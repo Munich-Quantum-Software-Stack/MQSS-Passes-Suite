@@ -29,6 +29,7 @@ Add the following lines to llvm-project/llvm/lib/Passes/PassBuilder.cpp for ever
 #include "llvm/Transforms/Utils/QIR/QirBarrierBeforeFinalMeasurements.h"  
 #include "llvm/Transforms/Utils/QIR/QirGrouping.h"  
 #include "llvm/Transforms/Utils/QIR/QirCXCancellation.h"  
+#include "llvm/Transforms/Utils/QIR/QirRemoveNonEntrypointFunctions.h"  
 #include "llvm/Transforms/Utils/QIR/new_pass.h"  
 ...
 ```
@@ -40,11 +41,12 @@ Add the following lines to llvm-project/llvm/lib/Passes/PassRegistry.def after t
 #define MODULE_PASS(NAME, CREATE_PASS)
 #endif
 MODULE_PASS("qir-grouping", QirGroupingPass())
+MODULE_PASS("qir-remove-non-entrypoint-functions", QirRemoveNonEntrypointFunctionsPass())  
 ...
 #ifndef FUNCTION_PASS
 #define FUNCTION_PASS(NAME, CREATE_PASS)
 #endif
-FUNCTION_PASS("qir-barrier-before-final-measurements", QirBarrierBeforeFinalMeasurementsPass())
+FUNCTION_PASS("qir-barrier-before-final-measurements", QirBarrierBeforeFinalMeasurementsPass())  
 FUNCTION_PASS("qir-cx-cancellation", QirCXCancellationPass())  
 FUNCTION_PASS("new-pass", new_pass())
 ...
@@ -56,6 +58,7 @@ add_llvm_component_library(LLVMTransformUtils
   QIR/QirBarrierBeforeFinalMeasurements.cpp  
   QIR/QirGrouping.cpp  
   QIR/QirCXCancellation.cpp  
+  MODULE_PASS("qir-remove-non-entrypoint-functions", QirRemoveNonEntrypointFunctionsPass())  
   QIR/new_pass.cpp  
 ...
 ```

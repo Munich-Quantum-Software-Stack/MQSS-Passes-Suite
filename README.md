@@ -58,7 +58,7 @@ add_llvm_component_library(LLVMTransformUtils
   QIR/QirBarrierBeforeFinalMeasurements.cpp  
   QIR/QirGrouping.cpp  
   QIR/QirCXCancellation.cpp  
-  MODULE_PASS("qir-remove-non-entrypoint-functions", QirRemoveNonEntrypointFunctionsPass())  
+  QIR/QirRemoveNonEntrypointFunctions.cpp  
   QIR/new_pass.cpp  
 ...
 ```

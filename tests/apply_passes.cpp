@@ -38,13 +38,13 @@ int main() {
     }
 
     // Step 2: Load the shared objects and create instances of your passes
-    void *soHandle1 = dlopen("./QirRemoveNonEntrypointFunctionsPass.so", RTLD_LAZY);
+    void *soHandle1 = dlopen("./src/passes/libQirRemoveNonEntrypointFunctionsPass.so", RTLD_LAZY);
     if (!soHandle1) {
         std::cerr << "Error loading shared object." << std::endl;
         return 1;
     }
 
-    void *soHandle2 = dlopen("./QirBarrierBeforeFinalMeasurementsPass.so", RTLD_LAZY);
+    void *soHandle2 = dlopen("./src/passes/libQirBarrierBeforeFinalMeasurementsPass.so", RTLD_LAZY);
     if (!soHandle2) {
         std::cerr << "Error loading shared object." << std::endl;
         return 1;

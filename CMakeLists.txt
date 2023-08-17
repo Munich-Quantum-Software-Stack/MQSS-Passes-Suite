@@ -1,18 +1,13 @@
-cmake_minimum_required(VERSION 3.12)
-project(QirPassManager)
-#  VERSION 0.1
-#  DESCRIPTION "QIR Pass Manager"
-#  LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.22.1)
+project(QirPassManager
+  VERSION 0.1
+  DESCRIPTION "QIR Pass Manager")
 
 # Find LLVMConfig.cmake
 find_path(LLVM_CONFIG_DIR LLVMConfig.cmake
   HINTS
   "${CMAKE_PREFIX_PATH}"
   ENV LLVM_DIR
-#  PATHS
-#  "/usr/local/llvm"
-#  "/usr/llvm"
-#  "/usr/local/opt/llvm"
 )
 
 if (NOT LLVM_CONFIG_DIR)
@@ -23,12 +18,8 @@ message(STATUS "Using LLVMConfig.cmake in: ${LLVM_CONFIG_DIR}")
 
 # Include LLVMConfig.cmake
 list(APPEND CMAKE_PREFIX_PATH "${LLVM_CONFIG_DIR}")
-message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${LLVM_CONFIG_DIR}")
-message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-#find_package(FFI REQUIRED)
 find_package(LLVM REQUIRED CONFIG)
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 
 # Set up LLVM-specific flags
 add_definitions(${LLVM_DEFINITIONS})

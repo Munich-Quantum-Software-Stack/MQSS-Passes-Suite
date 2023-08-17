@@ -1,2 +1,3 @@
 add_library(QirBarrierBeforeFinalMeasurementsPass MODULE QirBarrierBeforeFinalMeasurements.cpp)
 add_library(QirRemoveNonEntrypointFunctionsPass MODULE QirRemoveNonEntrypointFunctions.cpp)
+add_library(QirCXCancellationPass MODULE QirCXCancellation.cpp)

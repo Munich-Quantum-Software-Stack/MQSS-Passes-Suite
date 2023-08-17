@@ -49,6 +49,12 @@ int main() {
         std::cerr << "Error loading shared object." << std::endl;
         return 1;
     }
+    
+    void *soHandle3 = dlopen("./src/passes/libQirCXCancellationPass.so", RTLD_LAZY);
+    if (!soHandle3) {
+        std::cerr << "Error loading shared object." << std::endl;
+        return 1;
+    }
 
     using passCreator = PassModule* (*)();
     
@@ -66,12 +72,21 @@ int main() {
         return 1;
     }
 
+    passCreator createPass3 = reinterpret_cast<passCreator>(dlsym(soHandle3, "createQirCXCancellationPass"));
+    if (!createPass3) {
+        std::cerr << "Error getting factory function: " << dlerror() << std::endl;
+        dlclose(soHandle3);
+        return 1;
+    }
+
     PassModule *myPass1 = createPass1();
     PassModule *myPass2 = createPass2();
+    PassModule *myPass3 = createPass3();
 
     // Step 3: Apply the pass to the LLVM IR
     myPass1->run(module.get(), MAM);
     myPass2->run(module.get(), MAM);
+    myPass3->run(module.get(), MAM);
 
     // Step 4: Optionally, print the optimized LLVM IR
     module->print(outs(), nullptr);
@@ -79,9 +94,11 @@ int main() {
     // Clean up
     delete myPass1;
     delete myPass2;
+    delete myPass3;
     
     dlclose(soHandle1);
     dlclose(soHandle2);
+    dlclose(soHandle3);
 
     return 0;
 }

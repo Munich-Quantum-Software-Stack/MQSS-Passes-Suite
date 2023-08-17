@@ -1,13 +1,19 @@
-Install Clang and LLVM:
+Install CMake and LLVM:
 ```bash
-$ cd ${DEV_PATH}
-$ sudo apt install -y clang llvm
+$ sudo apt install -y cmake llvm
 ```
 
-Clone the passes:
+Clone the passes and move to the right branch:
 ```bash
 $ cd ${DEV_PATH}
-$ cd qir_passes
+$ git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes.git
+$ cd qir_passes/
 $ git checkout PassManager
+```
+
+Run the example:
+```bash
+$ cd ${DEV_PATH}/qir_passes/tests
+$ sh build.sh
 ```
 

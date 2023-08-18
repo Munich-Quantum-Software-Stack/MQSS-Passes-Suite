@@ -56,6 +56,12 @@ int main() {
         return 1;
     }
 
+    void *soHandle4 = dlopen("./src/passes/libQirGroupingPass.so", RTLD_LAZY);
+    if (!soHandle4) {
+        std::cerr << "Error loading shared object." << std::endl;
+        return 1;
+    }
+
     using passCreator = PassModule* (*)();
     
     passCreator createPass1 = reinterpret_cast<passCreator>(dlsym(soHandle1, "createQirRemoveNonEntrypointFunctionsPass"));
@@ -79,14 +85,23 @@ int main() {
         return 1;
     }
 
+    passCreator createPass4 = reinterpret_cast<passCreator>(dlsym(soHandle4, "createQirGroupingPass"));
+    if (!createPass4) {
+        std::cerr << "Error getting factory function: " << dlerror() << std::endl;
+        dlclose(soHandle4);
+        return 1;
+    }
+
     PassModule *myPass1 = createPass1();
     PassModule *myPass2 = createPass2();
     PassModule *myPass3 = createPass3();
+    PassModule *myPass4 = createPass4();
 
     // Step 3: Apply the pass to the LLVM IR
     myPass1->run(module.get(), MAM);
     myPass2->run(module.get(), MAM);
     myPass3->run(module.get(), MAM);
+    myPass4->run(module.get(), MAM);
 
     // Step 4: Optionally, print the optimized LLVM IR
     module->print(outs(), nullptr);
@@ -95,10 +110,12 @@ int main() {
     delete myPass1;
     delete myPass2;
     delete myPass3;
+    delete myPass4;
     
     dlclose(soHandle1);
     dlclose(soHandle2);
     dlclose(soHandle3);
+    dlclose(soHandle4);
 
     return 0;
 }

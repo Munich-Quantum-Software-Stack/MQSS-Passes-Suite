@@ -14,23 +14,14 @@ define i64 @Entry_Point_Name() #0 {
 entry:
   ; calls to initialize the execution environment
   call void @__quantum__rt__initialize(i8* null)
-  br label %body
-
-body:                                     ; preds = %entry
   ; calls to QIS functions that are not irreversible
   call void @__quantum__qis__h__body(%Qubit* null)
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
-  br label %measurements
-
-measurements:                             ; preds = %body
   ; calls to QIS functions that are irreversible
   call void @__quantum__qis__mz__body(%Qubit* null, %Result* writeonly null)
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Result* writeonly inttoptr (i64 1 to %Result*))
-  br label %output
-
-output:                                   ; preds = %measurements
   ; calls to record the program output
   call void @__quantum__rt__tuple_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @0, i32 0, i32 0))

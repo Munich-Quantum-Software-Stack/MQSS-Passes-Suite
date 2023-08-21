@@ -1,4 +1,7 @@
-#pragma once
+//#pragma once
+
+#ifndef PASS_MODULE_H
+#define PASS_MODULE_H
 
 #include <llvm/IR/PassManager.h>
 #include <llvm/IR/Module.h>
@@ -12,4 +15,6 @@ public:
 };
 
 }
+
+#endif // PASS_MODULE_H
 

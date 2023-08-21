@@ -5,12 +5,13 @@
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IR/CFG.h>
 
 #include "PassModule.h"
 
 namespace llvm {
 
-class QirCXCancellationPass : public PassModule {
+class QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass : public PassModule {
 public:
     PreservedAnalyses run(Module *module, ModuleAnalysisManager &/*mam*/);
 };

@@ -2,7 +2,7 @@
 
 using namespace llvm;
 
-PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module *module, ModuleAnalysisManager &mam) {
+PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module *module, ModuleAnalysisManager &/*mam*/) {
     std::vector<Instruction*> mz_instructions;
     bool barrier_found = false;
     for(auto &function : *module){
@@ -20,12 +20,11 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module *module, Mod
 
                     if(call_name == "__quantum__qis__mz__body")
                     	mz_instructions.push_back(&instruction);
-		    else if(call_name == "__quantum__qis__barrier__body")
+		            else if(call_name == "__quantum__qis__barrier__body")
                     	barrier_found = true;
             	}
             }
-	}
-    
+	    }
 
     	LLVMContext &Ctx = function.getContext();
 
@@ -33,10 +32,8 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module *module, Mod
             Type::getVoidTy(Ctx),       // return void
             false);                     // no variable arguments
 
-        if(mz_instructions.empty()){
-            errs() << "No measurements were found\n";
+        if(mz_instructions.empty())
             return PreservedAnalyses::none();
-        }
 
         Function *barrier_function;
         if(barrier_found)
@@ -44,7 +41,7 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module *module, Mod
         else{
             barrier_function = Function::Create(
                 function_type,
-                Function::ExternalWeakLinkage,
+                function.getLinkage(), //Function::ExternalWeakLinkage,
                 "__quantum__qis__barrier__body",
                 module);
         }

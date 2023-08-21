@@ -46,7 +46,7 @@ class QirGroupingPass : public PassModule { //PassInfoMixin<QirGroupingPass> {
 	void expandBasedOnDest(Module *module, BasicBlock* block, bool move_quatum, std::string const& name);
 	bool isQuantumRegister(Type const *type);		
 	int64_t classifyInstruction(Instruction const *instr);
-	PreservedAnalyses run(Module *module, ModuleAnalysisManager &mam);
+	PreservedAnalyses run(Module *module, ModuleAnalysisManager &/*mam*/);
     private:
         void deleteInstructions();
 

@@ -44,20 +44,26 @@ int main() {
         return 1;
     }
 
-    void *soHandle2 = dlopen("./src/passes/libQirBarrierBeforeFinalMeasurementsPass.so", RTLD_LAZY);
+    void *soHandle2 = dlopen("./src/passes/libQirGroupingPass.so", RTLD_LAZY);
     if (!soHandle2) {
         std::cerr << "Error loading shared object." << std::endl;
         return 1;
     }
-    
-    void *soHandle3 = dlopen("./src/passes/libQirCXCancellationPass.so", RTLD_LAZY);
+
+    void *soHandle3 = dlopen("./src/passes/libQirBarrierBeforeFinalMeasurementsPass.so", RTLD_LAZY);
     if (!soHandle3) {
         std::cerr << "Error loading shared object." << std::endl;
         return 1;
     }
-
-    void *soHandle4 = dlopen("./src/passes/libQirGroupingPass.so", RTLD_LAZY);
+    
+    void *soHandle4 = dlopen("./src/passes/libQirCXCancellationPass.so", RTLD_LAZY);
     if (!soHandle4) {
+        std::cerr << "Error loading shared object." << std::endl;
+        return 1;
+    }
+
+    void *soHandle5 = dlopen("./src/passes/libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so", RTLD_LAZY);
+    if (!soHandle5) {
         std::cerr << "Error loading shared object." << std::endl;
         return 1;
     }
@@ -71,24 +77,31 @@ int main() {
         return 1;
     }
 
-    passCreator createPass2 = reinterpret_cast<passCreator>(dlsym(soHandle2, "createQirBarrierBeforeFinalMeasurementsPass"));
+    passCreator createPass2 = reinterpret_cast<passCreator>(dlsym(soHandle2, "createQirGroupingPass"));
     if (!createPass2) {
         std::cerr << "Error getting factory function: " << dlerror() << std::endl;
         dlclose(soHandle2);
         return 1;
     }
 
-    passCreator createPass3 = reinterpret_cast<passCreator>(dlsym(soHandle3, "createQirCXCancellationPass"));
+    passCreator createPass3 = reinterpret_cast<passCreator>(dlsym(soHandle3, "createQirBarrierBeforeFinalMeasurementsPass"));
     if (!createPass3) {
         std::cerr << "Error getting factory function: " << dlerror() << std::endl;
         dlclose(soHandle3);
         return 1;
     }
 
-    passCreator createPass4 = reinterpret_cast<passCreator>(dlsym(soHandle4, "createQirGroupingPass"));
+    passCreator createPass4 = reinterpret_cast<passCreator>(dlsym(soHandle4, "createQirCXCancellationPass"));
     if (!createPass4) {
         std::cerr << "Error getting factory function: " << dlerror() << std::endl;
         dlclose(soHandle4);
+        return 1;
+    }
+
+    passCreator createPass5 = reinterpret_cast<passCreator>(dlsym(soHandle5, "createQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass"));
+    if (!createPass5) {
+        std::cerr << "Error getting factory function: " << dlerror() << std::endl;
+        dlclose(soHandle5);
         return 1;
     }
 
@@ -96,12 +109,14 @@ int main() {
     PassModule *myPass2 = createPass2();
     PassModule *myPass3 = createPass3();
     PassModule *myPass4 = createPass4();
+    PassModule *myPass5 = createPass5();
 
     // Step 3: Apply the pass to the LLVM IR
     myPass1->run(module.get(), MAM);
     myPass2->run(module.get(), MAM);
     myPass3->run(module.get(), MAM);
     myPass4->run(module.get(), MAM);
+    myPass5->run(module.get(), MAM);
 
     // Step 4: Optionally, print the optimized LLVM IR
     module->print(outs(), nullptr);
@@ -111,11 +126,13 @@ int main() {
     delete myPass2;
     delete myPass3;
     delete myPass4;
-    
+    delete myPass5;
+
     dlclose(soHandle1);
     dlclose(soHandle2);
     dlclose(soHandle3);
     dlclose(soHandle4);
+    dlclose(soHandle5);
 
     return 0;
 }

@@ -12,7 +12,7 @@ namespace llvm {
 
 class QirBarrierBeforeFinalMeasurementsPass : public PassModule {
 public:
-    PreservedAnalyses run(Module *module, ModuleAnalysisManager &mam);
+    PreservedAnalyses run(Module *module, ModuleAnalysisManager &/*mam*/);
 };
 
 }

@@ -9,7 +9,7 @@ namespace llvm {
 
 class QirRemoveNonEntrypointFunctionsPass : public PassModule {
 public:
-    PreservedAnalyses run(Module *module, ModuleAnalysisManager &mam);
+    PreservedAnalyses run(Module *module, ModuleAnalysisManager &/*mam*/);
 };
 
 }

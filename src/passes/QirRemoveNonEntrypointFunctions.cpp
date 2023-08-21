@@ -2,7 +2,7 @@
 
 using namespace llvm;
 
-PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(Module *module, ModuleAnalysisManager &mam){
+PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(Module *module, ModuleAnalysisManager &/*mam*/){
     std::vector<Function*> functions_to_delete;
 
     for(auto &function : *module)

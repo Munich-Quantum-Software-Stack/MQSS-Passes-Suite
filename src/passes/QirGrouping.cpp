@@ -341,9 +341,9 @@ void QirGroupingPass::expandBasedOnSource(Module *module, BasicBlock *block){
             instruction.replaceAllUsesWith(new_instruction);
             to_delete.push_back(&instruction);
 
-	    std::string str;
+	        /*std::string str;
             llvm::raw_string_ostream(str) << instruction;
-            errs() << "Instruction to be deleted: " << str << '\n';
+            errs() << "Instruction to be deleted: " << str << '\n';*/
         }
         else if(instr_class != InvalidMixedLocation){
             // Check if depends on readout
@@ -376,9 +376,9 @@ void QirGroupingPass::expandBasedOnSource(Module *module, BasicBlock *block){
                 instruction.replaceAllUsesWith(new_instr);
                 to_delete.push_back(&instruction);
 
-		std::string str;
+		        /*std::string str;
                 llvm::raw_string_ostream(str) << instruction;
-                errs() << "Instruction to be deleted: " << str << '\n';
+                errs() << "Instruction to be deleted: " << str << '\n';*/
 
                 post_quantum_instructions.insert(new_instr);
                 continue;
@@ -394,9 +394,9 @@ void QirGroupingPass::expandBasedOnSource(Module *module, BasicBlock *block){
             instruction.replaceAllUsesWith(new_instr);
             to_delete.push_back(&instruction);
 
-	    std::string str;
+	        /*std::string str;
             llvm::raw_string_ostream(str) << instruction;
-            errs() << "Instruction to be deleted: " << str << '\n';
+            errs() << "Instruction to be deleted: " << str << '\n';*/
         }
         else
             assert(((void)"Unsupported occurring while grouping instructions", false));
@@ -453,9 +453,9 @@ void QirGroupingPass::expandBasedOnDest(
             instruction.replaceAllUsesWith(new_instruction);
             to_delete.push_back(&instruction);
 
-	    std::string str;
-	    llvm::raw_string_ostream(str) << instruction;
-	    errs() << "Instruction to be deleted: " << str << '\n';
+	        /*std::string str;
+	        llvm::raw_string_ostream(str) << instruction;
+	        errs() << "Instruction to be deleted: " << str << '\n';*/
         }
     }
 
@@ -464,7 +464,7 @@ void QirGroupingPass::expandBasedOnDest(
     deleteInstructions();
 }
 
-PreservedAnalyses QirGroupingPass::run(Module *module, ModuleAnalysisManager &mam) {
+PreservedAnalyses QirGroupingPass::run(Module *module, ModuleAnalysisManager &/*mam*/) {
     LLVMContext &context = module->getContext();
     
     pre_quantum_builder  = std::make_shared<IRBuilder<>>(context);

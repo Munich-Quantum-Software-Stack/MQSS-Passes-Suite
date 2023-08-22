@@ -21,7 +21,6 @@ set(MAIN_SOURCE ${CUSTOM_MAIN_SOURCE})
 file(GLOB SOURCES
     src/QirPassManager.cpp
     src/passes/*.cpp
-    #tests/main.cpp
     ${MAIN_SOURCE}
 )
 
@@ -32,7 +31,7 @@ set(EXECUTABLE_NAME ${CUSTOM_EXECUTABLE_NAME})
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
 # Link against LLVM libraries
-target_link_libraries(main
+target_link_libraries(${EXECUTABLE_NAME}
     PRIVATE
     LLVM
 )

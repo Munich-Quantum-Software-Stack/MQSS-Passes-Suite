@@ -14,11 +14,15 @@ find_package(LLVM REQUIRED CONFIG)
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
+# Specify the main source file using the CUSTOM_MAIN_SOURCE variable
+set(MAIN_SOURCE ${CUSTOM_MAIN_SOURCE})
+
 # Add the source files for compilation
 file(GLOB SOURCES
     src/QirPassManager.cpp
     src/passes/*.cpp
-    tests/main.cpp
+    #tests/main.cpp
+    ${MAIN_SOURCE}
 )
 
 # Get the executable name from the CUSTOM_EXECUTABLE_NAME variable

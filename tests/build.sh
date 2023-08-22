@@ -3,6 +3,6 @@ cd ../
 rm -rf build/ 2> /dev/null
 mkdir build/
 cd build/
-cmake -DCUSTOM_EXECUTABLE_NAME=main ..
+cmake -DCUSTOM_MAIN_SOURCE=tests/main.cpp -DCUSTOM_EXECUTABLE_NAME=main ..
 make
 ./main

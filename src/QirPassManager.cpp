@@ -1,6 +1,6 @@
 #include "QirPassManager.h"
 
-namespace llvm {
+using namespace llvm;
 
 QirPassManager::QirPassManager() {}
 
@@ -17,7 +17,5 @@ PreservedAnalyses QirPassManager::run(Module *module, ModuleAnalysisManager &mam
     }
 
     return allPassesPreserved;
-}
-
 }
 

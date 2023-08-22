@@ -1,12 +1,19 @@
 #ifndef QIR_PASS_MANAGER_H
 #define QIR_PASS_MANAGER_H
 
+// LLVM
+#include <llvm/Passes/PassBuilder.h>
+#include <llvm/Passes/PassPlugin.h>
+#include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/SourceMgr.h>
 #include <llvm/IR/PassManager.h>
+#include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IRReader/IRReader.h>
 
 #include "../src/headers/PassModule.h"
 
-namespace llvm {
+using namespace llvm; //{
 
 class QirPassManager {
 public:
@@ -23,7 +30,7 @@ private:
     std::vector<PassModule*> passes_;
 };
 
-}
+//}
 
 #endif // QIR_PASS_MANAGER_H
 

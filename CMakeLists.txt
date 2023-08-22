@@ -14,17 +14,6 @@ find_package(LLVM REQUIRED CONFIG)
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
-# Build your executable
-#add_executable(main 
-#    tests/main.cpp
-#    src/QirPassManager.cpp
-#    src/passes/QirBarrierBeforeFinalMeasurements.cpp
-#    src/passes/QirCXCancellation.cpp
-#    src/passes/QirGrouping.cpp
-#    src/passes/QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
-#    src/passes/QirRemoveNonEntrypointFunctions.cpp
-#)
-
 # Add the source files for compilation
 file(GLOB SOURCES
     src/QirPassManager.cpp
@@ -32,15 +21,16 @@ file(GLOB SOURCES
     tests/main.cpp
 )
 
+# Get the executable name from the CUSTOM_EXECUTABLE_NAME variable
+set(EXECUTABLE_NAME ${CUSTOM_EXECUTABLE_NAME})
+
 # Add the sources to the executable
-add_executable(main ${SOURCES})
+add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
 # Link against LLVM libraries
 target_link_libraries(main
     PRIVATE
     LLVM
-    #LLVMCore
-    #LLVMSupport
 )
 
 # Print the include directories and libraries found

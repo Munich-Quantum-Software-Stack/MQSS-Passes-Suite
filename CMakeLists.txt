@@ -41,5 +41,5 @@ message("LLVM_INCLUDE_DIRS: ${LLVM_INCLUDE_DIRS}")
 message("LLVM_DEFINITIONS: ${LLVM_DEFINITIONS}")
 
 # Print the LLVM libraries being linked
-get_target_property(LLVM_LIBS main LINK_LIBRARIES)
+get_target_property(LLVM_LIBS ${EXECUTABLE_NAME} LINK_LIBRARIES)
 message("LLVM_LIBS: ${LLVM_LIBS}")

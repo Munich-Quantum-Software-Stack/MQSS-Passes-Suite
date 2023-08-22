@@ -1,19 +1,3 @@
-// LLVM
-/*#include <llvm/Passes/PassBuilder.h>
-#include <llvm/Passes/PassPlugin.h>
-#include <llvm/Support/raw_ostream.h>
-#include <llvm/Support/SourceMgr.h>
-#include <llvm/IR/PassManager.h>
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/Module.h>
-#include <llvm/IRReader/IRReader.h>*/
-
-// Inout-output capabilities
-#include <iostream>
-
-// Linking
-#include <dlfcn.h>
-
 // QIR Pass Manager
 #include "../src/QirPassManager.h"
 
@@ -23,6 +7,8 @@
 #include "../src/headers/QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.h"
 #include "../src/headers/QirCXCancellation.h"
 #include "../src/headers/QirRemoveNonEntrypointFunctions.h"
+
+#include <iostream>
 
 using namespace llvm;
 

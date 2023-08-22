@@ -1,7 +1,6 @@
 #ifndef QIR_PASS_MANAGER_H
 #define QIR_PASS_MANAGER_H
 
-// LLVM
 #include <llvm/Passes/PassBuilder.h>
 #include <llvm/Passes/PassPlugin.h>
 #include <llvm/Support/raw_ostream.h>
@@ -10,6 +9,8 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IRReader/IRReader.h>
+
+#include <dlfcn.h>
 
 #include "../src/headers/PassModule.h"
 

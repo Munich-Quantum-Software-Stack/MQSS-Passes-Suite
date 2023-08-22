@@ -3,6 +3,9 @@ project(QirPassManager
   VERSION 0.1
   DESCRIPTION "QIR Pass Manager")
 
+# Set the C++ standard
+set(CMAKE_CXX_STANDARD 14)
+
 # Find LLVMConfig.cmake
 find_path(LLVM_CONFIG_DIR LLVMConfig.cmake
   HINTS
@@ -35,8 +38,18 @@ set(EXECUTABLE_NAME ${CUSTOM_EXECUTABLE_NAME})
 # Specify the main source file using the CUSTOM_MAIN_SOURCE variable
 set(MAIN_SOURCE ${CUSTOM_MAIN_SOURCE})
 
+# Add the source files for compilation
+file(GLOB SOURCES
+    src/QirPassManager.cpp
+    #src/passes/*.cpp
+    ${MAIN_SOURCE}
+)
+
+# Get the executable name from the CUSTOM_EXECUTABLE_NAME variable
+set(EXECUTABLE_NAME ${CUSTOM_EXECUTABLE_NAME})
+
 # Build your executable
-add_executable(${EXECUTABLE_NAME} ${MAIN_SOURCE})
+add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
 # Include passes subdirectory
 add_subdirectory(src/passes)

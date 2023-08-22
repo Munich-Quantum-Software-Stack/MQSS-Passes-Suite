@@ -45,6 +45,6 @@ PreservedAnalyses QirCXCancellationPass::run(Module *module, ModuleAnalysisManag
     return PreservedAnalyses::all();
 }
 
-extern "C" PassModule* createQirCXCancellationPass() {
+extern "C" PassModule* createQirPass() {
     return new QirCXCancellationPass();
 }

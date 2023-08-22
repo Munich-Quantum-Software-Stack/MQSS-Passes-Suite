@@ -62,6 +62,6 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module *module, Mod
     return PreservedAnalyses::all();
 }
 
-extern "C" PassModule* createQirBarrierBeforeFinalMeasurementsPass() {
+extern "C" PassModule* createQirPass() {
     return new QirBarrierBeforeFinalMeasurementsPass();
 }

@@ -589,6 +589,6 @@ PreservedAnalyses QirGroupingPass::run(Module *module, ModuleAnalysisManager &/*
     return PreservedAnalyses::all();
 }
 
-extern "C" PassModule* createQirGroupingPass() {
+extern "C" PassModule* createQirPass() {
     return new QirGroupingPass();
 }

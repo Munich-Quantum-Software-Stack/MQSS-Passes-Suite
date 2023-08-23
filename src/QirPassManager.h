@@ -14,7 +14,7 @@
 
 #include "../src/headers/PassModule.h"
 
-using namespace llvm; //{
+using namespace llvm;
 
 class QirPassManager {
 public:
@@ -30,8 +30,6 @@ public:
 private:
     std::vector<std::string> passes_;
 };
-
-//}
 
 #endif // QIR_PASS_MANAGER_H
 

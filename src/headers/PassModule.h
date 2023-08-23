@@ -3,13 +3,11 @@
 #include <llvm/IR/PassManager.h>
 #include <llvm/IR/Module.h>
 
-namespace llvm {
+using namespace llvm;
 
 class PassModule {
 public:
     virtual PreservedAnalyses run(Module *module, ModuleAnalysisManager &mam) = 0;
     virtual ~PassModule() {}
 };
-
-}
 

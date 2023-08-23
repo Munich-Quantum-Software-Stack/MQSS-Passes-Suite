@@ -13,7 +13,9 @@ $ git checkout PassManager
 
 Run the example:
 ```bash
-$ cd ${DEV_PATH}/qir_passes/tests
+$ cd ${DEV_PATH}/qir_passes/
 $ sh build.sh
+$ cd tests/
+$ sh build_client.sh
 ```
 

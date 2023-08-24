@@ -17,11 +17,11 @@ const int BUFFER_SIZE = 65536;
 int serverSocket = -1;
 
 void handleClient(int clientSocket) {
-    char QirFile[BUFFER_SIZE];
+    char genericQir[BUFFER_SIZE];
     ssize_t bytesRead;
 
-    while ((bytesRead = recv(clientSocket, QirFile, BUFFER_SIZE, 0)) > 0) {
-        QirFile[bytesRead] = '\0';
+    while ((bytesRead = recv(clientSocket, genericQir, BUFFER_SIZE, 0)) > 0) {
+        genericQir[bytesRead] = '\0';
         std::cout << "Generic QIR received" << std::endl;
 
 		ModuleAnalysisManager MAM;
@@ -29,10 +29,13 @@ void handleClient(int clientSocket) {
 		LLVMContext           Context;
 		SMDiagnostic          error;
 
-		// Read QIR 
-		std::unique_ptr<Module> module = parseIRFile(QirFile, error, Context);
+		// Read generic QIR
+        auto memoryBuffer = MemoryBuffer::getMemBuffer(genericQir, "QIR Buffer", false);
+        MemoryBufferRef QIRRef = *memoryBuffer;
+
+		std::unique_ptr<Module> module = parseIR(QIRRef, error, Context);
 		if(!module) {
-			std::cerr << "Error reading .ll file." << std::endl;
+			std::cerr << "Error parsing Generic QIR" << std::endl;
 			exit(1);
 		}
 

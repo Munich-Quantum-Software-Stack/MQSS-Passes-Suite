@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <cstring>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -30,15 +32,41 @@ int main() {
     }
 
     // Send data to server
-    const char* message = "../benchmarks/bell_state.ll";
-    send(clientSocket, message, strlen(message), 0);
+    //const char* message = "../benchmarks/bell_state.ll";
+	const char* filename = "../benchmarks/bell_state.ll";
+
+    // Open the file
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return 1;
+    }
+
+    // Get the file size
+    file.seekg(0, std::ios::end);
+    std::streampos fileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    // Read the file content into a buffer
+    char* generic_qir = new char[fileSize];
+    file.read(generic_qir, fileSize);
+    file.close();
+
+	ssize_t bytesSent = send(clientSocket, generic_qir, fileSize, 0);
+    if (bytesSent == -1) {
+        std::cerr << "Error: Failed to send generic QIR over the socket" << std::endl;
+		delete[] generic_qir;
+		exit(1);
+	}
+
+	delete[] generic_qir;
 
     // Receive response from server
-    char buffer[BUFFER_SIZE];
-    ssize_t bytesRead = recv(clientSocket, buffer, BUFFER_SIZE, 0);
+    char adapted_qir[BUFFER_SIZE];
+    ssize_t bytesRead = recv(clientSocket, adapted_qir, BUFFER_SIZE, 0);
     if (bytesRead > 0) {
-        buffer[bytesRead] = '\0';
-        std::cout << buffer << std::endl;
+        adapted_qir[bytesRead] = '\0';
+        std::cout << adapted_qir << std::endl;
     }
 
     close(clientSocket);

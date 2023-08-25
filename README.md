@@ -8,7 +8,7 @@ Clone the passes and move to the right branch:
 $ cd ${DEV_PATH}
 $ git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes.git
 $ cd qir_passes/
-$ git checkout PassManager
+$ git checkout Plugins
 ```
 
 Run the example:

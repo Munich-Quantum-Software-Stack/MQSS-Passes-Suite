@@ -12,15 +12,6 @@ find_package(Threads REQUIRED)
 # Set LLVM_ENABLE_THREADS to ON
 set(LLVM_ENABLE_THREADS ON)
 
-# Find sys/socket.h
-#find_path(UNIX_INCLUDE_PATH sys/socket.h)
-#
-#if (NOT UNIX_INCLUDE_PATH)
-#  message(FATAL_ERROR "socket.h not found.")
-#endif()
-#
-#message(STATUS "Using sys/socket.h in: ${UNIX_INCLUDE_PATH}")
-
 # Find LLVMConfig.cmake
 find_path(LLVM_CONFIG_DIR LLVMConfig.cmake
   HINTS
@@ -68,5 +59,4 @@ add_subdirectory(src/passes)
 # Link the executable with LLVM and Threads libraries
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE LLVM)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Threads::Threads)
-#target_link_libraries(${EXECUTABLE_NAME} PRIVATE socket)
-#target_include_directories(${EXECUTABLE_NAME} PRIVATE ${UNIX_INCLUDE_PATH})
+

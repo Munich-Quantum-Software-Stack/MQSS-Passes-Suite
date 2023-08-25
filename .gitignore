@@ -1,7 +1,9 @@
-*.o
-*.so
 build/
-*.swp
-*_BACKUP
 daemon/
 
+*.o
+*.so
+*.swp
+
+*_BACKUP
+client

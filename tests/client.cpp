@@ -6,12 +6,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <vector>
 
-const char* SERVER_IP = "127.0.0.1";
-const int PORT = 8081;
-const int BUFFER_SIZE = 65536;
+const char* SERVER_IP   = "127.0.0.1";
+const int   PORT        = 8081;
+const int   BUFFER_SIZE = 65536; // TODO
 
-int main() {
+int main(void) {
     // Create socket
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1) {
@@ -19,7 +20,7 @@ int main() {
         return 1;
     }
 
-    // Connect to server
+    // Connect to the QPM
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(PORT);
@@ -31,11 +32,8 @@ int main() {
         return 1;
     }
 
-    // Send data to server
-    //const char* message = "../benchmarks/bell_state.ll";
-	const char* filename = "../benchmarks/bell_state.ll";
-
-    // Open the file
+    // Open the QIR file
+    const char* filename = "../benchmarks/bell_state.ll";
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << filename << std::endl;
@@ -48,27 +46,77 @@ int main() {
     file.seekg(0, std::ios::beg);
 
     // Read the file content into a buffer
-    char* generic_qir = new char[fileSize];
-    file.read(generic_qir, fileSize);
+    char* genericQir = new char[fileSize];
+    file.read(genericQir, fileSize);
     file.close();
 
-	ssize_t bytesSent = send(clientSocket, generic_qir, fileSize, 0);
+    // Send generic QIR to the QPM
+    ssize_t fileSizeNetwork = htonl(fileSize);
+    std::cout << "Sending generic QIR" << std::endl << std::endl;
+	ssize_t bytesSent = send(clientSocket, &fileSizeNetwork, sizeof(fileSizeNetwork), 0);
     if (bytesSent == -1) {
-        std::cerr << "Error: Failed to send generic QIR over the socket" << std::endl;
-		delete[] generic_qir;
+        std::cerr << "Error: Failed to send size of generic QIR to the QPM" << std::endl;
 		exit(1);
 	}
+    bytesSent = send(clientSocket, genericQir, fileSize, 0);
+    if (bytesSent == -1) {
+        std::cerr << "Error: Failed to send generic QIR to the QPM" << std::endl;
+        exit(1);
+    }
+    delete[] genericQir;
 
-	delete[] generic_qir;
+    // Append the desired passes
+    std::vector<std::string> passes {
+        "libQirRemoveNonEntrypointFunctionsPass.so",
+        "libQirGroupingPass.so",
+        "libQirBarrierBeforeFinalMeasurementsPass.so",
+        "libQirCXCancellationPass.so",
+        "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so"
+    };
 
-    // Receive response from server
+    // Send each of the passes to the QPM
+	for (std::string pass : passes) {
+        const char* libPass = pass.c_str();
+		ssize_t passSizeNetwork = htonl(strlen(libPass));
+		
+        std::cout << "Sending pass " << pass << " (" << strlen(libPass) << ")" << std::endl;
+		
+		if (send(clientSocket, &passSizeNetwork, sizeof(passSizeNetwork), 0)  < 0) {
+			std::cout << "Warning: Failed to send size of the following pass to the QPM: \n" 
+					  << pass << std::endl;
+			continue;
+		}
+		if (send(clientSocket, libPass, strlen(libPass), 0) < 0) {
+			std::cout << "Warning: Failed to send the followig pass to the QPM: \n"
+					  << pass << std::endl;
+			continue;
+		}
+	}
+    std::cout << std::endl;
+
+    // Send End Of Transmission (EOF)
+    const char* eot = "EOT";
+    ssize_t eotSizeNetwork = htonl(strlen(eot));
+	if (send(clientSocket, &eotSizeNetwork, sizeof(eotSizeNetwork), 0) < 0) {
+		std::cout << "Warning: Failed to send size of the EOT to the QPM" << std::endl;
+		close(clientSocket);
+		return 1;
+	}
+    if (send(clientSocket, eot, strlen(eot), 0) < 0) {
+        std::cerr << "Error: failed to send end of transmission to the QPM" << std::endl;
+		close(clientSocket);
+        return 1;
+    }
+
+    // Receive response from QPM
     char adapted_qir[BUFFER_SIZE];
     ssize_t bytesRead = recv(clientSocket, adapted_qir, BUFFER_SIZE, 0);
     if (bytesRead > 0) {
         adapted_qir[bytesRead] = '\0';
-        std::cout << adapted_qir << std::endl;
+        std::cout << "Received adapted QIR:\n\n" << adapted_qir << std::endl;
     }
 
+    // Close connection with the QPM
     close(clientSocket);
     return 0;
 }

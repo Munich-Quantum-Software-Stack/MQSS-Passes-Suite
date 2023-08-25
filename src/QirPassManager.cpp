@@ -13,7 +13,7 @@ PreservedAnalyses QirPassManager::run(Module *module, ModuleAnalysisManager &mam
     PreservedAnalyses allPassesPreserved;
 
     for(std::string pass : passes_) {
-        void *soHandle = dlopen(pass.c_str(), RTLD_LAZY);
+		void *soHandle = dlopen(pass.c_str(), RTLD_NOW /*RTLD_LAZY*/);
 
         if(!soHandle) {
             std::cout << "Warning: error loading shared object: " << pass << std::endl;

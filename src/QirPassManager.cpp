@@ -16,7 +16,7 @@ PreservedAnalyses QirPassManager::run(Module *module, ModuleAnalysisManager &mam
 		void *soHandle = dlopen(pass.c_str(), RTLD_NOW /*RTLD_LAZY*/);
 
         if(!soHandle) {
-            std::cout << "Warning: error loading shared object: " << pass << std::endl;
+            std::cout << "Warning: Error loading shared object: " << pass << std::endl;
             continue;
         }
 
@@ -25,7 +25,7 @@ PreservedAnalyses QirPassManager::run(Module *module, ModuleAnalysisManager &mam
         passCreator createQirPass = reinterpret_cast<passCreator>(dlsym(soHandle, "createQirPass"));
 
         if(!createQirPass) {
-            std::cout << "Warning: error getting factory function: "  << std::endl;
+            std::cout << "Warning: Error getting factory function of pass: " << pass << std::endl;
             dlclose(soHandle);
             continue;
         }

@@ -67,11 +67,12 @@ int main(void) {
 
     // Append the desired passes
     std::vector<std::string> passes {
+        "libQirDivisionByZeroPass.so",
         "libQirRemoveNonEntrypointFunctionsPass.so",
         "libQirGroupingPass.so",
         "libQirBarrierBeforeFinalMeasurementsPass.so",
-        "libQirCXCancellationPass.so",
-        "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so"
+        "libQirCXCancellationPass.so"
+        //"libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so" // TODO segmentation fault
     };
 
     // Send each of the passes to the QPM
@@ -79,7 +80,7 @@ int main(void) {
         const char* libPass = pass.c_str();
 		ssize_t passSizeNetwork = htonl(strlen(libPass));
 		
-        std::cout << "Sending pass " << pass << " (" << strlen(libPass) << ")" << std::endl;
+        std::cout << "Sending pass " << pass << std::endl;
 		
 		if (send(clientSocket, &passSizeNetwork, sizeof(passSizeNetwork), 0)  < 0) {
 			std::cout << "Warning: Failed to send size of the following pass to the QPM: \n" 

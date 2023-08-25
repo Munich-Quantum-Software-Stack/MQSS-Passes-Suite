@@ -1,6 +1,6 @@
 Install CMake and LLVM:
 ```bash
-$ sudo apt install -y cmake llvm
+$ sudo apt install -y cmake llvm libopenmpi-dev
 ```
 
 Clone the passes and move to the right branch:

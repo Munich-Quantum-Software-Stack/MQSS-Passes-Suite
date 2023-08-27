@@ -86,9 +86,7 @@ void handleClient(int clientSocket) {
  
     std::string str;
     raw_string_ostream OS(str);
-    std::cout << "MADE IT HERE (1)" << std::endl;
     OS << *module;
-    std::cout << "MADE IT HERE (2)" << std::endl;
     OS.flush();
     const char* qir = str.data();
     send(clientSocket, qir, strlen(qir), 0);

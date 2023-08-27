@@ -71,7 +71,8 @@ int main(void) {
         "libQirGroupingPass.so",
         "libQirBarrierBeforeFinalMeasurementsPass.so",
         "libQirCXCancellationPass.so",
-        "libQirDivisionByZeroPass.so",
+        "libQirDivisionByZeroPass.so", // TODO We need a pass that gets rid of this kind of situations:
+                                       // br i1 true, label %if_denominator_is_zero, label %after_zero_check
         "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so"
     };
 

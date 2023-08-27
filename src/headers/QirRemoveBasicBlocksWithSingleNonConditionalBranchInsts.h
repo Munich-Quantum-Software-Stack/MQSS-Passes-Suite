@@ -7,6 +7,8 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/CFG.h>
 
+#include <algorithm>
+
 #include "PassModule.h"
 
 namespace llvm {
@@ -17,3 +19,4 @@ public:
 };
 
 }
+

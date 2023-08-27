@@ -586,7 +586,7 @@ PreservedAnalyses QirGroupingPass::run(Module *module, ModuleAnalysisManager &/*
             expandBasedOnDest(module, load_block, false, "load");
     }
 
-    return PreservedAnalyses::all();
+    return PreservedAnalyses::none();
 }
 
 extern "C" PassModule* createQirPass() {

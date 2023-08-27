@@ -9,6 +9,7 @@
 #include <thread>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 const int PORT = 8081;
 
@@ -57,8 +58,6 @@ void handleClient(int clientSocket) {
                 break;
             }
 
-            std::cout << "Pass received: " << passBuffer << std::endl;
-            
             passes.push_back(passBuffer);
             delete[] passBuffer;
         }
@@ -72,8 +71,12 @@ void handleClient(int clientSocket) {
 	}
 	
     // Append all received passes
-	for (std::string pass : passes)
+    std::reverse(passes.begin(), passes.end());
+    while (!passes.empty()) {
+        auto pass = passes.back();
         QPM.append("./src/passes/" + pass);
+        passes.pop_back();
+    }
 
 	// Run the passes
 	QPM.run(module.get(), MAM);
@@ -83,7 +86,9 @@ void handleClient(int clientSocket) {
  
     std::string str;
     raw_string_ostream OS(str);
+    std::cout << "MADE IT HERE (1)" << std::endl;
     OS << *module;
+    std::cout << "MADE IT HERE (2)" << std::endl;
     OS.flush();
     const char* qir = str.data();
     send(clientSocket, qir, strlen(qir), 0);

@@ -13,7 +13,7 @@ PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(Module *module, Modul
         if(function->use_empty())
             function->eraseFromParent();
 
-    return PreservedAnalyses::all();
+    return PreservedAnalyses::none();
 }
 
 extern "C" PassModule* createQirPass() {

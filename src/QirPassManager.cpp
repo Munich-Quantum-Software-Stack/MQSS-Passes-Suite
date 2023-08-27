@@ -1,5 +1,6 @@
 #include "QirPassManager.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace llvm;
 
@@ -12,11 +13,15 @@ void QirPassManager::append(std::string pass) {
 PreservedAnalyses QirPassManager::run(Module *module, ModuleAnalysisManager &mam) {
     PreservedAnalyses allPassesPreserved;
 
-    for(std::string pass : passes_) {
+    while (!passes_.empty()) {
+        auto pass = passes_.back();
 		void *soHandle = dlopen(pass.c_str(), RTLD_NOW /*RTLD_LAZY*/);
+
+        std::cout << "Applying pass: " << pass << std::endl;
 
         if(!soHandle) {
             std::cout << "Warning: Error loading shared object: " << pass << std::endl;
+            passes_.pop_back();
             continue;
         }
 
@@ -26,6 +31,7 @@ PreservedAnalyses QirPassManager::run(Module *module, ModuleAnalysisManager &mam
 
         if(!createQirPass) {
             std::cout << "Warning: Error getting factory function of pass: " << pass << std::endl;
+            passes_.pop_back();
             dlclose(soHandle);
             continue;
         }
@@ -36,6 +42,7 @@ PreservedAnalyses QirPassManager::run(Module *module, ModuleAnalysisManager &mam
         
         delete QirPass;
         dlclose(soHandle);
+        passes_.pop_back();
     }
 
     return allPassesPreserved;

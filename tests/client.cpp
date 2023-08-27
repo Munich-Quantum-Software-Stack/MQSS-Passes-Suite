@@ -27,7 +27,7 @@ int main(void) {
     inet_pton(AF_INET, SERVER_IP, &serverAddr.sin_addr);
 
     if (connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        std::cerr << "Error connecting to server" << std::endl;
+        std::cerr << "Error connecting to the QPM" << std::endl;
         close(clientSocket);
         return 1;
     }
@@ -67,16 +67,17 @@ int main(void) {
 
     // Append the desired passes
     std::vector<std::string> passes {
-        "libQirDivisionByZeroPass.so",
-        "libQirRemoveNonEntrypointFunctionsPass.so",
+		"libQirRemoveNonEntrypointFunctionsPass.so",
         "libQirGroupingPass.so",
         "libQirBarrierBeforeFinalMeasurementsPass.so",
-        "libQirCXCancellationPass.so"
-        //"libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so" // TODO segmentation fault
+        "libQirCXCancellationPass.so",
+        "libQirDivisionByZeroPass.so",
+        "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so"
     };
 
     // Send each of the passes to the QPM
-	for (std::string pass : passes) {
+    while (!passes.empty()) {
+        auto pass = passes.back();
         const char* libPass = pass.c_str();
 		ssize_t passSizeNetwork = htonl(strlen(libPass));
 		
@@ -92,6 +93,7 @@ int main(void) {
 					  << pass << std::endl;
 			continue;
 		}
+        passes.pop_back();
 	}
     std::cout << std::endl;
 

@@ -79,7 +79,7 @@ void handleClient(int clientSocket) {
     }
 
 	// Run the passes
-	QPM.run(module.get(), MAM);
+	QPM.run(*module/*.get()*/, MAM);
 
     // Print the result
     //module->print(outs(), nullptr);

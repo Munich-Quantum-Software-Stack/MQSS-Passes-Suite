@@ -15,7 +15,7 @@
 namespace llvm {
 
 class QirGroupingPass : public PassModule { //PassInfoMixin<QirGroupingPass> {
-    public:
+public:
 	enum class ResourceType
 	{
 	    UNDEFINED,
@@ -40,38 +40,38 @@ class QirGroupingPass : public PassModule { //PassInfoMixin<QirGroupingPass> {
 	    InvalidMixedLocation       = -1
     	};
 
-	void prepareSourceSeparation(Module *module, BasicBlock *block);
-    	void nextQuantumCycle(Module *module, BasicBlock* block);
-        void expandBasedOnSource(Module *module, BasicBlock *block);
-	void expandBasedOnDest(Module *module, BasicBlock* block, bool move_quatum, std::string const& name);
+	void prepareSourceSeparation(Module &module, BasicBlock *block);
+    void nextQuantumCycle(Module &module, BasicBlock* block);
+    void expandBasedOnSource(Module &module, BasicBlock *block);
+	void expandBasedOnDest(Module &module, BasicBlock* block, bool move_quatum, std::string const& name);
 	bool isQuantumRegister(Type const *type);		
 	int64_t classifyInstruction(Instruction const *instr);
-	PreservedAnalyses run(Module *module, ModuleAnalysisManager &/*mam*/);
-    private:
-        void deleteInstructions();
+	PreservedAnalyses run(Module &module, ModuleAnalysisManager &mam);
+private:
+    void deleteInstructions();
 
-        ResourceAnalysis operandAnalysis(Value* val) const;
+    ResourceAnalysis operandAnalysis(Value* val) const;
 
-        BasicBlock* pre_quantum_block{nullptr};
-        BasicBlock* quantum_block{nullptr};
-        BasicBlock* post_quantum_block{nullptr};
+    BasicBlock* post_classical_block_{nullptr};
+    BasicBlock* quantum_block_{nullptr};
+    BasicBlock* pre_classical_block_{nullptr};
 
-        std::shared_ptr<IRBuilder<>> pre_quantum_builder{};
-        std::shared_ptr<IRBuilder<>> quantum_builder{};
-        std::shared_ptr<IRBuilder<>> post_quantum_builder{};
+    std::shared_ptr<IRBuilder<>> pre_classical_builder_{};
+    std::shared_ptr<IRBuilder<>> quantum_builder_{};
+    std::shared_ptr<IRBuilder<>> post_classical_builder_{};
 
-        std::vector<BasicBlock*> quantum_blocks{};
-        std::vector<BasicBlock*> classical_blocks{};
+    std::vector<BasicBlock*> quantum_blocks_{};
+    std::vector<BasicBlock*> classical_blocks_{};
 
 	std::unordered_set<std::string> quantum_register_types = {
-            "Qubit", 
-            "Result"};
-        std::unordered_set<std::string> irreversible_operations = {
-            "__quantum__qis__reset__body",
-            "__quantum__qis__mz__body"};
+        "Qubit", 
+        "Result"};
+    std::unordered_set<std::string> irreversible_operations = {
+        "__quantum__qis__reset__body",
+        "__quantum__qis__mz__body"};
 	std::string qir_runtime_prefix = "__quantum__rt__";
 
-        std::vector<Instruction*> to_delete;
+    std::vector<Instruction*> to_delete;
 };
 
 }

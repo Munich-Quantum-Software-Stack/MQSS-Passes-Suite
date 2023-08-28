@@ -2,10 +2,10 @@
 
 using namespace llvm;
 
-PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module *module, ModuleAnalysisManager &/*mam*/) {
+PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module &module, ModuleAnalysisManager &/*mam*/) {
     std::vector<Instruction*> mz_instructions;
     bool barrier_found = false;
-    for(auto &function : *module){
+    for(auto &function : module){
     	for(auto &block : function){
             for(auto &instruction : block){
             	CallInst *call_instruction = dyn_cast<CallInst>(&instruction);
@@ -37,7 +37,7 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module *module, Mod
 
         Function *barrier_function;
         if(barrier_found)
-            barrier_function = module->getFunction("__quantum__qis__barrier__body");
+            barrier_function = module.getFunction("__quantum__qis__barrier__body");
         else{
             barrier_function = Function::Create(
                 function_type,

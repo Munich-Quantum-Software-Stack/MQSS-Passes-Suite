@@ -1,6 +1,7 @@
 #include <llvm/Support/raw_ostream.h>
 
 #include "../headers/QirGrouping.h"
+#include "../headers/QirGroupingAnalysis.h"
 
 #include <unordered_set>
 
@@ -86,84 +87,85 @@ void QirGroupingPass::deleteInstructions(){
     for(auto it = to_delete.rbegin(); it != to_delete.rend(); ++it){
         auto ptr = *it;
         if(!ptr->use_empty())
-	    throw std::runtime_error("Error: Unable to delete instruction.\n");
-	else
+            throw std::runtime_error("Error: Unable to delete instruction.\n");
+        else
             ptr->eraseFromParent();
     }
 }
 
-void QirGroupingPass::prepareSourceSeparation(Module *module, BasicBlock *block){
+void QirGroupingPass::prepareSourceSeparation(Module &module, BasicBlock *block){
     // Creating replacement blocks
-    LLVMContext& context = module->getContext(); // TODO: Do we need the module here?
+    LLVMContext& context = module.getContext(); // TODO: Do we need the module here?
 
-    post_quantum_block = BasicBlock::Create(
-	context,
-	"post-quantum",
-	block->getParent(),
-	block);
+    post_classical_block_ = BasicBlock::Create(
+		context,
+		"post-quantum",
+		block->getParent(),
+		block);
 
-    quantum_block = BasicBlock::Create(
-	context, "quantum", 
-	block->getParent(), 
-	post_quantum_block);
+    quantum_block_ = BasicBlock::Create(
+		context, "quantum", 
+		block->getParent(), 
+		post_classical_block_);
 
-    pre_quantum_block = BasicBlock::Create(
-	context, 
-	"pre-quantum", 
-	block->getParent(), 
-	quantum_block);
+    pre_classical_block_ = BasicBlock::Create(
+		context, 
+		"pre-quantum", 
+		block->getParent(), 
+		quantum_block_);
 
     // Storing the blocks for later processing
-    quantum_blocks.push_back(quantum_block);
-    classical_blocks.push_back(pre_quantum_block);
-    classical_blocks.push_back(post_quantum_block);
+    quantum_blocks_.push_back(quantum_block_);
+    classical_blocks_.push_back(pre_classical_block_);
+    classical_blocks_.push_back(post_classical_block_);
 
     // Renaming the block
-    pre_quantum_block->takeName(block);
+    pre_classical_block_->takeName(block);
 
     // Preparing builders
-    post_quantum_builder->SetInsertPoint(post_quantum_block);
-    quantum_builder->SetInsertPoint(quantum_block);
-    pre_quantum_builder->SetInsertPoint(pre_quantum_block);
+    post_classical_builder_->SetInsertPoint(post_classical_block_);
+    quantum_builder_->SetInsertPoint(quantum_block_);
+    pre_classical_builder_->SetInsertPoint(pre_classical_block_);
 
     // Replacing entry
     block->setName("exit_quantum_grouping");
     block->replaceUsesWithIf(
-    	pre_quantum_block,
+    	pre_classical_block_,
         [](Use& use){
             auto* phi_node = dyn_cast<PHINode>(use.getUser());
             return (phi_node == nullptr);
         });
 }
 
-void QirGroupingPass::nextQuantumCycle(Module *module, BasicBlock* block){
-    auto& context = module->getContext(); // TODO: DO WE NEED module HERE?
-    pre_quantum_builder->CreateBr(quantum_block);
-    quantum_builder->CreateBr(post_quantum_block);
+void QirGroupingPass::nextQuantumCycle(Module &module, BasicBlock* block){
+    auto& context = module.getContext(); // TODO: DO WE NEED module HERE?
+    
+    pre_classical_builder_->CreateBr(quantum_block_);
+    quantum_builder_->CreateBr(post_classical_block_);
 
-    pre_quantum_block = post_quantum_block;
+    pre_classical_block_ = post_classical_block_;
 
     // Creating replacement blocks
-    post_quantum_block = BasicBlock::Create(
+    post_classical_block_ = BasicBlock::Create(
 	context, 
 	"post-quantum", 
 	block->getParent(), 
 	block);
 
-    quantum_block = BasicBlock::Create(
+    quantum_block_ = BasicBlock::Create(
 	context, 
 	"quantum", 
 	block->getParent(), 
-	post_quantum_block);
+	post_classical_block_);
 
     // Storing the blocks for later processing
-    quantum_blocks.push_back(quantum_block);
-    classical_blocks.push_back(post_quantum_block);
+    quantum_blocks_.push_back(quantum_block_);
+    classical_blocks_.push_back(post_classical_block_);
 
     // Preparing builders
-    post_quantum_builder->SetInsertPoint(post_quantum_block);
-    quantum_builder->SetInsertPoint(quantum_block);
-    pre_quantum_builder->SetInsertPoint(pre_quantum_block);
+    post_classical_builder_->SetInsertPoint(post_classical_block_);
+    quantum_builder_->SetInsertPoint(quantum_block_);
+    pre_classical_builder_->SetInsertPoint(pre_classical_block_);
 }
 
 QirGroupingPass::ResourceAnalysis QirGroupingPass::operandAnalysis(Value* val) const{
@@ -195,12 +197,12 @@ QirGroupingPass::ResourceAnalysis QirGroupingPass::operandAnalysis(Value* val) c
             ret.type = ResourceType::RESULT;
 
         if(ret.type != ResourceType::UNDEFINED){
-            auto user = llvm::dyn_cast<llvm::User>(val);
+            auto user = dyn_cast<User>(val);
             ret.id    = 0;
 
             if(user && user->getNumOperands() == 1)
             {
-                auto cst = llvm::dyn_cast<llvm::ConstantInt>(user->getOperand(0));
+                auto cst = dyn_cast<ConstantInt>(user->getOperand(0));
 
                 if(cst)
                     ret.id = cst->getValue().getZExtValue();
@@ -211,7 +213,7 @@ QirGroupingPass::ResourceAnalysis QirGroupingPass::operandAnalysis(Value* val) c
     return ret;
 }
 
-void QirGroupingPass::expandBasedOnSource(Module *module, BasicBlock *block){
+void QirGroupingPass::expandBasedOnSource(Module &module, BasicBlock *block){
     prepareSourceSeparation(module, block);
 
     // Variables used for the modifications
@@ -336,13 +338,13 @@ void QirGroupingPass::expandBasedOnSource(Module *module, BasicBlock *block){
             auto new_instruction = instruction.clone();
             new_instruction->takeName(&instruction);
 
-            quantum_builder->Insert(new_instruction);
+            quantum_builder_->Insert(new_instruction);
 
             instruction.replaceAllUsesWith(new_instruction);
             to_delete.push_back(&instruction);
 
 	        /*std::string str;
-            llvm::raw_string_ostream(str) << instruction;
+            raw_string_ostream(str) << instruction;
             errs() << "Instruction to be deleted: " << str << '\n';*/
         }
         else if(instr_class != InvalidMixedLocation){
@@ -372,12 +374,12 @@ void QirGroupingPass::expandBasedOnSource(Module *module, BasicBlock *block){
                 // Inserting to post section
                 auto new_instr = instruction.clone();
                 new_instr->takeName(&instruction);
-                post_quantum_builder->Insert(new_instr);
+                post_classical_builder_->Insert(new_instr);
                 instruction.replaceAllUsesWith(new_instr);
                 to_delete.push_back(&instruction);
 
 		        /*std::string str;
-                llvm::raw_string_ostream(str) << instruction;
+                raw_string_ostream(str) << instruction;
                 errs() << "Instruction to be deleted: " << str << '\n';*/
 
                 post_quantum_instructions.insert(new_instr);
@@ -389,33 +391,33 @@ void QirGroupingPass::expandBasedOnSource(Module *module, BasicBlock *block){
             auto new_instr = instruction.clone();
 
             new_instr->takeName(&instruction);
-            pre_quantum_builder->Insert(new_instr);
+            pre_classical_builder_->Insert(new_instr);
 
             instruction.replaceAllUsesWith(new_instr);
             to_delete.push_back(&instruction);
 
 	        /*std::string str;
-            llvm::raw_string_ostream(str) << instruction;
+            raw_string_ostream(str) << instruction;
             errs() << "Instruction to be deleted: " << str << '\n';*/
         }
         else
             assert(((void)"Unsupported occurring while grouping instructions", false));
     }
 
-    pre_quantum_builder->CreateBr(quantum_block);
-    quantum_builder->CreateBr(post_quantum_block);
-    post_quantum_builder->CreateBr(block);
+    pre_classical_builder_->CreateBr(quantum_block_);
+    quantum_builder_->CreateBr(post_classical_block_);
+    post_classical_builder_->CreateBr(block);
 
     deleteInstructions();
 }
 
 void QirGroupingPass::expandBasedOnDest(
-    Module            *module,
+    Module            &module,
     BasicBlock        *block,
     bool              move_quatum,
     std::string const &name)
 {
-    auto& context = module->getContext(); // TODO: DO WE NEED module HERE?
+    auto& context = module.getContext(); // TODO: DO WE NEED module HERE?
     to_delete.clear();
 
     auto extra_block = BasicBlock::Create(
@@ -427,7 +429,7 @@ void QirGroupingPass::expandBasedOnDest(
     extra_block->takeName(block);
     block->replaceUsesWithIf(
         extra_block,
-        [](llvm::Use& use){
+        [](Use& use){
             auto* phi_node = dyn_cast<PHINode>(use.getUser());
             return (phi_node == nullptr);
         });
@@ -454,7 +456,7 @@ void QirGroupingPass::expandBasedOnDest(
             to_delete.push_back(&instruction);
 
 	        /*std::string str;
-	        llvm::raw_string_ostream(str) << instruction;
+	        raw_string_ostream(str) << instruction;
 	        errs() << "Instruction to be deleted: " << str << '\n';*/
         }
     }
@@ -464,125 +466,46 @@ void QirGroupingPass::expandBasedOnDest(
     deleteInstructions();
 }
 
-PreservedAnalyses QirGroupingPass::run(Module *module, ModuleAnalysisManager &/*mam*/) {
-    LLVMContext &context = module->getContext();
+PreservedAnalyses QirGroupingPass::run(Module &module, ModuleAnalysisManager &mam) {
+    auto &result  = mam.getResult<QirGroupingAnalysisPass>(module);
+    auto &context = module.getContext();
     
-    pre_quantum_builder  = std::make_shared<IRBuilder<>>(context);
-    quantum_builder      = std::make_shared<IRBuilder<>>(context);
-    post_quantum_builder = std::make_shared<IRBuilder<>>(context);
+   	pre_classical_builder_  = std::make_shared<IRBuilder<>>(context);
+    quantum_builder_        = std::make_shared<IRBuilder<>>(context);
+    post_classical_builder_ = std::make_shared<IRBuilder<>>(context);
 
-    std::vector<BasicBlock*> has_meas_blocks{};
-    std::vector<BasicBlock*> has_no_meas_blocks{};
-    std::vector<BasicBlock*> has_qc_blocks{};
-    std::vector<BasicBlock*> has_init_blocks{};
-    std::vector<BasicBlock*> has_rec_blocks{};
-
-    std::vector<BasicBlock*> only_mz_blocks{};
-    std::vector<BasicBlock*> only_qc_blocks{};
-    std::vector<BasicBlock*> only_cc_blocks{};
-
-    std::vector<BasicBlock*> qc_cc_blocks{};
-
-    // Sort out blocks in different categories
-    for(Function &function : *module){
-        for(BasicBlock &block : function){
-            bool only_cc_instructions = true;
-            bool only_qc_instructions = true;
-            bool only_mz_instructions = true;
-            
-            bool has_measurements = false;
-            bool has_record = false;
-            bool has_initialize = false;
-
-            for(Instruction &instruction : block){
-                CallBase *call_instruction = dyn_cast<CallBase>(&instruction);
-
-                if(call_instruction){
-                    Function *called_function = call_instruction->getCalledFunction();
-                    assert(((void)"Wrong pointer", called_function != nullptr));
-                    
-                    std::string call_name = static_cast<std::string>(called_function->getName());
-                    
-                    std::string prefix("__quantum__");
-
-                    if(!call_name.compare(0, prefix.size(), prefix)){
-                        only_cc_instructions = false;
-                            
-                        has_measurements = has_measurements 
-                                         || call_name == "__quantum__qis__mz__body";
-
-                        only_mz_instructions =  only_mz_instructions
-                                             && has_measurements/*
-                                             && only_qc_instructions*/;
-
-                        has_initialize = has_initialize
-                                       || call_name == "__quantum__rt__initialize";
-                            
-                        has_record =  has_record
-                                   || call_name == "__quantum__rt__tuple_record_output"
-                                   || call_name == "__quantum__rt__result_record_output"
-                                   || call_name == "__quantum__qis__read_result__body";
-                    }
-                    else
-                        only_qc_instructions = false;
-                }
-            }
-            
-            if(has_measurements)
-                has_meas_blocks.push_back(&block);
-            else
-                has_no_meas_blocks.push_back(&block);
-
-            if(has_initialize)
-                has_init_blocks.push_back(&block);
-
-            if(has_record)
-                has_rec_blocks.push_back(&block);
-
-            if(only_cc_instructions)
-                only_cc_blocks.push_back(&block);
-            else if(only_qc_instructions){
-                only_qc_blocks.push_back(&block);
-                
-                if(only_mz_instructions)
-                    only_mz_blocks.push_back(&block);
-            }
-            else
-                qc_cc_blocks.push_back(&block);
-        }
-    }
-
-    for(BasicBlock *block : has_no_meas_blocks){
-	quantum_blocks.clear();
-        classical_blocks.clear();       
-		
-	// First split
-        expandBasedOnSource(module, block);
-		
-	// Second splits
-        for(BasicBlock *readout_block : quantum_blocks)
-            expandBasedOnDest(module, readout_block, true, "readout");
-
-	// Last classical block does not contain any loads
-        classical_blocks.pop_back();
-        for(BasicBlock *load_block : classical_blocks)
-            expandBasedOnDest(module, load_block, false, "load");
-    }
-
-    for(BasicBlock *block : has_meas_blocks){
-        quantum_blocks.clear();
-        classical_blocks.clear();
+    for (auto* block : result.qc_cc_blocks) {
+		errs() << block->getName() << '\n';
+        quantum_blocks_.clear();
+        classical_blocks_.clear();
 
         // First split
         expandBasedOnSource(module, block);
 
         // Second splits
-        for(BasicBlock *readout_block : quantum_blocks)
+        for (auto* readout_block : quantum_blocks_)
             expandBasedOnDest(module, readout_block, true, "readout");
 
         // Last classical block does not contain any loads
-        classical_blocks.pop_back();
-        for(BasicBlock *load_block : classical_blocks)
+        classical_blocks_.pop_back();
+        for (auto* load_block : classical_blocks_)
+            expandBasedOnDest(module, load_block, false, "load");
+    }
+
+    for (auto* block : result.qc_mc_cc_blocks) {
+        quantum_blocks_.clear();
+        classical_blocks_.clear();
+
+        // First split
+        expandBasedOnSource(module, block);
+
+        // Second splits
+        for (auto* readout_block : quantum_blocks_)
+            expandBasedOnDest(module, readout_block, true, "readout");
+
+        // Last classical block does not contain any loads
+        classical_blocks_.pop_back();
+        for (auto* load_block : classical_blocks_)
             expandBasedOnDest(module, load_block, false, "load");
     }
 

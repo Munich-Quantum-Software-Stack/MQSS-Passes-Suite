@@ -1,6 +1,9 @@
 add_library(QirRemoveNonEntrypointFunctionsPass MODULE QirRemoveNonEntrypointFunctions.cpp)
 add_library(QirBarrierBeforeFinalMeasurementsPass MODULE QirBarrierBeforeFinalMeasurements.cpp)
 add_library(QirCXCancellationPass MODULE QirCXCancellation.cpp)
-add_library(QirGroupingPass MODULE QirGrouping.cpp)
+#add_library(QirGroupingAnalysisPass MODULE QirGroupingAnalysis.cpp)
+#add_library(QirGroupingPass MODULE QirGrouping.cpp)
 add_library(QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass MODULE QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp)
 add_library(QirDivisionByZeroPass MODULE QirDivisionByZero.cpp)
+add_library(QirReplaceConstantBranchesPass MODULE QirReplaceConstantBranches.cpp)
+

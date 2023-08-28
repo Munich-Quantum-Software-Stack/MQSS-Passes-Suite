@@ -68,12 +68,12 @@ int main(void) {
     // Append the desired passes
     std::vector<std::string> passes {
 		"libQirRemoveNonEntrypointFunctionsPass.so",
-        "libQirGroupingPass.so",
+        "libQirDivisionByZeroPass.so",
+        //"libQirGroupingPass.so",
+        "libQirReplaceConstantBranchesPass.so",
+        "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
         "libQirBarrierBeforeFinalMeasurementsPass.so",
         "libQirCXCancellationPass.so",
-        "libQirDivisionByZeroPass.so", // TODO We need a pass that gets rid of this kind of situations:
-                                       // br i1 true, label %if_denominator_is_zero, label %after_zero_check
-        "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so"
     };
 
     // Send each of the passes to the QPM

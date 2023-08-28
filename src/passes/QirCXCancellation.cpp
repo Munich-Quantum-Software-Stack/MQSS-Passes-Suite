@@ -2,8 +2,8 @@
 
 using namespace llvm;
 
-PreservedAnalyses QirCXCancellationPass::run(Module *module, ModuleAnalysisManager &/*mam*/) {
-    for(auto &function : *module){
+PreservedAnalyses QirCXCancellationPass::run(Module &module, ModuleAnalysisManager &/*mam*/) {
+    for(auto &function : module){
         std::vector<CallInst*> cx_instructions;
         std::vector<CallInst*> single_cx;
         for(auto &block : function){

@@ -7,18 +7,18 @@ const char* const QirDivisionByZeroPass::EC_VARIABLE_NAME        = "__qir__error
 int64_t const     QirDivisionByZeroPass::EC_QIR_DIVISION_BY_ZERO = 1100;
 
 
-PreservedAnalyses QirDivisionByZeroPass::run(Module *module, ModuleAnalysisManager& /*mam*/)
+PreservedAnalyses QirDivisionByZeroPass::run(Module &module, ModuleAnalysisManager& /*mam*/)
 {
 
-	 IRBuilder<> builder(module->getContext());
-	 module->getOrInsertGlobal(EC_VARIABLE_NAME, builder.getInt64Ty());
-	 error_variable_ = module->getNamedGlobal(EC_VARIABLE_NAME);
+	 IRBuilder<> builder(module.getContext());
+	 module.getOrInsertGlobal(EC_VARIABLE_NAME, builder.getInt64Ty());
+	 error_variable_ = module.getNamedGlobal(EC_VARIABLE_NAME);
          error_variable_->setLinkage(GlobalValue::InternalLinkage);
          error_variable_->setInitializer(builder.getInt64(0));
          error_variable_->setConstant(false);
 
 	 std::vector<Instruction*> instructions;
-         for (auto& function : *module)
+         for (auto& function : module)
 	 {
 	      for (auto& block : function)
 	      {
@@ -55,7 +55,7 @@ PreservedAnalyses QirDivisionByZeroPass::run(Module *module, ModuleAnalysisManag
        // Checking error codes at end of
        Function* entry = nullptr;
        std::vector<BasicBlock*> exit_blocks;
-       for (auto& function : *module)
+       for (auto& function : module)
        {
            if (function.hasFnAttribute("EntryPoint"))
            {
@@ -87,7 +87,7 @@ PreservedAnalyses QirDivisionByZeroPass::run(Module *module, ModuleAnalysisManag
 
                builder.SetInsertPoint(if_block->getTerminator());
 
-              auto fnc = module->getFunction(EC_REPORT_FUNCTION);
+              auto fnc = module.getFunction(EC_REPORT_FUNCTION);
               std::vector<Value*> arguments;
 																					                   arguments.push_back(load);
              
@@ -100,10 +100,10 @@ PreservedAnalyses QirDivisionByZeroPass::run(Module *module, ModuleAnalysisManag
 	                types[i] = arguments[i]->getType();
                   }
 
-                auto return_type = Type::getVoidTy(module->getContext());
+                auto return_type = Type::getVoidTy(module.getContext());
 
                 FunctionType* fnc_type = FunctionType::get(return_type, types, false);
-                fnc = Function::Create(fnc_type, Function::ExternalLinkage, EC_REPORT_FUNCTION, *module);
+                fnc = Function::Create(fnc_type, Function::ExternalLinkage, EC_REPORT_FUNCTION, module);
              }
 
             builder.CreateCall(fnc, arguments);
@@ -113,9 +113,9 @@ PreservedAnalyses QirDivisionByZeroPass::run(Module *module, ModuleAnalysisManag
           return PreservedAnalyses::none();
 }
 
-void QirDivisionByZeroPass::raiseError(int64_t error_code, Module *module, Instruction* instr)
+void QirDivisionByZeroPass::raiseError(int64_t error_code, Module &module, Instruction* instr)
 {
-    IRBuilder<> builder(module->getContext());
+    IRBuilder<> builder(module.getContext());
     auto const&  final_block = instr->getParent();
     auto         if_block    = final_block->splitBasicBlock(instr, "if_ecc_not_set", true);
     auto         start_block = if_block->splitBasicBlock(if_block->getTerminator(), "-INTERMEDIATE-", true);

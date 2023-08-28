@@ -34,10 +34,10 @@ class QirDivisionByZeroPass :  public PassModule {
     // Default destruction.
    ~QirDivisionByZeroPass() = default;
 				     //
-   PreservedAnalyses run(Module *module, ModuleAnalysisManager& /*mam*/);
+   PreservedAnalyses run(Module &module, ModuleAnalysisManager& /*mam*/);
     
 
-    void raiseError(int64_t error_code, Module *module, Instruction* instr);
+    void raiseError(int64_t error_code, Module &module, Instruction* instr);
   
    private:
 

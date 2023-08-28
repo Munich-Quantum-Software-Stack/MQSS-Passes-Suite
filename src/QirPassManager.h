@@ -26,7 +26,7 @@ public:
     }
     
     void append(std::string pass);
-    PreservedAnalyses run(Module *module, ModuleAnalysisManager &mam);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &mam);
 
 private:
     std::vector<std::string> passes_;

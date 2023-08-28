@@ -27,7 +27,15 @@ entry:
   call void @__quantum__rt__tuple_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @0, i32 0, i32 0))
   call void @__quantum__rt__result_record_output(%Result* inttoptr (i64 1 to %Result*), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @1, i32 0, i32 0))
+  br i1 true, label %true_block, label %false_block
 
+true_block:                                       ; preds = %entry
+  br label %exit_block
+
+false_block:                                      ; preds = %entry
+  br label %exit_block
+
+exit_block:                                       ; preds = %false_block, %true_block
   ret i64 0
 }
 

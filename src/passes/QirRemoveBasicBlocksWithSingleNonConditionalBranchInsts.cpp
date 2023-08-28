@@ -2,9 +2,8 @@
 
 using namespace llvm;
 
-PreservedAnalyses QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::run(Module *module, ModuleAnalysisManager &/*mam*/){
-    for (auto &function : *module) {
-
+PreservedAnalyses QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::run(Module &module, ModuleAnalysisManager &/*mam*/){
+    for (auto &function : module) {
         // Collect blocks that will be removed
         std::vector<BasicBlock*> useless_blocks;
         for (auto &block : function) {

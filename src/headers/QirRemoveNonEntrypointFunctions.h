@@ -1,8 +1,5 @@
 #pragma once
 
-#include <llvm/IR/PassManager.h>
-#include <llvm/IR/Module.h>
-
 #include "PassModule.h"
 
 namespace llvm {

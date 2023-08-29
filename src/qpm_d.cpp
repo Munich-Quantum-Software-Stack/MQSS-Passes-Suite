@@ -1,5 +1,6 @@
 // QIR Pass Manager
-#include "../src/QirPassManager.h"
+#include "QirPassManager.hpp"
+
 #include <iostream>
 #include <cstring>
 #include <csignal>
@@ -79,7 +80,7 @@ void handleClient(int clientSocket) {
     }
 
 	// Run the passes
-	QPM.run(*module/*.get()*/, MAM);
+	QPM.run(*module, MAM);
 
     // Print the result
     //module->print(outs(), nullptr);
@@ -90,7 +91,7 @@ void handleClient(int clientSocket) {
     OS.flush();
     const char* qir = str.data();
     send(clientSocket, qir, strlen(qir), 0);
-    std::cout << "Adapted QIR sent" << std::endl;
+    std::cout << "Adapted QIR sent to client" << std::endl;
 
     delete[] genericQir;
 	close(clientSocket);
@@ -145,7 +146,7 @@ int main(void) {
             continue;
         }
 
-        std::cout << "Client connected" << std::endl;
+        std::cout << "\nClient connected" << std::endl;
 
         std::thread clientThread(handleClient, clientSocket);
         clientThread.detach();

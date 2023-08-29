@@ -1,4 +1,4 @@
-#include "QirPassManager.h"
+#include "QirPassManager.hpp"
 #include <iostream>
 #include <algorithm>
 

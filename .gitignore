@@ -1,6 +1,5 @@
 build/
 daemon/
-delete/
 
 *.o
 *.so

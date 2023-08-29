@@ -1,14 +1,10 @@
 #include "../headers/QirReplaceConstantBranches.h"
 
-#include <llvm/Transforms/Scalar/SimplifyCFG.h>
-#include <llvm/Transforms/InstCombine/InstCombine.h>
-#include <llvm/Transforms/Scalar/JumpThreading.h>
-
 using namespace llvm;
 
 PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnalysisManager &mam) {
     for (auto &function : module) {
-        std::vector<BasicBlock*> useless_blocks;
+        //std::vector<BasicBlock*> useless_blocks;
         for (auto &block : function) {
             if (auto *BI = dyn_cast<BranchInst>(block.getTerminator())) {
                 if (BI->isConditional()) {
@@ -17,12 +13,12 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnal
                         auto *falseTarget = BI->getSuccessor(1);
                         if (CI->isOne()) {
                             ReplaceInstWithInst(BI, BranchInst::Create(trueTarget));
-                            if (falseTarget->getSinglePredecessor())
-                                useless_blocks.push_back(falseTarget);
+                            /*if (falseTarget->getSinglePredecessor())
+                                useless_blocks.push_back(falseTarget);*/
                         } else {
                             ReplaceInstWithInst(BI, BranchInst::Create(falseTarget));
-                            if (trueTarget->getSinglePredecessor())
-                                useless_blocks.push_back(trueTarget);
+                            /*if (trueTarget->getSinglePredecessor())
+                                useless_blocks.push_back(trueTarget);*/
                         }
                     }
 

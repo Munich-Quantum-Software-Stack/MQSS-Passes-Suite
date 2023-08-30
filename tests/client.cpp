@@ -67,13 +67,12 @@ int main(void) {
 
     // Append the desired passes
     std::vector<std::string> passes {
+        "libQirReplaceConstantBranchesPass.so",
 		"libQirRemoveNonEntrypointFunctionsPass.so",
-        "libQirGroupingPass.so",
-        "libQirDivisionByZeroPass.so",
+        "libQirCXCancellationPass.so",
+        //"libQirGroupingPass.so",
         "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
         "libQirBarrierBeforeFinalMeasurementsPass.so",
-        "libQirCXCancellationPass.so",
-        //"libQirReplaceConstantBranchesPass.so",
     };
 
     // Send each of the passes to the QPM

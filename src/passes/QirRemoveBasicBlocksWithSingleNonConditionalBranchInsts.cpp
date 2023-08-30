@@ -1,8 +1,8 @@
-#include "../headers/QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.h"
+#include "../headers/QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.hpp"
 
 using namespace llvm;
 
-PreservedAnalyses QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::run(Module &module, ModuleAnalysisManager &/*mam*/){
+PreservedAnalyses QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::run(Module &module, ModuleAnalysisManager &MAM) {
     for (auto &function : module) {
         // Collect blocks that will be removed
         std::vector<BasicBlock*> useless_blocks;

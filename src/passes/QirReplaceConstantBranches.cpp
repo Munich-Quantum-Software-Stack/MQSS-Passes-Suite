@@ -1,10 +1,10 @@
-#include "../headers/QirReplaceConstantBranches.h"
+#include "../headers/QirReplaceConstantBranches.hpp"
 
 using namespace llvm;
 
-PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnalysisManager &mam) {
+PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnalysisManager &MAM) {
     for (auto &function : module) {
-        //std::vector<BasicBlock*> useless_blocks;
+        std::vector<BasicBlock*> useless_blocks;
         for (auto &block : function) {
             if (auto *BI = dyn_cast<BranchInst>(block.getTerminator())) {
                 if (BI->isConditional()) {
@@ -12,49 +12,51 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnal
                         auto *trueTarget  = BI->getSuccessor(0);
                         auto *falseTarget = BI->getSuccessor(1);
                         if (CI->isOne()) {
+                            if (falseTarget->hasNPredecessors(1))
+                                useless_blocks.push_back(falseTarget);
                             ReplaceInstWithInst(BI, BranchInst::Create(trueTarget));
-                            /*if (falseTarget->getSinglePredecessor())
-                                useless_blocks.push_back(falseTarget);*/
                         } else {
+                            if (trueTarget->hasNPredecessors(1))
+                                useless_blocks.push_back(trueTarget);
                             ReplaceInstWithInst(BI, BranchInst::Create(falseTarget));
-                            /*if (trueTarget->getSinglePredecessor())
-                                useless_blocks.push_back(trueTarget);*/
                         }
                     }
-
                 }
             }
         }
         
-        /*while (!useless_blocks.empty()) {
+        while (!useless_blocks.empty()) {
             auto *useless_block = useless_blocks.back();
-            errs() << "To be erased: " << useless_block->getName() << '\n';
             useless_block->eraseFromParent();
             useless_blocks.pop_back();
-        }*/
+        }
     }
         
-    ModulePassManager MPM;
-    FunctionPassManager FPM;
-    LoopPassManager LPM;
-    PassBuilder PB;
-    LoopAnalysisManager LAM;
-    FunctionAnalysisManager FAM;
-    CGSCCAnalysisManager CGAM;
+    //ModulePassManager       MPM;
+    //FunctionPassManager     FPM;
+    //LoopPassManager         LPM;
 
-    PB.registerModuleAnalyses(mam);
-    PB.registerCGSCCAnalyses(CGAM);
-    PB.registerFunctionAnalyses(FAM);
-    PB.registerLoopAnalyses(LAM);
-    PB.crossRegisterProxies(LAM, FAM, CGAM, mam);
+    //ModuleAnalysisManager   MAM;
+    //FunctionAnalysisManager FAM;
+    //LoopAnalysisManager     LAM;
+    //CGSCCAnalysisManager    CGAM;
 
-    FPM.addPass(SimplifyCFGPass());
-    FPM.addPass(InstCombinePass());
-    FPM.addPass(JumpThreadingPass());
+    //PassBuilder PB;
+
+    //PB.registerModuleAnalyses(MAM);
+    //PB.registerFunctionAnalyses(FAM);
+    //PB.registerLoopAnalyses(LAM);
+    //PB.registerCGSCCAnalyses(CGAM);
+
+    //PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
+
+    //FPM.addPass(SimplifyCFGPass());
+    //FPM.addPass(InstCombinePass());
+    //FPM.addPass(JumpThreadingPass());
     
-    MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
+    //MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
 
-    MPM.run(module, mam);
+    //MPM.run(module, MAM);
 
     return PreservedAnalyses::none();
 }

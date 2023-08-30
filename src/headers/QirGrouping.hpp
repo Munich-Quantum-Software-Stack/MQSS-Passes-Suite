@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PassModule.h"
+#include "PassModule.hpp"
 
 #include <functional>
 #include <unordered_map>
@@ -51,7 +51,7 @@ public:
 	void expandBasedOnDest(Module &module, BasicBlock* block, bool move_quatum, std::string const& name);
 	bool isQuantumRegister(Type const *type);		
 	int64_t classifyInstruction(Instruction const *instr);
-	PreservedAnalyses run(Module &module, ModuleAnalysisManager &mam);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 	void runBlockAnalysis(Module &module);
     Result runGroupingAnalysis(Module &module);
 private:

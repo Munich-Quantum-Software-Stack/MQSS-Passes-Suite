@@ -1,8 +1,8 @@
-#include "../headers/QirCXCancellation.h"
+#include "../headers/QirCXCancellation.hpp"
 
 using namespace llvm;
 
-PreservedAnalyses QirCXCancellationPass::run(Module &module, ModuleAnalysisManager &/*mam*/) {
+PreservedAnalyses QirCXCancellationPass::run(Module &module, ModuleAnalysisManager &MAM) {
     for(auto &function : module){
         std::vector<CallInst*> cx_instructions;
         std::vector<CallInst*> single_cx;

@@ -1,6 +1,9 @@
 build/
 daemon/
 
+src/passes/QirDivisionByZero.cpp
+src/headers/QirDivisionByZero.h
+
 *.o
 *.so
 *.swp

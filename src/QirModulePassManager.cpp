@@ -1,17 +1,17 @@
-#include "QirPassManager.hpp"
+#include "QirModulePassManager.hpp"
 #include <iostream>
 #include <algorithm>
 
 using namespace llvm;
 
-QirPassManager::QirPassManager() {}
+QirModulePassManager::QirModulePassManager() {}
 
-void QirPassManager::append(std::string pass) {
+void QirModulePassManager::append(std::string pass) {
     passes_.push_back(pass);
 }
 
-PreservedAnalyses QirPassManager::run(Module &module, ModuleAnalysisManager &mam) {
-    PreservedAnalyses allPassesPreserved;
+void /*PreservedAnalyses*/ QirModulePassManager::run(Module &module, ModuleAnalysisManager &MAM) {
+    //PreservedAnalyses allPassesPreserved; // TODO
 
     while (!passes_.empty()) {
         auto pass = passes_.back();
@@ -38,13 +38,13 @@ PreservedAnalyses QirPassManager::run(Module &module, ModuleAnalysisManager &mam
 
         PassModule *QirPass = createQirPass();
 
-        QirPass->run(module, mam);
+        QirPass->run(module, MAM);
         
         delete QirPass;
         dlclose(soHandle);
         passes_.pop_back();
     }
 
-    return allPassesPreserved;
+    //return allPassesPreserved;
 }
 

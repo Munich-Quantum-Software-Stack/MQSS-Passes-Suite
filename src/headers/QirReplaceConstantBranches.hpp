@@ -1,12 +1,12 @@
 #pragma once
 
-#include "PassModule.h"
+#include "PassModule.hpp"
 
 namespace llvm {
 
 class QirReplaceConstantBranchesPass : public PassModule {
 public:
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &mam);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 }

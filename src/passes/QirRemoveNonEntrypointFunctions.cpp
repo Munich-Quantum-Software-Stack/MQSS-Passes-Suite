@@ -1,8 +1,8 @@
-#include "../headers/QirRemoveNonEntrypointFunctions.h"
+#include "../headers/QirRemoveNonEntrypointFunctions.hpp"
 
 using namespace llvm;
 
-PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(Module &module, ModuleAnalysisManager &/*mam*/){
+PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(Module &module, ModuleAnalysisManager &MAM) {
     std::vector<Function*> functions_to_delete;
 
     for(auto &function : module)

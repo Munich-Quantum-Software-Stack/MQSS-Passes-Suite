@@ -1,5 +1,5 @@
 // QIR Pass Manager
-#include "QirPassManager.hpp"
+#include "QirModulePassManager.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -27,10 +27,8 @@ void handleClient(int clientSocket) {
 
     std::cout << "Generic QIR received from a client" << std::endl;
 
-    ModuleAnalysisManager MAM;
-    QirPassManager        QPM;
-    LLVMContext           Context;
-    SMDiagnostic          error;
+    LLVMContext  Context;
+    SMDiagnostic error;
     
 	// Parse generic QIR into a module
 	auto memoryBuffer = MemoryBuffer::getMemBuffer(genericQir, "QIR Buffer", false);
@@ -65,22 +63,25 @@ void handleClient(int clientSocket) {
     }
 
     if (passes.empty()) {
-		std::cout << "Warning: A client did not send any pass to the QPM" << std::endl;
+		std::cout << "Warning: A client did not send any pass to the QMPM" << std::endl;
 		close(clientSocket);
     	std::cout << "Client disconnected" << std::endl;
 		return;
 	}
 	
     // Append all received passes
+    QirModulePassManager    QMPM;
+    ModuleAnalysisManager   MAM;
+    
     std::reverse(passes.begin(), passes.end());
     while (!passes.empty()) {
         auto pass = passes.back();
-        QPM.append("./src/passes/" + pass);
+        QMPM.append("./src/passes/" + pass);
         passes.pop_back();
     }
 
-	// Run the passes
-	QPM.run(*module, MAM);
+	// Run QIR passes
+	QMPM.run(*module, MAM);
 
     // Print the result
     //module->print(outs(), nullptr);
@@ -134,7 +135,7 @@ int main(void) {
         return 1;
     }
 
-    std::cout << "QPM listening on port " << PORT << std::endl;
+    std::cout << "QMPM listening on port " << PORT << std::endl;
 
     while (true) {
         sockaddr_in clientAddr;
@@ -153,7 +154,7 @@ int main(void) {
     }
 
     close(qpmSocket);
-	std::cerr << "QPM stopped" << std::endl;
+	std::cerr << "QMPM stopped" << std::endl;
 
     return 0;
 }

@@ -1,5 +1,4 @@
 #include "../headers/QirGrouping.hpp"
-//#include "../QirGroupingAnalysis.hpp"
 
 using namespace llvm;
 
@@ -537,7 +536,8 @@ QirGroupingPass::Result QirGroupingPass::runGroupingAnalysis(Module &module) {
     return ret;
 }
 
-PreservedAnalyses QirGroupingPass::run(Module &module, ModuleAnalysisManager &mam) {
+PreservedAnalyses QirGroupingPass::run(Module &module, ModuleAnalysisManager &MAM) {
+
     auto result   = runGroupingAnalysis(module);
     auto &context = module.getContext();
     

@@ -1,8 +1,8 @@
-#include "../headers/QirBarrierBeforeFinalMeasurements.h"
+#include "../headers/QirBarrierBeforeFinalMeasurements.hpp"
 
 using namespace llvm;
 
-PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module &module, ModuleAnalysisManager &/*mam*/) {
+PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module &module, ModuleAnalysisManager &MAM) {
     std::vector<Instruction*> mz_instructions;
     bool barrier_found = false;
     for(auto &function : module){

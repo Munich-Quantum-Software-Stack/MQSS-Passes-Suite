@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(QirPassManager
-  VERSION 0.1
-  DESCRIPTION "QIR Pass Manager")
+project(QirModulePassManager
+  VERSION 0.2
+  DESCRIPTION "QIR Module Pass Manager")
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 14)
@@ -43,7 +43,7 @@ set(MAIN_SOURCE ${CUSTOM_MAIN_SOURCE})
 
 # Add the source files for compilation
 file(GLOB SOURCES
-    src/QirPassManager.cpp
+    src/QirModulePassManager.cpp
     ${MAIN_SOURCE}
 )
 

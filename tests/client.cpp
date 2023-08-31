@@ -68,11 +68,11 @@ int main(void) {
     // Append the desired passes
     std::vector<std::string> passes {
         "libQirReplaceConstantBranchesPass.so",
+        "libQirGroupingPass.so", // TODO: Does __quantum__rt__initialize belong to post-quantum?
 		"libQirRemoveNonEntrypointFunctionsPass.so",
         "libQirCXCancellationPass.so",
-        //"libQirGroupingPass.so",
-        "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
         "libQirBarrierBeforeFinalMeasurementsPass.so",
+        "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
     };
 
     // Send each of the passes to the QPM

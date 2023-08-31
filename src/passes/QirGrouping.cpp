@@ -147,16 +147,16 @@ void QirGroupingPass::nextQuantumCycle(Module &module, BasicBlock* block){
 
     // Creating replacement blocks
     post_classical_block_ = BasicBlock::Create(
-	context, 
-	"post-quantum", 
-	block->getParent(), 
-	block);
+        context, 
+        "post-quantum", 
+        block->getParent(), 
+        block);
 
     quantum_block_ = BasicBlock::Create(
-	context, 
-	"quantum", 
-	block->getParent(), 
-	post_classical_block_);
+        context, 
+        "quantum", 
+        block->getParent(), 
+        post_classical_block_);
 
     // Storing the blocks for later processing
     quantum_blocks_.push_back(quantum_block_);

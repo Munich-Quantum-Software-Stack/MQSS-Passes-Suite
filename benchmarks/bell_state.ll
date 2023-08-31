@@ -12,7 +12,7 @@
 
 define i64 @Entry_Point_Name() #0 {
 entry:
-  ; %0 = sdiv i32 1, 0 ; TODO: Waiting for libQirDivisionByZeroPass.so to be finished
+  %0 = sdiv i32 1, 0 ; TODO: Waiting for libQirDivisionByZeroPass.so to be finished
   ; calls to initialize the execution environment
   call void @__quantum__rt__initialize(i8* null)
   ; calls to QIS functions that are not irreversible

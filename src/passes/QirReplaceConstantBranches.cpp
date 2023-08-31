@@ -2,7 +2,7 @@
 
 using namespace llvm;
 
-PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnalysisManager &MAM) {
+PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     for (auto &function : module) {
         std::vector<BasicBlock*> useless_blocks;
         for (auto &block : function) {
@@ -31,32 +31,29 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnal
             useless_blocks.pop_back();
         }
     }
-        
-    //ModulePassManager       MPM;
-    //FunctionPassManager     FPM;
-    //LoopPassManager         LPM;
 
-    //ModuleAnalysisManager   MAM;
-    //FunctionAnalysisManager FAM;
-    //LoopAnalysisManager     LAM;
-    //CGSCCAnalysisManager    CGAM;
+    PassBuilder PB;
 
-    //PassBuilder PB;
+    LoopAnalysisManager     LAM;
+    FunctionAnalysisManager FAM;
+    CGSCCAnalysisManager    CGAM;
+    ModuleAnalysisManager   MAM;
 
-    //PB.registerModuleAnalyses(MAM);
-    //PB.registerFunctionAnalyses(FAM);
-    //PB.registerLoopAnalyses(LAM);
-    //PB.registerCGSCCAnalyses(CGAM);
+    PB.registerModuleAnalyses(MAM);
+    PB.registerCGSCCAnalyses(CGAM);
+    PB.registerFunctionAnalyses(FAM);
+    PB.registerLoopAnalyses(LAM);
 
-    //PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
+    PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
 
-    //FPM.addPass(SimplifyCFGPass());
-    //FPM.addPass(InstCombinePass());
-    //FPM.addPass(JumpThreadingPass());
+    ModulePassManager MPM = PB.buildPerModuleDefaultPipeline(OptimizationLevel::O0);
+
+    MPM.addPass(createModuleToFunctionPassAdaptor(SimplifyCFGPass()));
+    MPM.addPass(createModuleToFunctionPassAdaptor(InstCombinePass()));
+    MPM.addPass(createModuleToFunctionPassAdaptor(JumpThreadingPass()));
     
-    //MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
-
-    //MPM.run(module, MAM);
+    MPM.run(module, MAM);
+    MPM = ModulePassManager();
 
     return PreservedAnalyses::none();
 }
@@ -64,3 +61,4 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnal
 extern "C" PassModule* createQirPass() {
     return new QirReplaceConstantBranchesPass();
 }
+

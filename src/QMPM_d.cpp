@@ -31,7 +31,7 @@ void handleClient(int clientSocket) {
     SMDiagnostic error;
     
 	// Parse generic QIR into a module
-	auto memoryBuffer = MemoryBuffer::getMemBuffer(genericQir, "QIR Buffer", false);
+	auto memoryBuffer = MemoryBuffer::getMemBuffer(genericQir, "QIR (LRZ)", false);
 	
     MemoryBufferRef QIRRef = *memoryBuffer;
     std::unique_ptr<Module> module = parseIR(QIRRef, error, Context);
@@ -39,6 +39,8 @@ void handleClient(int clientSocket) {
         std::cout << "Warning: There was an error parsing the generic QIR" << std::endl;
         return;
     }
+
+    module->setSourceFileName("");
  
 	std::vector<std::string> passes;
     while (true) {

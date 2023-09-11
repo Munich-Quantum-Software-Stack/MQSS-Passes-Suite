@@ -39,7 +39,9 @@ void handleClient(int clientSocket) {
         std::cout << "Warning: There was an error parsing the generic QIR" << std::endl;
         return;
     }
-
+    
+    Metadata* metadata = ConstantAsMetadata::get(ConstantInt::get(Context, APInt(1, true)));
+    module->addModuleFlag(Module::Warning, "lrz_supports_qir", metadata);
     module->setSourceFileName("");
  
 	std::vector<std::string> passes;

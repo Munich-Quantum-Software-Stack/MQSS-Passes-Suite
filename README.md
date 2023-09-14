@@ -11,11 +11,15 @@ $ cd qir_passes/
 $ git checkout Plugins
 ```
 
-Run the example:
+Run the daemon:
 ```bash
 $ cd ${DEV_PATH}/qir_passes/
 $ sh build.sh
-$ cd tests/
+```
+
+Run the client in a different terminal:
+```bash
+$ cd ${DEV_PATH}/qir_passes/tests/
 $ sh build_client.sh
 ```
 

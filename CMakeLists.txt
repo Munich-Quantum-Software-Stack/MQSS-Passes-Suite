@@ -33,7 +33,6 @@ find_package(LLVM REQUIRED CONFIG)
 # Set up LLVM-specific flags
 add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
-#link_directories(${LLVM_LIBRARY_DIRS})
 
 # Add the passes directory to include paths
 include_directories(src/headers)

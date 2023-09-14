@@ -6,6 +6,24 @@ using namespace llvm;
 
 QirModulePassManager::QirModulePassManager() {}
 
+QirModulePassManager &QirModulePassManager::getInstance() {
+    static QirModulePassManager instance;
+    return instance;
+}
+
+void QirModulePassManager::setMetadata(const QirMetadata &metadata) {
+    qirMetadata_ = metadata;
+}
+
+void QirModulePassManager::clearMetadata() {
+    qirMetadata_.suitablePasses.clear();
+    qirMetadata_.reversibleGates.clear();
+}
+
+QirMetadata &QirModulePassManager::getMetadata() {
+    return qirMetadata_;
+}
+
 void QirModulePassManager::append(std::string pass) {
     passes_.push_back(pass);
 }

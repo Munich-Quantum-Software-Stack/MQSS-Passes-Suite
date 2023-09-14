@@ -1,4 +1,5 @@
 #include "../headers/QirReplaceConstantBranches.hpp"
+#include "../QirModulePassManager.hpp"
 
 using namespace llvm;
 
@@ -73,9 +74,11 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnal
             if (ConstantInt* boolConstant = dyn_cast<ConstantInt>(boolMetadata->getValue()))
                 errs() << "lrz_supports_qir: " << (boolConstant->isOne() ? "true" : "false") << '\n';*/
 
-    // XXX THIS IS HOW YOU FETCH OUR OWN METADATA:
+    // XXX THIS IS HOW YOU FETCH METADATA FROM OUR CONTEXT:
 
-    // TODO
+    QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
+    for (auto reversibleGate : qirMetadata.reversibleGates)
+        errs() << "\tReversible Gate: " << reversibleGate << '\n';    
 
     return PreservedAnalyses::none();
 }

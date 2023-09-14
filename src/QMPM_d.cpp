@@ -13,7 +13,6 @@
 #include <algorithm>
 
 const int PORT = 8081;
-
 int qpmSocket = -1;
 
 void handleClient(int clientSocket) {
@@ -39,7 +38,8 @@ void handleClient(int clientSocket) {
         std::cout << "Warning: There was an error parsing the generic QIR" << std::endl;
         return;
     }
-    
+   
+    // Append the module's metadata 
     Metadata* metadata = ConstantAsMetadata::get(ConstantInt::get(Context, APInt(1, true)));
     module->addModuleFlag(Module::Warning, "lrz_supports_qir", metadata);
     module->setSourceFileName("");
@@ -72,10 +72,16 @@ void handleClient(int clientSocket) {
     	std::cout << "Client disconnected" << std::endl;
 		return;
 	}
-	
+
+    // Append the context's metadata (THIS IS MEANT FOR FUTURE DSE)
+    QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
+    qirMetadata.append(REVERSIBLE_GATE, "CNOT");
+    qirMetadata.append(REVERSIBLE_GATE, "H");
+    QirModulePassManager::getInstance().setMetadata(qirMetadata);
+
     // Append all received passes
-    QirModulePassManager    QMPM;
-    ModuleAnalysisManager   MAM;
+    QirModulePassManager &QMPM = QirModulePassManager::getInstance();
+    ModuleAnalysisManager MAM;
     
     std::reverse(passes.begin(), passes.end());
     while (!passes.empty()) {
@@ -98,6 +104,7 @@ void handleClient(int clientSocket) {
     send(clientSocket, qir, strlen(qir), 0);
     std::cout << "Adapted QIR sent to client" << std::endl;
 
+    QMPM.clearMetadata();
     delete[] genericQir;
 	close(clientSocket);
 

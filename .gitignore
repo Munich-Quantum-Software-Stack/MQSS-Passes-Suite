@@ -2,7 +2,9 @@ build/
 daemon/
 
 src/passes/QirDivisionByZero.cpp
+src/passes/QirCXCancellation.cpp
 src/headers/QirDivisionByZero.h
+src/headers/QirCXCancellation.hpp
 
 *.o
 *.so

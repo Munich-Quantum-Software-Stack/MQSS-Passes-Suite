@@ -44,11 +44,21 @@ entry:
   ret i64 0
 }
 
+;define void @__quantum__qis__hczh__body(%Qubit* %p, %Qubit* %q) #2 {
+;entry:
+;  call void @__quantum__qis__h__body(%Qubit* %q)
+;  call void @__quantum__qis__cz__body(%Qubit* %p, %Qubit* %q)
+;  call void @__quantum__qis__h__body(%Qubit* %q)
+;  ret void
+;}
+
 ; declarations of QIS functions
 
 declare void @__quantum__qis__h__body(%Qubit*)
 
 declare void @__quantum__qis__cnot__body(%Qubit*, %Qubit*)
+
+;declare void @__quantum__qis__cz__body(%Qubit*, %Qubit*)
 
 declare void @__quantum__qis__mz__body(%Qubit*, %Result* writeonly) #1
 

@@ -4,4 +4,6 @@ add_library(QirCXCancellationPass MODULE QirCXCancellation.cpp)
 add_library(QirGroupingPass MODULE QirGrouping.cpp)
 add_library(QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass MODULE QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp)
 add_library(QirReplaceConstantBranchesPass MODULE QirReplaceConstantBranches.cpp)
+add_library(QirFunctionReplacementPass MODULE QirFunctionReplacement.cpp)
+add_library(QirRedundantGatesCancellationPass MODULE QirRedundantGatesCancellation.cpp)
 

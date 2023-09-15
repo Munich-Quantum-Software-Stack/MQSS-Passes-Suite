@@ -1,5 +1,4 @@
 #include "../headers/QirReplaceConstantBranches.hpp"
-#include "../QirModulePassManager.hpp"
 
 using namespace llvm;
 
@@ -59,26 +58,6 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnal
     
     MPM.run(module, MAM);
     MPM = ModulePassManager();
-    
-    // XXX THIS IS HOW YOU FETCH METADATA FROM THE MODULE:
-
-    /*Metadata* metadataVersion = module.getModuleFlag("qir_major_version");
-    if (metadataVersion)
-        if (ConstantAsMetadata* intMetadata = dyn_cast<ConstantAsMetadata>(metadataVersion))
-            if (ConstantInt* intConstant = dyn_cast<ConstantInt>(intMetadata->getValue()))
-                errs() << "qir_major_version: " << intConstant->getSExtValue() << '\n';
-
-    Metadata* metadataSupport = module.getModuleFlag("lrz_supports_qir");
-    if (metadataSupport)
-        if (ConstantAsMetadata* boolMetadata = dyn_cast<ConstantAsMetadata>(metadataSupport))
-            if (ConstantInt* boolConstant = dyn_cast<ConstantInt>(boolMetadata->getValue()))
-                errs() << "lrz_supports_qir: " << (boolConstant->isOne() ? "true" : "false") << '\n';*/
-
-    // XXX THIS IS HOW YOU FETCH METADATA FROM OUR CONTEXT:
-
-    QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
-    for (auto reversibleGate : qirMetadata.reversibleGates)
-        errs() << "\tReversible Gate: " << reversibleGate << '\n';    
 
     return PreservedAnalyses::none();
 }

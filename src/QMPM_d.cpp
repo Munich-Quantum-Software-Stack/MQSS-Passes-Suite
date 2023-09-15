@@ -15,7 +15,10 @@
 const int PORT = 8081;
 int qpmSocket = -1;
 
+const std::string QIS_START = "__quantum__qis_";
+
 void handleClient(int clientSocket) {
+    // Receive generic QIR
     ssize_t qirMessageSizeNetwork;
     recv(clientSocket, &qirMessageSizeNetwork, sizeof(qirMessageSizeNetwork), 0);
     ssize_t qirMessageSize = ntohl(qirMessageSizeNetwork);
@@ -24,12 +27,10 @@ void handleClient(int clientSocket) {
     ssize_t qirBytesRead = recv(clientSocket, genericQir, qirMessageSize, 0);
     genericQir[qirBytesRead] = '\0';
 
-    std::cout << "Generic QIR received from a client" << std::endl;
-
+	// Parse generic QIR into an LLVM module
     LLVMContext  Context;
     SMDiagnostic error;
     
-	// Parse generic QIR into a module
 	auto memoryBuffer = MemoryBuffer::getMemBuffer(genericQir, "QIR (LRZ)", false);
 	
     MemoryBufferRef QIRRef = *memoryBuffer;
@@ -39,11 +40,21 @@ void handleClient(int clientSocket) {
         return;
     }
    
-    // Append the module's metadata 
+    std::cout << "Generic QIR received from a client" << std::endl;
+    
+    // Append the desired metadata to the module
+    // These metadata will be attached to the IR of this module
     Metadata* metadata = ConstantAsMetadata::get(ConstantInt::get(Context, APInt(1, true)));
     module->addModuleFlag(Module::Warning, "lrz_supports_qir", metadata);
     module->setSourceFileName("");
- 
+
+    Metadata* metadataSupport = module->getModuleFlag("lrz_supports_qir");
+    if (metadataSupport)
+        if (ConstantAsMetadata* boolMetadata = dyn_cast<ConstantAsMetadata>(metadataSupport))
+            if (ConstantInt* boolConstant = dyn_cast<ConstantInt>(boolMetadata->getValue()))
+                errs() << "\tModule-level Metadata: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
+
+    // Receive the list of passes 
 	std::vector<std::string> passes;
     while (true) {
         ssize_t passMessageSizeNetwork;
@@ -73,11 +84,119 @@ void handleClient(int clientSocket) {
 		return;
 	}
 
-    // Append the context's metadata (THIS IS MEANT FOR FUTURE DSE)
+    // Append the desired metadata to the module's context
+    // These metadata will NOT be attached to the module's IR
     QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
-    qirMetadata.append(REVERSIBLE_GATE, "CNOT");
-    qirMetadata.append(REVERSIBLE_GATE, "H");
+    for (auto &function : module->getFunctionList()) {
+		auto name = static_cast<std::string>(function.getName());
+		bool is_quantum = (name.size() >= QIS_START.size() &&
+						   name.substr(0, QIS_START.size()) == QIS_START);
+
+        if (is_quantum && !function.hasFnAttribute("irreversible"))
+			qirMetadata.append(REVERSIBLE_GATE, static_cast<std::string>(function.getName()));
+    }
     QirModulePassManager::getInstance().setMetadata(qirMetadata);
+
+    // Append the desired metadata to each gate
+    // These metadata will be attached to the module's IR
+	Function *function = module->getFunction("__quantum__qis__hczh__body");
+	
+	if (!function) {
+		StructType *qubitType     = StructType::getTypeByName(Context, "Qubit");
+		PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+
+		FunctionType *funcType = FunctionType::get(
+			Type::getVoidTy(Context), 
+			{
+				qubitPtrType, 
+				qubitPtrType
+			}, 
+			false
+		);
+
+		function = Function::Create(
+			funcType, 
+			Function::ExternalLinkage,
+			"__quantum__qis__hczh__body",
+			module.get()
+		);
+
+		BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
+		IRBuilder<> builder(entryBlock);
+
+		Function *qis_h_body  = module->getFunction("__quantum__qis__h__body");
+		Function *qis_cz_body = module->getFunction("__quantum__qis__cz__body");
+		
+		if (!qis_h_body) {
+			FunctionType *funcTypeH = FunctionType::get(
+				Type::getVoidTy(Context),
+				{qubitPtrType},
+				false
+			);
+
+			qis_h_body = Function::Create(
+				funcTypeH,
+				Function::ExternalLinkage,
+				"__quantum__qis__h__body",
+				module.get()
+			);
+		}
+
+		if (!qis_cz_body) {
+			FunctionType *funcTypeCZ = FunctionType::get(
+				Type::getVoidTy(Context),
+				{
+					qubitPtrType, 
+					qubitPtrType
+				}, 
+				false
+			);
+
+			qis_cz_body = Function::Create(
+				funcTypeCZ,
+				Function::ExternalLinkage,
+				"__quantum__qis__cz__body",
+				module.get()
+			);
+		}
+
+		builder.CreateCall(
+			qis_h_body, 
+			{
+				builder.CreateLoad(
+					qubitPtrType, 
+					function->arg_begin()
+				)
+			}
+		);
+		builder.CreateCall(
+			qis_cz_body, 
+			{
+				builder.CreateLoad(
+					qubitPtrType,
+					function->arg_begin()
+				),
+				builder.CreateLoad(
+					qubitPtrType, 
+					std::next(function->arg_begin())
+				)
+			}
+		);
+		builder.CreateCall(
+			qis_h_body, 
+			{
+				builder.CreateLoad(
+					qubitPtrType, 
+					std::next(function->arg_begin())
+				)
+			}
+		);
+		builder.CreateRetVoid();
+	}
+
+    Function *functionToBeReplaced = module->getFunction("__quantum__qis__cnot__body");
+    if (functionToBeReplaced)
+        functionToBeReplaced->addFnAttr("replaceWith", "__quantum__qis__hczh__body");
 
     // Append all received passes
     QirModulePassManager &QMPM = QirModulePassManager::getInstance();

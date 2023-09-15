@@ -54,6 +54,7 @@ public:
     PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 	void runBlockAnalysis(Module &module);
     Result runGroupingAnalysis(Module &module);
+
 private:
     void deleteInstructions();
 

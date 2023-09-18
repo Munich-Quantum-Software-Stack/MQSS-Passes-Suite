@@ -5,6 +5,7 @@
 #include <cstring>
 #include <csignal>
 #include <sys/socket.h>
+#include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <thread>
@@ -80,7 +81,7 @@ void handleClient(int clientSocket) {
     if (passes.empty()) {
 		std::cout << "Warning: A client did not send any pass to the QMPM" << std::endl;
 		close(clientSocket);
-    	std::cout << "Client disconnected" << std::endl;
+        std::cout << "Client disconnected";
 		return;
 	}
 
@@ -226,7 +227,7 @@ void handleClient(int clientSocket) {
     delete[] genericQir;
 	close(clientSocket);
 
-	std::cout << "Client disconnected" << std::endl;
+	std::cout << "Client disconnected";
 }
 
 void signalHandler(int signum) {
@@ -276,6 +277,11 @@ int main(void) {
             continue;
         }
 
+        struct winsize w;
+        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+        std::cout << std::endl;
+        for (int i = 0; i < w.ws_col; i++)
+            std::cout << '-';
         std::cout << "\nClient connected" << std::endl;
 
         std::thread clientThread(handleClient, clientSocket);

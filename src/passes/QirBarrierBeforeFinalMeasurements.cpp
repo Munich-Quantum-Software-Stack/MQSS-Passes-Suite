@@ -18,22 +18,27 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module &module, Mod
 
                     std::string call_name = static_cast<std::string>(mz_function->getName());
 
-                    if(call_name == "__quantum__qis__mz__body")
+                    if(call_name == "__quantum__qis__barrier__body")
+                        goto exit_loops;
+
+                    if(call_name == "__quantum__qis__mz__body") {
                     	mz_instructions.push_back(&instruction);
-		            else if(call_name == "__quantum__qis__barrier__body")
-                    	barrier_found = true;
+                        goto exit_loops;
+                    }
             	}
             }
 	    }
+
+        exit_loops:
+
+        if(mz_instructions.empty())
+            return PreservedAnalyses::none();
 
     	LLVMContext &Ctx = function.getContext();
 
     	FunctionType* function_type = FunctionType::get(
             Type::getVoidTy(Ctx),       // return void
             false);                     // no variable arguments
-
-        if(mz_instructions.empty())
-            return PreservedAnalyses::none();
 
         Function *barrier_function;
         if(barrier_found)
@@ -46,7 +51,7 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module &module, Mod
                 module);
         }
 
-        while(!mz_instructions.empty()){
+        //while(!mz_instructions.empty()){
             Instruction *mz_instruction = mz_instructions.back();
 
             CallInst::Create(
@@ -56,7 +61,7 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module &module, Mod
                 mz_instruction);        // insert before
 
             mz_instructions.pop_back();
-        }
+        //}
     }
 
     return PreservedAnalyses::none();

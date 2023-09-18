@@ -5,4 +5,5 @@ add_library(QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass MODULE Q
 add_library(QirReplaceConstantBranchesPass MODULE QirReplaceConstantBranches.cpp)
 add_library(QirFunctionReplacementPass MODULE QirFunctionReplacement.cpp)
 add_library(QirRedundantGatesCancellationPass MODULE QirRedundantGatesCancellation.cpp)
+add_library(QirDeferMeasurementPass MODULE QirDeferMeasurement.cpp)
 

@@ -73,6 +73,7 @@ int main(void) {
         "libQirGroupingPass.so", // TODO: Does __quantum__rt__initialize belong to post-quantum?
 		"libQirRemoveNonEntrypointFunctionsPass.so",
         "libQirBarrierBeforeFinalMeasurementsPass.so",
+        "libQirDeferMeasurementPass.so",
         "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
     };
 

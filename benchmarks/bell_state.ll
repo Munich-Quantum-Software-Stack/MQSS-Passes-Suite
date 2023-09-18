@@ -21,6 +21,7 @@ entry:
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   ; calls to QIS functions that are irreversible
+  call void @__quantum__qis__id__body(%Qubit* null)
   call void @__quantum__qis__mz__body(%Qubit* null, %Result* writeonly null)
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Result* writeonly inttoptr (i64 1 to %Result*))
   ; calls to record the program output
@@ -59,6 +60,8 @@ declare void @__quantum__qis__h__body(%Qubit*)
 declare void @__quantum__qis__cnot__body(%Qubit*, %Qubit*)
 
 ;declare void @__quantum__qis__cz__body(%Qubit*, %Qubit*)
+
+declare void @__quantum__qis__id__body(%Qubit*)
 
 declare void @__quantum__qis__mz__body(%Qubit*, %Result* writeonly) #1
 

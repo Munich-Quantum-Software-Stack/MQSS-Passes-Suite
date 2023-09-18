@@ -99,16 +99,19 @@ void handleClient(int clientSocket) {
 
     // Append the desired metadata to each gate
     // These metadata will be attached to the module's IR
-	Function *function = module->getFunction("__quantum__qis__hczh__body");
+	Function *function = module->getFunction("__quantum__qis__rxryrx__body");
 	
 	if (!function) {
-		StructType *qubitType     = StructType::getTypeByName(Context, "Qubit");
+        Type        *doubleType   = Type::getDoubleTy(Context);
+		StructType  *qubitType    = StructType::getTypeByName(Context, "Qubit");
 		PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
 
 		FunctionType *funcType = FunctionType::get(
 			Type::getVoidTy(Context), 
 			{
-				qubitPtrType, 
+                doubleType,
+                doubleType,
+                doubleType,
 				qubitPtrType
 			}, 
 			false
@@ -117,86 +120,82 @@ void handleClient(int clientSocket) {
 		function = Function::Create(
 			funcType, 
 			Function::ExternalLinkage,
-			"__quantum__qis__hczh__body",
+			"__quantum__qis__rxryrx__body",
 			module.get()
 		);
 
 		BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
 		IRBuilder<> builder(entryBlock);
 
-		Function *qis_h_body  = module->getFunction("__quantum__qis__h__body");
-		Function *qis_cz_body = module->getFunction("__quantum__qis__cz__body");
+		Function *qis_rx_body = module->getFunction("__quantum__qis__rx__body");
+		Function *qis_ry_body = module->getFunction("__quantum__qis__ry__body");
 		
-		if (!qis_h_body) {
-			FunctionType *funcTypeH = FunctionType::get(
+		if (!qis_rx_body) {
+			FunctionType *funcTypeRx = FunctionType::get(
 				Type::getVoidTy(Context),
-				{qubitPtrType},
+				{
+                    doubleType,
+                    qubitPtrType
+                },
 				false
 			);
 
-			qis_h_body = Function::Create(
-				funcTypeH,
+			qis_rx_body = Function::Create(
+				funcTypeRx,
 				Function::ExternalLinkage,
-				"__quantum__qis__h__body",
+				"__quantum__qis__rx__body",
 				module.get()
 			);
 		}
 
-		if (!qis_cz_body) {
-			FunctionType *funcTypeCZ = FunctionType::get(
+		if (!qis_ry_body) {
+			FunctionType *funcTypeRy = FunctionType::get(
 				Type::getVoidTy(Context),
 				{
-					qubitPtrType, 
+					doubleType,
 					qubitPtrType
 				}, 
 				false
 			);
 
-			qis_cz_body = Function::Create(
-				funcTypeCZ,
+			qis_ry_body = Function::Create(
+				funcTypeRy,
 				Function::ExternalLinkage,
-				"__quantum__qis__cz__body",
+				"__quantum__qis__ry__body",
 				module.get()
 			);
 		}
 
+        Value *a = function->getArg(0);
+        Value *b = function->getArg(1);
+        Value *c = function->getArg(2);
+
+        Value *q = /*builder.CreateLoad(*/function->getArg(3)/*)*/;
+
+        Value *sum_ab         = builder.CreateFAdd(a, b);
+        Value *sum_bc         = builder.CreateFAdd(b, c);
+        Value *prod_bc        = builder.CreateFMul(b, c);
+        Value *sum_ab_prod_bc = builder.CreateFAdd(sum_ab, prod_bc);
+
 		builder.CreateCall(
-			qis_h_body, 
-			{
-				builder.CreateLoad(
-					qubitPtrType, 
-					function->arg_begin()
-				)
-			}
+			qis_rx_body, 
+			{sum_ab, q}
 		);
 		builder.CreateCall(
-			qis_cz_body, 
-			{
-				builder.CreateLoad(
-					qubitPtrType,
-					function->arg_begin()
-				),
-				builder.CreateLoad(
-					qubitPtrType, 
-					std::next(function->arg_begin())
-				)
-			}
+			qis_ry_body, 
+			{sum_bc, q}
 		);
 		builder.CreateCall(
-			qis_h_body, 
-			{
-				builder.CreateLoad(
-					qubitPtrType, 
-					std::next(function->arg_begin())
-				)
-			}
+			qis_rx_body, 
+			{sum_ab_prod_bc, q}
 		);
+
 		builder.CreateRetVoid();
 	}
 
-    Function *functionToBeReplaced = module->getFunction("__quantum__qis__cnot__body");
+    Function *functionToBeReplaced = module->getFunction("__quantum__qis__U3__body");
     if (functionToBeReplaced)
-        functionToBeReplaced->addFnAttr("replaceWith", "__quantum__qis__hczh__body");
+        functionToBeReplaced->addFnAttr("replaceWith", "__quantum__qis__rxryrx__body");
 
     // Append all received passes
     QirModulePassManager &QMPM = QirModulePassManager::getInstance();

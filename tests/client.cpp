@@ -67,9 +67,9 @@ int main(void) {
 
     // Append the desired passes
     std::vector<std::string> passes {
-        "libQirReplaceConstantBranchesPass.so",
         "libQirRedundantGatesCancellationPass.so",
         "libQirFunctionReplacementPass.so",
+        "libQirReplaceConstantBranchesPass.so",
         "libQirGroupingPass.so", // TODO: Does __quantum__rt__initialize belong to post-quantum?
 		"libQirRemoveNonEntrypointFunctionsPass.so",
         "libQirBarrierBeforeFinalMeasurementsPass.so",

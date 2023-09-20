@@ -6,5 +6,8 @@ add_library(QirReplaceConstantBranchesPass MODULE QirReplaceConstantBranches.cpp
 add_library(QirFunctionReplacementPass MODULE QirFunctionReplacement.cpp)
 add_library(QirRedundantGatesCancellationPass MODULE QirRedundantGatesCancellation.cpp)
 add_library(QirDeferMeasurementPass MODULE QirDeferMeasurement.cpp)
+
 add_library(QirQubitRemapPass MODULE QirQubitRemap.cpp)
+add_library(QirAllocationAnalysisPass SHARED QirAllocationAnalysis.cpp)
+target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
 

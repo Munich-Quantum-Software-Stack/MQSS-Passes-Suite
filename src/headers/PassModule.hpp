@@ -10,9 +10,3 @@ public:
     virtual ~PassModule() {}
 };
 
-/*class AnalysisFunction {
-public:
-    virtual Result run(Function &function, FunctionAnalysisManager &FAM) = 0;
-    virtual ~AnalysisFunction() {}
-};*/
-

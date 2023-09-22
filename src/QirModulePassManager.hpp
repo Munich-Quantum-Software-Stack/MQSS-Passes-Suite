@@ -10,12 +10,17 @@ using namespace llvm;
 enum MetadataType {
     SUITABLE_PASS,
     REVERSIBLE_GATE,
+    INJECTED_ANNOTATION,
+    SHOULD_REMOVE_CALL_ATTRIBUTES,
     UNKNOWN
 };
 
 struct QirMetadata {
     std::vector<std::string> reversibleGates;
     std::vector<std::string> suitablePasses;
+    std::vector<std::string> injectedAnnotations;
+
+    bool shouldRemoveCallAttributes;
 
 	void append(const int key, const std::string &value) {
         switch(key) {
@@ -25,9 +30,16 @@ struct QirMetadata {
             case REVERSIBLE_GATE:
                 reversibleGates.push_back(value);
                 break;
+            case INJECTED_ANNOTATION:
+                injectedAnnotations.push_back(value);
+                break;
             default:
                 errs() << "Warning: Unknown metadata type: " << key <<  "\n";
         }
+    }
+
+    void setRemoveCallAttributes(const bool &value) {
+        shouldRemoveCallAttributes = value;
     }
 };
 
@@ -40,7 +52,7 @@ public:
     }
     
     void append(std::string pass);
-    void /*PreservedAnalyses*/ run(Module &module, ModuleAnalysisManager &MAM);
+    void run(Module &module, ModuleAnalysisManager &MAM);
     void setMetadata(const QirMetadata &metadata);
     void clearMetadata();
 

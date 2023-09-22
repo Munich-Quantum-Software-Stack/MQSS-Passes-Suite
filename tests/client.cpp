@@ -77,6 +77,7 @@ int main(void) {
         "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
         "libQirQubitRemapPass.so",
         "libQirResourceAnnotationPass.so",
+	"libQirFunctionAnnotatorPass.so",
     };
 
     // Send each of the passes to the QPM

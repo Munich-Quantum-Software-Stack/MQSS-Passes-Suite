@@ -10,6 +10,7 @@ add_library(QirRedundantGatesCancellationPass MODULE QirRedundantGatesCancellati
 add_library(QirDeferMeasurementPass MODULE QirDeferMeasurement.cpp)
 add_library(QirQubitRemapPass MODULE QirQubitRemap.cpp)
 add_library(QirResourceAnnotationPass MODULE QirResourceAnnotation.cpp)
+add_library(QirFunctionAnnotatorPass MODULE QirFunctionAnnotator.cpp)
 
 target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
 target_link_libraries(QirResourceAnnotationPass PRIVATE QirAllocationAnalysisPass)

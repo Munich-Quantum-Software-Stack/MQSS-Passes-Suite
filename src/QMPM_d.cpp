@@ -85,19 +85,6 @@ void handleClient(int clientSocket) {
 		return;
 	}
 
-    // Append the desired metadata to the module's context
-    // These metadata will NOT be attached to the module's IR
-    QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
-    for (auto &function : module->getFunctionList()) {
-		auto name = static_cast<std::string>(function.getName());
-		bool is_quantum = (name.size() >= QIS_START.size() &&
-						   name.substr(0, QIS_START.size()) == QIS_START);
-
-        if (is_quantum && !function.hasFnAttribute("irreversible"))
-			qirMetadata.append(REVERSIBLE_GATE, static_cast<std::string>(function.getName()));
-    }
-    QirModulePassManager::getInstance().setMetadata(qirMetadata);
-
     // Append the desired metadata to each gate
     // These metadata will be attached to the module's IR
 	Function *function = module->getFunction("__quantum__qis__rxryrx__body");
@@ -194,9 +181,29 @@ void handleClient(int clientSocket) {
 		builder.CreateRetVoid();
 	}
 
-    Function *functionToBeReplaced = module->getFunction("__quantum__qis__U3__body");
+    // Append the desired metadata to the module's context
+    // These metadata will NOT be attached to the module's IR
+    QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
+
+    for (auto &function : module->getFunctionList()) {
+		auto name = static_cast<std::string>(function.getName());
+		bool is_quantum = (name.size() >= QIS_START.size() &&
+						   name.substr(0, QIS_START.size()) == QIS_START);
+
+        if (is_quantum && !function.hasFnAttribute("irreversible"))
+			qirMetadata.append(REVERSIBLE_GATE, static_cast<std::string>(function.getName()));
+    }
+
+    /*Function *functionToBeReplaced = module->getFunction("__quantum__qis__U3__body");
     if (functionToBeReplaced)
-        functionToBeReplaced->addFnAttr("replaceWith", "__quantum__qis__rxryrx__body");
+        functionToBeReplaced->addFnAttr("replaceWith", "__quantum__qis__rxryrx__body");*/
+    Function *functionKey   = module->getFunction("__quantum__qis__U3__body");
+    Function *functionValue = module->getFunction("__quantum__qis__rxryrx__body");
+    auto key   = static_cast<std::string>(functionKey->getName());
+    auto value = static_cast<std::string>(functionValue->getName());
+    qirMetadata.injectAnnotation(key, value);
+
+    QirModulePassManager::getInstance().setMetadata(qirMetadata);
 
     // Append all received passes
     QirModulePassManager &QMPM = QirModulePassManager::getInstance();

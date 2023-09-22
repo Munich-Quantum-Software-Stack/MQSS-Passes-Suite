@@ -67,6 +67,7 @@ int main(void) {
 
     // Append the desired passes
     std::vector<std::string> passes {
+	    "libQirFunctionAnnotatorPass.so",
         "libQirRedundantGatesCancellationPass.so",
         "libQirFunctionReplacementPass.so",
         "libQirReplaceConstantBranchesPass.so",
@@ -77,7 +78,6 @@ int main(void) {
         "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
         "libQirQubitRemapPass.so",
         "libQirResourceAnnotationPass.so",
-	"libQirFunctionAnnotatorPass.so",
     };
 
     // Send each of the passes to the QPM

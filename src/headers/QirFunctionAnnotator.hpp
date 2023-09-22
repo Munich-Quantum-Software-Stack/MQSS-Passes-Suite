@@ -9,11 +9,10 @@
 
 namespace llvm {
 
-     class FunctionAnnotatorPass : public PassModule 
-     {
-          public:
-				      
-              PreservedAnalyses run(Module& module, ModuleAnalysisManager& mam);
-       };
+class QirFunctionAnnotatorPass : public PassModule {
+public:
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
+};
 
-} //llvm
+}
+

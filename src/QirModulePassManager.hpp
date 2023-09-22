@@ -4,21 +4,21 @@
 #include "headers/PassModule.hpp"
 
 #include <dlfcn.h>
+#include <unordered_map>
+#include <string>
 
 using namespace llvm;
 
 enum MetadataType {
     SUITABLE_PASS,
     REVERSIBLE_GATE,
-    INJECTED_ANNOTATION,
-    SHOULD_REMOVE_CALL_ATTRIBUTES,
     UNKNOWN
 };
 
 struct QirMetadata {
     std::vector<std::string> reversibleGates;
     std::vector<std::string> suitablePasses;
-    std::vector<std::string> injectedAnnotations;
+    std::unordered_map<std::string, std::string> injectedAnnotations;
 
     bool shouldRemoveCallAttributes;
 
@@ -30,15 +30,16 @@ struct QirMetadata {
             case REVERSIBLE_GATE:
                 reversibleGates.push_back(value);
                 break;
-            case INJECTED_ANNOTATION:
-                injectedAnnotations.push_back(value);
-                break;
             default:
                 errs() << "Warning: Unknown metadata type: " << key <<  "\n";
         }
     }
 
-    void setRemoveCallAttributes(const bool &value) {
+    void injectAnnotation(const std::string &key, const std::string &value) {
+        injectedAnnotations[key] = value;
+    }
+
+    void setRemoveCallAttributes(const bool value) {
         shouldRemoveCallAttributes = value;
     }
 };

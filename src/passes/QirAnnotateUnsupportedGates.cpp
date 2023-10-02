@@ -6,8 +6,6 @@ std::string const QirAnnotateUnsupportedGatesPass::QIS_START = "__quantum"
                                                                "__qis_";
 
 PreservedAnalyses QirAnnotateUnsupportedGatesPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
-    //QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
-
     bool changed = false;
 
     // XXX THIS IS HOW YOU QUERY A PLATFORM USING QDMI

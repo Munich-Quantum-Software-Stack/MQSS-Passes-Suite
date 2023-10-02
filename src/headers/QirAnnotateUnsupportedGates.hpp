@@ -1,7 +1,6 @@
 #pragma once
 
 #include "PassModule.hpp"
-#include "../QirPassRunner.hpp"
 
 #include <functional>
 #include <unordered_map>

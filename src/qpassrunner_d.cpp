@@ -1,4 +1,4 @@
-// QIR Pass Manager
+// QIR Pass Runner
 #include "QirPassRunner.hpp"
 
 #include <iostream>
@@ -78,7 +78,7 @@ void handleClient(int clientSocket) {
     /************************************************************/
 
     // XXX THIS IS HOW YOU APPEND METADATA TO THE MODULE
-    // (These metadata will be attached to the IR of this module)
+    // (These metadata will be attached to the module's IR)
     Metadata* metadata = ConstantAsMetadata::get(ConstantInt::get(Context, APInt(1, true)));
     module->addModuleFlag(Module::Warning, "lrz_supports_qir", metadata);
     module->setSourceFileName("");

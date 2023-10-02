@@ -1,6 +1,4 @@
 #include "../headers/QirFunctionAnnotator.hpp"
-#include "../QirPassRunner.hpp"
-
 
 using namespace llvm;
 

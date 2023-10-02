@@ -87,7 +87,7 @@ void handleClient(int clientSocket) {
     if (metadataSupport)
         if (ConstantAsMetadata* boolMetadata = dyn_cast<ConstantAsMetadata>(metadataSupport))
             if (ConstantInt* boolConstant = dyn_cast<ConstantInt>(boolMetadata->getValue()))
-                errs() << "\tModule-level Metadata: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
+                errs() << "\t[Module-level Metadata] Module has a flag: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
 
     // XXX THIS IS HOW YOU APPEND METADATA TO EACH GATE
     // (These metadata will be attached to the module's IR)

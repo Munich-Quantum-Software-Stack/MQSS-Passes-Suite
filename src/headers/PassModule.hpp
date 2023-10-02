@@ -1,6 +1,7 @@
 #pragma once
 
 #include "llvm.hpp"
+#include <qdmi.hpp>
 
 using namespace llvm;
 

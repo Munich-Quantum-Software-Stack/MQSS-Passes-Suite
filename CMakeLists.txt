@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(QirPassRunner
-  VERSION 0.2
-  DESCRIPTION "QIR Module Pass Manager")
+  VERSION 0.3
+  DESCRIPTION "QIR Pass Runner")
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 14)
@@ -37,14 +37,21 @@ include_directories(${LLVM_INCLUDE_DIRS})
 # Add the passes directory to include paths
 include_directories(src/headers)
 
-# Specify the main source file using the CUSTOM_MAIN_SOURCE variable
-set(MAIN_SOURCE ${CUSTOM_MAIN_SOURCE})
+# Specify the path to QDMI using the CUSTOM_QDMI_PATH variable
+set(QDMI_PATH ${CUSTOM_QDMI_PATH})
+
+# Specify the path to the directory containing libqdmi.so
+link_directories(${CUSTOM_QDMI_PATH}/build)
+
+# Include the directory containing qdmi.hpp
+include_directories(${CUSTOM_QDMI_PATH})
 
 # Build QirPassRunner as a shared library
 add_library(QirPassRunner SHARED src/QirPassRunner.cpp)
 
-# Link any necessary libraries (e.g., LLVM)
+# Link any necessary libraries (e.g., LLVM and QDMI)
 target_link_libraries(QirPassRunner PRIVATE LLVM)
+target_link_libraries(QirPassRunner PRIVATE qdmi)
 
 # Specify the output directory for the shared library
 set_target_properties(QirPassRunner PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/passes")
@@ -53,7 +60,7 @@ set_target_properties(QirPassRunner PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE
 set(EXECUTABLE_NAME ${CUSTOM_EXECUTABLE_NAME})
 
 # Build the executable
-add_executable(${EXECUTABLE_NAME} ${MAIN_SOURCE})
+add_executable(${EXECUTABLE_NAME} src/qpassrunner_d.cpp)
 
 # Link the executable with LLVM and Threads libraries
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE LLVM)

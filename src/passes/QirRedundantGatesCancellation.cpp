@@ -33,7 +33,7 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleA
                             gatesToRemove.push_back(last_instruction);
                             gatesToRemove.push_back(current_instruction);
                             
-                            errs() << "\tContext-level Metadata: redundant gate pair found (" << reversibleGate << ")\n";
+                            errs() << "\t[Context-level Metadata] Redundant gate pair found: " << reversibleGate << '\n';
                         }
                         singletonContainer.clear();
                     }

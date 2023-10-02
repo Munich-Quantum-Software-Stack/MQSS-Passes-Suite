@@ -11,13 +11,17 @@ using namespace llvm;
 
 enum MetadataType {
     SUITABLE_PASS,
+    SUPPORTED_GATE,
     REVERSIBLE_GATE,
+    AVAILABLE_PLATFORM,
     UNKNOWN
 };
 
 struct QirMetadata {
     std::vector<std::string> reversibleGates;
+    std::vector<std::string> supportedGates;
     std::vector<std::string> suitablePasses;
+    std::vector<std::string> availablePlatforms;
     std::unordered_map<std::string, std::string> injectedAnnotations;
 
     bool shouldRemoveCallAttributes;
@@ -27,8 +31,14 @@ struct QirMetadata {
             case SUITABLE_PASS:
                 suitablePasses.push_back(value);
                 break;
+            case SUPPORTED_GATE:
+                supportedGates.push_back(value);
+                break;
             case REVERSIBLE_GATE:
                 reversibleGates.push_back(value);
+                break;
+            case AVAILABLE_PLATFORM:
+                availablePlatforms.push_back(value);
                 break;
             default:
                 errs() << "Warning: Unknown metadata type: " << key <<  "\n";

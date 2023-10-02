@@ -1,17 +1,29 @@
+# Include all new passes here
+set(PASSES_SOURCE_FILES
+    QirAnnotateUnsupportedGates.cpp
+    QirBarrierBeforeFinalMeasurements.cpp
+    QirDeferMeasurement.cpp
+    QirFunctionAnnotator.cpp
+    QirFunctionReplacement.cpp
+    QirGrouping.cpp
+    QirQubitRemap.cpp
+    QirRedundantGatesCancellation.cpp
+    QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
+    QirRemoveNonEntrypointFunctions.cpp
+    QirReplaceConstantBranches.cpp
+    QirResourceAnnotation.cpp
+)
+
+# Compile each pass as a shared object and link it to QDMI
+foreach(src_file ${PASSES_SOURCE_FILES})
+    get_filename_component(src_name ${src_file} NAME_WE)
+    set(target_name "${src_name}Pass")
+    add_library(${target_name} MODULE ${src_file})
+    target_link_libraries(${target_name} PRIVATE qdmi)
+endforeach()
+
+# Analysis passes invoked from custom passes have to be linked to the custom pass
 add_library(QirAllocationAnalysisPass SHARED QirAllocationAnalysis.cpp)
-
-add_library(QirBarrierBeforeFinalMeasurementsPass MODULE QirBarrierBeforeFinalMeasurements.cpp)
-add_library(QirRemoveNonEntrypointFunctionsPass MODULE QirRemoveNonEntrypointFunctions.cpp)
-add_library(QirGroupingPass MODULE QirGrouping.cpp)
-add_library(QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass MODULE QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp)
-add_library(QirReplaceConstantBranchesPass MODULE QirReplaceConstantBranches.cpp)
-add_library(QirFunctionReplacementPass MODULE QirFunctionReplacement.cpp)
-add_library(QirRedundantGatesCancellationPass MODULE QirRedundantGatesCancellation.cpp)
-add_library(QirDeferMeasurementPass MODULE QirDeferMeasurement.cpp)
-add_library(QirQubitRemapPass MODULE QirQubitRemap.cpp)
-add_library(QirResourceAnnotationPass MODULE QirResourceAnnotation.cpp)
-add_library(QirFunctionAnnotatorPass MODULE QirFunctionAnnotator.cpp)
-
 target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
 target_link_libraries(QirResourceAnnotationPass PRIVATE QirAllocationAnalysisPass)
 

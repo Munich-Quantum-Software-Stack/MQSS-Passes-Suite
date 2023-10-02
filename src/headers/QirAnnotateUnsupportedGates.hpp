@@ -10,8 +10,10 @@
 
 namespace llvm {
 
-class QirFunctionAnnotatorPass : public PassModule {
+class QirAnnotateUnsupportedGatesPass : public PassModule {
 public:
+    static std::string const QIS_START;
+
     PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 

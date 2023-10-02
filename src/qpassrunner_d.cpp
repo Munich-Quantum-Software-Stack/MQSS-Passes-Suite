@@ -1,5 +1,5 @@
 // QIR Pass Manager
-#include "QirModulePassManager.hpp"
+#include "QirPassRunner.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -67,7 +67,7 @@ void handleClient(int clientSocket) {
     }
 
     if (passes.empty()) {
-		std::cout << "Warning: A client did not send any pass to the QMPM" << std::endl;
+		std::cout << "Warning: A client did not send any pass to the pass runner" << std::endl;
 		close(clientSocket);
         std::cout << "Client disconnected";
 		return;
@@ -190,7 +190,7 @@ void handleClient(int clientSocket) {
 
     // XXX THIS IS HOW YOU APPEND METADATA TO THE MODULE'S CONTEXT
     // (These metadata will NOT be attached to the module's IR)
-    QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
+    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
 
     for (auto &function : module->getFunctionList()) {
 		auto name = static_cast<std::string>(function.getName());
@@ -209,13 +209,13 @@ void handleClient(int clientSocket) {
         qirMetadata.setRemoveCallAttributes(false);
     }
 
-    QirModulePassManager::getInstance().setMetadata(qirMetadata);
+    QirPassRunner::getInstance().setMetadata(qirMetadata);
     /**********************************************************/
     /***********END OF EXAMPLES OF METADATA HANDLING***********/
     /**********************************************************/
 
     // Append all received passes
-    QirModulePassManager &QMPM = QirModulePassManager::getInstance();
+    QirPassRunner &QMPM = QirPassRunner::getInstance();
     ModuleAnalysisManager MAM;
     
     std::reverse(passes.begin(), passes.end());
@@ -281,7 +281,7 @@ int main(void) {
         return 1;
     }
 
-    std::cout << "QMPM listening on port " << PORT << std::endl;
+    std::cout << "Pass Runner listening on port " << PORT << std::endl;
 
     while (true) {
         sockaddr_in clientAddr;
@@ -305,7 +305,7 @@ int main(void) {
     }
 
     close(qpmSocket);
-	std::cerr << "QMPM stopped" << std::endl;
+	std::cerr << "Pass runner stopped" << std::endl;
 
     return 0;
 }

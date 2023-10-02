@@ -44,9 +44,9 @@ struct QirMetadata {
     }
 };
 
-class QirModulePassManager {
+class QirPassRunner {
 public:
-    static QirModulePassManager &getInstance();
+    static QirPassRunner &getInstance();
 
     std::vector<std::string> getPasses() const {
         return passes_;
@@ -60,7 +60,7 @@ public:
     QirMetadata &getMetadata();
 
 private:
-    QirModulePassManager();
+    QirPassRunner();
     std::vector<std::string> passes_;
 	QirMetadata qirMetadata_;
 };

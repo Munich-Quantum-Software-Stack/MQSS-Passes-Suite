@@ -1,11 +1,11 @@
 #include "../headers/QirFunctionAnnotator.hpp"
-#include "../QirModulePassManager.hpp"
+#include "../QirPassRunner.hpp"
 
 
 using namespace llvm;
 
 PreservedAnalyses QirFunctionAnnotatorPass::run(Module& module, ModuleAnalysisManager& /*MAM*/) {
-    QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
+    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
       
     bool changed     = false;
     auto annotations = qirMetadata.injectedAnnotations;

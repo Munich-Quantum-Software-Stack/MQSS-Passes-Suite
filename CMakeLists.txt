@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(QirModulePassManager
+project(QirPassRunner
   VERSION 0.2
   DESCRIPTION "QIR Module Pass Manager")
 
@@ -40,14 +40,14 @@ include_directories(src/headers)
 # Specify the main source file using the CUSTOM_MAIN_SOURCE variable
 set(MAIN_SOURCE ${CUSTOM_MAIN_SOURCE})
 
-# Build QirModulePassManager as a shared library
-add_library(QirModulePassManager SHARED src/QirModulePassManager.cpp)
+# Build QirPassRunner as a shared library
+add_library(QirPassRunner SHARED src/QirPassRunner.cpp)
 
 # Link any necessary libraries (e.g., LLVM)
-target_link_libraries(QirModulePassManager PRIVATE LLVM)
+target_link_libraries(QirPassRunner PRIVATE LLVM)
 
 # Specify the output directory for the shared library
-set_target_properties(QirModulePassManager PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/passes")
+set_target_properties(QirPassRunner PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/passes")
 
 # Get the executable name from the CUSTOM_EXECUTABLE_NAME variable
 set(EXECUTABLE_NAME ${CUSTOM_EXECUTABLE_NAME})
@@ -58,7 +58,7 @@ add_executable(${EXECUTABLE_NAME} ${MAIN_SOURCE})
 # Link the executable with LLVM and Threads libraries
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE LLVM)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Threads::Threads)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE QirModulePassManager)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE QirPassRunner)
 
 # Include passes subdirectory
 add_subdirectory(src/passes)

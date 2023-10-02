@@ -76,8 +76,8 @@ int main(void) {
         "libQirBarrierBeforeFinalMeasurementsPass.so",
         "libQirDeferMeasurementPass.so",
         "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
-        "libQirQubitRemapPass.so",
-        "libQirResourceAnnotationPass.so",
+        //"libQirQubitRemapPass.so",
+        //"libQirResourceAnnotationPass.so",
     };
 
     // Send each of the passes to the QPM

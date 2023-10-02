@@ -1,10 +1,10 @@
 #include "../headers/QirRedundantGatesCancellation.hpp"
-#include "../QirModulePassManager.hpp"
+#include "../QirPassRunner.hpp"
 
 using namespace llvm;
 
 PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
-    QirMetadata &qirMetadata = QirModulePassManager::getInstance().getMetadata();
+    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
 
     for (auto reversibleGate : qirMetadata.reversibleGates) {
         for(auto &function : module){

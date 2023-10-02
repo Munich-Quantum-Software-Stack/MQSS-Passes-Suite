@@ -1,34 +1,34 @@
-#include "QirModulePassManager.hpp"
+#include "QirPassRunner.hpp"
 #include <iostream>
 #include <algorithm>
 
 using namespace llvm;
 
-QirModulePassManager::QirModulePassManager() {}
+QirPassRunner::QirPassRunner() {}
 
-QirModulePassManager &QirModulePassManager::getInstance() {
-    static QirModulePassManager instance;
+QirPassRunner &QirPassRunner::getInstance() {
+    static QirPassRunner instance;
     return instance;
 }
 
-void QirModulePassManager::setMetadata(const QirMetadata &metadata) {
+void QirPassRunner::setMetadata(const QirMetadata &metadata) {
     qirMetadata_ = metadata;
 }
 
-void QirModulePassManager::clearMetadata() {
+void QirPassRunner::clearMetadata() {
     qirMetadata_.suitablePasses.clear();
     qirMetadata_.reversibleGates.clear();
 }
 
-QirMetadata &QirModulePassManager::getMetadata() {
+QirMetadata &QirPassRunner::getMetadata() {
     return qirMetadata_;
 }
 
-void QirModulePassManager::append(std::string pass) {
+void QirPassRunner::append(std::string pass) {
     passes_.push_back(pass);
 }
 
-void /*PreservedAnalyses*/ QirModulePassManager::run(Module &module, ModuleAnalysisManager &MAM) {
+void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisManager &MAM) {
     //PreservedAnalyses allPassesPreserved; // TODO
 
     while (!passes_.empty()) {

@@ -68,6 +68,7 @@ int main(void) {
     // Append the desired passes
     std::vector<std::string> passes {
 	    "libQirAnnotateUnsupportedGatesPass.so",
+        "libQirU3DecompositionPass.so",
 	    "libQirFunctionAnnotatorPass.so",
         "libQirRedundantGatesCancellationPass.so",
         "libQirFunctionReplacementPass.so",

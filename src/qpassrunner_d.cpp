@@ -91,7 +91,7 @@ void handleClient(int clientSocket) {
 
     // XXX THIS IS HOW YOU APPEND METADATA TO EACH GATE
     // (These metadata will be attached to the module's IR)
-    Function *functionKey = module->getFunction("__quantum__qis__U3__body");
+    /*Function *functionKey = module->getFunction("__quantum__qis__U3__body");
     if (functionKey) {
         Function *function = module->getFunction("__quantum__qis__rxryrx__body");
         
@@ -186,7 +186,7 @@ void handleClient(int clientSocket) {
 
             builder.CreateRetVoid();
         }
-	}
+	}*/
 
     // XXX THIS IS HOW YOU APPEND METADATA TO THE MODULE'S CONTEXT
     // (These metadata will NOT be attached to the module's IR)
@@ -205,13 +205,13 @@ void handleClient(int clientSocket) {
         }
     }
 
-    Function *functionValue = module->getFunction("__quantum__qis__rxryrx__body");
+    /*Function *functionValue = module->getFunction("__quantum__qis__rxryrx__body");
     if (functionValue) {
         auto key   = static_cast<std::string>(functionKey->getName());
         auto value = static_cast<std::string>(functionValue->getName());
         qirMetadata.injectAnnotation(key, value);
         qirMetadata.setRemoveCallAttributes(false);
-    }
+    }*/
 
     QirPassRunner::getInstance().setMetadata(qirMetadata);
     /**********************************************************/

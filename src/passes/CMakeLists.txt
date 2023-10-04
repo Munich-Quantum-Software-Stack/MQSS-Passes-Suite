@@ -12,6 +12,7 @@ set(PASSES_SOURCE_FILES
     QirRemoveNonEntrypointFunctions.cpp
     QirReplaceConstantBranches.cpp
     QirResourceAnnotation.cpp
+    QirU3Decomposition.cpp
 )
 
 # Compile each pass as a shared object and link it to QDMI

@@ -82,9 +82,6 @@ private:
 	std::unordered_set<std::string> quantum_register_types = {
         "Qubit", 
         "Result"};
-    //std::unordered_set<std::string> irreversible_operations = {
-    //    "__quantum__qis__reset__body",
-    //    "__quantum__qis__mz__body"};
 	
     std::string qir_runtime_prefix = "__quantum__rt__";
 

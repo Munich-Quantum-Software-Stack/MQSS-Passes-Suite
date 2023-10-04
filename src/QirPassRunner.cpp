@@ -16,7 +16,6 @@ void QirPassRunner::setMetadata(const QirMetadata &metadata) {
 }
 
 void QirPassRunner::clearMetadata() {
-    qirMetadata_.suitablePasses.clear();
     qirMetadata_.reversibleGates.clear();
     qirMetadata_.supportedGates.clear();
     qirMetadata_.availablePlatforms.clear();

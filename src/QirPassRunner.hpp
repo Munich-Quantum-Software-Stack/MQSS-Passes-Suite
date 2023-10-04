@@ -10,7 +10,6 @@
 using namespace llvm;
 
 enum MetadataType {
-    SUITABLE_PASS,
     SUPPORTED_GATE,
     REVERSIBLE_GATE,
     IRREVERSIBLE_GATE,
@@ -22,7 +21,6 @@ struct QirMetadata {
     std::vector<std::string> reversibleGates;
     std::vector<std::string> irreversibleGates;
     std::vector<std::string> supportedGates;
-    std::vector<std::string> suitablePasses;
     std::vector<std::string> availablePlatforms;
     std::unordered_map<std::string, std::string> injectedAnnotations;
 
@@ -30,9 +28,6 @@ struct QirMetadata {
 
 	void append(const int key, const std::string &value) {
         switch(key) {
-            case SUITABLE_PASS:
-                suitablePasses.push_back(value);
-                break;
             case SUPPORTED_GATE:
                 supportedGates.push_back(value);
                 break;

@@ -1,5 +1,4 @@
 #include "../headers/QirRedundantGatesCancellation.hpp"
-//#include "../QirPassRunner.hpp"
 
 using namespace llvm;
 

@@ -41,7 +41,6 @@ int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction) {
 
         // Checking if it is an irreversabile operation
         auto name = static_cast<std::string>(called_function->getName());
-        //if(irreversible_operations.find(name) != irreversible_operations.end())
         if(std::find(irreversible_operations.begin(), irreversible_operations.end(), name) != irreversible_operations.end())
             destructive_quantum = true;
 

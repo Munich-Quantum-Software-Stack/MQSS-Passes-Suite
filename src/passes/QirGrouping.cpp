@@ -19,11 +19,12 @@ bool QirGroupingPass::isQuantumRegister(Type const *type){
     return false;
 }
 
-int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction){
+int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction) {
+    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
+
 	int64_t ret = PureClassical;
 
-    // TODO: HOW ARE WE OBTAINING PROFILES?
-    /*auto irreversible_operations = config_.irreversibleOperations();*/
+    auto irreversible_operations = qirMetadata.irreversibleGates;
 
     // Checking all operations
     bool any_quantum         = false;
@@ -40,12 +41,13 @@ int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction){
 
         // Checking if it is an irreversabile operation
         auto name = static_cast<std::string>(called_function->getName());
-        if(irreversible_operations.find(name) != irreversible_operations.end())
+        //if(irreversible_operations.find(name) != irreversible_operations.end())
+        if(std::find(irreversible_operations.begin(), irreversible_operations.end(), name) != irreversible_operations.end())
             destructive_quantum = true;
 
         for(auto& arg : call_instruction->args()){
             auto q = isQuantumRegister(arg->getType());
-            any_quantum |= q;
+            any_quantum   |=  q;
             any_classical |= !q;
         }
 

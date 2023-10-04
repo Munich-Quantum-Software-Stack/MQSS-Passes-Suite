@@ -48,12 +48,12 @@ exit_block:                                       ; preds = %false_block, %true_
   ret i64 0
 }
 
-define i64 @NonEntry_Point_Name() #2 {
+define i64 @NonEntry_Point_Name() #3 {
 entry:
   ret i64 0
 }
 
-define void @__quantum__qis__hczh__body(%Qubit* %p, %Qubit* %q) #2 {
+define void @__quantum__qis__hczh__body(%Qubit* %p, %Qubit* %q) #3 {
 entry:
   call void @__quantum__qis__h__body(%Qubit* %q)
   call void @__quantum__qis__cz__body(%Qubit* %p, %Qubit* %q)
@@ -63,11 +63,11 @@ entry:
 
 ; declarations of QIS functions
 
-declare void @__quantum__qis__h__body(%Qubit*)
+declare void @__quantum__qis__h__body(%Qubit*) #2
 
 declare void @__quantum__qis__U3__body(double %a, double %b, double %c, %Qubit*)
 
-declare void @__quantum__qis__cnot__body(%Qubit*, %Qubit*) #3
+declare void @__quantum__qis__cnot__body(%Qubit*, %Qubit*) #4
 
 declare void @__quantum__qis__cz__body(%Qubit*, %Qubit*)
 
@@ -89,9 +89,11 @@ attributes #0 = { "entry_point" "qir_profiles"="base_profile" "output_labeling_s
 
 attributes #1 = { "irreversible" }
 
-attributes #2 = { "qir_profiles"="base_profile" }
+attributes #2 = { "verbatim" }
 
-attributes #3 = { "replaceWith"="__quantum__qis__hczh__body" }
+attributes #3 = { "qir_profiles"="base_profile" }
+
+attributes #4 = { "replaceWith"="__quantum__qis__hczh__body" }
 
 ; module flags
 

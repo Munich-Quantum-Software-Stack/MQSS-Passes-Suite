@@ -1,5 +1,5 @@
 #include "../headers/QirRedundantGatesCancellation.hpp"
-#include "../QirPassRunner.hpp"
+//#include "../QirPassRunner.hpp"
 
 using namespace llvm;
 
@@ -7,23 +7,23 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleA
     QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
 
     for (auto reversibleGate : qirMetadata.reversibleGates) {
-        for(auto &function : module){
+        for (auto &function : module) {
             std::vector<CallInst*> gatesToRemove;
             std::vector<CallInst*> singletonContainer;
-            for(auto &block : function){
-                for(auto &instruction : block){
+            for (auto &block : function) {
+                for (auto &instruction : block) {
                     auto *current_instruction = dyn_cast<CallInst>(&instruction);
 
-                    if(current_instruction){
+                    if (current_instruction) {
                         auto *current_function = current_instruction->getCalledFunction();
                     
-                        if(current_function == nullptr)
+                        if (current_function == nullptr)
                             continue;
                     
                         std::string current_name = static_cast<std::string>(current_function->getName());
                     
-                        if(current_name == reversibleGate){
-                            if(singletonContainer.size() == 0){
+                        if (current_name == reversibleGate) {
+                            if (singletonContainer.size() == 0) {
                                 singletonContainer.push_back(current_instruction);
                                 continue;
                             }
@@ -40,9 +40,9 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleA
                 }
             }
 
-            assert(((void)"Programming error: please report this issue", gatesToRemove.size() % 2 == 0));
+            assert(((void)"Number of gates to be removed is not even", gatesToRemove.size() % 2 == 0));
 
-            while(!gatesToRemove.empty()){
+            while (!gatesToRemove.empty()) {
                 auto *gateToRemove = gatesToRemove.back();
                 gateToRemove->eraseFromParent();
                 gatesToRemove.pop_back();

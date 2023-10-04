@@ -197,8 +197,12 @@ void handleClient(int clientSocket) {
 		bool is_quantum = (name.size() >= QIS_START.size() &&
 						   name.substr(0, QIS_START.size()) == QIS_START);
 
-        if (is_quantum && !function.hasFnAttribute("irreversible"))
-			qirMetadata.append(REVERSIBLE_GATE, static_cast<std::string>(function.getName()));
+        if (is_quantum) {
+            if (!function.hasFnAttribute("irreversible"))
+			    qirMetadata.append(REVERSIBLE_GATE, static_cast<std::string>(function.getName()));
+            else
+			    qirMetadata.append(IRREVERSIBLE_GATE, static_cast<std::string>(function.getName()));
+        }
     }
 
     Function *functionValue = module->getFunction("__quantum__qis__rxryrx__body");
@@ -215,18 +219,18 @@ void handleClient(int clientSocket) {
     /**********************************************************/
 
     // Append all received passes
-    QirPassRunner &QMPM = QirPassRunner::getInstance();
+    QirPassRunner &QPR = QirPassRunner::getInstance();
     ModuleAnalysisManager MAM;
     
     std::reverse(passes.begin(), passes.end());
     while (!passes.empty()) {
         auto pass = passes.back();
-        QMPM.append("./src/passes/" + pass);
+        QPR.append("./src/passes/" + pass);
         passes.pop_back();
     }
 
 	// Run QIR passes
-	QMPM.run(*module, MAM);
+	QPR.run(*module, MAM);
 
     // Print the result
     //module->print(outs(), nullptr);
@@ -239,7 +243,7 @@ void handleClient(int clientSocket) {
     send(clientSocket, qir, strlen(qir), 0);
     std::cout << "Adapted QIR sent to client" << std::endl;
 
-    QMPM.clearMetadata();
+    QPR.clearMetadata();
     delete[] genericQir;
 	close(clientSocket);
 

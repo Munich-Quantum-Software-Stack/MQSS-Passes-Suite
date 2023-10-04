@@ -2,6 +2,7 @@
 
 #include "llvm.hpp"
 #include <qdmi.hpp>
+#include "../QirPassRunner.hpp"
 
 using namespace llvm;
 

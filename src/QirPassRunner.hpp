@@ -13,12 +13,14 @@ enum MetadataType {
     SUITABLE_PASS,
     SUPPORTED_GATE,
     REVERSIBLE_GATE,
+    IRREVERSIBLE_GATE,
     AVAILABLE_PLATFORM,
     UNKNOWN
 };
 
 struct QirMetadata {
     std::vector<std::string> reversibleGates;
+    std::vector<std::string> irreversibleGates;
     std::vector<std::string> supportedGates;
     std::vector<std::string> suitablePasses;
     std::vector<std::string> availablePlatforms;
@@ -36,6 +38,9 @@ struct QirMetadata {
                 break;
             case REVERSIBLE_GATE:
                 reversibleGates.push_back(value);
+                break;
+            case IRREVERSIBLE_GATE:
+                irreversibleGates.push_back(value);
                 break;
             case AVAILABLE_PLATFORM:
                 availablePlatforms.push_back(value);

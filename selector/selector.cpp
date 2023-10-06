@@ -67,16 +67,18 @@ int main(void) {
 
     // Append the desired passes
     std::vector<std::string> passes {
+        "libQirPlaceIrreversibleGatesInMetadataPass.so",
 	    "libQirAnnotateUnsupportedGatesPass.so",
         "libQirU3DecompositionPass.so",
+        "libQirCNotDecompositionPass.so",
 	    "libQirFunctionAnnotatorPass.so",
         "libQirRedundantGatesCancellationPass.so",
         "libQirFunctionReplacementPass.so",
         "libQirReplaceConstantBranchesPass.so",
         "libQirGroupingPass.so", // TODO: Does __quantum__rt__initialize belong to post-quantum?
 		"libQirRemoveNonEntrypointFunctionsPass.so",
-        "libQirBarrierBeforeFinalMeasurementsPass.so",
         "libQirDeferMeasurementPass.so",
+        "libQirBarrierBeforeFinalMeasurementsPass.so",
         "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
         "libQirQubitRemapPass.so",
         "libQirResourceAnnotationPass.so",

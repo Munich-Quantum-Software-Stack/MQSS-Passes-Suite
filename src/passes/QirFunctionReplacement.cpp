@@ -13,7 +13,7 @@ QirFunctionReplacementPass::Result QirFunctionReplacementPass::runFunctionReplac
     for (auto &function : module) {
         if (function.hasFnAttribute("replaceWith")) {
             auto attr = function.getFnAttribute("replaceWith");
-            errs() << "\t[Function-level Metadata] Function has 'replaceWith' attribute: " << static_cast<std::string>(function.getName()) << '\n';
+            errs() << "\tFunction has 'replaceWith' attribute: " << static_cast<std::string>(function.getName()) << '\n';
 
             if (!attr.isStringAttribute()) {
                 errs() << "\tWarning: Expected string attribute for attribute 'replaceWith'\n";
@@ -23,7 +23,7 @@ QirFunctionReplacementPass::Result QirFunctionReplacementPass::runFunctionReplac
             auto name = static_cast<std::string>(attr.getValueAsString());
             auto it   = ret.name_to_function_pointer.find(name);
 
-            errs() << "\t                          Function is a replacement           : " << name << '\n';
+            errs() << "\tFunction is a replacement           : " << name << '\n';
 
             // Ignoring replacements that were not found
             if (it == ret.name_to_function_pointer.end()) {

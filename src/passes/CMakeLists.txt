@@ -1,17 +1,29 @@
 # Include all new passes here
 set(PASSES_SOURCE_FILES
+    # A
     QirAnnotateUnsupportedGates.cpp
+    # B
     QirBarrierBeforeFinalMeasurements.cpp
+    # C
+    QirCNotDecomposition.cpp
+    # D
     QirDeferMeasurement.cpp
+    # F
     QirFunctionAnnotator.cpp
     QirFunctionReplacement.cpp
+    # G
     QirGrouping.cpp
+    # P
+    QirPlaceIrreversibleGatesInMetadata.cpp
+    # Q
     QirQubitRemap.cpp
+    # R
     QirRedundantGatesCancellation.cpp
     QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
     QirRemoveNonEntrypointFunctions.cpp
     QirReplaceConstantBranches.cpp
     QirResourceAnnotation.cpp
+    # U
     QirU3Decomposition.cpp
 )
 

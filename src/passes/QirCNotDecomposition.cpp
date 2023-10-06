@@ -1,30 +1,27 @@
-#include "../headers/QirU3Decomposition.hpp"
+#include "../headers/QirCNotDecomposition.hpp"
 
 using namespace llvm;
 
-PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisManager &MAM) {
+PreservedAnalyses QirCNotDecompositionPass::run(Module &module, ModuleAnalysisManager &MAM) {
     auto& Context = module.getContext();
 
-    Function *functionKey = module.getFunction("__quantum__qis__U3__body");
+    Function *functionKey = module.getFunction("__quantum__qis__cnot__body");
     
     if (!functionKey)
         return PreservedAnalyses::all();
 
-    Function *function = module.getFunction("__quantum__qis__rxryrx__body");
+    Function *function = module.getFunction("__quantum__qis__hczh__body");
 
     if (function)
         return PreservedAnalyses::all();
 
-    Type        *doubleType   = Type::getDoubleTy(Context);
     StructType  *qubitType    = StructType::getTypeByName(Context, "Qubit");
     PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
 
     FunctionType *funcType = FunctionType::get(
         Type::getVoidTy(Context),
         {
-            doubleType,
-            doubleType,
-            doubleType,
+            qubitPtrType,
             qubitPtrType
         },
         false
@@ -33,74 +30,65 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
     function = Function::Create(
         funcType,
         Function::ExternalLinkage,
-        "__quantum__qis__rxryrx__body",
+        "__quantum__qis__hczh__body",
         module
     );
 
     BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
     IRBuilder<> builder(entryBlock);
 
-    Function *qis_rx_body = module.getFunction("__quantum__qis__rx__body");
-    Function *qis_ry_body = module.getFunction("__quantum__qis__ry__body");
+    Function *qis_h_body = module.getFunction("__quantum__qis__h__body");
+    Function *qis_cz_body = module.getFunction("__quantum__qis__cz__body");
 
-    if (!qis_rx_body) {
-        FunctionType *funcTypeRx = FunctionType::get(
+    if (!qis_h_body) {
+        FunctionType *funcTypeH = FunctionType::get(
             Type::getVoidTy(Context),
             {
-                doubleType,
                 qubitPtrType
             },
             false
         );
 
-        qis_rx_body = Function::Create(
-            funcTypeRx,
+        qis_h_body = Function::Create(
+            funcTypeH,
             Function::ExternalLinkage,
-            "__quantum__qis__rx__body",
+            "__quantum__qis__h__body",
             module
         );
     }
 
-    if (!qis_ry_body) {
-        FunctionType *funcTypeRy = FunctionType::get(
+    if (!qis_cz_body) {
+        FunctionType *funcTypeCz = FunctionType::get(
             Type::getVoidTy(Context),
             {
-                doubleType,
+                qubitPtrType,
                 qubitPtrType
             },
             false
         );
 
-        qis_ry_body = Function::Create(
-            funcTypeRy,
+        qis_cz_body = Function::Create(
+            funcTypeCz,
             Function::ExternalLinkage,
-            "__quantum__qis__ry__body",
+            "__quantum__qis__cz__body",
             module
         );
     }
 
-    Value *a = function->getArg(0);
-    Value *b = function->getArg(1);
-    Value *c = function->getArg(2);
-
-    Value *q = function->getArg(3);
-
-    Value *sum_ab         = builder.CreateFAdd(a, b);
-    Value *sum_bc         = builder.CreateFAdd(b, c);
-    Value *prod_bc        = builder.CreateFMul(b, c);
-    Value *sum_ab_prod_bc = builder.CreateFAdd(sum_ab, prod_bc);
+    Value *p = function->getArg(0);
+    Value *q = function->getArg(1);
 
     builder.CreateCall(
-        qis_rx_body,
-        {sum_ab, q}
+        qis_h_body,
+        {q}
     );
     builder.CreateCall(
-        qis_ry_body,    
-        {sum_bc, q}
+        qis_cz_body,    
+        {p, q}
     );
     builder.CreateCall(
-        qis_rx_body,
-        {sum_ab_prod_bc, q}
+        qis_h_body,
+        {q}
     );
 
     builder.CreateRetVoid();
@@ -109,7 +97,7 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
     // (These metadata will NOT be attached to the module's IR)
     QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
 
-    Function *functionValue = module.getFunction("__quantum__qis__rxryrx__body");
+    Function *functionValue = module.getFunction("__quantum__qis__hczh__body");
     if (functionValue) {
         auto key   = static_cast<std::string>(functionKey->getName());
         auto value = static_cast<std::string>(functionValue->getName());
@@ -123,5 +111,5 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
 }
 
 extern "C" PassModule* createQirPass() {
-    return new QirU3DecompositionPass();
+    return new QirCNotDecompositionPass();
 }

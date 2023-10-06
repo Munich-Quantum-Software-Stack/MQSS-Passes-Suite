@@ -73,12 +73,7 @@ void handleClient(int clientSocket) {
 		return;
 	}
 
-    /************************************************************/
-    /***********BEGIN OF EXAMPLES OF METADATA HANDLING***********/
-    /************************************************************/
-
-    // XXX THIS IS HOW YOU APPEND METADATA TO THE MODULE
-    // (These metadata will be attached to the module's IR)
+    // Attach metadata to the IR
     Metadata* metadata = ConstantAsMetadata::get(ConstantInt::get(Context, APInt(1, true)));
     module->addModuleFlag(Module::Warning, "lrz_supports_qir", metadata);
     module->setSourceFileName("");
@@ -87,136 +82,7 @@ void handleClient(int clientSocket) {
     if (metadataSupport)
         if (ConstantAsMetadata* boolMetadata = dyn_cast<ConstantAsMetadata>(metadataSupport))
             if (ConstantInt* boolConstant = dyn_cast<ConstantInt>(boolMetadata->getValue()))
-                errs() << "\t[Module-level Metadata] Module has a flag: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
-
-    // XXX THIS IS HOW YOU APPEND METADATA TO EACH GATE
-    // (These metadata will be attached to the module's IR)
-    /*Function *functionKey = module->getFunction("__quantum__qis__U3__body");
-    if (functionKey) {
-        Function *function = module->getFunction("__quantum__qis__rxryrx__body");
-        
-        if (!function) {
-            Type        *doubleType   = Type::getDoubleTy(Context);
-            StructType  *qubitType    = StructType::getTypeByName(Context, "Qubit");
-            PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
-
-            FunctionType *funcType = FunctionType::get(
-                Type::getVoidTy(Context), 
-                {
-                    doubleType,
-                    doubleType,
-                    doubleType,
-                    qubitPtrType
-                }, 
-                false
-            );
-
-            function = Function::Create(
-                funcType, 
-                Function::ExternalLinkage,
-                "__quantum__qis__rxryrx__body",
-                module.get()
-            );
-
-            BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
-            IRBuilder<> builder(entryBlock);
-
-            Function *qis_rx_body = module->getFunction("__quantum__qis__rx__body");
-            Function *qis_ry_body = module->getFunction("__quantum__qis__ry__body");
-            
-            if (!qis_rx_body) {
-                FunctionType *funcTypeRx = FunctionType::get(
-                    Type::getVoidTy(Context),
-                    {
-                        doubleType,
-                        qubitPtrType
-                    },
-                    false
-                );
-
-                qis_rx_body = Function::Create(
-                    funcTypeRx,
-                    Function::ExternalLinkage,
-                    "__quantum__qis__rx__body",
-                    module.get()
-                );
-            }
-
-            if (!qis_ry_body) {
-                FunctionType *funcTypeRy = FunctionType::get(
-                    Type::getVoidTy(Context),
-                    {
-                        doubleType,
-                        qubitPtrType
-                    }, 
-                    false
-                );
-
-                qis_ry_body = Function::Create(
-                    funcTypeRy,
-                    Function::ExternalLinkage,
-                    "__quantum__qis__ry__body",
-                    module.get()
-                );
-            }
-
-            Value *a = function->getArg(0);
-            Value *b = function->getArg(1);
-            Value *c = function->getArg(2);
-
-            Value *q = function->getArg(3);
-
-            Value *sum_ab         = builder.CreateFAdd(a, b);
-            Value *sum_bc         = builder.CreateFAdd(b, c);
-            Value *prod_bc        = builder.CreateFMul(b, c);
-            Value *sum_ab_prod_bc = builder.CreateFAdd(sum_ab, prod_bc);
-
-            builder.CreateCall(
-                qis_rx_body, 
-                {sum_ab, q}
-            );
-            builder.CreateCall(
-                qis_ry_body, 
-                {sum_bc, q}
-            );
-            builder.CreateCall(
-                qis_rx_body, 
-                {sum_ab_prod_bc, q}
-            );
-
-            builder.CreateRetVoid();
-        }
-	}*/
-
-    // XXX THIS IS HOW YOU APPEND METADATA TO THE MODULE'S CONTEXT
-    // (These metadata will NOT be attached to the module's IR)
-    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
-
-    for (auto &function : module->getFunctionList()) {
-		auto name = static_cast<std::string>(function.getName());
-		bool is_quantum = (name.size() >= QIS_START.size() &&
-						   name.substr(0, QIS_START.size()) == QIS_START);
-
-        if (is_quantum) {
-            if (!function.hasFnAttribute("irreversible"))
-			    qirMetadata.append(REVERSIBLE_GATE, static_cast<std::string>(function.getName()));
-            else
-			    qirMetadata.append(IRREVERSIBLE_GATE, static_cast<std::string>(function.getName()));
-        }
-    }
-
-    /*Function *functionValue = module->getFunction("__quantum__qis__rxryrx__body");
-    if (functionValue) {
-        auto key   = static_cast<std::string>(functionKey->getName());
-        auto value = static_cast<std::string>(functionValue->getName());
-        qirMetadata.injectAnnotation(key, value);
-        qirMetadata.setRemoveCallAttributes(false);
-    }*/
-
-    QirPassRunner::getInstance().setMetadata(qirMetadata);
-    /**********************************************************/
-    /***********END OF EXAMPLES OF METADATA HANDLING***********/
-    /**********************************************************/
+                errs() << "\tFlag inserted: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
 
     // Append all received passes
     QirPassRunner &QPR = QirPassRunner::getInstance();

@@ -1,14 +1,8 @@
 build/
-daemon/
-
-src/passes/QirDivisionByZero.cpp
-src/passes/QirCXCancellation.cpp
-src/headers/QirDivisionByZero.h
-src/headers/QirCXCancellation.hpp
+selector/build/
 
 *.o
 *.so
 *.swp
-
 *_BACKUP
-client
+

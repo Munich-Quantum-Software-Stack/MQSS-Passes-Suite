@@ -14,7 +14,7 @@
 #include <algorithm>
 
 const int PORT = 8081;
-int qpmSocket = -1;
+int qprSocket = -1;
 
 const std::string QIS_START = "__quantum__qis_";
 
@@ -117,37 +117,37 @@ void handleClient(int clientSocket) {
 }
 
 void signalHandler(int signum) {
-	close(qpmSocket);
+	close(qprSocket);
 	exit(0);
 }
 
 int main(void) {
 	signal(SIGTERM, signalHandler);
 
-    qpmSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (qpmSocket == -1) {
+    qprSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (qprSocket == -1) {
         std::cerr << "Error creating socket" << std::endl;
         return 1;
     }
 
     // Enable the SO_REUSEADDR option
     int optval = 1;
-    setsockopt(qpmSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+    setsockopt(qprSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_port = htons(PORT);
 
-    if (bind(qpmSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
+    if (bind(qprSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
         std::cerr << "Error binding" << std::endl;
-        close(qpmSocket);
+        close(qprSocket);
         return 1;
     }
 
-    if (listen(qpmSocket, 5) == -1) {
+    if (listen(qprSocket, 5) == -1) {
         std::cerr << "Error listening" << std::endl;
-        close(qpmSocket);
+        close(qprSocket);
         return 1;
     }
 
@@ -156,7 +156,7 @@ int main(void) {
     while (true) {
         sockaddr_in clientAddr;
         socklen_t clientAddrLen = sizeof(clientAddr);
-        int clientSocket = accept(qpmSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
+        int clientSocket = accept(qprSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
 
         if (clientSocket == -1) {
             std::cerr << "Error accepting connection" << std::endl;
@@ -174,7 +174,7 @@ int main(void) {
         clientThread.detach();
     }
 
-    close(qpmSocket);
+    close(qprSocket);
 	std::cerr << "Pass runner stopped" << std::endl;
 
     return 0;

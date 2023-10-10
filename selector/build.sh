@@ -3,10 +3,17 @@
 # Set the script to exit on any non-zero status
 set -e
 
-# Build the selector
-rm selector 2> /dev/null || true
-mpic++ -std=c++14 selector.cpp -o selector
+# Install the dependencies
+sudo apt install -y cmake || true
 
-# Run the selector
-./selector
+# Build the pass selector runner
+mkdir build/ 2> /dev/null || true
+cd build/
+cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
+cmake --build .
+
+export LC_ALL=en_US.UTF-8
+
+# Run the pass selector runner
+./qselectorrunner_d
 

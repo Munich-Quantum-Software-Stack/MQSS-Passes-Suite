@@ -20,7 +20,7 @@ int main(void) {
         return 1;
     }
 
-    // Connect to the Quantum Pass Runner (QPR)
+    // Connect to the QIR Pass Runner (QPR)
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(PORT);
@@ -33,7 +33,7 @@ int main(void) {
     }
 
     // Open the QIR file
-    const char* filename = "../benchmarks/bell_state.ll";
+    const char* filename = "../../benchmarks/bell_state.ll";
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << filename << std::endl;
@@ -74,13 +74,6 @@ int main(void) {
 	    "libQirFunctionAnnotatorPass.so",
         "libQirRedundantGatesCancellationPass.so",
         "libQirFunctionReplacementPass.so",
-        "libQirReplaceConstantBranchesPass.so",
-        "libQirGroupingPass.so", // TODO: Does __quantum__rt__initialize belong to post-quantum?
-		"libQirRemoveNonEntrypointFunctionsPass.so",
-        "libQirDeferMeasurementPass.so",
-        "libQirBarrierBeforeFinalMeasurementsPass.so",
-        "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
-        "libQirQubitRemapPass.so",
         "libQirResourceAnnotationPass.so",
     };
 

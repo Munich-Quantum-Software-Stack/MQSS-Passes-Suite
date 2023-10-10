@@ -7,7 +7,7 @@ set -e
 bash qdmi/build.sh
 
 # Install the dependencies
-sudo apt install -y cmake llvm libopenmpi-dev || true
+sudo apt install -y cmake llvm libopenmpi-dev g++ || true
 
 # Build the pass runner
 mkdir build/ 2> /dev/null || true

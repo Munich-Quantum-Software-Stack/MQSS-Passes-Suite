@@ -1,6 +1,6 @@
 Install CMake and LLVM:
 ```bash
-$ sudo apt install -y cmake llvm libopenmpi-dev
+$ sudo apt install -y cmake llvm libopenmpi-dev g++
 ```
 
 Clone the passes and move to the right branch:
@@ -11,15 +11,21 @@ $ cd qir_passes/
 $ git checkout Plugins
 ```
 
-Run the daemon:
+Run the QIR pass runner daemon:
 ```bash
 $ cd ${DEV_PATH}/qir_passes/
 $ sh build.sh
 ```
 
-Run the client in a different terminal:
+Run the pass selector runner daemon:
 ```bash
-$ cd ${DEV_PATH}/qir_passes/tests/
-$ sh build_client.sh
+$ cd ${DEV_PATH}/qir_passes/selector/
+$ sh build.sh
+```
+
+Run the client to submit a QIR and a pass selector:
+```bash
+$ cd ${DEV_PATH}/qir_passes/selector/clients/
+$ sh build.sh
 ```
 

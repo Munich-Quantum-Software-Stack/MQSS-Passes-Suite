@@ -9,17 +9,14 @@
 
 namespace llvm {
 
-struct AllocationAnalysis
-{
-    enum ResourceType
-    {
+struct AllocationAnalysis {
+    enum ResourceType {
         NotResource,
         QubitResource,
         ResultResource
     };
 
-    struct ResourceAccessLocation
-    {
+    struct ResourceAccessLocation {
         Value*       operand{nullptr};
         ResourceType type{ResourceType::NotResource};
         uint64_t     index{static_cast<uint64_t>(-1)};

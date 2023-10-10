@@ -11,6 +11,7 @@ set(PASSES_SOURCE_FILES
     # F
     QirFunctionAnnotator.cpp
     QirFunctionReplacement.cpp
+    QirFunctionValidation.cpp
     # G
     QirGrouping.cpp
     # P
@@ -37,6 +38,7 @@ endforeach()
 
 # Analysis passes invoked from custom passes have to be linked to the custom pass
 add_library(QirAllocationAnalysisPass SHARED QirAllocationAnalysis.cpp)
+target_link_libraries(QirFunctionValidationPass PRIVATE QirAllocationAnalysisPass)
 target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
 target_link_libraries(QirResourceAnnotationPass PRIVATE QirAllocationAnalysisPass)
 

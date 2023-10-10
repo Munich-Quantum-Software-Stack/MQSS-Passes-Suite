@@ -5,7 +5,6 @@ using namespace llvm;
 
 PreservedAnalyses QirResourceAnnotationPass::run(Module &module, ModuleAnalysisManager &MAM) {
     for (auto &function : module) {
-        // XXX THIS IS HOW YOU INVOKE A CUSTOM PASS
         QirAllocationAnalysisPass QAAP;
         FunctionAnalysisManager FAM;
         QAAP.run(function, FAM);

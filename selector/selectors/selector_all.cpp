@@ -70,6 +70,7 @@ int main(void) {
         "libQirPlaceIrreversibleGatesInMetadataPass.so",
 	    "libQirAnnotateUnsupportedGatesPass.so",
         "libQirU3DecompositionPass.so",
+        "libQirRzDecompositionPass.so",
         "libQirCNotDecompositionPass.so",
 	    "libQirFunctionAnnotatorPass.so",
         "libQirRedundantGatesCancellationPass.so",

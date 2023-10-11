@@ -24,6 +24,7 @@ set(PASSES_SOURCE_FILES
     QirRemoveNonEntrypointFunctions.cpp
     QirReplaceConstantBranches.cpp
     QirResourceAnnotation.cpp
+    QirRzDecomposition.cpp
     # U
     QirU3Decomposition.cpp
 )

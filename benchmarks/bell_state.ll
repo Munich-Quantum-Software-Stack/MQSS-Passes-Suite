@@ -50,14 +50,6 @@ entry:
   ret i64 0
 }
 
-; define void @__quantum__qis__hczh__body(%Qubit* %p, %Qubit* %q) #2 {
-; entry:
-;   call void @__quantum__qis__h__body(%Qubit* %q)
-;   call void @__quantum__qis__cz__body(%Qubit* %p, %Qubit* %q)
-;   call void @__quantum__qis__h__body(%Qubit* %q)
-;   ret void
-; }
-
 ; declarations of QIS functions
 
 declare void @__quantum__qis__h__body(%Qubit*)
@@ -89,8 +81,6 @@ attributes #0 = { "entry_point" "qir_profiles"="base_profile" "output_labeling_s
 attributes #1 = { "irreversible" }
 
 attributes #2 = { "qir_profiles"="base_profile" }
-
-; attributes #3 = { "replaceWith"="__quantum__qis__hczh__body" }
 
 ; module flags
 

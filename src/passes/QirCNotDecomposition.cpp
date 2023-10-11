@@ -93,8 +93,6 @@ PreservedAnalyses QirCNotDecompositionPass::run(Module &module, ModuleAnalysisMa
 
     builder.CreateRetVoid();
 
-    // XXX THIS IS HOW YOU APPEND METADATA TO THE MODULE'S CONTEXT
-    // (These metadata will NOT be attached to the module's IR)
     QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
 
     Function *functionValue = module.getFunction("__quantum__qis__hczh__body");

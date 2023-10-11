@@ -33,7 +33,7 @@ int main(void) {
     }
 
     // Open the QIR file
-    const char* filename = "../../benchmarks/bell_state.ll";
+    const char* filename = "../../benchmarks/test.ll";
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << filename << std::endl;

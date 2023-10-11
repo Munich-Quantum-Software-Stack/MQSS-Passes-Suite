@@ -6,6 +6,8 @@ set(PASSES_SOURCE_FILES
     QirBarrierBeforeFinalMeasurements.cpp
     # C
     QirCNotDecomposition.cpp
+    QirCommuteCnotRx.cpp
+    QirCommuteRxCnot.cpp
     # D
     QirDeferMeasurement.cpp
     # F

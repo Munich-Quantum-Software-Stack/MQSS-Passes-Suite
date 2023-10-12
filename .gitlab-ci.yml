@@ -26,6 +26,8 @@ before_script:
   - echo Pass Runner built successfully
   - cd ../tests
   - mpic++ -std=c++14 test.cpp -o test
+  - echo Test built successfully
+  - cd ..
 
 stages:
   - test

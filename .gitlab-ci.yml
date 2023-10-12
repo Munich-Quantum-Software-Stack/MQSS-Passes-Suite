@@ -6,8 +6,8 @@ stages:
 build_daemons:
   stage: build
   script:
-    - apt update
-    - apt install -y cmake llvm libopenmpi-dev g++
+    - apk update
+    - apk install -y cmake llvm libopenmpi-dev g++
     - cd qdmi
     - mkdir build
     - cd build

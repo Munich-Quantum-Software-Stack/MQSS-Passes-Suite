@@ -4,8 +4,7 @@
 set -e
 
 # Build the client
-rm client 2> /dev/null || true
-mpic++ -std=c++14 test.cpp -o test
+mpic++ -std=c++14 client.cpp -o client
 
 # Run the client
-./test
+./client

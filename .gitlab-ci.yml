@@ -1,53 +1,47 @@
 image: ubuntu:latest
 
+before_script:
+  - apt update
+  - apt install -y cmake llvm libopenmpi-dev g++
+  - cd qdmi
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - echo QDMI built successfully
+  - cd ../../selector
+  - mkdir build
+  - cd build
+  - cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
+  - cmake --build .
+  - export LC_ALL=en_US.UTF-8
+  - echo Selector Runner built successfully
+  - cd ../..
+  - mkdir build
+  - cd build
+  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
+  - cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
+  - cmake --build .
+  - export LC_ALL=en_US.UTF-8
+  - echo Pass Runner built successfully
+  - cd ../tests
+  - mpic++ -std=c++14 test.cpp -o test
+
 stages:
-  - build
-  - wake
   - test
+#  - type_check_and_lint
 
-build_daemons:
-  stage: build
-  script:
-    - apt update
-    - apt install -y cmake llvm libopenmpi-dev g++
-    - cd qdmi
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make
-    - echo QDMI built successfully
-    - cd ../../selector
-    - mkdir build
-    - cd build
-    - cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
-    - cmake --build .
-    - export LC_ALL=en_US.UTF-8
-    - echo Selector Runner built successfully
-    - cd ../..
-    - mkdir build
-    - cd build
-    - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
-    - cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
-    - cmake --build .
-    - export LC_ALL=en_US.UTF-8
-    - echo Pass Runner built successfully
-
-build_client:
-  stage: build
-  script:
-    - cd tests
-    - mpic++ -std=c++14 test.cpp -o test
-
-run_daemons:
-  stage: wake
+testing:
+  stage: test
   script:
     - ./build/qpassrunner_d &
     - sleep 1
     - ./selector/build/qselectorrunner_d &
     - sleep 1
-
-run_client:
-  stage: wake
-  script:
     - ./tests/test
+
+#type_checking:
+#  stage: type_check_and_lint
+#  script:
+#    -
 

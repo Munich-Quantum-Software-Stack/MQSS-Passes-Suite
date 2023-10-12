@@ -70,3 +70,15 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE QirPassRunner)
 # Include passes subdirectory
 add_subdirectory(src/passes)
 
+# Add the test executable
+add_executable(tests/test test.cpp)
+
+# Link the test executable with QirPassRunner
+target_link_libraries(tests/test PRIVATE QirPassRunner)
+
+# Create a custom target for running tests
+add_custom_target(run_tests
+  COMMAND tests/test
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+

@@ -46,7 +46,7 @@ build_pass_runner:
   script:
     - mkdir -p build
     - cd build
-    - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME -DCUSTOM_QDMI_PATH=$CUSTOM_QDMI_PATH ..
+    - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME -DCUSTOM_QDMI_PATH=qdmi ..
     - cmake --build .
     - echo "Pass Runner built successfully"
 

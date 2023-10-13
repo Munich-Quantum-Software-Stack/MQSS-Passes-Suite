@@ -43,10 +43,11 @@ stages:
 analyze:
   stage: analyze
   script:
-    - clang --analyze -o analysis_log -I$LLVM_INCLUDE_PATH -Iqdmi/ src/qpassrunner_d.cpp
-  artifacts:
-    paths:
-      analysis_log
+    - clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ src/qpassrunner_d.cpp
+#    - clang --analyze -o analysis_log -I$LLVM_INCLUDE_PATH -Iqdmi/ src/qpassrunner_d.cpp
+#  artifacts:
+#    paths:
+#      analysis_log
 
 testing:
   stage: test

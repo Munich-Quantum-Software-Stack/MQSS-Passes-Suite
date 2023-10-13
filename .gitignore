@@ -8,4 +8,5 @@ tests/test
 *.so
 *.swp
 *_BACKUP
+*.plist
 

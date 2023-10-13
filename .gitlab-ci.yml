@@ -14,15 +14,33 @@ stages:
   - analyze
   - test
 
-build_qdmi:
+#build_qdmi:
+#  stage: build
+#  script:
+#    - cd qdmi
+#    - mkdir -p build
+#    - cd build
+#    - cmake ..
+#    - make
+#    - echo "QDMI built successfully"
+
+build_pass_runner:
   stage: build
   script:
     - cd qdmi
-    - mkdir -p build
+    - mkdir build
     - cd build
     - cmake ..
     - make
     - echo "QDMI built successfully"
+    - cd ../..
+    - mkdir -p build
+    - cd build
+    - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME -DCUSTOM_QDMI_PATH=CUSTOM_QDMI_PATH ..
+    - cmake --build .
+    - echo "Pass Runner built successfully"
+#  needs:
+#    - build_qdmi
 
 build_selector:
   stage: build
@@ -33,17 +51,6 @@ build_selector:
     - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME ..
     - cmake --build .
     - echo "Selector Runner built successfully"
-
-build_pass_runner:
-  stage: build
-  script:
-    - mkdir -p build
-    - cd build
-    - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME -DCUSTOM_QDMI_PATH=CUSTOM_QDMI_PATH ..
-    - cmake --build .
-    - echo "Pass Runner built successfully"
-  needs:
-    - build_qdmi
 
 analyze:
   stage: analyze

@@ -40,7 +40,8 @@ testing:
     - sleep 1
     - ./selector/build/qselectorrunner_d &
     - sleep 1
-    - ./tests/test
+    - cd selector/build
+    - ../../tests/test
 
 #type_checking:
 #  stage: type_check_and_lint

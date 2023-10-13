@@ -2,6 +2,8 @@ build/
 builds/
 selector/build/
 
+tests/test
+
 *.o
 *.so
 *.swp

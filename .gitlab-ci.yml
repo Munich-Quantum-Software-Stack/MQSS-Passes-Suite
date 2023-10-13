@@ -1,36 +1,48 @@
-image: ubuntu:latest
+image:
+  name: ubuntu:latest
+  before_script:
+    - apt update
+    - apt install -y cmake llvm libopenmpi-dev g++ clang
 
-before_script:
-  - apt update
-  - apt install -y cmake llvm libopenmpi-dev g++ clang
-  - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
-  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
-  - cd qdmi
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
-  - echo QDMI built successfully
-  - cd ../../selector
-  - mkdir build
-  - cd build
-  - cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
-  - cmake --build .
-  - echo Selector Runner built successfully
-  - cd ../..
-  - mkdir build
-  - cd build
-  - cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
-  - cmake --build .
-  - echo Pass Runner built successfully
-  - cd ../tests
-  - mpic++ -std=c++14 test.cpp -o test
-  - echo Test built successfully
-  - cd ..
+variables:
+  LLVM_INCLUDE_PATH: $(llvm-config --includedir)
+  CMAKE_PREFIX_PATH: $(llvm-config --libdir)/cmake/llvm
+  CUSTOM_EXECUTABLE_NAME: qpassrunner_d
+  CUSTOM_QDMI_PATH: qdmi
 
 stages:
+  - build
   - analyze
   - test
+
+build_qdmi:
+  stage: build
+  script:
+    - cd qdmi
+    - mkdir -p build
+    - cd build
+    - cmake ..
+    - make
+    - echo "QDMI built successfully"
+
+build_selector:
+  stage: build
+  script:
+    - cd selector
+    - mkdir -p build
+    - cd build
+    - cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
+    - cmake --build .
+    - echo "Selector Runner built successfully"
+
+build_pass_runner:
+  stage: build
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME -DCUSTOM_QDMI_PATH=$CUSTOM_QDMI_PATH ..
+    - cmake --build .
+    - echo "Pass Runner built successfully"
 
 analyze:
   stage: analyze

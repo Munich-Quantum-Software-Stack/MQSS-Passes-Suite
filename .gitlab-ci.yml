@@ -7,6 +7,9 @@ image: ubuntu:latest
 before_script:
   - apt update
   - apt install -y cmake llvm libopenmpi-dev g++
+  - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
+  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
+# - export LC_ALL=en_US.UTF-8
   - cd qdmi
   - mkdir build
   - cd build
@@ -18,15 +21,15 @@ before_script:
   - cd build
   - cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
   - cmake --build .
-  - export LC_ALL=en_US.UTF-8
+# - export LC_ALL=en_US.UTF-8
   - echo Selector Runner built successfully
   - cd ../..
   - mkdir build
   - cd build
-  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
+# - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
   - cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
   - cmake --build .
-  - export LC_ALL=en_US.UTF-8
+# - export LC_ALL=en_US.UTF-8
   - echo Pass Runner built successfully
   - cd ../tests
   - mpic++ -std=c++14 test.cpp -o test
@@ -40,7 +43,7 @@ stages:
 #analyze:
 #  stage: analyze
 #  script:
-#    - clang --analyze -o analysis_log src/qpassrunner_d.cpp
+#    - clang --analyze -o analysis_log -I$LLVM_INCLUDE_PATH src/qpassrunner_d.cpp
 #  artifacts:
 #    paths:
 #      analysis_log
@@ -48,7 +51,8 @@ stages:
 testing:
   stage: test
   script:
-    - ./build/qpassrunner_d &
+    - cd build
+    - ./qpassrunner_d &
     - sleep 1
     - cd selector/build/
     - ./qselectorrunner_d &

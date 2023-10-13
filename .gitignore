@@ -2,6 +2,7 @@ build/
 builds/
 selector/build/
 
+analysis_log
 tests/test
 
 *.o

@@ -1,8 +1,8 @@
-image:
-  name: ubuntu:latest
-  before_script:
-    - apt update
-    - apt install -y cmake llvm libopenmpi-dev g++ clang
+image: ubuntu:latest
+
+before_script:
+  - apt update
+  - apt install -y cmake llvm libopenmpi-dev g++ clang
 
 variables:
   LLVM_INCLUDE_PATH: $(llvm-config --includedir)

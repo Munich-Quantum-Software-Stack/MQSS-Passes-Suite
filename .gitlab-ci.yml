@@ -9,13 +9,6 @@ before_script:
   - export CUSTOM_EXECUTABLE_NAME=qpassrunner_d
   - export CUSTOM_QDMI_PATH=qdmi
 
-#variables:
-#  LLVM_INCLUDE_PATH: $(llvm-config --includedir)
-#  CMAKE_PREFIX_PATH: $(llvm-config --libdir)/cmake/llvm
-#  CUSTOM_EXECUTABLE_NAME: qselectorrunner_d
-#  CUSTOM_EXECUTABLE_NAME: qpassrunner_d
-#  CUSTOM_QDMI_PATH: qdmi
-
 stages:
   - build
   - analyze
@@ -29,6 +22,7 @@ build_qdmi:
     - cd build
     - cmake ..
     - make
+    - make install 
     - echo "QDMI built successfully"
 
 build_selector:
@@ -46,9 +40,11 @@ build_pass_runner:
   script:
     - mkdir -p build
     - cd build
-    - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME -DCUSTOM_QDMI_PATH=qdmi ..
+    - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME -DCUSTOM_QDMI_PATH=CUSTOM_QDMI_PATH ..
     - cmake --build .
     - echo "Pass Runner built successfully"
+  needs:
+    - build_qdmi
 
 analyze:
   stage: analyze

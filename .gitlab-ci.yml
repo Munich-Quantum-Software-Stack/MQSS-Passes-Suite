@@ -41,6 +41,7 @@ testing:
     - ./selector/build/qselectorrunner_d &
     - sleep 1
     - cd selector/build
+    - ls selectors/
     - ../../tests/test
 
 #type_checking:

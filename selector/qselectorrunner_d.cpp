@@ -27,19 +27,15 @@ void handleClient(int clientSocket) {
     ssize_t qirBytesRead = recv(clientSocket, receivedSelector, qirMessageSize, 0);
     receivedSelector[qirBytesRead] = '\0';
 
-    //char libraryPath[100];
-    //strcpy(libraryPath, "./selectors/");
-    //strcat(libraryPath, receivedSelector);
-
-    //std::cout << "Selector received from a client: " << receivedSelector << std::endl;
-   
     // Load the shared object selector
-    void* lib_handle = dlopen(/*libraryPath*/ receivedSelector, RTLD_LAZY);
+    void* lib_handle = dlopen(receivedSelector, RTLD_LAZY);
  
     if (!lib_handle) {
         std::cerr << "Error loading selector as a shared library: " << dlerror() << std::endl;
         return;
     }
+
+    std::cout << "Selector received from a client: " << receivedSelector << std::endl;
 
     // Get a function pointer to the selector function in the shared library
     typedef void (*SelectorFunction)();

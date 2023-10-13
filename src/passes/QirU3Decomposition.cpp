@@ -10,7 +10,7 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
     if (!functionKey)
         return PreservedAnalyses::all();
 
-    Function *function = module.getFunction("__quantum__qis__rxryrx__body");
+    Function *function = module.getFunction("__quantum__qis__rzryrz__body");
 
     if (function)
         return PreservedAnalyses::all();
@@ -33,17 +33,17 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
     function = Function::Create(
         funcType,
         Function::ExternalLinkage,
-        "__quantum__qis__rxryrx__body",
+        "__quantum__qis__rzryrz__body",
         module
     );
 
     BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
     IRBuilder<> builder(entryBlock);
 
-    Function *qis_rx_body = module.getFunction("__quantum__qis__rx__body");
+    Function *qis_rz_body = module.getFunction("__quantum__qis__rz__body");
     Function *qis_ry_body = module.getFunction("__quantum__qis__ry__body");
 
-    if (!qis_rx_body) {
+    if (!qis_rz_body) {
         FunctionType *funcTypeRx = FunctionType::get(
             Type::getVoidTy(Context),
             {
@@ -53,10 +53,10 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
             false
         );
 
-        qis_rx_body = Function::Create(
+        qis_rz_body = Function::Create(
             funcTypeRx,
             Function::ExternalLinkage,
-            "__quantum__qis__rx__body",
+            "__quantum__qis__rz__body",
             module
         );
     }
@@ -86,7 +86,7 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
     Value *q = function->getArg(3);
 
     builder.CreateCall(
-        qis_rx_body,
+        qis_rz_body,
         {b, q}
     );
     builder.CreateCall(
@@ -94,7 +94,7 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
         {a, q}
     );
     builder.CreateCall(
-        qis_rx_body,
+        qis_rz_body,
         {c, q}
     );
 
@@ -102,7 +102,7 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module, ModuleAnalysisMana
 
     QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
 
-    Function *functionValue = module.getFunction("__quantum__qis__rxryrx__body");
+    Function *functionValue = module.getFunction("__quantum__qis__rzryrz__body");
     if (functionValue) {
         auto key   = static_cast<std::string>(functionKey->getName());
         auto value = static_cast<std::string>(functionValue->getName());

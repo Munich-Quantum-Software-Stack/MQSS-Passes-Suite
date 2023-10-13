@@ -10,7 +10,7 @@ PreservedAnalyses QirCNotDecompositionPass::run(Module &module, ModuleAnalysisMa
     if (!functionKey)
         return PreservedAnalyses::all();
 
-    Function *function = module.getFunction("__quantum__qis__hczh__body");
+    Function *function = module.getFunction("__quantum__qis__cnot_to_hczh__body");
 
     if (function)
         return PreservedAnalyses::all();
@@ -30,7 +30,7 @@ PreservedAnalyses QirCNotDecompositionPass::run(Module &module, ModuleAnalysisMa
     function = Function::Create(
         funcType,
         Function::ExternalLinkage,
-        "__quantum__qis__hczh__body",
+        "__quantum__qis__cnot_to_hczh__body",
         module
     );
 
@@ -95,7 +95,7 @@ PreservedAnalyses QirCNotDecompositionPass::run(Module &module, ModuleAnalysisMa
 
     QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
 
-    Function *functionValue = module.getFunction("__quantum__qis__hczh__body");
+    Function *functionValue = module.getFunction("__quantum__qis__cnot_to_hczh__body");
     if (functionValue) {
         auto key   = static_cast<std::string>(functionKey->getName());
         auto value = static_cast<std::string>(functionValue->getName());

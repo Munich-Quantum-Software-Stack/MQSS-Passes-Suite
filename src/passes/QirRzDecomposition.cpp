@@ -10,7 +10,7 @@ PreservedAnalyses QirRzDecompositionPass::run(Module &module, ModuleAnalysisMana
     if (!functionKey)
         return PreservedAnalyses::all();
 
-    Function *function = module.getFunction("__quantum__qis__rz2rxryrx__body");
+    Function *function = module.getFunction("__quantum__qis__rz_to_rxryrx__body");
 
     if (function)
         return PreservedAnalyses::all();
@@ -31,7 +31,7 @@ PreservedAnalyses QirRzDecompositionPass::run(Module &module, ModuleAnalysisMana
     function = Function::Create(
         funcType,
         Function::ExternalLinkage,
-        "__quantum__qis__rz2rxryrx__body",
+        "__quantum__qis__rz_to_rxryrx__body",
         module
     );
 
@@ -103,7 +103,7 @@ PreservedAnalyses QirRzDecompositionPass::run(Module &module, ModuleAnalysisMana
 
     QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
 
-    Function *functionValue = module.getFunction("__quantum__qis__rz2rxryrx__body");
+    Function *functionValue = module.getFunction("__quantum__qis__rz_to_rxryrx__body");
     if (functionValue) {
         auto key   = static_cast<std::string>(functionKey->getName());
         auto value = static_cast<std::string>(functionValue->getName());

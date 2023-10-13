@@ -8,6 +8,16 @@ before_script:
   - export CUSTOM_EXECUTABLE_NAME=qselectorrunner_d
   - export CUSTOM_EXECUTABLE_NAME=qpassrunner_d
   - export CUSTOM_QDMI_PATH=qdmi
+  - cd qdmi
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - echo "QDMI built successfully"
+  - cd ../../tests
+  - mpic++ -std=c++14 test.cpp -o test
+  - echo "Test built successfully"
+  - cd ..
 
 stages:
   - build
@@ -27,13 +37,6 @@ stages:
 build_pass_runner:
   stage: build
   script:
-    - cd qdmi
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make
-    - echo "QDMI built successfully"
-    - cd ../..
     - mkdir -p build
     - cd build
     - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME -DCUSTOM_QDMI_PATH=CUSTOM_QDMI_PATH ..
@@ -42,7 +45,7 @@ build_pass_runner:
 #  needs:
 #    - build_qdmi
 
-build_selector:
+build_selector_runner:
   stage: build
   script:
     - cd selector

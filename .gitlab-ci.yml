@@ -34,22 +34,24 @@ before_script:
   - cd ..
 
 stages:
+  - analyze
   - test
-#  - type_check_and_lint
+
+#analyze:
+#  stage: analyze
+#  script:
+#    - clang --analyze -o analysis_log src/qpassrunner_d.cpp
+#  artifacts:
+#    paths:
+#      analysis_log
 
 testing:
   stage: test
   script:
-    - cd ./build/qpassrunner_d &
+    - ./build/qpassrunner_d &
     - sleep 1
     - cd selector/build/
     - ./qselectorrunner_d &
     - sleep 1
-    - ls selectors/
     - ../../tests/test
-
-#type_checking:
-#  stage: type_check_and_lint
-#  script:
-#    -
 

@@ -3,12 +3,18 @@ image: ubuntu:latest
 before_script:
   - apt update
   - apt install -y cmake llvm libopenmpi-dev g++ clang
+  - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
+  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
+  - export CUSTOM_EXECUTABLE_NAME=qselectorrunner_d
+  - export CUSTOM_EXECUTABLE_NAME=qpassrunner_d
+  - export CUSTOM_QDMI_PATH=qdmi
 
-variables:
-  LLVM_INCLUDE_PATH: $(llvm-config --includedir)
-  CMAKE_PREFIX_PATH: $(llvm-config --libdir)/cmake/llvm
-  CUSTOM_EXECUTABLE_NAME: qpassrunner_d
-  CUSTOM_QDMI_PATH: qdmi
+#variables:
+#  LLVM_INCLUDE_PATH: $(llvm-config --includedir)
+#  CMAKE_PREFIX_PATH: $(llvm-config --libdir)/cmake/llvm
+#  CUSTOM_EXECUTABLE_NAME: qselectorrunner_d
+#  CUSTOM_EXECUTABLE_NAME: qpassrunner_d
+#  CUSTOM_QDMI_PATH: qdmi
 
 stages:
   - build
@@ -31,7 +37,7 @@ build_selector:
     - cd selector
     - mkdir -p build
     - cd build
-    - cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
+    - cmake -DCUSTOM_EXECUTABLE_NAME=$CUSTOM_EXECUTABLE_NAME ..
     - cmake --build .
     - echo "Selector Runner built successfully"
 

@@ -54,7 +54,7 @@ testing:
     - cd build
     - ./qpassrunner_d &
     - sleep 1
-    - cd selector/build/
+    - cd ../selector/build/
     - ./qselectorrunner_d &
     - sleep 1
     - ../../tests/test

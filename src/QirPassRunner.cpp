@@ -1,6 +1,7 @@
 #include "QirPassRunner.hpp"
 #include <iostream>
 #include <algorithm>
+#include <string>
 
 using namespace llvm;
 
@@ -38,19 +39,24 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisMana
 		void *soHandle = dlopen(pass.c_str(), /*RTLD_NOW*/ RTLD_LAZY);
 
         if(!soHandle) {
-            std::cout << "Warning: Error loading shared object: " << pass << std::endl;
+            std::cout << "[Pass Runner] Warning: Error loading shared object: " << pass << std::endl;
             passes_.pop_back();
             continue;
         }
 
-        std::cout << "Applying pass: " << pass << std::endl;
+        size_t lastSlash = pass.find_last_of('/');
+        std::string passName = pass.substr(lastSlash + 4);
+        size_t lastDot = passName.find_last_of('.');
+        std::string passNameWithoutExt = passName.substr(0, lastDot);
+
+        std::cout << "[Pass Runner] Applying pass: \033[1m" << passNameWithoutExt << "\033[0m" << std::endl;
 
         using passCreator = PassModule* (*)();
 
         passCreator createQirPass = reinterpret_cast<passCreator>(dlsym(soHandle, "createQirPass"));
 
         if(!createQirPass) {
-            std::cout << "Warning: Error getting factory function of pass: " << pass << std::endl;
+            std::cout << "[Pass Runner] Warning: Error getting factory function of pass: " << pass << std::endl;
             passes_.pop_back();
             dlclose(soHandle);
             continue;

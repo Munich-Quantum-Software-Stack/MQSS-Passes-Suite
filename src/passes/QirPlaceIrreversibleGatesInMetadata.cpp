@@ -17,11 +17,11 @@ PreservedAnalyses QirPlaceIrreversibleGatesInMetadataPass::run(Module &module, M
 			auto name = static_cast<std::string>(function.getName());
             if (!function.hasFnAttribute("irreversible")) {
                 qirMetadata.append(REVERSIBLE_GATE, name);
-				errs() << "\tReversible gate found: " << name << '\n';
+				errs() << "              Reversible gate found: " << name << '\n';
 			}
             else {
                 qirMetadata.append(IRREVERSIBLE_GATE, name);
-				errs() << "\tIrreversible gate found: " << name << '\n';
+				errs() << "              Irreversible gate found: " << name << '\n';
 			}
         }
     }

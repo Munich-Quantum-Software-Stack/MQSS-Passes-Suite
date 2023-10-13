@@ -16,7 +16,7 @@ int main(void) {
     // Create socket
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1) {
-        std::cerr << "Error creating socket" << std::endl;
+        std::cerr << "[Selector] Error creating socket" << std::endl;
         return 1;
     }
 
@@ -27,7 +27,7 @@ int main(void) {
     inet_pton(AF_INET, SERVER_IP, &serverAddr.sin_addr);
 
     if (connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        std::cerr << "Error connecting to the QPR" << std::endl;
+        std::cerr << "[Selector] Error connecting to the QPR" << std::endl;
         close(clientSocket);
         return 1;
     }
@@ -36,7 +36,7 @@ int main(void) {
     const char* filename = "../../benchmarks/test.ll";
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filename << std::endl;
+        std::cerr << "[Selector] Failed to open file: " << filename << std::endl;
         return 1;
     }
 
@@ -52,15 +52,15 @@ int main(void) {
 
     // Send generic QIR to the QPR
     ssize_t fileSizeNetwork = htonl(fileSize);
-    std::cout << "Sending generic QIR" << std::endl << std::endl;
+    std::cout << "[Selector] Sending generic QIR" << std::endl << std::endl;
 	ssize_t bytesSent = send(clientSocket, &fileSizeNetwork, sizeof(fileSizeNetwork), 0);
     if (bytesSent == -1) {
-        std::cerr << "Error: Failed to send size of generic QIR to the QPR" << std::endl;
+        std::cerr << "[Selector] Error: Failed to send size of generic QIR to the QPR" << std::endl;
 		exit(1);
 	}
     bytesSent = send(clientSocket, genericQir, fileSize, 0);
     if (bytesSent == -1) {
-        std::cerr << "Error: Failed to send generic QIR to the QPR" << std::endl;
+        std::cerr << "[Selector] Error: Failed to send generic QIR to the QPR" << std::endl;
         exit(1);
     }
     delete[] genericQir;
@@ -83,15 +83,15 @@ int main(void) {
         const char* libPass = pass.c_str();
 		ssize_t passSizeNetwork = htonl(strlen(libPass));
 		
-        std::cout << "Sending pass " << pass << std::endl;
+        std::cout << "[Selector] Sending pass " << pass << std::endl;
 		
 		if (send(clientSocket, &passSizeNetwork, sizeof(passSizeNetwork), 0)  < 0) {
-			std::cout << "Warning: Failed to send size of the following pass to the QPR: \n" 
+			std::cout << "[Selector] Warning: Failed to send size of the following pass to the QPR: \n" 
 					  << pass << std::endl;
 			continue;
 		}
 		if (send(clientSocket, libPass, strlen(libPass), 0) < 0) {
-			std::cout << "Warning: Failed to send the followig pass to the QPR: \n"
+			std::cout << "[Selector] Warning: Failed to send the followig pass to the QPR: \n"
 					  << pass << std::endl;
 			continue;
 		}
@@ -103,12 +103,12 @@ int main(void) {
     const char* eot = "EOT";
     ssize_t eotSizeNetwork = htonl(strlen(eot));
 	if (send(clientSocket, &eotSizeNetwork, sizeof(eotSizeNetwork), 0) < 0) {
-		std::cout << "Warning: Failed to send size of the EOT to the QPR" << std::endl;
+		std::cout << "[Selector] Warning: Failed to send size of the EOT to the QPR" << std::endl;
 		close(clientSocket);
 		return 1;
 	}
     if (send(clientSocket, eot, strlen(eot), 0) < 0) {
-        std::cerr << "Error: failed to send end of transmission to the QPR" << std::endl;
+        std::cerr << "[Selector] Error: failed to send end of transmission to the QPR" << std::endl;
 		close(clientSocket);
         return 1;
     }
@@ -118,7 +118,7 @@ int main(void) {
     ssize_t bytesRead = recv(clientSocket, adapted_qir, BUFFER_SIZE, 0);
     if (bytesRead > 0) {
         adapted_qir[bytesRead] = '\0';
-        std::cout << "Received adapted QIR:\n\n" << adapted_qir << std::endl;
+        std::cout << "[Selector] Received adapted QIR:\n\n" << adapted_qir << std::endl;
     }
 
     // Close connection with the QPR

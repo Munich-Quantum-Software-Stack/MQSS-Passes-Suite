@@ -1,5 +1,4 @@
 // QIR Selector Runner
-//#include "QirSelectorRunner.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -31,18 +30,18 @@ void handleClient(int clientSocket) {
     void* lib_handle = dlopen(receivedSelector, RTLD_LAZY);
  
     if (!lib_handle) {
-        std::cerr << "Error loading selector as a shared library: " << dlerror() << std::endl;
+        std::cerr << "[Selector Runner] Error loading selector as a shared library: " << dlerror() << std::endl;
         return;
     }
 
-    std::cout << "Selector received from a client: " << receivedSelector << std::endl;
+    std::cout << "[Selector Runner] Selector received from a client: " << receivedSelector << std::endl;
 
     // Get a function pointer to the selector function in the shared library
     typedef void (*SelectorFunction)();
     SelectorFunction selector = reinterpret_cast<SelectorFunction>(dlsym(lib_handle, "main"));
 
     if (!selector) {
-        std::cerr << "Error finding function in shared library: " << dlerror() << std::endl;
+        std::cerr << "[Selector Runner] Error finding function in shared library: " << dlerror() << std::endl;
         return;
     }
 
@@ -55,7 +54,7 @@ void handleClient(int clientSocket) {
     delete[] receivedSelector;
 	close(clientSocket);
 
-	std::cout << "Client disconnected";
+	std::cout << "[Selector Runner] Client disconnected";
 }
 
 void signalHandler(int signum) {
@@ -68,7 +67,7 @@ int main(void) {
 
     qsrSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (qsrSocket == -1) {
-        std::cerr << "Error creating socket" << std::endl;
+        std::cerr << "[Selector Runner] Error creating socket" << std::endl;
         return 1;
     }
 
@@ -82,18 +81,18 @@ int main(void) {
     serverAddr.sin_port = htons(PORT);
 
     if (bind(qsrSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        std::cerr << "Error binding" << std::endl;
+        std::cerr << "[Selector Runner] Error binding" << std::endl;
         close(qsrSocket);
         return 1;
     }
 
     if (listen(qsrSocket, 5) == -1) {
-        std::cerr << "Error listening" << std::endl;
+        std::cerr << "[Selector Runner] Error listening" << std::endl;
         close(qsrSocket);
         return 1;
     }
 
-    std::cout << "Selector Runner listening on port " << PORT << std::endl;
+    std::cout << "[Selector Runner] Listening on port " << PORT << std::endl;
 
     while (true) {
         sockaddr_in clientAddr;
@@ -101,7 +100,7 @@ int main(void) {
         int clientSocket = accept(qsrSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
 
         if (clientSocket == -1) {
-            std::cerr << "Error accepting connection" << std::endl;
+            std::cerr << "[Selector Runner] Error accepting connection" << std::endl;
             continue;
         }
 
@@ -110,14 +109,14 @@ int main(void) {
         std::cout << std::endl;
         for (int i = 0; i < w.ws_col; i++)
             std::cout << '-';
-        std::cout << "\nClient connected" << std::endl;
+        std::cout << "\n[Selector Runner] Client connected" << std::endl;
 
         std::thread clientThread(handleClient, clientSocket);
         clientThread.detach();
     }
 
     close(qsrSocket);
-	std::cerr << "Selector Runner stopped" << std::endl;
+	std::cerr << "[Selector Runner] Stopped" << std::endl;
 
     return 0;
 }

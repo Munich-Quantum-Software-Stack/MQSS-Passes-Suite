@@ -25,7 +25,7 @@ PreservedAnalyses QirAnnotateUnsupportedGatesPass::run(Module &module, ModuleAna
         // Insert attribute to each unsupported gate
         auto it = std::find(supported_gate_set.begin(), supported_gate_set.end(), original_gate);
         if (it == supported_gate_set.end()) {
-            errs() << "\t[QDMI] Unsupported gate found: " << original_gate << '\n';
+            errs() << "              Unsupported gate found: " << original_gate << '\n';
             function.addFnAttr("unsupported");
             changed = true;
         }

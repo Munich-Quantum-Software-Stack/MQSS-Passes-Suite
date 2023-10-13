@@ -31,7 +31,7 @@ PreservedAnalyses QirCommuteCnotRxPass::run(Module &module, ModuleAnalysisManage
                                     
                                     if (previous_arg == current_arg) {
                                         current_instruction->moveBefore(prev_instruction);
-                                        errs() << "\tCommuting: " << previous_name << " and " << current_name << '\n';
+                                        errs() << "              Commuting: " << previous_name << " and " << current_name << '\n';
                                     }
                                 }
                             }

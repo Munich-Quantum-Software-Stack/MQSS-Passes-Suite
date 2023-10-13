@@ -37,11 +37,11 @@ void handleClient(int clientSocket) {
     MemoryBufferRef QIRRef = *memoryBuffer;
     std::unique_ptr<Module> module = parseIR(QIRRef, error, Context);
     if (!module) {
-        std::cout << "Warning: There was an error parsing the generic QIR" << std::endl;
+        std::cout << "[Pass Runner] Warning: There was an error parsing the generic QIR" << std::endl;
         return;
     }
    
-    std::cout << "Generic QIR received from a client" << std::endl;
+    std::cout << "[Pass Runner] Generic QIR received from a client" << std::endl;
     
     // Receive the list of passes 
 	std::vector<std::string> passes;
@@ -67,9 +67,9 @@ void handleClient(int clientSocket) {
     }
 
     if (passes.empty()) {
-		std::cout << "Warning: A client did not send any pass to the pass runner" << std::endl;
+		std::cout << "[Pass Runner] Warning: A client did not send any pass to the pass runner" << std::endl;
 		close(clientSocket);
-        std::cout << "Client disconnected";
+        std::cout << "[Pass Runner] Client disconnected";
 		return;
 	}
 
@@ -82,7 +82,7 @@ void handleClient(int clientSocket) {
     if (metadataSupport)
         if (ConstantAsMetadata* boolMetadata = dyn_cast<ConstantAsMetadata>(metadataSupport))
             if (ConstantInt* boolConstant = dyn_cast<ConstantInt>(boolMetadata->getValue()))
-                errs() << "\tFlag inserted: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
+                errs() << "[Pass Runner] Flag inserted: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
 
     // Append all received passes
     QirPassRunner &QPR = QirPassRunner::getInstance();
@@ -107,13 +107,13 @@ void handleClient(int clientSocket) {
     OS.flush();
     const char* qir = str.data();
     send(clientSocket, qir, strlen(qir), 0);
-    std::cout << "Adapted QIR sent to client" << std::endl;
+    std::cout << "[Pass Runner] Adapted QIR sent to client" << std::endl;
 
     QPR.clearMetadata();
     delete[] genericQir;
 	close(clientSocket);
 
-	std::cout << "Client disconnected";
+	std::cout << "[Pass Runner] Client disconnected";
 }
 
 void signalHandler(int signum) {
@@ -126,7 +126,7 @@ int main(void) {
 
     qprSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (qprSocket == -1) {
-        std::cerr << "Error creating socket" << std::endl;
+        std::cerr << "[Pass Runner] Error creating socket" << std::endl;
         return 1;
     }
 
@@ -140,18 +140,18 @@ int main(void) {
     serverAddr.sin_port = htons(PORT);
 
     if (bind(qprSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        std::cerr << "Error binding" << std::endl;
+        std::cerr << "[Pass Runner] Error binding" << std::endl;
         close(qprSocket);
         return 1;
     }
 
     if (listen(qprSocket, 5) == -1) {
-        std::cerr << "Error listening" << std::endl;
+        std::cerr << "[Pass Runner] Error listening" << std::endl;
         close(qprSocket);
         return 1;
     }
 
-    std::cout << "Pass Runner listening on port " << PORT << std::endl;
+    std::cout << "[Pass Runner] Listening on port " << PORT << std::endl;
 
     while (true) {
         sockaddr_in clientAddr;
@@ -159,7 +159,7 @@ int main(void) {
         int clientSocket = accept(qprSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
 
         if (clientSocket == -1) {
-            std::cerr << "Error accepting connection" << std::endl;
+            std::cerr << "[Pass Runner] Error accepting connection" << std::endl;
             continue;
         }
 
@@ -168,14 +168,14 @@ int main(void) {
         std::cout << std::endl;
         for (int i = 0; i < w.ws_col; i++)
             std::cout << '-';
-        std::cout << "\nClient connected" << std::endl;
+        std::cout << "\n[Pass Runner] Client connected" << std::endl;
 
         std::thread clientThread(handleClient, clientSocket);
         clientThread.detach();
     }
 
     close(qprSocket);
-	std::cerr << "Pass runner stopped" << std::endl;
+	std::cerr << "[Pass Runner] Stopped" << std::endl;
 
     return 0;
 }

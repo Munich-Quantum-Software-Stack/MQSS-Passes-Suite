@@ -22,7 +22,6 @@ build_qdmi:
     - cd build
     - cmake ..
     - make
-    - make install 
     - echo "QDMI built successfully"
 
 build_selector:

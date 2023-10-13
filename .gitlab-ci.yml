@@ -1,8 +1,8 @@
-#image: ubuntu:latest
-image: ubuntu:20.04
-
-variables:
-  TZ: "Europe/Berlin"
+image: ubuntu:latest
+#image: ubuntu:20.04
+#
+#variables:
+#  TZ: "Europe/Berlin"
 
 before_script:
   - apt update
@@ -40,11 +40,11 @@ stages:
 testing:
   stage: test
   script:
-    - ./build/qpassrunner_d &
+    - cd ./build/qpassrunner_d &
     - sleep 1
-    - ./selector/build/qselectorrunner_d &
+    - cd selector/build/
+    - ./qselectorrunner_d &
     - sleep 1
-    - cd selector/build
     - ls selectors/
     - ../../tests/test
 

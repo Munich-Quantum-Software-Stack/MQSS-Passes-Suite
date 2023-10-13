@@ -37,7 +37,8 @@ void handleClient(int clientSocket) {
     std::cout << "[Selector Runner] Selector received from a client: " << receivedSelector << std::endl;
 
     // Get a function pointer to the selector function in the shared library
-    typedef void (*SelectorFunction)();
+    typedef int (*SelectorFunction)();
+    // TODO DON'T CALL MAIN DIRECTLY BUT A CUSTOM FUNCTION
     SelectorFunction selector = reinterpret_cast<SelectorFunction>(dlsym(lib_handle, "main"));
 
     if (!selector) {
@@ -46,7 +47,14 @@ void handleClient(int clientSocket) {
     }
 
     // Call the selector function
-    selector();
+    int returnedValue = selector();
+
+    // Inform the client wheter the selector finished successfully
+    const char* job_status = returnedValue == 0 ? "1" : "0";
+    ssize_t bytesSent = send(clientSocket, job_status, strlen(job_status), 0);
+
+    if (bytesSent == -1 || bytesSent < strlen(job_status))
+        std::cerr << "[Selector Runner] Error reporting success of job to the client" << std::endl;
 
     // Close the library
     dlclose(lib_handle);

@@ -1,6 +1,9 @@
 #image: ubuntu:latest
 image: ubuntu:20.04
 
+variables:
+  TZ: "Europe/Berlin"
+
 before_script:
   - apt update
   - apt install -y cmake llvm libopenmpi-dev g++

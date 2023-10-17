@@ -1,9 +1,9 @@
-Install CMake and LLVM:
+Install the following dependencies:
 ```bash
 $ sudo apt install -y cmake llvm libopenmpi-dev g++
 ```
 
-Clone the passes and move to the right branch:
+Clone this repository and move to the right branch:
 ```bash
 $ cd ${DEV_PATH}
 $ git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes.git
@@ -11,21 +11,23 @@ $ cd qir_passes/
 $ git checkout Plugins
 ```
 
-Run the QIR pass runner daemon:
+Run the QIR Pass Runner daemon:
 ```bash
 $ cd ${DEV_PATH}/qir_passes/
 $ sh build.sh
 ```
 
-Run the pass selector runner daemon:
+Run the Selector Runner daemon:
 ```bash
 $ cd ${DEV_PATH}/qir_passes/selector/
 $ sh build.sh
 ```
 
-Run the client to submit a QIR and a pass selector:
+Run a test client to submit a QIR and a pass selector:
 ```bash
-$ cd ${DEV_PATH}/qir_passes/selector/clients/
+$ cd ${DEV_PATH}/qir_passes/tests/
 $ sh build.sh
 ```
+
+![Alt](flowcharts/flow.png)
 

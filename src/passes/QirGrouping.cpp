@@ -20,7 +20,8 @@ bool QirGroupingPass::isQuantumRegister(Type const *type){
 }
 
 int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction) {
-    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
 
 	int64_t ret = PureClassical;
 

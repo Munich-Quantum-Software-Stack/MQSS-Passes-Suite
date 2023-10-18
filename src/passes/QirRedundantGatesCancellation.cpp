@@ -3,7 +3,8 @@
 using namespace llvm;
 
 PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
-    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
 
     for (auto reversibleGate : qirMetadata.reversibleGates) {
         for (auto &function : module) {

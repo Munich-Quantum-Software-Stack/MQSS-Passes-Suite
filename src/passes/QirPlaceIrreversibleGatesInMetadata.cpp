@@ -6,9 +6,10 @@ std::string const QirPlaceIrreversibleGatesInMetadataPass::QIS_START = "__quantu
                                                                        "__qis_";
 
 PreservedAnalyses QirPlaceIrreversibleGatesInMetadataPass::run(Module &module, ModuleAnalysisManager &MAM) {
-	QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+	QirMetadata &qirMetadata = QPR.getMetadata();
 
-    for (auto &function : module/*->getFunctionList()*/) {
+    for (auto &function : module) {
         auto name = static_cast<std::string>(function.getName());
         bool is_quantum = (name.size() >= QIS_START.size() &&
                            name.substr(0, QIS_START.size()) == QIS_START);
@@ -26,7 +27,7 @@ PreservedAnalyses QirPlaceIrreversibleGatesInMetadataPass::run(Module &module, M
         }
     }
  
-    QirPassRunner::getInstance().setMetadata(qirMetadata);    
+    QPR.setMetadata(qirMetadata);
 
     return PreservedAnalyses::all();
 }

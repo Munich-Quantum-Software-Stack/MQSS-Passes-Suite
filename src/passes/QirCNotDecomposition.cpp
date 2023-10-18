@@ -92,8 +92,9 @@ PreservedAnalyses QirCNotDecompositionPass::run(Module &module, ModuleAnalysisMa
     );
 
     builder.CreateRetVoid();
-
-    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
+    
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
 
     Function *functionValue = module.getFunction("__quantum__qis__cnot_to_hczh__body");
     if (functionValue) {
@@ -103,7 +104,7 @@ PreservedAnalyses QirCNotDecompositionPass::run(Module &module, ModuleAnalysisMa
         qirMetadata.setRemoveCallAttributes(false);
     }
 
-    QirPassRunner::getInstance().setMetadata(qirMetadata);    
+    QPR.setMetadata(qirMetadata);    
 
     return PreservedAnalyses::none();
 }

@@ -3,7 +3,8 @@
 using namespace llvm;
 
 PreservedAnalyses QirFunctionAnnotatorPass::run(Module& module, ModuleAnalysisManager& /*MAM*/) {
-    QirMetadata &qirMetadata = QirPassRunner::getInstance().getMetadata();
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
       
     bool changed     = false;
     auto annotations = qirMetadata.injectedAnnotations;

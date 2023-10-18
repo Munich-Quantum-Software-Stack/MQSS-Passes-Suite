@@ -33,8 +33,8 @@ int main(void) {
     }
 
     // Send selector to the QSR
-    //const char* selectorName = "selectors/libselector_all.so";
-    const char* selectorName = "selectors/libselector_basic.so";
+    const char* selectorName = "selectors/libselector_all.so";
+    //const char* selectorName = "selectors/libselector_basic.so";
     ssize_t fileSizeNetwork = htonl(strlen(selectorName));
 
     std::cout << "[Client] Sending selector: " << selectorName << std::endl;

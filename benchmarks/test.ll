@@ -23,7 +23,9 @@ entry:
   call void @__quantum__qis__rz__body(double %zero, %Qubit* null)
   call void @__quantum__qis__h__body(%Qubit* null)
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__x__body(%Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__x__body(%Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__rx__body(double %zero, %Qubit* inttoptr (i64 1 to %Qubit*))
   ; calls to QIS functions that are irreversible
@@ -60,6 +62,8 @@ declare void @__quantum__qis__U3__body(double, double, double, %Qubit*)
 declare void @__quantum__qis__rz__body(double, %Qubit*)
 
 declare void @__quantum__qis__rx__body(double, %Qubit*)
+
+declare void @__quantum__qis__x__body(%Qubit*)
 
 declare void @__quantum__qis__cnot__body(%Qubit*, %Qubit*)
 

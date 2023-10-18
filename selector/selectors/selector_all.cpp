@@ -67,6 +67,7 @@ int main(void) {
 
     // Append the desired passes
     std::vector<std::string> passes {
+        "libQirXCnotXReductionPass.so",
         "libQirCommuteCnotRxPass.so",
         "libQirCommuteRxCnotPass.so",
         "libQirPlaceIrreversibleGatesInMetadataPass.so",

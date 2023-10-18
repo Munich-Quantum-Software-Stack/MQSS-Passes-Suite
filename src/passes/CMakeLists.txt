@@ -29,6 +29,8 @@ set(PASSES_SOURCE_FILES
     QirRzDecomposition.cpp
     # U
     QirU3Decomposition.cpp
+    # X
+    QirXCnotXReduction.cpp
 )
 
 # Compile each pass as a shared object and link it to QDMI

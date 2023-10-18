@@ -67,14 +67,7 @@ int main(void) {
 
     // Append the desired passes
     std::vector<std::string> passes {
-        "libQirPlaceIrreversibleGatesInMetadataPass.so",
-	    "libQirAnnotateUnsupportedGatesPass.so",
-        "libQirU3DecompositionPass.so",
-        "libQirCNotDecompositionPass.so",
-	    "libQirFunctionAnnotatorPass.so",
-        "libQirRedundantGatesCancellationPass.so",
-        "libQirFunctionReplacementPass.so",
-        "libQirResourceAnnotationPass.so",
+        "libQirNormalizeArgAnglePass.so",
     };
 
     // Send each of the passes to the QPR

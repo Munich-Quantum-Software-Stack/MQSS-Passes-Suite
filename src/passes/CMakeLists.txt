@@ -16,6 +16,8 @@ set(PASSES_SOURCE_FILES
     QirFunctionValidation.cpp
     # G
     QirGrouping.cpp
+    # N
+    QirNormalizeArgAngle.cpp
     # P
     QirPlaceIrreversibleGatesInMetadata.cpp
     # Q

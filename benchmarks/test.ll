@@ -9,6 +9,7 @@
 @1 = internal constant [3 x i8] c"r2\00"
 
 @d0 = internal constant double 0.0
+@d1 = internal constant double 17.2787595947 
 
 ; entry point definition
 
@@ -16,11 +17,12 @@ define i64 @Entry_Point_Name() #0 {
 entry:
   %0 = sdiv i32 1, 0
   %zero = load double, double* @d0
+  %pi4 = load double, double* @d1
   ; calls to initialize the execution environment
   call void @__quantum__rt__initialize(i8* null)
   ; calls to QIS functions that are not irreversible
   call void @__quantum__qis__U3__body(double %zero, double %zero, double %zero, %Qubit* null)
-  call void @__quantum__qis__rz__body(double %zero, %Qubit* null)
+  call void @__quantum__qis__rz__body(double %pi4, %Qubit* null)
   call void @__quantum__qis__h__body(%Qubit* null)
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__x__body(%Qubit* inttoptr (i64 1 to %Qubit*))

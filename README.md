@@ -1,3 +1,5 @@
+![Alt](flowcharts/flow.png)
+
 Install the following dependencies:
 ```bash
 $ sudo apt install -y cmake llvm libopenmpi-dev g++
@@ -29,5 +31,9 @@ $ cd ${DEV_PATH}/qir_passes/tests/
 $ sh build.sh
 ```
 
-![Alt](flowcharts/flow.png)
+You can also update the documentation:
+```bash
+$ cd ${DEV_PATH}/qir_passes/
+$ sh build_documentation.sh
+```
 

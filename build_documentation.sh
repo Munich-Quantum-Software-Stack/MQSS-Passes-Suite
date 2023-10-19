@@ -19,6 +19,7 @@ else
     make
     sudo make install
     cd ../..
+    rm -rf doxygen
 fi
 
 doxygen Doxyfile

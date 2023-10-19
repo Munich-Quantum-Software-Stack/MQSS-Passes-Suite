@@ -1,11 +1,15 @@
+.DS_Store
+
 build/
 selector/build/
 
 tests/test
 
+*~
 *.o
 *.so
 *.swp
-*_BACKUP
+*.bkp
 *.plist
+*.metadata
 

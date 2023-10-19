@@ -1,65 +1,5 @@
-//                                                                 ┌───────────────────────────────────────────────────────────────────────────┐
-//                                                                 │   struct QirMetadata                                                      │
-//                                                                 ├───────────────────────────────────────────────────────────────────────────┤
-//                                                                 │ ─ void injectAnnotation(const std: string &key, const std: string &value) │
-//                                                                 │ ─ void setRemoveCallAttributes(const bool value)                          │
-//                                                                 │ ─ void append(const int key, const std::string &value)                    │
-//                                                                 │ ─ std::vector<std:string> reversibleGates                                 │
-//                                                                 │ ─ std::vector<std::string> irreversibleGates                              │
-//                                                                 │ ─ std::vector<std::string> supportedGates                                 │
-//                                                                 │ ─ std::vector<std::string> availablePlatforms                             │
-//                                                                 │ ─ std::unordered_map<std::string, std::string> injectedAnnotations        │
-//                                                                 │ ─ bool shouldRemoveCallAttributes                                         │
-//                                                                 └─────────────────────────────────────┬─────────────────────────────────────┘
-//                                                                                                       │
-//                                                                                                       │
-//                                                                                                       │
-//                                                                                                       V
-//                                                                 ┌───────────────────────────────────────────────────────────────────────────┐
-//                                                                 │   class QirPassRunner                                                     │
-//                                                                 ├───────────────────────────────────────────────────────────────────────────┤
-//                                                                 │   public                                                                  │
-//                                                                 ├───────────────────────────────────────────────────────────────────────────┤
-//                                                                 │ ─ static QirPassRunner &getInstance()                                     │
-//                                                                 │ ─ void append(std: string pass)                                           │
-//                                                                 │ ─ void run(Module &module, ModuleAnalysisManager &MAM)                    │
-//                                                                 │ ─ std: vector<std::string> getPasses)                                     │
-//                                                                 │ ─ QirMetadata &getMetadata()                                              │
-//                                                                 │ ─ void setMetadata(const QirMetadata &metadata)                           │
-//                                                                 │ ─ void clearMetadata()                                                    │
-//                                                                 ├───────────────────────────────────────────────────────────────────────────┤
-//                                                                 │   private                                                                 │
-//                                                                 ├───────────────────────────────────────────────────────────────────────────┤
-//                                                                 │ ─ QirPassRunner()                                                         │
-//                                                                 │ ─ std::vector<std::string> passes_                                        │
-//                                                                 │ ─ QirMetadata qirMetadata_                                                │
-//                                                                 └─────────────────────────────────────┬─────────────────────────────────────┘
-//                                                                                                       │
-//                                                                          ┌────────────────────────────┼────────────────//─────┐
-//                                                                          │                            │                       │
-//                                                                          V                            V                       │
-// ┌───────────────────┐             ┌────────────────┐             ┌───────────────┐             ┌─────────────┐                │                                      ┌──────────────┐
-// │ qselectorrunner_d ├─ ─invoke─ ─>│ libSelector.so │=====QIR====>│ qpassrunner_d ├─ ─invoke─ ─>│ libPass1.so │................│..........qdmi_supported_gate_set()..>│    Target    │
-// │                   │             │                │==NamePass1=>│               │=====QIR====>│             │<===============│==================GateSet=============│ Architecture │
-// │                   │             │                │     ...     │               │<====QIR=====│             │                │                                      │              │
-// │                   │             │                │==NamePassN=>│               │             └─────────────┘                │                                      │              │
-// │                   │             │                │             │               │                    .                       │                                      │              │
-// │                   │             │                │             │               │                    .                       │                                      │              │
-// │                   │             │                │             │               │                    .                       V                                      │              │
-// │                   │             │                │             │               │                                     ┌─────────────┐                               │              │
-// │                   │             │                │             │               ├─ ─ ─ ─ ─ ─ ─ ─ -invoke─ ─ ─ ─ ─ ─ ─>│ libPassN.so │...qdmi_supported_gate_set()..>│              │
-// │                   │             │                │             │               │==================QIR===============>│             │<==========GateSet=============│              │
-// │                   │             │                │<====QIR=====│               │<=================QIR================│             │                               │              │
-// └───────────────────┘             └────────────────┘             └───────────────┘                                     └─────────────┘                               └──────────────┘
-//          ^                                                               ^
-//          │                                                               │
-// +++++++++++++++++++++                                            +++++++++++++++++
-// +                   +                                            +               +
-// +     Selectors     +                                            +     Passes    +
-// +                   +                                            +               +
-// +++++++++++++++++++++                                            +++++++++++++++++
+// QIR Pass Runner daemon
 
-// QIR Pass Runner
 #include "QirPassRunner.hpp"
 
 #include <iostream>
@@ -74,19 +14,88 @@
 #include <vector>
 #include <algorithm>
 
-const int PORT = 8081;
-int qprSocket = -1;
-
+const int         PORT      = 8081;
+int               qprSocket = -1;
 const std::string QIS_START = "__quantum__qis_";
 
-void handleClient(int clientSocket) {
-    // Receive generic QIR
+/*                                                                 ┌───────────────────────────────────────────────────────────────────────────┐
+ *                                                                 │   struct QirMetadata                                                      │
+ *                                                                 ├───────────────────────────────────────────────────────────────────────────┤
+ *                                                                 │ ─ void injectAnnotation(const std: string &key, const std: string &value) │
+ *                                                                 │ ─ void setRemoveCallAttributes(const bool value)                          │
+ *                                                                 │ ─ void append(const int key, const std::string &value)                    │
+ *                                                                 │ ─ std::vector<std:string> reversibleGates                                 │
+ *                                                                 │ ─ std::vector<std::string> irreversibleGates                              │
+ *                                                                 │ ─ std::vector<std::string> supportedGates                                 │
+ *                                                                 │ ─ std::vector<std::string> availablePlatforms                             │
+ *                                                                 │ ─ std::unordered_map<std::string, std::string> injectedAnnotations        │
+ *                                                                 │ ─ bool shouldRemoveCallAttributes                                         │
+ *                                                                 └─────────────────────────────────────┬─────────────────────────────────────┘
+ *                                                                                                       │
+ *                                                                                                       │
+ *                                                                                                       │
+ *                                                                                                       V
+ *                                                                 ┌───────────────────────────────────────────────────────────────────────────┐
+ *                                                                 │   class QirPassRunner                                                     │
+ *                                                                 ├───────────────────────────────────────────────────────────────────────────┤
+ *                                                                 │   public                                                                  │
+ *                                                                 ├───────────────────────────────────────────────────────────────────────────┤
+ *                                                                 │ ─ static QirPassRunner &getInstance()                                     │
+ *                                                                 │ ─ void append(std: string pass)                                           │
+ *                                                                 │ ─ void run(Module &module, ModuleAnalysisManager &MAM)                    │
+ *                                                                 │ ─ std: vector<std::string> getPasses)                                     │
+ *                                                                 │ ─ QirMetadata &getMetadata()                                              │
+ *                                                                 │ ─ void setMetadata(const QirMetadata &metadata)                           │
+ *                                                                 │ ─ void clearMetadata()                                                    │
+ *                                                                 ├───────────────────────────────────────────────────────────────────────────┤
+ *                                                                 │   private                                                                 │
+ *                                                                 ├───────────────────────────────────────────────────────────────────────────┤
+ *                                                                 │ ─ QirPassRunner()                                                         │
+ *                                                                 │ ─ std::vector<std::string> passes_                                        │
+ *                                                                 │ ─ QirMetadata qirMetadata_                                                │
+ *                                                                 └─────────────────────────────────────┬─────────────────────────────────────┘
+ *                                                                                                       │
+ *                                                                          ┌────────────────────────────┼────────────────//─────┐
+ *                                                                          │                            │                       │
+ *                                                                          V                            V                       │
+ * ┌───────────────────┐             ┌────────────────┐             ┌───────────────┐             ┌─────────────┐                │                                      ┌──────────────┐
+ * │ qselectorrunner_d ├─ ─invoke─ ─>│ libSelector.so │=====QIR====>│ qpassrunner_d ├─ ─invoke─ ─>│ libPass1.so │................│..........qdmi_supported_gate_set()..>│    Target    │
+ * │                   │             │                │==NamePass1=>│               │=====QIR====>│             │<===============│==================GateSet=============│ Architecture │
+ * │                   │             │                │     ...     │               │<====QIR=====│             │                │                                      │              │
+ * │                   │             │                │==NamePassN=>│               │             └─────────────┘                │                                      │              │
+ * │                   │             │                │             │               │                    .                       │                                      │              │
+ * │                   │             │                │             │               │                    .                       │                                      │              │
+ * │                   │             │                │             │               │                    .                       V                                      │              │
+ * │                   │             │                │             │               │                                     ┌─────────────┐                               │              │
+ * │                   │             │                │             │               ├─ ─ ─ ─ ─ ─ ─ ─ -invoke─ ─ ─ ─ ─ ─ ─>│ libPassN.so │...qdmi_supported_gate_set()..>│              │
+ * │                   │             │                │             │               │==================QIR===============>│             │<==========GateSet=============│              │
+ * │                   │             │                │<====QIR=====│               │<=================QIR================│             │                               │              │
+ * └───────────────────┘             └────────────────┘             └───────────────┘                                     └─────────────┘                               └──────────────┘
+ *          ^                                                               ^
+ *          │                                                               │
+ * +++++++++++++++++++++                                            +++++++++++++++++
+ * +                   +                                            +               +
+ * +     Selectors     +                                            +     Passes    +
+ * +                   +                                            +               +
+ * +++++++++++++++++++++                                            +++++++++++++++++
+ */
+
+/* Function triggered whenever a selector connects to this daemon.
+ * Its job is to receive the QIR in binary blob and parse it into
+ * an LLVM module. Then, it receives the names of all those passes
+ * that should subsequently be applied to the QIR. Finally, it 
+ * receives from the selector an End Of Transmission (EOT) message
+ * to stop lisenting for more passes. All passes are appended to 
+ * a 'QirPassRunner' instance which is also used to run the passes.
+ */
+void handleSelector(int selectorSocket) {
+    // Receive generic QIR from the selector
     ssize_t qirMessageSizeNetwork;
-    recv(clientSocket, &qirMessageSizeNetwork, sizeof(qirMessageSizeNetwork), 0);
+    recv(selectorSocket, &qirMessageSizeNetwork, sizeof(qirMessageSizeNetwork), 0);
     ssize_t qirMessageSize = ntohl(qirMessageSizeNetwork);
 
     char* genericQir = new char[qirMessageSize];
-    ssize_t qirBytesRead = recv(clientSocket, genericQir, qirMessageSize, 0);
+    ssize_t qirBytesRead = recv(selectorSocket, genericQir, qirMessageSize, 0);
     genericQir[qirBytesRead] = '\0';
 
 	// Parse generic QIR into an LLVM module
@@ -102,17 +111,17 @@ void handleClient(int clientSocket) {
         return;
     }
    
-    std::cout << "[Pass Runner] Generic QIR received from a client" << std::endl;
+    std::cout << "[Pass Runner] Generic QIR received from a selector" << std::endl;
     
-    // Receive the list of passes 
+    // Receive the list of passes from the selector
 	std::vector<std::string> passes;
     while (true) {
         ssize_t passMessageSizeNetwork;
-        recv(clientSocket, &passMessageSizeNetwork, sizeof(passMessageSizeNetwork), 0);
+        recv(selectorSocket, &passMessageSizeNetwork, sizeof(passMessageSizeNetwork), 0);
         ssize_t passMessageSize = ntohl(passMessageSizeNetwork);
 
         char* passBuffer = new char[passMessageSize];
-        ssize_t passBytesRead = recv(clientSocket, passBuffer, passMessageSize, 0);
+        ssize_t passBytesRead = recv(selectorSocket, passBuffer, passMessageSize, 0);
 
         if (passBytesRead > 0) {
             passBuffer[passBytesRead] = '\0';
@@ -128,9 +137,9 @@ void handleClient(int clientSocket) {
     }
 
     if (passes.empty()) {
-		std::cout << "[Pass Runner] Warning: A client did not send any pass to the pass runner" << std::endl;
-		close(clientSocket);
-        std::cout << "[Pass Runner] Client disconnected";
+		std::cout << "[Pass Runner] Warning: A selector did not send any pass to the pass runner" << std::endl;
+		close(selectorSocket);
+        std::cout << "[Pass Runner] Selector disconnected";
 		return;
 	}
 
@@ -145,7 +154,7 @@ void handleClient(int clientSocket) {
             if (ConstantInt* boolConstant = dyn_cast<ConstantInt>(boolMetadata->getValue()))
                 errs() << "[Pass Runner] Flag inserted: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
 
-    // Append all received passes
+    // Create an instance of the QirPassRunner and append to it all the received passes
     QirPassRunner &QPR = QirPassRunner::getInstance();
     ModuleAnalysisManager MAM;
     
@@ -159,53 +168,67 @@ void handleClient(int clientSocket) {
 	// Run QIR passes
 	QPR.run(*module, MAM);
 
-    // Print the result
-    //module->print(outs(), nullptr);
- 
+    // Send the adapted QIR back to the selector
     std::string str;
     raw_string_ostream OS(str);
     OS << *module;
     OS.flush();
     const char* qir = str.data();
-    send(clientSocket, qir, strlen(qir), 0);
-    std::cout << "[Pass Runner] Adapted QIR sent to client" << std::endl;
+    send(selectorSocket, qir, strlen(qir), 0);
+    std::cout << "[Pass Runner] Adapted QIR sent to selector" << std::endl;
 
+    // Free memory
     QPR.clearMetadata();
     delete[] genericQir;
-	close(clientSocket);
 
-	std::cout << "[Pass Runner] Client disconnected";
+    // Disconnect from the selector
+	close(selectorSocket);
+	std::cout << "[Pass Runner] Selector disconnected";
 }
 
+/* Function for the graceful termination of the daemon closing
+ * its own socket before exiting
+ */
 void signalHandler(int signum) {
+	std::cerr << "[Pass Runner] Stoping" << std::endl;
 	close(qprSocket);
 	exit(0);
 }
 
+/* Main function
+ */
 int main(void) {
+    // Go to function 'signalHandler' whenever the 'SIGTERM' (graceful
+    // termination) signal is sent to this process
 	signal(SIGTERM, signalHandler);
 
+    // Create a socket for transfering data from and to selectors
     qprSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (qprSocket == -1) {
-        std::cerr << "[Pass Runner] Error creating socket" << std::endl;
+        std::cerr << "[Pass Runner] Error creating own socket" << std::endl;
         return 1;
     }
 
-    // Enable the SO_REUSEADDR option
+    // Enable the 'SO_REUSEADDR' option to avoid blocking the IP and port 
+    // used by the daemon in case it is not terminated gracefully
     int optval = 1;
     setsockopt(qprSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
-    sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(PORT);
+    // Bind the socket
+    sockaddr_in qprAddr;
 
-    if (bind(qprSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
+    qprAddr.sin_family      = AF_INET;
+    qprAddr.sin_addr.s_addr = INADDR_ANY;
+    qprAddr.sin_port        = htons(PORT);
+
+    if (bind(qprSocket, (struct sockaddr*)&qprAddr, sizeof(qprAddr)) == -1) {
         std::cerr << "[Pass Runner] Error binding" << std::endl;
         close(qprSocket);
         return 1;
     }
 
+    // Start listening for incomming selectors
+    // TODO HOW MANY PENDING CONNECTIONS SHALL BE ALLOW TO QUEUE?
     if (listen(qprSocket, 5) == -1) {
         std::cerr << "[Pass Runner] Error listening" << std::endl;
         close(qprSocket);
@@ -214,13 +237,17 @@ int main(void) {
 
     std::cout << "[Pass Runner] Listening on port " << PORT << std::endl;
 
+    // Enter to an infinite loop
     while (true) {
-        sockaddr_in clientAddr;
-        socklen_t clientAddrLen = sizeof(clientAddr);
-        int clientSocket = accept(qprSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
+        // Accept an incoming connection from a selector
+        sockaddr_in selectorAddr;
+        socklen_t selectorAddrLen = sizeof(selectorAddr);
+        int selectorSocket = accept(qprSocket, (struct sockaddr*)&selectorAddr, &selectorAddrLen);
 
-        if (clientSocket == -1) {
-            std::cerr << "[Pass Runner] Error accepting connection" << std::endl;
+        if (selectorSocket == -1) {
+            std::cerr << "[Pass Runner] Error accepting connection from a selector" 
+                      << std::endl;
+
             continue;
         }
 
@@ -229,15 +256,18 @@ int main(void) {
         std::cout << std::endl;
         for (int i = 0; i < w.ws_col; i++)
             std::cout << '-';
-        std::cout << "\n[Pass Runner] Client connected" << std::endl;
+        std::cout << "\n[Pass Runner] Selector connected" << std::endl;
 
-        std::thread clientThread(handleClient, clientSocket);
-        clientThread.detach();
+        // Create a new thread that executes 'handleSelector' to receive
+        // a QIR and a set of passes from the selector to subsequently
+        // apply them to the QIR
+        std::thread selectorThread(handleSelector, selectorSocket);
+
+        // Detach from this thread once done. The 'selectorSocket' socket
+        // was closed by the 'handleSelector' function
+        selectorThread.detach();
     }
 
-    close(qprSocket);
-	std::cerr << "[Pass Runner] Stopped" << std::endl;
-
-    return 0;
+    return 1;
 }
 

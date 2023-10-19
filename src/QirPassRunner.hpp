@@ -1,3 +1,9 @@
+/* The 'QirPassRunner' class is a derived class of the 'PassModule'
+ * abstract class. This derived class keeps track of metadata shared
+ * among its daemon, the passes, and the selector runner. This
+ * class also manages the passes and their invokation.
+ */
+
 #ifndef QIR_MODULE_PASS_MANAGER_H
 #define QIR_MODULE_PASS_MANAGER_H
 
@@ -9,7 +15,8 @@
 
 using namespace llvm;
 
-// Enumerated type for appending information to the metadata
+/* Enumerated type for appending information to the metadata
+ */
 enum MetadataType {
     SUPPORTED_GATE,
     REVERSIBLE_GATE,

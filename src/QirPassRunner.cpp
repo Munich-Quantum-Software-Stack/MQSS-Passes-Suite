@@ -1,3 +1,5 @@
+// QirPassRunner
+
 #include "QirPassRunner.hpp"
 #include <iostream>
 #include <algorithm>
@@ -5,10 +7,12 @@
 
 using namespace llvm;
 
-// Default constructor of the 'QirPassRunner' class
+/* Default constructor of the 'QirPassRunner' class
+ */
 QirPassRunner::QirPassRunner() {}
 
-// Returns a reference to a 'QirPassRuner' object
+/* Returns a reference to a 'QirPassRuner' object
+ */
 QirPassRunner &QirPassRunner::getInstance() {
     static QirPassRunner instance;
     return instance;
@@ -21,7 +25,8 @@ void QirPassRunner::setMetadata(const QirMetadata &metadata) {
     qirMetadata_ = metadata;
 }
 
-// Empties all structures within the metadata
+/* Empties all structures within the metadata
+ */
 void QirPassRunner::clearMetadata() {
     qirMetadata_.reversibleGates.clear();
     qirMetadata_.supportedGates.clear();
@@ -29,7 +34,8 @@ void QirPassRunner::clearMetadata() {
     qirMetadata_.injectedAnnotations.clear();
 }
 
-// Returns the private metadata of the 'QirPassRunner' class
+/* Returns the private metadata of the 'QirPassRunner' class
+ */
 QirMetadata &QirPassRunner::getMetadata() {
     return qirMetadata_;
 }
@@ -53,10 +59,13 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisMana
         auto pass = passes_.back();
 
         // Load the library
-		void *soHandle = dlopen(pass.c_str(), RTLD_LAZY);
+		void *lib_handle = dlopen(pass.c_str(), RTLD_LAZY);
 
-        if(!soHandle) {
-            std::cout << "[Pass Runner] Warning: Could not load shared library: " << pass << std::endl;
+        if(!lib_handle) {
+            std::cout << "[Pass Runner] Warning: Could not load shared library: " 
+                      << pass 
+                      << std::endl;
+
             passes_.pop_back();
             continue;
         }
@@ -76,7 +85,7 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisMana
         using passLoader = PassModule* (*)();
 
         // Dynamic loading and linking of the shared library
-        passLoader loadQirPass = reinterpret_cast<passLoader>(dlsym(soHandle, "loadQirPass"));
+        passLoader loadQirPass = reinterpret_cast<passLoader>(dlsym(lib_handle, "loadQirPass"));
 
         if(!loadQirPass) {
             std::cout << "[Pass Runner] Warning: Could not get factory function of pass: " 
@@ -84,7 +93,7 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisMana
                       << std::endl;
 
             passes_.pop_back();
-            dlclose(soHandle);
+            dlclose(lib_handle);
             continue;
         }
 
@@ -95,7 +104,7 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisMana
 
         // Free memory
         delete QirPass;
-        dlclose(soHandle);
+        dlclose(lib_handle);
 
         passes_.pop_back();
     }

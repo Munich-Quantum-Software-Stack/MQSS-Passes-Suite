@@ -62,7 +62,7 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnal
     return PreservedAnalyses::none();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirReplaceConstantBranchesPass();
 }
 

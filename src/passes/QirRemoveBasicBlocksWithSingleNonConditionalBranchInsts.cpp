@@ -35,7 +35,7 @@ PreservedAnalyses QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::r
     return PreservedAnalyses::none();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass();
 }
 

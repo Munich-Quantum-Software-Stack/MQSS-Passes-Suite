@@ -94,6 +94,6 @@ PreservedAnalyses QirFunctionReplacementPass::run(Module &module, ModuleAnalysis
 	return PreservedAnalyses::none();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirFunctionReplacementPass();
 }

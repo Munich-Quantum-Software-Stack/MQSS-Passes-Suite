@@ -32,6 +32,6 @@ PreservedAnalyses QirPlaceIrreversibleGatesInMetadataPass::run(Module &module, M
     return PreservedAnalyses::all();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirPlaceIrreversibleGatesInMetadataPass();
 }

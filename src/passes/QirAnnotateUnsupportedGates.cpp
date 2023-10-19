@@ -37,6 +37,6 @@ PreservedAnalyses QirAnnotateUnsupportedGatesPass::run(Module &module, ModuleAna
     return PreservedAnalyses::all();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirAnnotateUnsupportedGatesPass();
 }

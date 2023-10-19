@@ -9,6 +9,7 @@
 
 using namespace llvm;
 
+// Enumerated type for appending information to the metadata
 enum MetadataType {
     SUPPORTED_GATE,
     REVERSIBLE_GATE,
@@ -17,7 +18,8 @@ enum MetadataType {
     UNKNOWN
 };
 
-/* This struct holds all metadata
+/* This struct holds all required metadata shared amongst the
+ * QIR Pass Runner, the QIR Selector Runner, and each pass
  */
 struct QirMetadata {
     // All required metadata shall be declared here
@@ -54,10 +56,16 @@ struct QirMetadata {
         }
     }
 
-    /* The 'injectedAnnotations' map is currently used to keep track of
-     * those LLVM functions with 'replaceWith' attribute. Use example:
+    /* The 'injecteAnnotation' inserts in a map a pair of call instructions.
+     * This map is currently used to keep track of those LLVM functions with 
+     * a 'replaceWith' attribute. Use example:
      * 
-     *     TODO
+     *     QirPassRunner &QPR = QirPassRunner::getInstance();
+     *     QirMetadata &qirMetadata = QPR.getMetadata();
+     *     auto key   = static_cast<std::string>(function1->getName());
+     *     auto value = static_cast<std::string>(function2->getName());
+     *     qirMetadata.injectAnnotation(key, value);
+     *     QPR.setMetadata(qirMetadata);
      */
     void injectAnnotation(const std::string &key, const std::string &value) {
         injectedAnnotations[key] = value;
@@ -68,9 +76,8 @@ struct QirMetadata {
      *
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
      *     QirMetadata &qirMetadata = QPR.getMetadata();
-     *     auto key   = static_cast<std::string>(function1->getName());
-     *     auto value = static_cast<std::string>(function2->getName());
-     *     qirMetadata.injectAnnotation(key, value);
+     *     qirMetadata.setRemoveCallAttributes(true);
+     *     QPR.setMetadata(qirMetadata);
      */
     void setRemoveCallAttributes(const bool value) {
         shouldRemoveCallAttributes = value;
@@ -121,8 +128,8 @@ public:
      */
     QirMetadata &getMetadata();
 
-    /* Saves 'qirMetadata_' as the metadata of 'QirPassRunner'
-     * class. Use example:
+    /* Saves 'metadata' as the private metadata ('qirMetadata_') of 
+     * the 'QirPassRunner' class. Use example:
      *
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
      *     QirMetadata &qirMetadata = QPR.getMetadata();

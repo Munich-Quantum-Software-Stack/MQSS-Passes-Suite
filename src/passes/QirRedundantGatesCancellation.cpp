@@ -52,6 +52,6 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleA
     return PreservedAnalyses::none();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirRedundantGatesCancellationPass();
 }

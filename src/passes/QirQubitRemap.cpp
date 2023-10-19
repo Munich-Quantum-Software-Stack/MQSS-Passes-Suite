@@ -88,6 +88,6 @@ PreservedAnalyses QirQubitRemapPass::run(Module &module, ModuleAnalysisManager &
     return PreservedAnalyses::none();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirQubitRemapPass();
 }

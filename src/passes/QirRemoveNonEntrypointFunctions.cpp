@@ -16,7 +16,7 @@ PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(Module &module, Modul
     return PreservedAnalyses::none();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirRemoveNonEntrypointFunctionsPass();
 }
 

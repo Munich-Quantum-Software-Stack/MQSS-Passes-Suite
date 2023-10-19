@@ -43,7 +43,7 @@ PreservedAnalyses QirFunctionAnnotatorPass::run(Module& module, ModuleAnalysisMa
      return PreservedAnalyses::all();
 }
 
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirFunctionAnnotatorPass();
 }
 

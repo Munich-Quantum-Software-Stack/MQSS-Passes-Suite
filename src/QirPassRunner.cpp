@@ -1,4 +1,6 @@
-// QirPassRunner
+/**
+ * The 'QirPassRunner' class.
+ */
 
 #include "QirPassRunner.hpp"
 #include <iostream>
@@ -7,25 +9,29 @@
 
 using namespace llvm;
 
-/* Default constructor of the 'QirPassRunner' class
+/**
+ * Default constructor of the 'QirPassRunner' class
  */
 QirPassRunner::QirPassRunner() {}
 
-/* Returns a reference to a 'QirPassRuner' object
+/**
+ * Returns a reference to a 'QirPassRuner' object
  */
 QirPassRunner &QirPassRunner::getInstance() {
     static QirPassRunner instance;
     return instance;
 }
 
-/* Saves 'metadata' as the private metadata of the 'QirPassRunner' 
+/**
+ * Saves 'metadata' as the private metadata of the 'QirPassRunner' 
  * class
  */
 void QirPassRunner::setMetadata(const QirMetadata &metadata) {
     qirMetadata_ = metadata;
 }
 
-/* Empties all structures within the metadata
+/**
+ * Empties all structures within the metadata
  */
 void QirPassRunner::clearMetadata() {
     qirMetadata_.reversibleGates.clear();
@@ -34,20 +40,23 @@ void QirPassRunner::clearMetadata() {
     qirMetadata_.injectedAnnotations.clear();
 }
 
-/* Returns the private metadata of the 'QirPassRunner' class
+/**
+ * Returns the private metadata of the 'QirPassRunner' class
  */
 QirMetadata &QirPassRunner::getMetadata() {
     return qirMetadata_;
 }
 
-/* Inserts a pass in the private vector 'passes_' of the 
+/**
+ *  Inserts a pass in the private vector 'passes_' of the 
  * 'QirPassRunner' class
  */
 void QirPassRunner::append(std::string pass) {
     passes_.push_back(pass);
 }
 
-/* Applies all passes in the private vector 'passes_' to the 
+/**
+ *  Applies all passes in the private vector 'passes_' to the 
  * QIR parsed into an LLVM module 'module'
  */
 void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisManager &MAM) {

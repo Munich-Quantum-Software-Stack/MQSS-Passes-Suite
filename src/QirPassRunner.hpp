@@ -1,4 +1,5 @@
-/* The 'QirPassRunner' class is a derived class of the 'PassModule'
+/**
+ * The 'QirPassRunner' class is a derived class of the 'PassModule'
  * abstract class. This derived class keeps track of metadata shared
  * among its daemon, the passes, and the selector runner. This
  * class also manages the passes and their invokation.
@@ -15,7 +16,8 @@
 
 using namespace llvm;
 
-/* Enumerated type for appending information to the metadata
+/**
+ * Enumerated type for appending information to the metadata
  */
 enum MetadataType {
     SUPPORTED_GATE,
@@ -25,7 +27,8 @@ enum MetadataType {
     UNKNOWN
 };
 
-/* This struct holds all required metadata shared amongst the
+/**
+ * This struct holds all required metadata shared amongst the
  * QIR Pass Runner, the QIR Selector Runner, and each pass
  */
 struct QirMetadata {
@@ -37,7 +40,8 @@ struct QirMetadata {
     std::unordered_map<std::string, std::string> injectedAnnotations;
     bool shouldRemoveCallAttributes;
 
-    /* Adds entries to multiple vectors of the metadata. Use example:
+    /**
+     * Adds entries to multiple vectors of the metadata. Use example:
      *
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
      *     QirMetadata &qirMetadata = QPR.getMetadata();
@@ -63,7 +67,8 @@ struct QirMetadata {
         }
     }
 
-    /* The 'injecteAnnotation' inserts in a map a pair of call instructions.
+    /**
+     * The 'injecteAnnotation' inserts in a map a pair of call instructions.
      * This map is currently used to keep track of those LLVM functions with 
      * a 'replaceWith' attribute. Use example:
      * 
@@ -78,7 +83,8 @@ struct QirMetadata {
         injectedAnnotations[key] = value;
     }
 
-    /* Function for removing all attributes associated to LLVM functions.
+    /**
+     * Function for removing all attributes associated to LLVM functions.
      * Use example:
      *
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
@@ -91,14 +97,16 @@ struct QirMetadata {
     }
 };
 
-/* This class is effectively a Pass Manager. It contains a 
+/**
+ * This class is effectively a Pass Manager. It contains a 
  * list of names of shared libraries (.so) implementing 
  * different kinds of passes. This class also contains a 
  * functions for invoking the pre-compiled passes.
 */
 class QirPassRunner {
 public:
-    /* Returns a reference to a 'QirPassRuner' object. This
+    /**
+     * Returns a reference to a 'QirPassRuner' object. This
      * object is created as a 'static' variable inside the
      * 'getInstance' function such that 'getInstance' has a
      * single instance shared across all calls to this
@@ -108,7 +116,8 @@ public:
      */
     static QirPassRunner &getInstance();
 
-    /* Fills the private vector 'passes_' with the names of the 
+    /**
+     * Fills the private vector 'passes_' with the names of the 
      * passes compiled as shared objects (.so) Use example:
      *
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
@@ -116,7 +125,8 @@ public:
      */
     void append(std::string pass);
 
-    /* Invokes each of the passes listed in the private vector
+    /**
+     * Invokes each of the passes listed in the private vector
      * 'passes_'. Use example:
      *
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
@@ -127,7 +137,8 @@ public:
      */
     void run(Module &module, ModuleAnalysisManager &MAM);
 
-    /* Returns the private metadata of 'QirPassRunner', that is, 'qirMetadata_',
+    /**
+     * Returns the private metadata of 'QirPassRunner', that is, 'qirMetadata_',
      * as a 'QirMetadata' object. Use example:
      *
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
@@ -135,7 +146,8 @@ public:
      */
     QirMetadata &getMetadata();
 
-    /* Saves 'metadata' as the private metadata ('qirMetadata_') of 
+    /**
+     * Saves 'metadata' as the private metadata ('qirMetadata_') of 
      * the 'QirPassRunner' class. Use example:
      *
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
@@ -145,7 +157,8 @@ public:
      */
     void setMetadata(const QirMetadata &metadata);
 
-    /* Empties all structures within the metadata. Use example:
+    /**
+     * Empties all structures within the metadata. Use example:
      * 
      *     QirPassRunner &QPR = QirPassRunner::getInstance();
      *     QPR.clearMetadata();

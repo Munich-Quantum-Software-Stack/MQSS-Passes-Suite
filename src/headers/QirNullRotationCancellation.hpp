@@ -2,6 +2,7 @@
 
 #include "PassModule.hpp"
 
+#include <cmath>
 #include <unordered_set>
 
 namespace llvm {

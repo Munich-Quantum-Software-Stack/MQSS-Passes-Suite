@@ -39,6 +39,9 @@ entry:
   ; calls to check null rotation cancellation
   call void @__quantum__qis__ry__body(double %zero, %Qubit* null)
   call void @__quantum__qis__rz__body(double %null_rotation, %Qubit* null)
+  ; calls to check rotation merging
+  call void @__quantum__qis__rx__body(double %pi4, %Qubit* null)
+  call void @__quantum__qis__rx__body(double %pi4, %Qubit* null)
   ; calls to record the program output
   call void @__quantum__rt__tuple_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @0, i32 0, i32 0))

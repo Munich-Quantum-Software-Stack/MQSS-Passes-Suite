@@ -16,6 +16,8 @@ set(PASSES_SOURCE_FILES
     QirFunctionValidation.cpp
     # G
     QirGrouping.cpp
+    # M
+    QirMergeRotations.cpp
     # N
     QirNormalizeArgAngle.cpp
     QirNullRotationCancellation.cpp

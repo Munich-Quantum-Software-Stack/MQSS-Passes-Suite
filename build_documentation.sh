@@ -6,14 +6,20 @@ set -e
 # Install the dependencies
 sudo apt install -y flex bison || true
 
-# Build the pass runner
-git clone https://github.com/doxygen/doxygen.git
-cd doxygen
-mkdir build/ 2> /dev/null || true
-cd build
-cmake -G "Unix Makefiles" ..
-make
-sudo make install
-cd ../..
+# Check if doxygen is installed
+if command -v "doxygen" &> /dev/null; then
+    echo "doxygen is already installed"
+else
+    echo "Installing doxygen"
+    git clone https://github.com/doxygen/doxygen.git
+    cd doxygen
+    mkdir build/ 2> /dev/null || true
+    cd build
+    cmake -G "Unix Makefiles" ..
+    make
+    sudo make install
+    cd ../..
+fi
+
 doxygen Doxyfile
 

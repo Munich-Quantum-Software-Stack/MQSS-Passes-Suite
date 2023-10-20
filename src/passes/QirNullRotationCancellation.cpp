@@ -3,7 +3,7 @@
 using namespace llvm;
 
 bool checkDoublePiMultiplies(double angle) {
-    const double doublePi = 3.14159265358979323846;
+    const double doublePi = 2 * 3.14159265358979323846;
     if (std::fmod(angle, doublePi) == 0)
         return true;
     return false;

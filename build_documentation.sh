@@ -22,5 +22,7 @@ else
     rm -rf doxygen
 fi
 
-doxygen Doxyfile
+cd src/
+doxygen ../Doxyfile
+cd ..
 

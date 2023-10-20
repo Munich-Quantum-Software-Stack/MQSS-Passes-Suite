@@ -87,7 +87,8 @@ int main(void) {
         "libQirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.so",
         "libQirQubitRemapPass.so",
         "libQirResourceAnnotationPass.so",
-	"libQirNullRotationCancellationPass.so",
+	    "libQirNullRotationCancellationPass.so",
+	    "libQirMergeRotationsPass.so",
     };
 
     // Send each of the passes to the QPR

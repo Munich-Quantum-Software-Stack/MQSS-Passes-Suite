@@ -1,7 +1,19 @@
+/**
+ * @file QirNormalizeArgAngle.cpp
+ * @brief Implementation of the 'QirNormalizeArgAnglePass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirNormalizeArgAngle.cpp?ref_type=heads">Source code.</a>
+ *
+ * Adapted from:
+ */
 #include "../headers/QirNormalizeArgAngle.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirNormalizeArgAnglePass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     auto& Context = module.getContext();
 
@@ -58,6 +70,10 @@ PreservedAnalyses QirNormalizeArgAnglePass::run(Module &module, ModuleAnalysisMa
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirNormalizeArgAnglePass' as a 'PassModule'.
+ * @return QirNormalizeArgAnglePass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirNormalizeArgAnglePass();
 }

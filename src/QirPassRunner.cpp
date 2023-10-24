@@ -1,5 +1,6 @@
 /**
- * The 'QirPassRunner' class.
+ * @file QirPassRunner.cpp
+ * @brief Implementation of the 'QirPassRunner' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/QirPassRunner.cpp?ref_type=heads">Source code.</a> 
  */
 
 #include "QirPassRunner.hpp"
@@ -10,12 +11,13 @@
 using namespace llvm;
 
 /**
- * Default constructor of the 'QirPassRunner' class
+ * @brief Default constructor of the 'QirPassRunner' class
  */
 QirPassRunner::QirPassRunner() {}
 
 /**
- * Returns a reference to a 'QirPassRuner' object
+ * @brief Returns a reference to a 'QirPassRuner' object
+ * @return QirPassRunner
  */
 QirPassRunner &QirPassRunner::getInstance() {
     static QirPassRunner instance;
@@ -23,15 +25,16 @@ QirPassRunner &QirPassRunner::getInstance() {
 }
 
 /**
- * Saves 'metadata' as the private metadata of the 'QirPassRunner' 
- * class
+ * @brief Saves 'metadata' as the private metadata of the 
+ * 'QirPassRunner' class.
+ * @param metadata The metadata attached to the module.
  */
 void QirPassRunner::setMetadata(const QirMetadata &metadata) {
     qirMetadata_ = metadata;
 }
 
 /**
- * Empties all structures within the metadata
+ * @brief Empties all structures within the metadata.
  */
 void QirPassRunner::clearMetadata() {
     qirMetadata_.reversibleGates.clear();
@@ -41,7 +44,8 @@ void QirPassRunner::clearMetadata() {
 }
 
 /**
- * Returns the private metadata of the 'QirPassRunner' class
+ * @brief Returns the private metadata of the 'QirPassRunner' class
+ * @return QirMetadata
  */
 QirMetadata &QirPassRunner::getMetadata() {
     return qirMetadata_;
@@ -56,8 +60,10 @@ void QirPassRunner::append(std::string pass) {
 }
 
 /**
- *  Applies all passes in the private vector 'passes_' to the 
+ * @brief  Applies all passes in the private vector 'passes_' to the 
  * QIR parsed into an LLVM module 'module'
+ * @param module The module of the submitted QIR.
+ * @param MAM The module analysis manager.
  */
 void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisManager &MAM) {
     // TODO HOW DO WE HANDLE 'PreservedAnalyses'?

@@ -1,3 +1,8 @@
+/**
+ * @file llvm.hpp
+ * @brief Include directives targeting required LLVM headers.
+ */
+
 #pragma once
 
 // Building

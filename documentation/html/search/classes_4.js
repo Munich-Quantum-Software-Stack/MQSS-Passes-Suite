@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['qirallocationanalysispass_0',['QirAllocationAnalysisPass',['../classllvm_1_1QirAllocationAnalysisPass.html',1,'llvm']]],
+  ['qirannotateunsupportedgatespass_1',['QirAnnotateUnsupportedGatesPass',['../classllvm_1_1QirAnnotateUnsupportedGatesPass.html',1,'llvm']]],
+  ['qirbarrierbeforefinalmeasurementspass_2',['QirBarrierBeforeFinalMeasurementsPass',['../classllvm_1_1QirBarrierBeforeFinalMeasurementsPass.html',1,'llvm']]],
+  ['qircnottohczhdecompositionpass_3',['QirCNotToHCZHDecompositionPass',['../classllvm_1_1QirCNotToHCZHDecompositionPass.html',1,'llvm']]],
+  ['qircommutecnotrxpass_4',['QirCommuteCnotRxPass',['../classllvm_1_1QirCommuteCnotRxPass.html',1,'llvm']]],
+  ['qircommuterxcnotpass_5',['QirCommuteRxCnotPass',['../classllvm_1_1QirCommuteRxCnotPass.html',1,'llvm']]],
+  ['qirdefermeasurementpass_6',['QirDeferMeasurementPass',['../classllvm_1_1QirDeferMeasurementPass.html',1,'llvm']]],
+  ['qirfunctionannotatorpass_7',['QirFunctionAnnotatorPass',['../classllvm_1_1QirFunctionAnnotatorPass.html',1,'llvm']]],
+  ['qirfunctionreplacementpass_8',['QirFunctionReplacementPass',['../classllvm_1_1QirFunctionReplacementPass.html',1,'llvm']]],
+  ['qirfunctionvalidationpass_9',['QirFunctionValidationPass',['../classllvm_1_1QirFunctionValidationPass.html',1,'llvm']]],
+  ['qirgroupingpass_10',['QirGroupingPass',['../classllvm_1_1QirGroupingPass.html',1,'llvm']]],
+  ['qirmetadata_11',['QirMetadata',['../structQirMetadata.html',1,'']]],
+  ['qirnormalizearganglepass_12',['QirNormalizeArgAnglePass',['../classllvm_1_1QirNormalizeArgAnglePass.html',1,'llvm']]],
+  ['qirpassrunner_13',['QirPassRunner',['../classQirPassRunner.html',1,'']]],
+  ['qirplaceirreversiblegatesinmetadatapass_14',['QirPlaceIrreversibleGatesInMetadataPass',['../classllvm_1_1QirPlaceIrreversibleGatesInMetadataPass.html',1,'llvm']]],
+  ['qirqubitremappass_15',['QirQubitRemapPass',['../classllvm_1_1QirQubitRemapPass.html',1,'llvm']]],
+  ['qirredundantgatescancellationpass_16',['QirRedundantGatesCancellationPass',['../classllvm_1_1QirRedundantGatesCancellationPass.html',1,'llvm']]],
+  ['qirremovebasicblockswithsinglenonconditionalbranchinstspass_17',['QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass',['../classllvm_1_1QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass.html',1,'llvm']]],
+  ['qirremovenonentrypointfunctionspass_18',['QirRemoveNonEntrypointFunctionsPass',['../classllvm_1_1QirRemoveNonEntrypointFunctionsPass.html',1,'llvm']]],
+  ['qirreplaceconstantbranchespass_19',['QirReplaceConstantBranchesPass',['../classllvm_1_1QirReplaceConstantBranchesPass.html',1,'llvm']]],
+  ['qirresourceannotationpass_20',['QirResourceAnnotationPass',['../classllvm_1_1QirResourceAnnotationPass.html',1,'llvm']]],
+  ['qirrztorxryrxdecompositionpass_21',['QirRzToRxRyRxDecompositionPass',['../classllvm_1_1QirRzToRxRyRxDecompositionPass.html',1,'llvm']]],
+  ['qiru3torzryrzdecompositionpass_22',['QirU3ToRzRyRzDecompositionPass',['../classllvm_1_1QirU3ToRzRyRzDecompositionPass.html',1,'llvm']]],
+  ['qirxcnotxreductionpass_23',['QirXCnotXReductionPass',['../classllvm_1_1QirXCnotXReductionPass.html',1,'llvm']]]
+];

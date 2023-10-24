@@ -1,5 +1,6 @@
 /**
- * The QIR Selector Runner daemon
+ * @file qselectorrunner_d.cpp
+ * @brief Implementation of the QIR Selector Runner daemon.
  */
 
 #include <iostream>
@@ -15,7 +16,17 @@
 #include <algorithm>
 #include <dlfcn.h>
 
+/**
+ * @var PORT
+ * @brief The port number from which the daemon will listen for
+ * incomming connections.
+ */
 const int PORT      = 8080;
+
+/**
+ * @var qsrSocket
+ * @brief Socket for transfering data from and to clients
+ */
 int       qsrSocket = -1;
 
 //                                                                 ┌───────────────────────────────────────────────────────────────────────────┐
@@ -80,11 +91,12 @@ int       qsrSocket = -1;
 // +++++++++++++++++++++                                            +++++++++++++++++
 
 /**
- * Function triggered whenever a client connects to this daemon.
+ * @brief Function triggered whenever a client connects to this daemon.
  * Its job is to receive the name of a selector and subsequently
  * invoke it. It is the invoked selector itself the one submitting
  * the QIR binary blob and a set of selected passes to the Pass 
  * Runner daemon.
+ * @param clientSocket The socket to connect with a client
  */
 void handleClient(int clientSocket) {
     // Receive name of the desired selector
@@ -146,8 +158,9 @@ void handleClient(int clientSocket) {
 }
 
 /**
- * Function for the graceful termination of the daemon closing
- * its own socket before exiting
+ * @brief Function for the graceful termination of the daemon closing
+ * its own socket before exiting.
+ * @param signum Number of the interrupt signal
  */
 void signalHandler(int signum) {
     std::cerr << "[Selector Runner] Stoping" << std::endl;
@@ -156,7 +169,11 @@ void signalHandler(int signum) {
 }
 
 /**
- * Main function
+ * @brief The main entry point of the program.
+ *
+ * The QIR Selector Runner daemon.
+ *
+ * @return int
  */
 int main(void) {
 	// Go to function 'signalHandler' whenever the 'SIGTERM' (graceful

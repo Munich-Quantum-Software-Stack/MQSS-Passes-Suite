@@ -1,12 +1,19 @@
+/**
+ * @file QirAllocationAnalysis.cpp
+ * @brief Implementation of the 'QirAllocationAnalysisPass' analysis pass. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirAllocationAnalysis.cpp?ref_type=heads">Source code.</a>
+ * 
+ * Adapted from: https://github.com/qir-alliance/qat/blob/main/qir/qat/Passes/StaticResourceComponent/AllocationAnalysisPass.cpp
+ */
+
 #include "../headers/QirAllocationAnalysis.hpp"
 
 using namespace llvm;
 
+// Checks for Qubit and Result pointer types.
 bool QirAllocationAnalysisPass::extractResourceId(Value* value, uint64_t& return_value, ResourceType& type) const {
-    auto* instruction_ptr = dyn_cast<IntToPtrInst>(value);
-    auto* operator_ptr    = dyn_cast<ConcreteOperator<Operator, Instruction::IntToPtr>>(value);
-
-    auto* nullptr_cast = dyn_cast<ConstantPointerNull>(value);
+    auto *instruction_ptr = dyn_cast<IntToPtrInst>(value);
+    auto *operator_ptr    = dyn_cast<ConcreteOperator<Operator, Instruction::IntToPtr>>(value);
+    auto *nullptr_cast    = dyn_cast<ConstantPointerNull>(value);
 
     if (instruction_ptr || operator_ptr || nullptr_cast) {
         if (!value->getType()->isPointerTy())
@@ -31,8 +38,7 @@ bool QirAllocationAnalysisPass::extractResourceId(Value* value, uint64_t& return
 
         bool     is_constant_int = nullptr_cast != nullptr;
         uint64_t n               = 0;
-
-        auto user = dyn_cast<User>(value);
+        auto     user            = dyn_cast<User>(value);
 
         // In case there exists a user, it must have exactly one argument
         // which should be an integer. In case of deferred integers, the mapping
@@ -55,6 +61,12 @@ bool QirAllocationAnalysisPass::extractResourceId(Value* value, uint64_t& return
     return false;
 }
 
+/**
+ * @brief Applies an analysis pass to the 'function' function.
+ * @param function The function.
+ * @param FAM The function analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirAllocationAnalysisPass::run(Function &function, FunctionAnalysisManager &/*FAM*/) {
 	AllocationAnalysis result;
 

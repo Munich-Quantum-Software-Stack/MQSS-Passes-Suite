@@ -1,7 +1,21 @@
+/**
+ * @file QirRedundantGatesCancellation.cpp
+ * @brief Implementation of the 'QirRedundantGatesCancellationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRedundantGatesCancellation.cpp?ref_type=heads">Source code.</a>
+ *
+ * This pass removes redundant one-qubit gates, that is, equivalent gates 
+  * acting back to back on the same qubit.
+ */
+
 #include "../headers/QirRedundantGatesCancellation.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     QirPassRunner &QPR = QirPassRunner::getInstance();
     QirMetadata &qirMetadata = QPR.getMetadata();
@@ -52,6 +66,10 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleA
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirRedundantGatesCancellationPass' as a 'PassModule'.
+ * @return QirRedundantGatesCancellationPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirRedundantGatesCancellationPass();
 }

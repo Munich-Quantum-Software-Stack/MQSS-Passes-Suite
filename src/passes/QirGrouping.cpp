@@ -1,12 +1,33 @@
+/**
+ * @file QirGrouping.cpp
+ * @brief Implementation of the 'QirGroupingPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirGrouping.cpp?ref_type=heads">Source code.</a>
+ *
+ * Adapted from:
+ */
+
 #include "../headers/QirGrouping.hpp"
 
 using namespace llvm;
 
+/**
+ * @var QirGroupingPass::QIS_START
+ * @brief Used within the 'QirGroupingPass' to define the quantum prefix.
+ */
 std::string const QirGroupingPass::QIS_START        = "__quantum"
                                                       "__qis_";
+
+/**
+ * @var QirGroupingPass::READ_INSTR_START
+ * @brief Used within the 'QirGroupingPass' to define the read prefix.
+ */
 std::string const QirGroupingPass::READ_INSTR_START = "__quantum"
                                                       "__qis__read_";
 
+/**
+ * @brief TODO
+ * @param type TODO
+ * @return bool
+ */
 bool QirGroupingPass::isQuantumRegister(Type const *type){
     if(type->isPointerTy()){
         auto element_type = type->getPointerElementType(); // TODO: getPointerElementType IS DEPRECATED
@@ -19,6 +40,11 @@ bool QirGroupingPass::isQuantumRegister(Type const *type){
     return false;
 }
 
+/**
+ * @brief TODO
+ * @param instruction TODO
+ * @return int64_t
+ */
 int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction) {
     QirPassRunner &QPR = QirPassRunner::getInstance();
     QirMetadata &qirMetadata = QPR.getMetadata();
@@ -85,6 +111,7 @@ int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction) {
     return ret;
 }
 
+// TODO WRITE A DESCRIPTION
 void QirGroupingPass::deleteInstructions(){
     for(auto it = to_delete.rbegin(); it != to_delete.rend(); ++it){
         auto ptr = *it;
@@ -95,9 +122,14 @@ void QirGroupingPass::deleteInstructions(){
     }
 }
 
+/**
+ * @brief TODO
+ * @param module The module of the submitted QIR.
+ * @param block TODO
+ */
 void QirGroupingPass::prepareSourceSeparation(Module &module, BasicBlock *block){
     // Creating replacement blocks
-    LLVMContext& context = module.getContext(); // TODO: Do we need the module here?
+    LLVMContext& context = module.getContext(); // TODO: DO WE NEED THE WHOLE Module HERE?
 
     post_classical_block_ = BasicBlock::Create(
 		context,
@@ -139,8 +171,13 @@ void QirGroupingPass::prepareSourceSeparation(Module &module, BasicBlock *block)
         });
 }
 
+/**
+ * @brief TODO
+ * @param module The module of the submitted QIR.
+ * @param block TODO
+ */
 void QirGroupingPass::nextQuantumCycle(Module &module, BasicBlock* block){
-    auto& context = module.getContext(); // TODO: DO WE NEED module HERE?
+    auto& context = module.getContext(); // TODO: DO WE NEED THE WHOLE Module HERE?
     
     pre_classical_builder_->CreateBr(quantum_block_);
     quantum_builder_->CreateBr(post_classical_block_);
@@ -170,6 +207,7 @@ void QirGroupingPass::nextQuantumCycle(Module &module, BasicBlock* block){
     pre_classical_builder_->SetInsertPoint(pre_classical_block_);
 }
 
+// TODO WRITE DESCRIPTION
 QirGroupingPass::ResourceAnalysis QirGroupingPass::operandAnalysis(Value* val) const{
     // Determining if this is a static resource
     auto* instruction_ptr = dyn_cast<IntToPtrInst>(val);
@@ -215,6 +253,11 @@ QirGroupingPass::ResourceAnalysis QirGroupingPass::operandAnalysis(Value* val) c
     return ret;
 }
 
+/**
+ * @brief TODO
+ * @param module The module of the submitted QIR.
+ * @param block TODO
+ */
 void QirGroupingPass::expandBasedOnSource(Module &module, BasicBlock *block){
     prepareSourceSeparation(module, block);
 
@@ -401,6 +444,13 @@ void QirGroupingPass::expandBasedOnSource(Module &module, BasicBlock *block){
     deleteInstructions();
 }
 
+/**
+ * @brief TODO
+ * @param module The module of the submitted QIR.
+ * @param block TODO
+ * @param move_quatum TODO
+ * @param name TODO
+ */
 void QirGroupingPass::expandBasedOnDest(
     Module            &module,
     BasicBlock        *block,
@@ -452,6 +502,10 @@ void QirGroupingPass::expandBasedOnDest(
     deleteInstructions();
 }
 
+/**
+ * @brief TODO
+ * @param module The module of the submitted QIR.
+ */
 void QirGroupingPass::runBlockAnalysis(Module &module) {
     for (auto& function : module) {
         for (auto& block : function) {
@@ -498,6 +552,11 @@ void QirGroupingPass::runBlockAnalysis(Module &module) {
     }
 }
 
+/**
+ * @brief TODO
+ * @param module The module of the submitted QIR.
+ * @return Result
+ */
 QirGroupingPass::Result QirGroupingPass::runGroupingAnalysis(Module &module) {
     GroupAnalysis ret;
 
@@ -538,6 +597,12 @@ QirGroupingPass::Result QirGroupingPass::runGroupingAnalysis(Module &module) {
     return ret;
 }
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirGroupingPass::run(Module &module, ModuleAnalysisManager &MAM) {
 
     auto result   = runGroupingAnalysis(module);
@@ -584,6 +649,10 @@ PreservedAnalyses QirGroupingPass::run(Module &module, ModuleAnalysisManager &MA
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirGroupingPass' as a 'PassModule'.
+ * @return QirGroupingPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirGroupingPass();
 }

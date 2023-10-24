@@ -1,7 +1,19 @@
+/**
+ * @file QirFunctionReplacement.cpp
+ * @brief Implementation of the 'QirFunctionReplacementPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirFunctionReplacement.cpp?ref_type=heads">Source code.</a>
+ *
+ * Adapted from: https://github.com/qir-alliance/qat/blob/main/qir/qat/Passes/FunctionReplacementPass/FunctionReplacementPass.cpp
+ */
+
 #include "../headers/QirFunctionReplacement.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies an analysis pass to the QIR's LLVM module.
+ * @param module The module.
+ * @return QirFunctionReplacementPass::Result 
+ */
 QirFunctionReplacementPass::Result QirFunctionReplacementPass::runFunctionReplacementAnalysis(Module &module) {
     FunctionRegister ret;
     
@@ -69,6 +81,12 @@ QirFunctionReplacementPass::Result QirFunctionReplacementPass::runFunctionReplac
     return ret;
 }
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirFunctionReplacementPass::run(Module &module, ModuleAnalysisManager &MAM) {
     IRBuilder<> builder(module.getContext());
     auto result = runFunctionReplacementAnalysis(module);
@@ -94,6 +112,10 @@ PreservedAnalyses QirFunctionReplacementPass::run(Module &module, ModuleAnalysis
 	return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirFunctionReplacementPass' as a 'PassModule'.
+ * @return QirFunctionReplacementPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirFunctionReplacementPass();
 }

@@ -1,3 +1,8 @@
+/**
+ * @file selector_all.cpp
+ * @brief Implementation of a dummy selector.
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -8,10 +13,34 @@
 #include <unistd.h>
 #include <vector>
 
+/**
+ * @var SERVER_IP
+ * @brief IP to connect to the QIR Pass Runner
+ */
 const char* SERVER_IP   = "127.0.0.1";
-const int   PORT        = 8081;
-const int   BUFFER_SIZE = 65536; // TODO
 
+/**
+ * @var PORT
+ * @brief The port number from which the selector will listen for
+ * incomming connections.
+ */
+const int   PORT        = 8081;
+
+/**
+ * @var BUFFER_SIZE
+ * @brief Size of the buffer that will store the binary blob of a
+ * QIR 
+ * @todo This variable should not be a fixed value.
+ */
+const int   BUFFER_SIZE = 65536;
+
+/**
+ * @brief The main entry point of the program.
+ *
+ * The Pass Selector.
+ *
+ * @return int
+ */
 int main(void) {
     // Create socket
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -75,7 +104,7 @@ int main(void) {
 	    "libQirAnnotateUnsupportedGatesPass.so",
         "libQirU3DecompositionPass.so",
         "libQirRzDecompositionPass.so",
-        "libQirCNotDecompositionPass.so",
+        "libQirCNotToHCZHDecompositionPass.so",
 	    "libQirFunctionAnnotatorPass.so",
         "libQirRedundantGatesCancellationPass.so",
         "libQirFunctionReplacementPass.so",

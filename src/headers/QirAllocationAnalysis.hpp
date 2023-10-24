@@ -1,3 +1,8 @@
+/**
+ * @file QirAllocationAnalysis.hpp 
+ * @brief Declaration of the 'QirAllocationAnalysisPass' class.
+ */
+
 #pragma once
 
 #include "llvm.hpp"
@@ -9,33 +14,49 @@
 
 namespace llvm {
 
+/**
+ * @struct AllocationAnalysis
+ * @brief TODO 
+ */
 struct AllocationAnalysis {
+    /**
+     * @enum ResourceType
+     * @brief TODO
+     */
     enum ResourceType {
-        NotResource,
-        QubitResource,
-        ResultResource
+        NotResource,    /**< Not a resource. */
+        QubitResource,  /**< A Qubit resource. */
+        ResultResource  /**< A Result resource. */
     };
 
+    /**
+     * @struct ResourceAccessLocation
+     * @brief TODO
+     */
     struct ResourceAccessLocation {
-        Value*       operand{nullptr};
-        ResourceType type{ResourceType::NotResource};
-        uint64_t     index{static_cast<uint64_t>(-1)};
-        Instruction* used_by{nullptr};
-        uint64_t     operand_id{0};
+        Value*       operand{nullptr};                  /**< TODO. */
+        ResourceType type{ResourceType::NotResource};   /**< TODO. */
+        uint64_t     index{static_cast<uint64_t>(-1)};  /**< TODO. */
+        Instruction* used_by{nullptr};                  /**< TODO. */
+        uint64_t     operand_id{0};                     /**< TODO. */
     };
 
     using ResourceValueToId  = std::unordered_map<Value*, ResourceAccessLocation>;
     using ResourceAccessList = std::vector<ResourceAccessLocation>;
 
-    uint64_t largest_qubit_index{0};
-    uint64_t largest_result_index{0};
-    uint64_t usage_qubit_counts{0};
-    uint64_t usage_result_counts{0};
+    uint64_t largest_qubit_index{0};        /**< TODO. */
+    uint64_t largest_result_index{0};       /**< TODO. */
+    uint64_t usage_qubit_counts{0};         /**< TODO. */
+    uint64_t usage_result_counts{0};        /**< TODO. */
 
-    ResourceValueToId  access_map{};
-    ResourceAccessList resource_access{};
+    ResourceValueToId  access_map{};        /**< TODO. */
+    ResourceAccessList resource_access{};   /**< TODO. */
 };
 
+/**
+ * @class QirAllocationAnalysisPass 
+ * @brief This analysis pass looks for ... TODO
+ */
 class QirAllocationAnalysisPass : public AnalysisInfoMixin<QirAllocationAnalysisPass> {
 public:
     using Result                 = AllocationAnalysis;
@@ -45,6 +66,13 @@ public:
 
     Result AnalysisResult;
 
+    /**
+     * @brief Applies this pass to the function 'function'.
+     *
+     * @param function The function.
+     * @param FAM The function analysis manager.
+     * @return PreservedAnalyses
+     */
     PreservedAnalyses run(Function &function, FunctionAnalysisManager &FAM);
 private:
 	bool extractResourceId(Value* value, uint64_t& return_value, ResourceType& type) const;

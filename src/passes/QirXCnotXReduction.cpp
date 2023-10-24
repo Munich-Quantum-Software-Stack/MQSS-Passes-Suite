@@ -1,7 +1,20 @@
+/**
+ * @file QirXCnotXReduction.cpp
+ * @brief Implementation of the 'QirXCnotXReductionPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirXCnotXReduction.cpp?ref_type=heads">Source code.</a>
+ *
+ * Adapted from: This pass removes X gates surrounding a CNOT gate.
+ */
+
 #include "../headers/QirXCnotXReduction.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirXCnotXReductionPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     for (auto &function : module) {
         for (auto &block : function) {
@@ -88,6 +101,10 @@ PreservedAnalyses QirXCnotXReductionPass::run(Module &module, ModuleAnalysisMana
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirXCnotXReductionPass' as a 'PassModule'.
+ * @return QirXCnotXReductionPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirXCnotXReductionPass();
 }

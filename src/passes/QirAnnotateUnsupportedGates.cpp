@@ -1,10 +1,29 @@
+/**
+ * @file QirAnnotateUnsupportedGates.cpp
+ * @brief Implementation of the 'QirAnnotateUnsupportedGatesPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirAnnotateUnsupportedGates.cpp?ref_type=heads">Source code.</a>
+ *
+ * This pass inserts an "unsupported" attribute to the appropriate gates 
+ * after querying the target platform using QDMI.
+ */
+
 #include "../headers/QirAnnotateUnsupportedGates.hpp"
 
 using namespace llvm;
 
+/**
+ * @var QirAnnotateUnsupportedGatesPass::QIS_START
+ * @brief Used within the 'QirAnnotateUnsupportedGatesPass' to define the quantum prefix.
+ */
 std::string const QirAnnotateUnsupportedGatesPass::QIS_START = "__quantum"
                                                                "__qis_";
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ *
+ * @param module The module of the submitted QIR.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirAnnotateUnsupportedGatesPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     bool changed = false;
 
@@ -37,6 +56,10 @@ PreservedAnalyses QirAnnotateUnsupportedGatesPass::run(Module &module, ModuleAna
     return PreservedAnalyses::all();
 }
 
+/**
+ * @brief External function for loading the 'QirAnnotateUnsupportedGatesPass' as a 'PassModule'.
+ * @return QirAnnotateUnsupportedGatesPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirAnnotateUnsupportedGatesPass();
 }

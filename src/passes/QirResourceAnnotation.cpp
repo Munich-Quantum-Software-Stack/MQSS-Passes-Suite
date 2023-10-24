@@ -1,8 +1,21 @@
+/**
+ * @file QirResourceAnnotation.cpp
+ * @brief Implementation of the 'QirResourceAnnotationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirResourceAnnotation.cpp?ref_type=heads">Source code.</a>
+ *
+ * Adapted from: https://github.com/qir-alliance/qat/blob/main/qir/qat/Passes/StaticResourceComponent/ResourceAnnotationPass.cpp
+ */
+
 #include "../headers/QirResourceAnnotation.hpp"
 #include "../headers/QirAllocationAnalysis.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirResourceAnnotationPass::run(Module &module, ModuleAnalysisManager &MAM) {
     for (auto &function : module) {
         QirAllocationAnalysisPass QAAP;
@@ -26,6 +39,10 @@ PreservedAnalyses QirResourceAnnotationPass::run(Module &module, ModuleAnalysisM
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirResourceAnnotationPass' as a 'PassModule'.
+ * @return QirResourceAnnotationPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirResourceAnnotationPass();
 }

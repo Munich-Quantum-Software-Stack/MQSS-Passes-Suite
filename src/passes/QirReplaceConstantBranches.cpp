@@ -1,7 +1,21 @@
+/**
+ * @file QirReplaceConstantBranches.cpp
+ * @brief Implementation of the 'QirReplaceConstantBranchesPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirReplaceConstantBranches.cpp?ref_type=heads">Source code.</a>
+ *
+ * This pass removes those blocks with conditional 
+ * branching terminators with hard-coded conditions.
+ */
+
 #include "../headers/QirReplaceConstantBranches.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     // XXX THIS IS OUR CUSTOM PASS:
 
@@ -62,6 +76,10 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(Module &module, ModuleAnal
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirReplaceConstantBranchesPass' as a 'PassModule'.
+ * @return QirReplaceConstantBranchesPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirReplaceConstantBranchesPass();
 }

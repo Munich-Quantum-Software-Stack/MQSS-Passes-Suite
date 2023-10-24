@@ -5,7 +5,7 @@ set(PASSES_SOURCE_FILES
     # B
     QirBarrierBeforeFinalMeasurements.cpp
     # C
-    QirCNotDecomposition.cpp
+    QirCNotToHCZHDecomposition.cpp
     QirCommuteCnotRx.cpp
     QirCommuteRxCnot.cpp
     # D

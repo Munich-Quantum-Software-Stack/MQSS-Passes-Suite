@@ -1,5 +1,6 @@
 /**
- * The QIR Pass Runner daemon.
+ * @file qpassrunner_d.cpp
+ * @brief Implementation of the QIR Pass Runner daemon. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/qpassrunner_d.cpp?ref_type=heads">Source code.</a> 
  */
 
 #include "QirPassRunner.hpp"
@@ -16,8 +17,23 @@
 #include <vector>
 #include <algorithm>
 
+/**
+ * @var PORT
+ * @brief The port number from which the daemon will listen for
+ * incomming connections.
+ */
 const int         PORT      = 8081;
+
+/**
+ * @var qsrSocket
+ * @brief Socket for transfering data from and to selectors
+ */
 int               qprSocket = -1;
+
+/**
+ * @var QIS_START
+ * @brief Used to define the quantum prefix.
+ */
 const std::string QIS_START = "__quantum__qis_";
 
 //                                                                 ┌───────────────────────────────────────────────────────────────────────────┐
@@ -82,13 +98,15 @@ const std::string QIS_START = "__quantum__qis_";
 // +++++++++++++++++++++                                            +++++++++++++++++
 
 /**
- * Function triggered whenever a selector connects to this daemon.
+ * @brief Function triggered whenever a selector connects to this daemon.
  * Its job is to receive the QIR in binary blob and parse it into
  * an LLVM module. Then, it receives the names of all those passes
  * that should subsequently be applied to the QIR. Finally, it 
  * receives from the selector an End Of Transmission (EOT) message
  * to stop lisenting for more passes. All passes are appended to 
  * a 'QirPassRunner' instance which is also used to run the passes.
+ *
+ * @param selectorSocket The socket to connect with a selector
  */
 void handleSelector(int selectorSocket) {
     // Receive generic QIR from the selector
@@ -189,8 +207,9 @@ void handleSelector(int selectorSocket) {
 }
 
 /**
- * Function for the graceful termination of the daemon closing
+ * @brief Function for the graceful termination of the daemon closing
  * its own socket before exiting
+ * @param signum Number of the interrupt signal
  */
 void signalHandler(int signum) {
 	std::cerr << "[Pass Runner] Stoping" << std::endl;
@@ -199,7 +218,11 @@ void signalHandler(int signum) {
 }
 
 /**
- * Main function
+ * @brief The main entry point of the program.
+ *
+ * The QIR Pass Runner daemon.
+ *
+ * @return int
  */
 int main(void) {
     // Go to function 'signalHandler' whenever the 'SIGTERM' (graceful

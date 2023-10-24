@@ -1,8 +1,21 @@
+/**
+ * @file QirQubitRemap.cpp
+ * @brief Implementation of the 'QirQubitRemapPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirQubitRemap.cpp?ref_type=heads">Source code.</a>
+ *
+ * Adapted from:
+ */
+
 #include "../headers/QirQubitRemap.hpp"
 #include "../headers/QirAllocationAnalysis.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirQubitRemapPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     for (auto &function : module) {
         QirAllocationAnalysisPass QAAP;
@@ -88,6 +101,10 @@ PreservedAnalyses QirQubitRemapPass::run(Module &module, ModuleAnalysisManager &
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirQubitRemapPass' as a 'PassModule'.
+ * @return QirQubitRemapPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirQubitRemapPass();
 }

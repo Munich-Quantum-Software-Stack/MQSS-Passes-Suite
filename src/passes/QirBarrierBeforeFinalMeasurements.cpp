@@ -1,7 +1,21 @@
+/**
+ * @file QirBarrierBeforeFinalMeasurements.cpp
+ * @brief Implementation of the 'QirBarrierBeforeFinalMeasurementsPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/tree/Plugins/src/passes?ref_type=heads">Source code.</a>
+ * 
+ * Adapted from: https://qiskit.org/documentation/stubs/qiskit.transpiler.passes.BarrierBeforeFinalMeasurements.html
+ */
+
 #include "../headers/QirBarrierBeforeFinalMeasurements.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ *
+ * @param module The module of the submitted QIR.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module &module, ModuleAnalysisManager &MAM) {
     std::vector<Instruction*> mz_instructions;
     bool barrier_found = false;
@@ -67,6 +81,10 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(Module &module, Mod
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirBarrierBeforeFinalMeasurementsPass' as a 'PassModule'.
+ * @return QirBarrierBeforeFinalMeasurementsPass 
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirBarrierBeforeFinalMeasurementsPass();
 }

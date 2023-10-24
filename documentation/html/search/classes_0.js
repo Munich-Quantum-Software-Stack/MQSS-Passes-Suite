@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['qirmetadata_0',['QirMetadata',['../structQirMetadata.html',1,'']]],
-  ['qirpassrunner_1',['QirPassRunner',['../classQirPassRunner.html',1,'']]]
+  ['allocationanalysis_0',['AllocationAnalysis',['../structllvm_1_1AllocationAnalysis.html',1,'llvm']]]
 ];

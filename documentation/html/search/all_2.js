@@ -1,5 +1,10 @@
 var searchData=
 [
-  ['getinstance_0',['getInstance',['../classQirPassRunner.html#a14d6db8d9602edd6c29dae9514b401b8',1,'QirPassRunner']]],
-  ['getmetadata_1',['getMetadata',['../classQirPassRunner.html#a4d2f6b25d5e5e102c809ac5b53d91195',1,'QirPassRunner']]]
+  ['calllist_0',['CallList',['../structllvm_1_1FunctionRegister.html#a2109b2eb8c35bb48d686967687f32121',1,'llvm::FunctionRegister']]],
+  ['calls_5fto_5freplace_1',['calls_to_replace',['../structllvm_1_1FunctionRegister.html#aa625712acc283201dbcdab05b99f831c',1,'llvm::FunctionRegister']]],
+  ['classical_5fblocks_5f_2',['classical_blocks_',['../classllvm_1_1QirGroupingPass.html#aa33616cd5e274ce6aa70fd604182b039',1,'llvm::QirGroupingPass']]],
+  ['classifyinstruction_3',['classifyInstruction',['../classllvm_1_1QirGroupingPass.html#aedd1db72ecea323d01b76e4e1b62b70d',1,'llvm::QirGroupingPass']]],
+  ['clearmetadata_4',['clearMetadata',['../classQirPassRunner.html#ae015c20a2e1c9d64be819e6aeda9d168',1,'QirPassRunner']]],
+  ['contains_5fquantum_5fcircuit_5f_5',['contains_quantum_circuit_',['../classllvm_1_1QirGroupingPass.html#abbdc7fb82dbaae837fd2f439b804560a',1,'llvm::QirGroupingPass']]],
+  ['contains_5fquantum_5fmeasurement_5f_6',['contains_quantum_measurement_',['../classllvm_1_1QirGroupingPass.html#ae3302734e702313216f8e689ad110705',1,'llvm::QirGroupingPass']]]
 ];

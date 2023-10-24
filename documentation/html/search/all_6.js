@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['setmetadata_0',['setMetadata',['../classQirPassRunner.html#a10eb3758e82c831cb088a3fbfaf0ed79',1,'QirPassRunner']]],
-  ['setremovecallattributes_1',['setRemoveCallAttributes',['../structQirMetadata.html#a69115d6e8cb5ef63c09d22e7a01ac4db',1,'QirMetadata']]]
+  ['getinstance_0',['getInstance',['../classQirPassRunner.html#a14d6db8d9602edd6c29dae9514b401b8',1,'QirPassRunner']]],
+  ['getmetadata_1',['getMetadata',['../classQirPassRunner.html#a4d2f6b25d5e5e102c809ac5b53d91195',1,'QirPassRunner']]],
+  ['groupanalysis_2',['groupanalysis',['../structllvm_1_1GroupAnalysis.html',1,'llvm::GroupAnalysis'],['../structllvm_1_1GroupAnalysis.html#ac32434ecded5d9f38796f7df72e34ac0',1,'llvm::GroupAnalysis::GroupAnalysis()']]]
 ];

@@ -1,7 +1,20 @@
+/**
+ * @file QirRemoveNonEntrypointFunctions.cpp
+ * @brief Implementation of the 'QirRemoveNonEntrypointFunctionsPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRemoveNonEntrypointFunctions.cpp?ref_type=heads">Source code.</a>
+ *
+ * Adapted from: https://github.com/qir-alliance/qat/blob/main/qir/qat/Passes/RemoveNonEntrypointFunctions/RemoveNonEntrypointFunctionsPass.cpp
+ */
+
 #include "../headers/QirRemoveNonEntrypointFunctions.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(Module &module, ModuleAnalysisManager &MAM) {
     std::vector<Function*> functions_to_delete;
 
@@ -16,6 +29,10 @@ PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(Module &module, Modul
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirRemoveNonEntrypointFunctionsPass' as a 'PassModule'.
+ * @return QirRemoveNonEntrypointFunctionsPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirRemoveNonEntrypointFunctionsPass();
 }

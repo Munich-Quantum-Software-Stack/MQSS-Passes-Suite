@@ -1,7 +1,20 @@
+/**
+ * @file QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
+ * @brief Implementation of the 'QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp?ref_type=heads">Source code.</a>
+ *
+ * This pass removes all blocks with a single (terminator) instruction.
+ */
+
 #include "../headers/QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::run(Module &module, ModuleAnalysisManager &MAM) {
     for (auto &function : module) {
         // Collect blocks that will be removed
@@ -35,6 +48,10 @@ PreservedAnalyses QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::r
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass' as a 'PassModule'.
+ * @return QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass
+ */
 extern "C" PassModule* loadQirPass() {
     return new QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass();
 }

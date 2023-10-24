@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['getinstance_0',['getInstance',['../classQirPassRunner.html#a14d6db8d9602edd6c29dae9514b401b8',1,'QirPassRunner']]],
-  ['getmetadata_1',['getMetadata',['../classQirPassRunner.html#a4d2f6b25d5e5e102c809ac5b53d91195',1,'QirPassRunner']]]
+  ['deleteinstructions_0',['deleteInstructions',['../classllvm_1_1QirGroupingPass.html#a90be75adf9b0acac4972f2e296e8ef70',1,'llvm::QirGroupingPass']]]
 ];

@@ -81,6 +81,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>This pass merges equivalent rotation gates into single rotation.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="QirNullRotationCancellation_8hpp_source.html">QirNullRotationCancellation.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for llvm::QirNullRotationCancellationPass:</div>
@@ -95,13 +98,17 @@ Inheritance diagram for llvm::QirNullRotationCancellationPass:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab4b0ee812ef671ca48dcbb3a2566bb2c" id="r_ab4b0ee812ef671ca48dcbb3a2566bb2c"><td class="memItemLeft" align="right" valign="top">PreservedAnalyses&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4b0ee812ef671ca48dcbb3a2566bb2c">run</a> (Module &amp;module, ModuleAnalysisManager &amp;MAM)</td></tr>
+<tr class="memdesc:ab4b0ee812ef671ca48dcbb3a2566bb2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies this pass to the QIR's LLVM module.  <br /></td></tr>
 <tr class="separator:ab4b0ee812ef671ca48dcbb3a2566bb2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classPassModule"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classPassModule')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classPassModule.html">PassModule</a></td></tr>
 <tr class="memitem:ae9262236a5f85f466005f6dbc118b5e0 inherit pub_methods_classPassModule" id="r_ae9262236a5f85f466005f6dbc118b5e0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classPassModule.html#ae9262236a5f85f466005f6dbc118b5e0">~PassModule</a> ()</td></tr>
 <tr class="memdesc:ae9262236a5f85f466005f6dbc118b5e0 inherit pub_methods_classPassModule"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor for <a class="el" href="classPassModule.html" title="This class derives from &#39;LLVM::ModulePassManager&#39;. The &#39;PassModule&#39; class is an abstract class....">PassModule</a>.  <br /></td></tr>
 <tr class="separator:ae9262236a5f85f466005f6dbc118b5e0 inherit pub_methods_classPassModule"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This pass merges equivalent rotation gates into single rotation. </p>
+<p>This pass removes rotation gates with null rotation, that is rotation by 0 or by 2pi multiplies. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ab4b0ee812ef671ca48dcbb3a2566bb2c" name="ab4b0ee812ef671ca48dcbb3a2566bb2c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab4b0ee812ef671ca48dcbb3a2566bb2c">&#9670;&#160;</a></span>run()</h2>
 
@@ -135,6 +142,16 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Applies this pass to the QIR's LLVM module. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">module</td><td>The module of the submitted QIR. </td></tr>
+    <tr><td class="paramname">MAM</td><td>The module analysis manager. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>PreservedAnalyses</dd></dl>
 <p>Applies this pass to the QIR's LLVM module. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">module</td><td>The module. </td></tr>

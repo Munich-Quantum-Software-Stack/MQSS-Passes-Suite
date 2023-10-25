@@ -1,4 +1,4 @@
-You can find the [documentation here](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes)
+You can find the [documentation here](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/files.html)
 
 ![Alt](flowcharts/flow.png)
 

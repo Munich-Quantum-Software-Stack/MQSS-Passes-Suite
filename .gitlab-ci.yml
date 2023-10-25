@@ -23,6 +23,7 @@ analyze:
   script:
     - apt update
     - apt install -y llvm libopenmpi-dev clang #g++
+    - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
     - find src selector -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ {} \;
 
 testing:
@@ -30,7 +31,6 @@ testing:
   script:
     - apt update
     - apt install -y cmake llvm libopenmpi-dev g++ #clang
-    - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
     - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
     # ...
     - cd qdmi

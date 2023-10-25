@@ -1,6 +1,6 @@
 /**
  * @file QirRedundantGatesCancellation.cpp
- * @brief Implementation of the 'QirRedundantGatesCancellationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRedundantGatesCancellation.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirRedundantGatesCancellationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRedundantGatesCancellation.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * This pass removes redundant one-qubit gates, that is, equivalent gates 
   * acting back to back on the same qubit.

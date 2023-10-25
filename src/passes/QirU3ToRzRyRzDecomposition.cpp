@@ -1,6 +1,6 @@
 /**
  * @file QirU3ToRzRyRzDecomposition.cpp 
- * @brief Implementation of the 'QirU3ToRzRyRzDecompositionPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirU3Decomposition.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirU3ToRzRyRzDecompositionPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirU3Decomposition.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * Adapted from: This pass decomposes a U3 gate into Rx and Ry gates.
  */

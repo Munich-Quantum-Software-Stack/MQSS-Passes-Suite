@@ -1,6 +1,6 @@
 /**
  * @file QirCommuteCnotRx.cpp
- * @brief Implementation of the 'QirCommuteCnotRxPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirCommuteCnotRx.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirCommuteCnotRxPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirCommuteCnotRx.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * Adapted from: https://arxiv.org/pdf/quant-ph/0308033.pdf
  */

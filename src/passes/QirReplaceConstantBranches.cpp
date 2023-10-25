@@ -1,6 +1,6 @@
 /**
  * @file QirReplaceConstantBranches.cpp
- * @brief Implementation of the 'QirReplaceConstantBranchesPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirReplaceConstantBranches.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirReplaceConstantBranchesPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirReplaceConstantBranches.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * This pass removes those blocks with conditional 
  * branching terminators with hard-coded conditions.

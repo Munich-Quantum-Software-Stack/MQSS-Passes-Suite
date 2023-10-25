@@ -1,8 +1,8 @@
 /**
  * @file QirGrouping.cpp
- * @brief Implementation of the 'QirGroupingPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirGrouping.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirGroupingPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirGrouping.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
- * Adapted from:
+ * Adapted from: https://github.com/qir-alliance/qat/tree/main/qir/qat/Passes/GroupingPass
  */
 
 #include "../headers/QirGrouping.hpp"

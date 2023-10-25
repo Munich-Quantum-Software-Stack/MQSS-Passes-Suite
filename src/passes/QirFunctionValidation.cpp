@@ -1,6 +1,6 @@
 /**
  * @file QirFunctionValidation.cpp
- * @brief Implementation of the 'QirFunctionValidationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirFunctionValidation.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirFunctionValidationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirFunctionValidation.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * Adapted from: https://github.com/qir-alliance/qat/blob/main/qir/qat/Passes/ValidationPass/FunctionValidationPass.cpp
  */

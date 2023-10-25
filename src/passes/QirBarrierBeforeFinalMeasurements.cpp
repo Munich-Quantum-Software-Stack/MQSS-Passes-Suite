@@ -1,6 +1,6 @@
 /**
  * @file QirBarrierBeforeFinalMeasurements.cpp
- * @brief Implementation of the 'QirBarrierBeforeFinalMeasurementsPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/tree/Plugins/src/passes?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirBarrierBeforeFinalMeasurementsPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/tree/Plugins/src/passes?ref_type=heads">Go to the source code of this file.</a>
  * 
  * Adapted from: https://qiskit.org/documentation/stubs/qiskit.transpiler.passes.BarrierBeforeFinalMeasurements.html
  */

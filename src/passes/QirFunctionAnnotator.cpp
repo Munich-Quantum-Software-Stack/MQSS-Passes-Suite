@@ -1,6 +1,6 @@
 /**
  * @file QirFunctionAnnotator.cpp
- * @brief Implementation of the 'QirFunctionAnnotatorPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirFunctionAnnotator.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirFunctionAnnotatorPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirFunctionAnnotator.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * Adapted from: https://github.com/qir-alliance/qat/blob/main/qir/qat/Passes/FunctionReplacementPass/FunctionAnnotatorPass.cpp
  */

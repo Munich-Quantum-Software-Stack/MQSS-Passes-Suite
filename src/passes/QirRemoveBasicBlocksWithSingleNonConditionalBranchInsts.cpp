@@ -1,6 +1,6 @@
 /**
  * @file QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
- * @brief Implementation of the 'QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * This pass removes all blocks with a single (terminator) instruction.
  */

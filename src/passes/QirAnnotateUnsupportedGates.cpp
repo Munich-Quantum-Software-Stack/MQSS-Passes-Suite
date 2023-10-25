@@ -1,6 +1,6 @@
 /**
  * @file QirAnnotateUnsupportedGates.cpp
- * @brief Implementation of the 'QirAnnotateUnsupportedGatesPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirAnnotateUnsupportedGates.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirAnnotateUnsupportedGatesPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirAnnotateUnsupportedGates.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * This pass inserts an "unsupported" attribute to the appropriate gates 
  * after querying the target platform using QDMI.

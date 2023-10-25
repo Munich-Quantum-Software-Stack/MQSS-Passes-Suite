@@ -55,7 +55,7 @@ struct AllocationAnalysis {
 
 /**
  * @class QirAllocationAnalysisPass 
- * @brief This analysis pass looks for ... TODO
+ * @brief TODO
  */
 class QirAllocationAnalysisPass : public AnalysisInfoMixin<QirAllocationAnalysisPass> {
 public:

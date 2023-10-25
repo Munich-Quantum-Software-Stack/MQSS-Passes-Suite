@@ -1,6 +1,6 @@
 /**
  * @file QirCNotToHCZHDecomposition.cpp
- * @brief Implementation of the 'QirCNotToHCZHDecompositionPass' class.
+ * @brief Implementation of the 'QirCNotToHCZHDecompositionPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirCNotToHCZHDecomposition.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * Adapted from: https://quantumcomputing.stackexchange.com/a/13784
  */

@@ -1,6 +1,6 @@
 /**
  * @file QirXCnotXReduction.cpp
- * @brief Implementation of the 'QirXCnotXReductionPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirXCnotXReduction.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirXCnotXReductionPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirXCnotXReduction.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * Adapted from: This pass removes X gates surrounding a CNOT gate.
  */

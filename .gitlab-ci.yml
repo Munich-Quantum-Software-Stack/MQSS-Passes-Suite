@@ -42,7 +42,6 @@ pages:
     paths:
       - public
   rules:
-#   - Plugins
     - if: '$CI_COMMIT_REF_NAME == "Plugins"'
 
 analyze:

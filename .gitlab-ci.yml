@@ -1,13 +1,71 @@
-# The Docker image that will be used to build your app
 image: ubuntu:latest
+
+before_script:
+  - apt update
+  - apt install -y cmake llvm libopenmpi-dev g++ clang
+  - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
+  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
+  - cd qdmi
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - echo QDMI built successfully
+  - cd ../../selector
+  - mkdir build
+  - cd build
+  - cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
+  - cmake --build .
+  - echo Selector Runner built successfully
+  - cd ../..
+  - mkdir build
+  - cd build
+  - cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
+  - cmake --build .
+  - echo Pass Runner built successfully
+  - cd ../tests
+  - mpic++ -std=c++14 test.cpp -o test
+  - echo Test built successfully
+  - cd ..
+
+stages:
+  - deploy
+  - analyze
+  - test
+
+#pages:
+#  stage: deploy
+#  script:
+##    - mkdir public
+##    - cp -r documentation/html/* public/
+#  artifacts:
+#    paths:
+#      - public
+#  only:
+#    - Plugins
+
 pages:
   script:
     - cp -r documentation/html/* public/
   artifacts:
     paths:
-      # The folder that contains the files to be exposed at the Page URL
       - public
   rules:
-    # This ensures that only pushes to the default branch will trigger
-    # a pages deploy
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    - if: '$CI_COMMIT_REF_NAME == "Plugins"'
+
+analyze:
+  stage: analyze
+  script:
+    - find . -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ {} \;
+
+testing:
+  stage: test
+  script:
+    - cd build
+    - ./qpassrunner_d &
+    - sleep 1
+    - cd ../selector/build/
+    - ./qselectorrunner_d &
+    - sleep 1
+    - ../../tests/test
+

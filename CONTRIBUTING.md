@@ -15,7 +15,7 @@ Before you get started, please take a moment to read this document to understand
 
 3. **Create a new branch**: Create a new branch for your contribution:
 ```shell
-   git checkout -b pass/your-pass-name
+   git checkout -b custom-pass/name-of-pass
 ```
 
 4. **Make Changes**: Make your changes or additions to the codebase.
@@ -24,12 +24,12 @@ Before you get started, please take a moment to read this document to understand
 
 6. **Commit Your Changes**: Commit your changes with a clear and concise message:
 ```shell
-git commit -m "Add feature/fix for XYZ"
+git commit -m "Added name-of-pass"
 ```
 
 7. **Push to Your Fork**: Push your changes to your fork on GitHub:
 ```shell
-git push origin feature/your-feature-name
+git push origin custom-pass/name-of-pass
 ```
 
 8. **Create a Pull Request**: Open a pull request from your branch to the original repository.

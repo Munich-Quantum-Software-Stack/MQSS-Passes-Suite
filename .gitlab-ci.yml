@@ -45,6 +45,7 @@ stages:
 #    - Plugins
 
 pages:
+  stage: deploy
   script:
     - cp -r documentation/html/* public/
   artifacts:

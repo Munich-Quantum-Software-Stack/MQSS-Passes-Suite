@@ -33,25 +33,16 @@ stages:
   - analyze
   - test
 
-#pages:
-#  stage: deploy
-#  script:
-##    - mkdir public
-##    - cp -r documentation/html/* public/
-#  artifacts:
-#    paths:
-#      - public
-#  only:
-#    - Plugins
-
 pages:
   stage: deploy
   script:
+    - mkdir public
     - cp -r documentation/html/* public/
   artifacts:
     paths:
       - public
   rules:
+#   - Plugins
     - if: '$CI_COMMIT_REF_NAME == "Plugins"'
 
 analyze:

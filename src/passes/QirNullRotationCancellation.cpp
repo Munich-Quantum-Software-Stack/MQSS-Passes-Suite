@@ -1,6 +1,6 @@
 /**
  * @file QirNullRotationCancellation.cpp
- * @brief Implementation of the 'QirNullRotationCancellationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirNullRotationCancellation.cpp?ref_type=heads">Source code.</a>
+ * @brief Implementation of the 'QirNullRotationCancellationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirNullRotationCancellation.cpp?ref_type=heads">Go to the source code of this file.</a>
  *
  * This pass removes rotation gates with null rotation, that is rotation by 0 or by 2pi multiplies. 
  */

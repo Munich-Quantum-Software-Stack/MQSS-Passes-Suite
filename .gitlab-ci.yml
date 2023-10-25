@@ -29,8 +29,20 @@ before_script:
   - cd ..
 
 stages:
+  - deploy
   - analyze
   - test
+
+deploy:
+  stage: deploy
+  script:
+    - mkdir public
+    - cp -r documentation/html/* public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - Plugins
 
 analyze:
   stage: analyze

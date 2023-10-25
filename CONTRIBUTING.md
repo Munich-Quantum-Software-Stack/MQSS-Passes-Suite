@@ -32,7 +32,7 @@ git commit -m "Added name-of-pass"
 git push origin custom-pass/name-of-pass
 ```
 
-8. **Create a Pull Request**: Open a pull request from your branch to the original repository.
+8. **Create a Pull Request**: Open a pull request from your branch to the Plugins branch in the original repository.
 
 9. **Discuss and Revise**: Engage in any discussions or changes requested by the maintainers.
 

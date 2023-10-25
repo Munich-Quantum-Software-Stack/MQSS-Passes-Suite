@@ -1,7 +1,19 @@
+/**
+ * @file QirNullRotationCancellation.cpp
+ * @brief Implementation of the 'QirNullRotationCancellationPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirNullRotationCancellation.cpp?ref_type=heads">Source code.</a>
+ *
+ * This pass removes rotation gates with null rotation, that is rotation by 0 or by 2pi multiplies. 
+ */
+
 #include "../headers/QirNullRotationCancellation.hpp"
 
 using namespace llvm;
 
+/**
+ * Checks if provided angle is a 2p multiple.
+ * @param double The rotation angle.
+ * @return bool
+ */
 bool checkDoublePiMultiplies(double angle) {
     const double doublePi = 2 * 3.14159265358979323846;
     if (std::fmod(angle, doublePi) == 0)
@@ -9,6 +21,13 @@ bool checkDoublePiMultiplies(double angle) {
     return false;
 }
 
+
+/**
+ * Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirNullRotationCancellationPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     
     auto& Context = module.getContext();
@@ -64,6 +83,10 @@ PreservedAnalyses QirNullRotationCancellationPass::run(Module &module, ModuleAna
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirNullRotationCancellationPass' as a 'PassModule'.
+ * @return QirNullRotationCancellationPass
+ */
 extern "C" PassModule* createQirPass() {
     return new QirNullRotationCancellationPass();
 }

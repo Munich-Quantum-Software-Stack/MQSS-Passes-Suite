@@ -1,7 +1,20 @@
+/**
+ * @file QirMergeRotations.cpp
+ * @brief Implementation of the 'QirMergeRotationsPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirMergeRotations.cpp?ref_type=heads">Source code.</a>
+ *
+ * This pass merges equivalent rotation gates into single rotation. 
+ */
+
 #include "../headers/QirMergeRotations.hpp"
 
 using namespace llvm;
 
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
 PreservedAnalyses QirMergeRotationsPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
         auto& Context = module.getContext();
 
@@ -76,6 +89,10 @@ PreservedAnalyses QirMergeRotationsPass::run(Module &module, ModuleAnalysisManag
     return PreservedAnalyses::none();
 }
 
+/**
+ * @brief External function for loading the 'QirMergeRotationsPass' as a 'PassModule'.
+ * @return QirMergeRotationsPass
+ */
 extern "C" PassModule* createQirPass() {
     return new QirMergeRotationsPass();
 }

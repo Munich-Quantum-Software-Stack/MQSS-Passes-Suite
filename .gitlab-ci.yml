@@ -1,9 +1,6 @@
 image: ubuntu:latest
 
 before_script:
-  - apt update
-  - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
-  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
 
 stages:
   - deploy
@@ -24,13 +21,17 @@ pages:
 analyze:
   stage: analyze
   script:
+    - apt update
     - apt install -y llvm libopenmpi-dev clang #g++
     - find src selector -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ {} \;
 
 testing:
   stage: test
   script:
+    - apt update
     - apt install -y cmake llvm libopenmpi-dev g++ #clang
+    - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
+    - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
     # ...
     - cd qdmi
     - mkdir build
@@ -49,7 +50,8 @@ testing:
     # ...
     - mpic++ -std=c++14 test.cpp -o test
     - echo Test built successfully
-    - cd ../build
+    # ...
+    - cd ..
     - mkdir build
     - cd build
     - cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..

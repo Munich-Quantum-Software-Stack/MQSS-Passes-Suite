@@ -15,7 +15,7 @@ using namespace llvm;
  * @param MAM The module analysis manager.
  * @return PreservedAnalyses
  */
-PreservedAnalyses QirCNotToHCZHDecompositionPass::run(Module &module, ModuleAnalysisManager &MAM) {
+PreservedAnalyses QirCNotToHCZHDecompositionPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
     auto& Context = module.getContext();
 
     Function *functionKey = module.getFunction("__quantum__qis__cnot__body");

@@ -93,6 +93,6 @@ PreservedAnalyses QirMergeRotationsPass::run(Module &module, ModuleAnalysisManag
  * @brief External function for loading the 'QirMergeRotationsPass' as a 'PassModule'.
  * @return QirMergeRotationsPass
  */
-extern "C" PassModule* createQirPass() {
+extern "C" PassModule* loadQirPass() {
     return new QirMergeRotationsPass();
 }

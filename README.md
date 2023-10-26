@@ -6,24 +6,45 @@
 
 Before you can install `qpassrunner_d`, you need to compile the project. To do this, follow the steps below:
 
-1. Install the required dependencies:
+1. Compile the chosen Quantum Device Management Interface (QDMI), for example:
+   - Navigate to the `qdmi` directory which contains a dummy QDMI:
+      ```bash
+      cd qdmi
+      ```
 
+   - Create a `build` directory:
+      ```bash
+      mkdir build/
+      cd build/
+      ```
+
+   - Configure the project using CMake:
+      ```bash
+      cmake ..
+      ```
+   - Build the project and return to the `qir_passes` directory: 
+      ```bash
+      make
+      cd ../..
+      ```
+
+2. Install the required dependencies:
    ```bash
    sudo apt install -y cmake llvm libopenmpi-dev g++
    ```
 
-2. Create a build directory:
+3. Create a `build` directory:
    ```bash
    mkdir build/
    cd build/
    ```
 
-3. Set the CMake prefix path to locate LLVM's CMake configuration:
+4. Set the CMake prefix path to locate LLVM's CMake configuration:
    ```bash
    export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
    ```
 
-4. Configure the project using CMake, specifying the custom executable name and the path to the chosen Quantum Device Management Interface:
+5. Configure the project using CMake, specifying the custom executable name and the path to the chosen QDMI compiled in step 1:
    ```bash
    cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
    ```
@@ -37,7 +58,7 @@ Before you can install `qpassrunner_d`, you need to compile the project. To do t
 
 Once the project is compiled, you can install `qpassrunner_d` system-wide with the following steps:
 
-1. Navigate to the build directory (if you are not already there):
+1. Navigate to the `build` directory (if you are not already there):
    ```bash
    cd build/
    ```
@@ -53,7 +74,7 @@ Once the project is compiled, you can install `qpassrunner_d` system-wide with t
 
 If you ever need to uninstall `qpassrunner_d`, follow these steps:
 
-1. Navigate to the build directory (if you are not already there):
+1. Navigate to the `build` directory (if you are not already there):
    ```bash
    cd build/
    ```
@@ -91,7 +112,7 @@ You can build the documentation locally using Doxygen.
       git clone https://github.com/doxygen/doxygen.git
       ```
    
-   - Create a build directory
+   - Create a `build` directory
       ```bash
       cd doxygen
       mkdir build/
@@ -134,7 +155,7 @@ You can run the QIR Pass Runner daemon and a dummy selector as follows:
 
 2. If `qpassrunner_d` is not installed, you can either 1) install it as described in the [Installation Section](#installation) and run it as shown in the above step or 2) compile it as explained in the [Compilation Section](#compilation) and then run it as follows:
 
-   - Navigate to the qir_passes directory (if you are not already there):
+   - Navigate to the `qir_passes` directory (if you are not already there):
      ```bash
      cd qir_passes/
      ```
@@ -144,12 +165,12 @@ You can run the QIR Pass Runner daemon and a dummy selector as follows:
      ./qpassrunner_d
      ```
 
-3. To compile and run the Selector Runner daemon, navigate to the selector directory using a second terminal:
+3. To compile and run the Selector Runner daemon, navigate to the `selector` directory using a second terminal:
    ```bash
    cd qir_passes/selector/
    ```
 
-4. Create a build directory:
+4. Create a `build` directory:
    ```bash
    mkdir build/
    cd build/
@@ -175,7 +196,7 @@ You can run the QIR Pass Runner daemon and a dummy selector as follows:
    ./qselectorrunner_d
    ```
 
-9. To compile and run a test client for submitting a Quantum Circuit described in QIR to the `qpassrunner_d` daemon, as well as a toy pass selector, navigate to the tests directory using a third terminal:
+9. To compile and run a test client for submitting a Quantum Circuit described in QIR to the `qpassrunner_d` daemon, as well as a toy pass selector, navigate to the `tests` directory using a third terminal:
    ```bash
    cd qir_passes/tests/
    ```

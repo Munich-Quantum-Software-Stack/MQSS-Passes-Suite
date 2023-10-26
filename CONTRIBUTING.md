@@ -37,7 +37,7 @@ Before you get started, please take a moment to read this document to understand
           // ...
       };
       ```
-   - Please ensure that your code contributions include comments that adhere to the formatting and conventions expected by Doxygen, as clear and consistent documentation is essential for maintaining and understanding the project.
+   - Please ensure that your code contributions include comments that adhere to the formatting and conventions expected by [Doxygen](https://www.doxygen.nl/manual/docblocks.html), as clear and consistent documentation is essential for maintaining and understanding the project.
 
 5. **Test**: Ensure that your changes work as intended and don't introduce any new issues.
 
@@ -51,7 +51,7 @@ Before you get started, please take a moment to read this document to understand
    git push origin custom-pass/name-of-pass
    ```
 
-8. **Create a Pull Request**: Open a pull request from your branch to the Plugins branch in the original repository.
+8. **Create a Pull Request**: Open a pull request from your branch to the `Plugins` branch in the original repository.
 
 9. **Discuss and Revise**: Engage in any discussions or changes requested by the maintainers.
 

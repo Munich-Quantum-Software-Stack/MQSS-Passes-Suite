@@ -6,6 +6,12 @@ project(QirPassRunner
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 14)
 
+# Set the installation directory for the daemon
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Installation directory" FORCE)
+endif()
+set(PASS_RUNNER_DAEMON_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
+
 # Find the Threads package
 find_package(Threads REQUIRED)
 
@@ -49,6 +55,9 @@ include_directories(${CUSTOM_QDMI_PATH})
 # Build QirPassRunner as a shared library
 add_library(QirPassRunner SHARED src/QirPassRunner.cpp)
 
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/bin/src/passes")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # Link any necessary libraries (e.g., LLVM and QDMI)
 target_link_libraries(QirPassRunner PRIVATE LLVM)
 target_link_libraries(QirPassRunner PRIVATE qdmi)
@@ -57,7 +66,7 @@ target_link_libraries(QirPassRunner PRIVATE qdmi)
 set_target_properties(QirPassRunner PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/passes")
 
 # Get the executable name from the CUSTOM_EXECUTABLE_NAME variable
-set(EXECUTABLE_NAME ${CUSTOM_EXECUTABLE_NAME})
+set(EXECUTABLE_NAME ${CUSTOM_EXECUTABLE_NAME} CACHE STRING "Name of your executable" FORCE)
 
 # Build the executable
 add_executable(${EXECUTABLE_NAME} src/qpassrunner_d.cpp)
@@ -70,3 +79,20 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE QirPassRunner)
 # Include passes subdirectory
 add_subdirectory(src/passes)
 
+# Install the daemon
+install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
+
+# Install the QirPassRunner as a shared library
+install(TARGETS QirPassRunner DESTINATION bin/src/passes)
+
+# Uninstall everything
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake"
+  IMMEDIATE @ONLY
+)
+
+add_custom_target(uninstall
+  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)

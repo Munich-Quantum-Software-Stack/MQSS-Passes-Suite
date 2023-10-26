@@ -38,6 +38,10 @@ set(PASSES_SOURCE_FILES
     QirXCnotXReduction.cpp
 )
 
+# Set RPATH for the shared libraries in this directory
+set(CMAKE_INSTALL_RPATH "${PASS_RUNNER_DAEMON_INSTALL_PATH}/bin/src/passes")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 # Compile each pass as a shared object and link it to QDMI
 foreach(src_file ${PASSES_SOURCE_FILES})
     get_filename_component(src_name ${src_file} NAME_WE)
@@ -51,4 +55,12 @@ add_library(QirAllocationAnalysisPass SHARED QirAllocationAnalysis.cpp)
 target_link_libraries(QirFunctionValidationPass PRIVATE QirAllocationAnalysisPass)
 target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
 target_link_libraries(QirResourceAnnotationPass PRIVATE QirAllocationAnalysisPass)
+
+# Specify the installation directory for the shared libraries
+list(APPEND PASSES_SOURCE_FILES QirAllocationAnalysis.cpp)
+foreach(src_file ${PASSES_SOURCE_FILES})
+    get_filename_component(src_name ${src_file} NAME_WE)
+    set(target_name "${src_name}Pass")
+    install(TARGETS ${target_name} DESTINATION "${PASS_RUNNER_DAEMON_INSTALL_PATH}/bin/src/passes")
+endforeach()
 

@@ -1,0 +1,14 @@
+# Uninstall target
+if(NOT DEFINED LIB_DIR)
+  set(LIB_DIR "/usr/local/bin/src")
+endif()
+
+if(NOT DEFINED INCLUDE_DIR)
+  set(INCLUDE_DIR "/usr/local/include/qpr")
+endif()
+
+message("Uninstalling...")
+set(EXECUTABLE_NAME "@EXECUTABLE_NAME@")
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove /usr/local/bin/${EXECUTABLE_NAME}
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${LIB_DIR})
+

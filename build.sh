@@ -15,9 +15,11 @@ cd build/
 export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
 cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
 cmake --build .
+sudo make install
 
 export LC_ALL=en_US.UTF-8
 
 # Run the pass runner
-./qpassrunner_d
+#./qpassrunner_d
+qpassrunner_d
 

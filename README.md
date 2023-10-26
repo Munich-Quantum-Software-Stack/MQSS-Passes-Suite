@@ -1,10 +1,10 @@
 # qpassrunner_d (Pass Runner Daemon)
 
-qpassrunner_d is a daemon for executing LLVM passes on a Quantum Circuit described on a Quantum Intermediate Representation (QIR). This README provides instructions for compiling, installing, and uninstalling the qpassrunner_d.
+`qpassrunner_d` is a daemon for executing LLVM passes on a Quantum Circuit described on a Quantum Intermediate Representation (QIR). This README provides instructions for compiling, installing, and uninstalling the `qpassrunner_d`.
 
 ## Compilation
 
-Before you can install qpassrunner_d, you need to compile the project. To do this, follow the steps below:
+Before you can install `qpassrunner_d`, you need to compile the project. To do this, follow the steps below:
 
 1. Install the required dependencies:
 
@@ -35,23 +35,23 @@ Before you can install qpassrunner_d, you need to compile the project. To do thi
 
 ## Installation
 
-Once the project is compiled, you can install qpassrunner_d system-wide with the following steps:
+Once the project is compiled, you can install `qpassrunner_d` system-wide with the following steps:
 
 1. Navigate to the build directory (if you are not already there):
    ```bash
    cd build/
    ```
 
-2. Install qpassrunner_d using sudo to ensure the necessary permissions for system-wide installation:
+2. Install `qpassrunner_d` using sudo to ensure the necessary permissions for system-wide installation:
    ```bash
    sudo make install
    ```
 
-qpassrunner_d should now be installed and ready to use on your system.
+`qpassrunner_d` should now be installed and ready to use on your system.
 
 ## Uninstallation
 
-If you ever need to uninstall qpassrunner_d, follow these steps:
+If you ever need to uninstall `qpassrunner_d`, follow these steps:
 
 1. Navigate to the build directory (if you are not already there):
    ```bash
@@ -63,13 +63,13 @@ If you ever need to uninstall qpassrunner_d, follow these steps:
    sudo make uninstall
    ```
 
-This will remove qpassrunner_d from your system.
+This will remove `qpassrunner_d` from your system.
 
 ## Documentation and Resources
 
 This section provides links to project documentation and additional resources:
 
-- [Documentation](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/files.html): Detailed documentation about the qpassrunner_d project.
+- [Documentation](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/files.html): Detailed documentation about the `qpassrunner_d` project.
 - [Wiki](https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/wikis/home): Project wiki with additional information and guides.
 - [Contributing Guidelines](CONTRIBUTING.md): Document to understand the process for contributing to our project.
 - Flowchart of the QIR Pass Runner daemon: 
@@ -125,14 +125,14 @@ Alternatively, you can manually open the file `documentation/html/index.html` wi
 
 You can run the QIR Pass Runner daemon and a dummy selector as follows:
 
-1. If qpassrunner_d is already installed:
+1. If `qpassrunner_d` is already installed:
 
    - Simply run the QIR Pass Runner daemon:
      ```bash
      qpassrunner_d
      ```
 
-2. If qpassrunner_d is not installed, you can either 1) install it as described in the [Installation Section](#installation) and run it as shown in the above step or 2) compile it as explained in the [Compilation Section](#compilation) and then run it as follows:
+2. If `qpassrunner_d` is not installed, you can either 1) install it as described in the [Installation Section](#installation) and run it as shown in the above step or 2) compile it as explained in the [Compilation Section](#compilation) and then run it as follows:
 
    - Navigate to the qir_passes directory (if you are not already there):
      ```bash
@@ -175,18 +175,18 @@ You can run the QIR Pass Runner daemon and a dummy selector as follows:
    ./qselectorrunner_d
    ```
 
-9. To compile and run a test client for submitting a Quantum Circuit described in QIR to the qpassrunner_d daemon, as well as a toy pass selector, navigate to the tests directory using a third terminal:
+9. To compile and run a test client for submitting a Quantum Circuit described in QIR to the `qpassrunner_d` daemon, as well as a toy pass selector, navigate to the tests directory using a third terminal:
    ```bash
    cd qir_passes/tests/
    ```
 
 10. Compile the test client using mpic++:
-   ```bash
-   mpic++ -std=c++14 test.cpp -o test
-   ```
+    ```bash
+    mpic++ -std=c++14 test.cpp -o test
+    ```
 
 11. Run the test client:
-   ```bash
-   ./test
-   ```
+    ```bash
+    ./test
+    ```
 

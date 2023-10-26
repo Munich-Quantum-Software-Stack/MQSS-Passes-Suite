@@ -1,4 +1,4 @@
-# qpassrunner_d (Pass Runner Daemon)
+# qpassrunner_d (QIR Pass Runner daemon)
 
 `qpassrunner_d` is a daemon for executing LLVM passes on a Quantum Circuit described on a Quantum Intermediate Representation (QIR). This README provides instructions for compiling, installing, and uninstalling the `qpassrunner_d`.
 

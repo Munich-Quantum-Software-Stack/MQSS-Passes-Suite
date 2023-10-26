@@ -18,7 +18,7 @@ Before you get started, please take a moment to read this document to understand
    git checkout -b custom-pass/name-of-pass
    ```
 
-4. **Create a custom pass**: Once your contribution is ready you need to registering the custom pass. Let `MyOptimization` be the name of your new pass. It shall then be located at `src/passes/QirMyOptimization.cpp`, whereas its header shall be located at `src/headers/QirMyOptimization.hpp`.
+4. **Create a custom pass**: Once your contribution is ready you need to register the custom pass. Let `MyOptimization` be the name of your new pass. It shall then be located at `src/passes/QirMyOptimization.cpp`, whereas its header shall be located at `src/headers/QirMyOptimization.hpp`.
 
    - Add the name of the pass to the `src/passes/CMakeLists.txt` file:
       ```cmake
@@ -37,6 +37,7 @@ Before you get started, please take a moment to read this document to understand
           // ...
       };
       ```
+   - Please ensure that your code contributions include comments that adhere to the formatting and conventions expected by Doxygen, as clear and consistent documentation is essential for maintaining and understanding the project.
 
 5. **Test**: Ensure that your changes work as intended and don't introduce any new issues.
 

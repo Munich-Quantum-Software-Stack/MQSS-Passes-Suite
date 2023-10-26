@@ -6,7 +6,12 @@
 
 Before you can install `qpassrunner_d`, you need to compile the project. To do this, follow the steps below:
 
-1. Compile the chosen Quantum Device Management Interface (QDMI), for example:
+1. Install the required dependencies:
+   ```bash
+   sudo apt install -y cmake llvm libopenmpi-dev g++
+   ```
+
+2. Compile the chosen Quantum Device Management Interface (QDMI), for example:
    - Navigate to the `qdmi` directory which contains a dummy QDMI:
       ```bash
       cd qdmi
@@ -27,11 +32,6 @@ Before you can install `qpassrunner_d`, you need to compile the project. To do t
       make
       cd ../..
       ```
-
-2. Install the required dependencies:
-   ```bash
-   sudo apt install -y cmake llvm libopenmpi-dev g++
-   ```
 
 3. Create a `build` directory:
    ```bash

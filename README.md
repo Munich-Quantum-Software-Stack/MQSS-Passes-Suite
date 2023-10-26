@@ -71,6 +71,7 @@ This section provides links to project documentation and additional resources:
 
 - [Documentation](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/files.html): Detailed documentation about the qpassrunner_d project.
 - [Wiki](https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/wikis/home): Project wiki with additional information and guides.
+- [Contributing Guidelines](CONTRIBUTING.md): Document to understand the process for contributing to our project.
 - Flowchart of the QIR Pass Runner daemon: 
 ![Alt](flowcharts/flow.png)
 
@@ -131,11 +132,9 @@ You can run the QIR Pass Runner daemon and a dummy selector as follows:
      qpassrunner_d
      ```
 
-2. If qpassrunner_d is not installed:
+2. If qpassrunner_d is not installed, you can either 1) install it as described in the [Installation Section](#installation) and run it as shown in the above step or 2) compile it as explained in the [Compilation Section](#compilation) and then run it as follows:
 
-You can either 1) install it as described in the [Installation Section](#installation) and run it as shown in the above step or 2) compile it as explained in the [Compilation Section](#compilation) and then run it as follows:
-
-   - Navigate to the qir_passes directory:
+   - Navigate to the qir_passes directory (if you are not already there):
      ```bash
      cd qir_passes/
      ```

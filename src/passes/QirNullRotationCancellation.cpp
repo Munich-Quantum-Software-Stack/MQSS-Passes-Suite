@@ -61,12 +61,14 @@ PreservedAnalyses QirNullRotationCancellationPass::run(Module &module, ModuleAna
 				        }
                     }
 
-                    auto angle = angleFP->getValue().convertToDouble(); 
+                    if (angleFP) {
+                        auto angle = angleFP->getValue().convertToDouble();
 
-                    if (angleFP->isZero() || checkDoublePiMultiplies(angle)) {
-                        rotationGatesToRemove.push_back(current_instruction);
-                        errs() << "\tRedundant rotation found: " << current_name << '\n';
-				    }
+                        if (angleFP->isZero() || checkDoublePiMultiplies(angle)) {
+                            rotationGatesToRemove.push_back(current_instruction);
+                            errs() << "\tRedundant rotation found: " << current_name << '\n';
+				        }
+                    }
                 }
             }
         }

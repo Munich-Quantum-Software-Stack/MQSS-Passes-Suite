@@ -7,7 +7,7 @@ set -e
 sudo apt install -y flex bison || true
 
 # Check if doxygen is installed
-if command -v "doxygen" &> /dev/null; then
+if command -v "doxygen"; then
     echo "doxygen is already installed"
 else
     echo "Installing doxygen"

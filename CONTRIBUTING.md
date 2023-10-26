@@ -9,28 +9,46 @@ Before you get started, please take a moment to read this document to understand
 1. **Fork the Repository**: Click the "Fork" button on the top right of the repository's page to create your own copy.
 
 2. **Clone Your Fork**: Clone your forked repository to your local machine:
-```shell
+   ```shell
    git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/your-fork.git
-```
+   ```
 
 3. **Create a new branch**: Create a new branch for your contribution:
-```shell
+   ```shell
    git checkout -b custom-pass/name-of-pass
-```
+   ```
 
-4. **Make Changes**: Make your changes or additions to the codebase.
+4. **Create a custom pass**: Once your contribution is ready you need to registering the custom pass. Let `MyOptimization` be the name of your new pass. It shall then be located at `src/passes/QirMyOptimization.cpp`, whereas its header shall be located at `src/headers/QirMyOptimization.hpp`.
+
+   - Add the name of the pass to the `src/passes/CMakeLists.txt` file:
+      ```cmake
+      set(PASSES_SOURCE_FILES
+          # ...
+          QirMyOptimization.cpp
+          # ...
+      )
+      ```
+
+   - Add the name of the pass compiled as a shared library to the selector `selector/selectors/selector_all.cpp` for CI testing purposes:
+      ```cpp
+      std::vector<std::string> passes {
+          // ...
+          libQirMyOptimizationPass.so
+          // ...
+      };
+      ```
 
 5. **Test**: Ensure that your changes work as intended and don't introduce any new issues.
 
 6. **Commit Your Changes**: Commit your changes with a clear and concise message:
-```shell
-git commit -m "Added name-of-pass"
-```
+   ```shell
+   git commit -m "Added name-of-pass"
+   ```
 
 7. **Push to Your Fork**: Push your changes to your fork on GitHub:
-```shell
-git push origin custom-pass/name-of-pass
-```
+   ```shell
+   git push origin custom-pass/name-of-pass
+   ```
 
 8. **Create a Pull Request**: Open a pull request from your branch to the Plugins branch in the original repository.
 

@@ -8,6 +8,8 @@ set(PASSES_SOURCE_FILES
     QirCNotToHCZHDecomposition.cpp
     QirCommuteCnotRx.cpp
     QirCommuteRxCnot.cpp
+    QirCommuteCnotX.cpp
+    QirCommuteXCnot.cpp
     # D
     QirDeferMeasurement.cpp
     # F

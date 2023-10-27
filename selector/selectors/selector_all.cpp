@@ -100,6 +100,8 @@ int main(void) {
         "libQirXCnotXReductionPass.so",
         "libQirCommuteCnotRxPass.so",
         "libQirCommuteRxCnotPass.so",
+        "libQirCommuteCnotXPass.so",
+        "libQirCommuteXCnotPass.so",
         "libQirPlaceIrreversibleGatesInMetadataPass.so",
 	    "libQirAnnotateUnsupportedGatesPass.so",
         "libQirU3ToRzRyRzDecompositionPass.so",

@@ -43,6 +43,9 @@ entry:
   call void @__quantum__qis__rx__body(double %pi4, %Qubit* null)
   call void @__quantum__qis__rx__body(double %pi4, %Qubit* null)
   call void @__quantum__qis__rx__body(double %pi4, %Qubit* null)
+  ; calls to check X and Cnot commutes
+  call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__x__body(%Qubit* inttoptr (i64 1 to %Qubit*))
   ; calls to record the program output
   call void @__quantum__rt__tuple_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @0, i32 0, i32 0))

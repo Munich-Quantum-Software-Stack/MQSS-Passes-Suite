@@ -192,7 +192,6 @@ public:
      */
     void clearMetadata();
 
-
 private:
     // Private constructor of the 'QirPassRunner' class
     QirPassRunner();

@@ -37,7 +37,6 @@ Before you get started, please take a moment to read this document to understand
           // ...
       };
       ```
-   - Please ensure that your code contributions include comments that adhere to the formatting and conventions expected by [Doxygen](https://www.doxygen.nl/manual/docblocks.html), as clear and consistent documentation is essential for maintaining and understanding the project.
 
 5. **Test**: Ensure that your changes work as intended and don't introduce any new issues.
 
@@ -59,7 +58,7 @@ Before you get started, please take a moment to read this document to understand
 
 ## Code Style and Guidelines
 
-Before making contributions, please familiarize yourself with our coding standards and guidelines. 
+Before making contributions, please familiarize yourself with our coding standards and guidelines. Kindly ensure that your code contributions include comments that adhere to the formatting and conventions expected by [Doxygen](https://www.doxygen.nl/manual/docblocks.html), as clear and consistent documentation is essential for maintaining and understanding the project.
 
 ## Reporting Issues
 

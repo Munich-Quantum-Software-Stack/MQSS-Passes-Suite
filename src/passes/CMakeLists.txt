@@ -10,6 +10,8 @@ set(PASSES_SOURCE_FILES
     QirCommuteRxCnot.cpp
     QirCommuteCnotX.cpp
     QirCommuteXCnot.cpp
+    QirCommuteCnotZ.cpp
+    QirCommuteZCnot.cpp
     # D
     QirDeferMeasurement.cpp
     # F

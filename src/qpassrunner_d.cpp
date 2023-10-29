@@ -253,9 +253,17 @@ int main(int argc, char* argv[]) {
     }
 
     // If we are the parent process, exit
+    const char *homeDirectory = getenv("HOME");
+    if (!homeDirectory) {
+        std::cerr << "[qpassrunner_d] Error getting the home directory" << std::endl;
+        return 1;
+    }
+    
+    std::string filePath = std::string(homeDirectory) + "/qpassrunner_d.log";
+    
     if (pid > 0) {
         std::cout << "[qpassrunner_d] To stop this daemon type: kill -15 " << pid << std::endl;
-        std::cout << "[qpassrunner_d] The log can be found in /var/log/qpassrunner_d.log" << std::endl;
+        std::cout << "[qpassrunner_d] The log can be found in ~/passrunner_d.log" << std::endl;
 
         return 0;
     }
@@ -306,7 +314,9 @@ int main(int argc, char* argv[]) {
     // Set the output stream
     if (stream == "log") {
         int logFileDescriptor = -1;
-        logFileDescriptor = open("/var/log/qpassrunner_d.log", O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
+
+        logFileDescriptor = open(filePath.c_str(), O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
+
         if (logFileDescriptor == -1) {
             std::cerr << "[qpassrunner_d] Warning: Could not open the log file" << std::endl;
         }

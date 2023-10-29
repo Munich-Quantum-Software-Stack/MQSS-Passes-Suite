@@ -3,6 +3,9 @@ project(QirPassRunner
   VERSION 0.3
   DESCRIPTION "QIR Pass Runner")
 
+# Create the qpassrunner_d.log file
+file(WRITE "$ENV{HOME}/qpassrunner_d.log" "")
+
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 14)
 

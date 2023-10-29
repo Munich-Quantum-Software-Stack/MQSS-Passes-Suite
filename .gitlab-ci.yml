@@ -57,7 +57,7 @@ execute:
     - cmake --build .
     - echo Pass Runner built successfully
     # ...
-    - ./qpassrunner_d &
+    - ./qpassrunner_d screen &
     - sleep 1
     - cd ../selector/build/
     - ./qselectorrunner_d &

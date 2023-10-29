@@ -91,9 +91,8 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisMana
         size_t      lastDot            = passName.find_last_of('.');
         std::string passNameWithoutExt = passName.substr(0, lastDot);
 
-        std::cout << "[Pass Runner] Applying pass: \033[1m" 
+        std::cout << "[Pass Runner] Applying pass: " 
                   << passNameWithoutExt 
-                  << "\033[0m" 
                   << std::endl;
 
         // Pointer to 'loadQirPass' function returning a pointer to the 'PassModule' object

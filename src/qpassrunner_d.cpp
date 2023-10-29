@@ -16,6 +16,11 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <fcntl.h>
 
 /**
  * @var PORT
@@ -127,11 +132,11 @@ void handleSelector(int selectorSocket) {
     MemoryBufferRef QIRRef = *memoryBuffer;
     std::unique_ptr<Module> module = parseIR(QIRRef, error, Context);
     if (!module) {
-        std::cout << "[Pass Runner] Warning: There was an error parsing the generic QIR" << std::endl;
+        std::cout << "[qpassrunner_d] Warning: There was an error parsing the generic QIR" << std::endl;
         return;
     }
    
-    std::cout << "[Pass Runner] Generic QIR received from a selector" << std::endl;
+    std::cout << "[qpassrunner_d] Generic QIR received from a selector" << std::endl;
     
     // Receive the list of passes from the selector
 	std::vector<std::string> passes;
@@ -157,9 +162,9 @@ void handleSelector(int selectorSocket) {
     }
 
     if (passes.empty()) {
-		std::cout << "[Pass Runner] Warning: A selector did not send any pass to the pass runner" << std::endl;
+		std::cout << "[qpassrunner_d] Warning: A selector did not send any pass to the pass runner" << std::endl;
 		close(selectorSocket);
-        std::cout << "[Pass Runner] Selector disconnected";
+        std::cout << "[qpassrunner_d] Selector disconnected" << std::endl;
 		return;
 	}
 
@@ -172,7 +177,7 @@ void handleSelector(int selectorSocket) {
     if (metadataSupport)
         if (ConstantAsMetadata* boolMetadata = dyn_cast<ConstantAsMetadata>(metadataSupport))
             if (ConstantInt* boolConstant = dyn_cast<ConstantInt>(boolMetadata->getValue()))
-                errs() << "[Pass Runner] Flag inserted: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
+                errs() << "[qpassrunner_d] Flag inserted: \"lrz_supports_qir\" = " << (boolConstant->isOne() ? "true" : "false") << '\n';
 
     // Create an instance of the QirPassRunner and append to it all the received passes
     QirPassRunner &QPR = QirPassRunner::getInstance();
@@ -181,7 +186,7 @@ void handleSelector(int selectorSocket) {
     std::reverse(passes.begin(), passes.end());
     while (!passes.empty()) {
         auto pass = passes.back();
-        QPR.append("./src/passes/" + pass);
+        QPR.append("/usr/local/bin/src/passes/" + pass);
         passes.pop_back();
     }
 
@@ -195,7 +200,7 @@ void handleSelector(int selectorSocket) {
     OS.flush();
     const char* qir = str.data();
     send(selectorSocket, qir, strlen(qir), 0);
-    std::cout << "[Pass Runner] Adapted QIR sent to selector" << std::endl;
+    std::cout << "[qpassrunner_d] Adapted QIR sent to selector" << std::endl;
 
     // Free memory
     QPR.clearMetadata();
@@ -203,7 +208,7 @@ void handleSelector(int selectorSocket) {
 
     // Disconnect from the selector
 	close(selectorSocket);
-	std::cout << "[Pass Runner] Selector disconnected";
+	std::cout << "[qpassrunner_d] Selector disconnected" << std::endl;
 }
 
 /**
@@ -212,9 +217,11 @@ void handleSelector(int selectorSocket) {
  * @param signum Number of the interrupt signal
  */
 void signalHandler(int signum) {
-	std::cerr << "[Pass Runner] Stoping" << std::endl;
-	close(qprSocket);
-	exit(0);
+    if (signum == SIGTERM) {
+        std::cerr << "[qpassrunner_d] Stoping" << std::endl;
+        close(qprSocket);
+        exit(0);
+    }
 }
 
 /**
@@ -224,15 +231,39 @@ void signalHandler(int signum) {
  *
  * @return int
  */
-int main(void) {
-    // Go to function 'signalHandler' whenever the 'SIGTERM' (graceful
-    // termination) signal is sent to this process
-	signal(SIGTERM, signalHandler);
+int main(int argc, char* argv[]) {
+    std::string stream = "screen";
+    if (argc != 2) {
+        std::cerr << "[qpassrunner_d] Usage: qpassrunner_d [screen|log]" << std::endl;
+        return 1;
+    } else {
+        stream = argv[1];
+        if (stream != "screen" && stream != "log") {
+            std::cerr << "[qpassrunner_d] Usage: qpassrunner_d [screen|log]" << std::endl;
+            return 1;
+        }
+    }
+
+    // Fork the process to create a daemon
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        std::cerr << "[qpassrunner_d] Failed to fork" << std::endl;
+        return 1;
+    }
+
+    // If we are the parent process, exit
+    if (pid > 0) {
+        std::cout << "[qpassrunner_d] To stop this daemon type: kill -15 " << pid << std::endl;
+        std::cout << "[qpassrunner_d] The log can be found in /var/log/qpassrunner_d.log" << std::endl;
+
+        return 0;
+    }
 
     // Create a socket for transfering data from and to selectors
     qprSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (qprSocket == -1) {
-        std::cerr << "[Pass Runner] Error creating own socket" << std::endl;
+        std::cerr << "[qpassrunner_d] Error creating own socket" << std::endl;
         return 1;
     }
 
@@ -248,8 +279,16 @@ int main(void) {
     qprAddr.sin_addr.s_addr = INADDR_ANY;
     qprAddr.sin_port        = htons(PORT);
 
-    if (bind(qprSocket, (struct sockaddr*)&qprAddr, sizeof(qprAddr)) == -1) {
-        std::cerr << "[Pass Runner] Error binding" << std::endl;
+    // Create a new session and become the session leader
+    setsid();
+
+    // Change the working directory to root to avoid locking the current directory
+    chdir("/");
+
+    signal(SIGTERM, signalHandler);  // Set up a signal handler for graceful termination
+
+    if (bind(qprSocket, (struct sockaddr*)&qprAddr, sizeof(qprAddr)) != 0) {
+        std::cerr << "[qpassrunner_d] Error binding" << std::endl;
         close(qprSocket);
         return 1;
     }
@@ -257,12 +296,25 @@ int main(void) {
     // Start listening for incomming selectors
     // TODO HOW MANY PENDING CONNECTIONS SHALL BE ALLOW TO QUEUE?
     if (listen(qprSocket, 5) == -1) {
-        std::cerr << "[Pass Runner] Error listening" << std::endl;
+        std::cerr << "[qpassrunner_d] Error listening" << std::endl;
         close(qprSocket);
         return 1;
     }
 
-    std::cout << "[Pass Runner] Listening on port " << PORT << std::endl;
+    std::cout << "[qpassrunner_d] Listening on port " << PORT;
+
+    // Set the output stream
+    if (stream == "log") {
+        int logFileDescriptor = -1;
+        logFileDescriptor = open("/var/log/qpassrunner_d.log", O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
+        if (logFileDescriptor == -1) {
+            std::cerr << "[qpassrunner_d] Warning: Could not open the log file" << std::endl;
+        }
+        else {
+            dup2(logFileDescriptor, STDOUT_FILENO);
+            dup2(logFileDescriptor, STDERR_FILENO);
+        }
+    }
 
     // Enter to an infinite loop
     while (true) {
@@ -272,18 +324,13 @@ int main(void) {
         int selectorSocket = accept(qprSocket, (struct sockaddr*)&selectorAddr, &selectorAddrLen);
 
         if (selectorSocket == -1) {
-            std::cerr << "[Pass Runner] Error accepting connection from a selector" 
+            std::cerr << "[qpassrunner_d] Error accepting connection from a selector" 
                       << std::endl;
 
             continue;
         }
 
-        struct winsize w;
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-        std::cout << std::endl;
-        for (int i = 0; i < w.ws_col; i++)
-            std::cout << '-';
-        std::cout << "\n[Pass Runner] Selector connected" << std::endl;
+        std::cout << "\n\n[qpassrunner_d] Selector connected" << std::endl;
 
         // Create a new thread that executes 'handleSelector' to receive
         // a QIR and a set of passes from the selector to subsequently

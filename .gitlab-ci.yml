@@ -56,7 +56,7 @@ execute:
     - cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
     - cmake --build .
     - echo Pass Runner built successfully
-    - sudo make install
+    - make install
     - echo Pass Runner installed successfully
     # ...
     - qpassrunner_d screen &

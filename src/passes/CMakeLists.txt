@@ -14,6 +14,7 @@ set(PASSES_SOURCE_FILES
     QirCommuteZCnot.cpp
     # D
     QirDeferMeasurement.cpp
+    QirDoubleCnotCancellation.cpp
     # F
     QirFunctionAnnotator.cpp
     QirFunctionReplacement.cpp

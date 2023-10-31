@@ -36,6 +36,9 @@ entry:
   call void @__quantum__qis__mz__body(%Qubit* null, %Result* writeonly null)
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Result* writeonly inttoptr (i64 1 to %Result*))
   call void @__quantum__qis__id__body(%Qubit* null)
+  ; calls to check double Cnot cancellation  
+  call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   ; calls to check null rotation cancellation
   call void @__quantum__qis__ry__body(double %zero, %Qubit* null)
   call void @__quantum__qis__rz__body(double %null_rotation, %Qubit* null)

@@ -100,6 +100,10 @@ int main(void) {
         "libQirXCnotXReductionPass.so",
         "libQirCommuteCnotRxPass.so",
         "libQirCommuteRxCnotPass.so",
+        "libQirCommuteCnotXPass.so",
+        "libQirCommuteXCnotPass.so",
+        "libQirCommuteCnotZPass.so",
+        "libQirCommuteZCnotPass.so",
         "libQirPlaceIrreversibleGatesInMetadataPass.so",
 	    "libQirAnnotateUnsupportedGatesPass.so",
         "libQirU3ToRzRyRzDecompositionPass.so",
@@ -118,6 +122,7 @@ int main(void) {
         "libQirResourceAnnotationPass.so",
 	    "libQirNullRotationCancellationPass.so",
 	    "libQirMergeRotationsPass.so",
+        "libQirDoubleCnotCancellationPass.so",
     };
 
     // Send each of the passes to the QPR

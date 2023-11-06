@@ -17,7 +17,10 @@ cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
 cmake --build .
 sudo make install
 
-export LC_ALL=en_US.UTF-8
+#sudo cmake -P -E copy ${CMAKE_SOURCE_DIR}/benchmarks/test.ll /usr/local/bin/src/schedulers/benchmarks/
+sudo cp benchmarks/test.ll  /usr/local/bin/src/schedulers/benchmarks/
+
+#export LC_ALL=en_US.UTF-8
 
 # Run the pass runner
 qpassrunner_d log # usage: qpassrunner_d [screen|log]

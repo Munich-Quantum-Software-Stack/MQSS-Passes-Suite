@@ -263,7 +263,7 @@ int main(int argc, char* argv[]) {
     
     if (pid > 0) {
         std::cout << "[qpassrunner_d] To stop this daemon type: kill -15 " << pid << std::endl;
-        std::cout << "[qpassrunner_d] The log can be found in ~/passrunner_d.log" << std::endl;
+        std::cout << "[qpassrunner_d] The log can be found in ~/qpassrunner_d.log" << std::endl;
 
         return 0;
     }
@@ -309,8 +309,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::cout << "[qpassrunner_d] Listening on port " << PORT;
-
     // Set the output stream
     if (stream == "log") {
         int logFileDescriptor = -1;
@@ -325,6 +323,8 @@ int main(int argc, char* argv[]) {
             dup2(logFileDescriptor, STDERR_FILENO);
         }
     }
+
+    std::cout << "[qpassrunner_d] Listening on port " << PORT;
 
     // Enter to an infinite loop
     while (true) {

@@ -43,56 +43,57 @@ const int   BUFFER_SIZE = 65536;
  */
 int main(void) {
     // Create socket
-    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (clientSocket == -1) {
+    int passrunnerSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (passrunnerSocket == -1) {
         std::cerr << "[Selector] Error creating socket" << std::endl;
         return 1;
     }
 
-    // Connect to the QIR Pass Runner (QPR)
-    sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(PORT);
-    inet_pton(AF_INET, SERVER_IP, &serverAddr.sin_addr);
+    // Connect to qpassrunner_d
+    sockaddr_in passrunnerAddr;
+    passrunnerAddr.sin_family = AF_INET;
+    passrunnerAddr.sin_port = htons(PORT);
+    inet_pton(AF_INET, SERVER_IP, &passrunnerAddr.sin_addr);
 
-    if (connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        std::cerr << "[Selector] Error connecting to the QPR" << std::endl;
-        close(clientSocket);
+    if (connect(passrunnerSocket, (struct sockaddr*)&passrunnerAddr, sizeof(passrunnerAddr)) == -1) {
+        std::cerr << "[Selector] Error connecting to qpassrunner_d" << std::endl;
+        close(passrunnerSocket);
         return 1;
     }
 
-    // Open the QIR file
-    const char* filename = "../../benchmarks/test.ll";
-    std::ifstream file(filename, std::ios::binary);
-    if (!file.is_open()) {
-        std::cerr << "[Selector] Failed to open file: " << filename << std::endl;
-        return 1;
-    }
+    //// Open the QIR file
+    //const char* filename = ".qpassrunner_d
+    //std::ifstream file(filename, std::ios::binary);
+    //if (!file.is_open()) {
+    //    std::cerr << "[Selector] Failed to open file: " << filename << std::endl;
+    //    return 1;
+    //}
 
-    // Get the file size
-    file.seekg(0, std::ios::end);
-    std::streampos fileSize = file.tellg();
-    file.seekg(0, std::ios::beg);
+    //// Get the file size
+    //file.seekg(0, std::ios::end);
+    //std::streampos fileSize = file.tellg();
+    //file.seekg(0, std::ios::beg);
 
-    // Read the file content into a buffer
-    char* genericQir = new char[fileSize];
-    file.read(genericQir, fileSize);
-    file.close();
+    //// Read the file content into a buffer
+    //char* genericQir = new char[fileSize];
+    //file.read(genericQir, fileSize);
+    //file.close();
 
-    // Send generic QIR to the QPR
-    ssize_t fileSizeNetwork = htonl(fileSize);
-    std::cout << "[Selector] Sending generic QIR" << std::endl << std::endl;
-	ssize_t bytesSent = send(clientSocket, &fileSizeNetwork, sizeof(fileSizeNetwork), 0);
-    if (bytesSent == -1) {
-        std::cerr << "[Selector] Error: Failed to send size of generic QIR to the QPR" << std::endl;
-		exit(1);
-	}
-    bytesSent = send(clientSocket, genericQir, fileSize, 0);
-    if (bytesSent == -1) {
-        std::cerr << "[Selector] Error: Failed to send generic QIR to the QPR" << std::endl;
-        exit(1);
-    }
-    delete[] genericQir;
+    //// Send generic QIR to qpassrunner_d
+    //ssize_t fileSizeNetwork = htonl(fileSize);
+    //std::cout << "[Selector] Sending generic QIR" << std::endl << std::endl;
+	//ssize_t bytesSent = send(passrunnerSocket, &fileSizeNetwork, sizeof(fileSizeNetwork), 0);
+    //if (bytesSent == -1) {
+    //    std::cerr << "[Selector] Error: Failed to send size of generic QIR module to qpassrunner_d" 
+    //              << std::endl;
+	//	exit(1);
+	//}
+    //bytesSent = send(passrunnerSocket, genericQir, fileSize, 0);
+    //if (bytesSent == -1) {
+    //    std::cerr << "[Selector] Error: Failed to send generic QIR to qpassrunner_d" << std::endl;
+    //    exit(1);
+    //}
+    //delete[] genericQir;
 
     // Append the desired passes
     std::vector<std::string> passes {
@@ -125,7 +126,7 @@ int main(void) {
         "libQirDoubleCnotCancellationPass.so",
     };
 
-    // Send each of the passes to the QPR
+    // Send each of the passes to qpassrunner_d
     while (!passes.empty()) {
         auto pass = passes.back();
         const char* libPass = pass.c_str();
@@ -133,13 +134,13 @@ int main(void) {
 		
         std::cout << "[Selector] Sending pass " << pass << std::endl;
 		
-		if (send(clientSocket, &passSizeNetwork, sizeof(passSizeNetwork), 0)  < 0) {
-			std::cout << "[Selector] Warning: Failed to send size of the following pass to the QPR: \n" 
+		if (send(passrunnerSocket, &passSizeNetwork, sizeof(passSizeNetwork), 0)  < 0) {
+			std::cout << "[Selector] Warning: Failed to send size of the following pass to qpassrunner_d: \n" 
 					  << pass << std::endl;
 			continue;
 		}
-		if (send(clientSocket, libPass, strlen(libPass), 0) < 0) {
-			std::cout << "[Selector] Warning: Failed to send the followig pass to the QPR: \n"
+		if (send(passrunnerSocket, libPass, strlen(libPass), 0) < 0) {
+			std::cout << "[Selector] Warning: Failed to send the followig pass to qpassrunner_d: \n"
 					  << pass << std::endl;
 			continue;
 		}
@@ -150,27 +151,27 @@ int main(void) {
     // Send End Of Transmission (EOF)
     const char* eot = "EOT";
     ssize_t eotSizeNetwork = htonl(strlen(eot));
-	if (send(clientSocket, &eotSizeNetwork, sizeof(eotSizeNetwork), 0) < 0) {
-		std::cout << "[Selector] Warning: Failed to send size of the EOT to the QPR" << std::endl;
-		close(clientSocket);
+	if (send(passrunnerSocket, &eotSizeNetwork, sizeof(eotSizeNetwork), 0) < 0) {
+		std::cout << "[Selector] Warning: Failed to send size of the EOT to qpassrunner_d" << std::endl;
+		close(passrunnerSocket);
 		return 1;
 	}
-    if (send(clientSocket, eot, strlen(eot), 0) < 0) {
-        std::cerr << "[Selector] Error: failed to send end of transmission to the QPR" << std::endl;
-		close(clientSocket);
+    if (send(passrunnerSocket, eot, strlen(eot), 0) < 0) {
+        std::cerr << "[Selector] Error: failed to send end of transmission to qpassrunner_d" << std::endl;
+		close(passrunnerSocket);
         return 1;
     }
 
-    // Receive response from the QPR
+    // Receive response from qpassrunner_d
     char adapted_qir[BUFFER_SIZE];
-    ssize_t bytesRead = recv(clientSocket, adapted_qir, BUFFER_SIZE, 0);
+    ssize_t bytesRead = recv(passrunnerSocket, adapted_qir, BUFFER_SIZE, 0);
     if (bytesRead > 0) {
         adapted_qir[bytesRead] = '\0';
         std::cout << "[Selector] Received adapted QIR:\n\n" << adapted_qir << std::endl;
     }
 
-    // Close connection with the QPR
-    close(clientSocket);
+    // Close connection with qpassrunner_d
+    close(passrunnerSocket);
     return 0;
 }
 

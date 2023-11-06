@@ -25,7 +25,7 @@ const int PORT      = 8080;
 
 /**
  * @var qsrSocket
- * @brief Socket for transfering data from and to clients
+ * @brief Socket for transfering data from and to schedulers
  */
 int       qsrSocket = -1;
 
@@ -91,36 +91,62 @@ int       qsrSocket = -1;
 // +++++++++++++++++++++                                            +++++++++++++++++
 
 /**
- * @brief Function triggered whenever a client connects to this daemon.
+ * @brief Function triggered whenever a scheduler connects to this daemon.
  * Its job is to receive the name of a selector and subsequently
  * invoke it. It is the invoked selector itself the one submitting
  * the QIR binary blob and a set of selected passes to the Pass 
  * Runner daemon.
- * @param clientSocket The socket to connect with a client
+ * @param schedulerSocket The socket to connect with a scheduler
  */
-void handleClient(int clientSocket) {
-    // Receive name of the desired selector
+void handleScheduler(int schedulerSocket) {
+    // Receive the generic QIR module
     ssize_t qirMessageSizeNetwork;
-    recv(clientSocket, &qirMessageSizeNetwork, sizeof(qirMessageSizeNetwork), 0);
+    recv(schedulerSocket, &qirMessageSizeNetwork, sizeof(qirMessageSizeNetwork), 0);
     ssize_t qirMessageSize = ntohl(qirMessageSizeNetwork);
+    char* receivedQir = new char[qirMessageSize];
+    ssize_t qirBytesRead = recv(schedulerSocket, receivedQir, qirMessageSize, 0);
+    receivedQir[qirBytesRead] = '\0';
 
+    std::cout << "[qselectorrunner_d] Generic QIR module (binary blob) received from a scheduler" 
+              << std::endl;
+
+    // Receive the target architecture
+    recv(schedulerSocket, &qirMessageSizeNetwork, sizeof(qirMessageSizeNetwork), 0);
+    qirMessageSize = ntohl(qirMessageSizeNetwork);
+    char* receivedTargetArch = new char[qirMessageSize];
+    qirBytesRead = recv(schedulerSocket, receivedTargetArch, qirMessageSize, 0);
+    receivedTargetArch[qirBytesRead] = '\0';
+
+    std::cout << "[qselectorrunner_d] Target architecture received from a scheduler: " 
+              << receivedTargetArch
+              << std::endl;
+
+    // Receive name of the desired selector
+    recv(schedulerSocket, &qirMessageSizeNetwork, sizeof(qirMessageSizeNetwork), 0);
+    qirMessageSize = ntohl(qirMessageSizeNetwork);
     char* receivedSelector = new char[qirMessageSize];
-    ssize_t qirBytesRead = recv(clientSocket, receivedSelector, qirMessageSize, 0);
+    qirBytesRead = recv(schedulerSocket, receivedSelector, qirMessageSize, 0);
     receivedSelector[qirBytesRead] = '\0';
+
+    std::cout << "[qselectorrunner_d] Selector received from a scheduler: " 
+              << receivedSelector 
+              << std::endl;
 
     // Load the selector as a shared library
     void* lib_handle = dlopen(receivedSelector, RTLD_LAZY);
  
     if (!lib_handle) {
-        std::cerr << "[Selector Runner] Error loading selector as a shared library: " 
+        std::cerr << "[qselectorrunner_d] Error loading selector as a shared library: " 
                   << dlerror() 
                   << std::endl;
 
-        close(clientSocket);
+        close(schedulerSocket);
         return;
     }
 
-    std::cout << "[Selector Runner] Selector received from a client: " << receivedSelector << std::endl;
+    // TODO SEND receivedQir, receivedTargetArch, and receivedSelector to 
+
+    
 
     // Dynamic loading and linking of the shared library
 	// TODO DO NOT CALL MAIN BUT ANOTHER FUNCTION
@@ -128,23 +154,22 @@ void handleClient(int clientSocket) {
     SelectorFunction selector = reinterpret_cast<SelectorFunction>(dlsym(lib_handle, "main"));
 
     if (!selector) {
-        std::cerr << "[Selector Runner] Error finding function in shared library: " 
+        std::cerr << "[qselectorrunner_d] Error finding function in shared library: " 
                   << dlerror() 
                   << std::endl;
 
         dlclose(lib_handle);
         return;
-    }
 
     // Call the selector function
     int returnedValue = selector();
 
-    // Inform the client wheter the selector finished successfully
+    // Inform the scheduler wheter the selector finished successfully
     const char *job_status = returnedValue == 0 ? "1" : "0";
-    ssize_t    bytesSent   = send(clientSocket, job_status, strlen(job_status), 0);
+    ssize_t    bytesSent   = send(schedulerSocket, job_status, strlen(job_status), 0);
 
     if (bytesSent == -1 || bytesSent < strlen(job_status)) {
-        std::cerr << "[Selector Runner] Error reporting success of job to the client" 
+        std::cerr << "[qselectorrunner_d] Error reporting success of job to the scheduler" 
                   << std::endl;
     }
 
@@ -152,9 +177,9 @@ void handleClient(int clientSocket) {
     delete[] receivedSelector;
     dlclose(lib_handle);
 
-    // Disconnect from the client
-	close(clientSocket);
-	std::cout << "[Selector Runner] Client disconnected";
+    // Disconnect from the scheduler
+	close(schedulerSocket);
+	std::cout << "[qselectorrunner_d] Client disconnected";
 }
 
 /**
@@ -163,7 +188,7 @@ void handleClient(int clientSocket) {
  * @param signum Number of the interrupt signal
  */
 void signalHandler(int signum) {
-    std::cerr << "[Selector Runner] Stoping" << std::endl;
+    std::cerr << "[qselectorrunner_d] Stoping" << std::endl;
 	close(qsrSocket);
 	exit(0);
 }
@@ -180,10 +205,10 @@ int main(void) {
     // termination) signal is sent to this process
 	signal(SIGTERM, signalHandler);
 
-	// Create a socket for transfering data from and to clients
+	// Create a socket for transfering data from and to schedulers
     qsrSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (qsrSocket == -1) {
-        std::cerr << "[Selector Runner] Error creating own socket" << std::endl;
+        std::cerr << "[qselectorrunner_d] Error creating own socket" << std::endl;
         return 1;
     }
 
@@ -200,30 +225,30 @@ int main(void) {
     serverAddr.sin_port        = htons(PORT);
 
     if (bind(qsrSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
-        std::cerr << "[Selector Runner] Error binding" << std::endl;
+        std::cerr << "[qselectorrunner_d] Error binding" << std::endl;
         close(qsrSocket);
         return 1;
     }
 
-	// Start listening for incomming clients
+	// Start listening for incomming schedulers
     // TODO HOW MANY PENDING CONNECTIONS SHALL BE ALLOW TO QUEUE?
     if (listen(qsrSocket, 5) == -1) {
-        std::cerr << "[Selector Runner] Error listening" << std::endl;
+        std::cerr << "[qselectorrunner_d] Error listening" << std::endl;
         close(qsrSocket);
         return 1;
     }
 
-    std::cout << "[Selector Runner] Listening on port " << PORT << std::endl;
+    std::cout << "[qselectorrunner_d] Listening on port " << PORT << std::endl;
 
 	// Enter to an infinite loop
     while (true) {
-		// Accept an incoming connection from a client
-        sockaddr_in clientAddr;
-        socklen_t clientAddrLen = sizeof(clientAddr);
-        int clientSocket = accept(qsrSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
+		// Accept an incoming connection from a scheduler
+        sockaddr_in schedulerAddr;
+        socklen_t schedulerAddrLen = sizeof(schedulerAddr);
+        int schedulerSocket = accept(qsrSocket, (struct sockaddr*)&schedulerAddr, &schedulerAddrLen);
 
-        if (clientSocket == -1) {
-            std::cerr << "[Selector Runner] Error accepting connection from a client" 
+        if (schedulerSocket == -1) {
+            std::cerr << "[qselectorrunner_d] Error accepting connection from a scheduler" 
 			          << std::endl;
 
             continue;
@@ -234,15 +259,15 @@ int main(void) {
         std::cout << std::endl;
         for (int i = 0; i < w.ws_col; i++)
             std::cout << '-';
-        std::cout << "\n[Selector Runner] Client connected" << std::endl;
+        std::cout << "[qselectorrunner_d] Client connected" << std::endl;
 
-		// Create a new thread that executes 'handleClient' to receive
-        // a selector from the client and then run it
-        std::thread clientThread(handleClient, clientSocket);
+		// Create a new thread that executes 'handleScheduler' to receive
+        // a selector from the scheduler and then run it
+        std::thread schedulerThread(handleScheduler, schedulerSocket);
 
-		// Detach from this thread once done. The 'clientSocket' socket
-        // was closed by the 'handleClient' function
-        clientThread.detach();
+		// Detach from this thread once done. The 'schedulerSocket' socket
+        // was closed by the 'handleScheduler' function
+        schedulerThread.detach();
     }
 
     return 1;

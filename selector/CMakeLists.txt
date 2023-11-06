@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(QirPassSelector
+project(QirSelectorRunner
   VERSION 0.2
   DESCRIPTION "QIR Selector Runner")
 

@@ -6,6 +6,10 @@ project(QirPassRunner
 # Create the qpassrunner_d.log file
 file(WRITE "$ENV{HOME}/qpassrunner_d.log" "")
 
+# Copy the test.ll benchmark to /usr/
+file(COPY ${CMAKE_SOURCE_DIR}/benchmarks/test.ll
+     DESTINATION /usr/local/bin/src/schedulers/benchmarks/)
+
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 14)
 

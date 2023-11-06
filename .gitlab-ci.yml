@@ -47,7 +47,7 @@ execute:
     - echo Selector Runner built successfully
     - cd ../../tests
     # ...
-    - mpic++ -std=c++14 test.cpp -o test
+    - mpic++ -std=c++14 test_selector.cpp -o test_selector
     - echo Test built successfully
     # ...
     - cd ..
@@ -64,5 +64,5 @@ execute:
     - cd ../selector/build/
     - ./qselectorrunner_d &
     - sleep 1
-    - ../../tests/test
+    - ../../tests/test_selector
 

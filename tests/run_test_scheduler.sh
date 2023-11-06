@@ -4,7 +4,7 @@
 set -e
 
 # Build the test
-mpic++ -std=c++14 test.cpp -o test
+g++ test_scheduler.cpp connection_handling.cpp -o test_scheduler -lrabbitmq
 
 # Run the test
-./test
+./test_scheduler

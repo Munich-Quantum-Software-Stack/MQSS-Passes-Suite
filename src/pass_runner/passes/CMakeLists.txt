@@ -21,6 +21,10 @@ set(PASSES_SOURCE_FILES
     QirFunctionReplacement.cpp
     # G
     QirGrouping.cpp
+    # H
+    QirHadamardAndXGateSwitch.cpp
+    QirHadamardAndYGateSwitch.cpp
+    QirHadamardAndZGateSwitch.cpp
     # M
     QirMergeRotations.cpp
     # N
@@ -37,10 +41,19 @@ set(PASSES_SOURCE_FILES
     QirReplaceConstantBranches.cpp
     QirResourceAnnotation.cpp
     QirRzToRxRyRxDecomposition.cpp
+    # S
+    QirSDaggerToS.cpp
+    QirSToSDagger.cpp
     # U
     QirU3ToRzRyRzDecomposition.cpp
     # X
-    QirXCnotXReduction.cpp)
+    QirXCnotXReduction.cpp
+    QirXGateAndHadamardSwitch.cpp
+    # Y
+    QirYGateAndHadamardSwitch.cpp
+    # Z
+    QirZGateAndHadamardSwitch.cpp
+)
 
 # Include all analysis passes here
 set(ANALYSIS_PASSES_SOURCE_FILES

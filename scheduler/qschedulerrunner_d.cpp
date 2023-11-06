@@ -6,9 +6,9 @@
 #include <iostream>
 #include <csignal>
 #include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
 #include <unistd.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <thread>
 #include <string>
 #include <vector>
@@ -20,8 +20,11 @@
 #include <fcntl.h>
 #include <dlfcn.h>
 #include <mutex>
+#include "llvm.hpp"
 
 #include "connection_handling.hpp"
+
+using namespace llvm;
 
 // Define a mutex for protecting shared resources
 std::mutex sharedMutex;
@@ -53,9 +56,9 @@ const int   PORT = 8082;
  * @return const char*
  */
 const char* handleClient(amqp_connection_state_t  conn,
-                  char const              *ClientQueue,
-                  int                      SendChannel,
-                  const std::string       &receivedScheduler) {
+                         char const              *ClientQueue,
+                         int                      SendChannel,
+                         const std::string       &receivedScheduler) {
 
         // Open the QIR file
         const char* filename = "/usr/local/bin/benchmarks/test.ll";
@@ -122,7 +125,7 @@ const char* handleClient(amqp_connection_state_t  conn,
         int receivedSchedulerSocket = socket(AF_INET, SOCK_STREAM, 0);
         if (receivedSchedulerSocket == -1) {
             std::cerr << "[qschedulerrunner_d] Error creating socket" << std::endl;
-            return 1;
+            return NULL;
         }
 
         // Connect to receivedScheduler 
@@ -139,7 +142,7 @@ const char* handleClient(amqp_connection_state_t  conn,
                       << std::endl;
 
             close(receivedSchedulerSocket);
-            return 1;
+            return NULL;
         }
 
         std::string str;

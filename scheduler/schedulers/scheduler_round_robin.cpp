@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <vector>
+
 #include <qdmi.hpp>
 
 /**
@@ -26,6 +27,12 @@ const char* SERVER_IP   = "127.0.0.1";
  * incomming connections.
  */
 const int   PORT        = 8082;
+
+/**
+ * @var qsrSocket
+ * @brief Socket for transfering data to qschedulerrunner_d
+ */
+int         qsrSocket   = -1;
 
 /**
  * @var BUFFER_SIZE
@@ -43,8 +50,26 @@ const int   BUFFER_SIZE = 65536;
  * @return int
  */
 int main(void) {
-    // Accept an incoming connection from qschedulerrunner_d
+    // Create a socket for transfering data to qschedulerrunner_d
+    qsrSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (qsrSocket == -1) {
+        std::cerr << "[qpassrunner_d] Error creating own socket" << std::endl;
+        return 1;
+    }
+
+    // Enable the 'SO_REUSEADDR' option to avoid blocking the IP and port
+    // used by the daemon in case it is not terminated gracefully
+    int optval = 1;
+    setsockopt(qsrSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+
+    // Bind the socket
     sockaddr_in schedulerAddr;
+
+    schedulerAddr.sin_family      = AF_INET;
+    schedulerAddr.sin_addr.s_addr = INADDR_ANY;
+    schedulerAddr.sin_port        = htons(PORT);
+
+    // Accept an incoming connection from qschedulerrunner_d
     socklen_t schedulerAddrLen = sizeof(schedulerAddr);
     int schedulerSocket = accept(qsrSocket, (struct sockaddr*)&schedulerAddr, &schedulerAddrLen);
 
@@ -94,7 +119,7 @@ int main(void) {
                   << std::endl;
 		exit(1);
 	}
-    bytesSent = send(selectorSocket, receivedQir, fileSize, 0);
+    bytesSent = send(selectorSocket, receivedQir, qirMessageSize, 0);
     if (bytesSent == -1) {
         std::cerr << "[Scheduler] Error: Failed to send generic QIR to qselectorrunner_d" 
                   << std::endl;
@@ -104,10 +129,10 @@ int main(void) {
 
     // Choose target architecture
     std::vector<std::string> platforms = qdmi_available_platforms();
-    const char *targetArchitecture = platforms.back();
+    /*const char*/ auto targetArchitecture = platforms.back();
 
     // Send target architecture to qselectorrunner_d
-    ssize_t targetArchSizeNetwork = htonl(strlen(targetArchitecture));
+    ssize_t targetArchSizeNetwork = htonl(targetArchitecture.size());
     
     std::cout << "[Scheduler] Sending target architecture " << targetArchitecture << std::endl;
     
@@ -120,7 +145,7 @@ int main(void) {
         close(selectorSocket);
         return 1;
     }
-    if (send(selectorSocket, targetArchitecture, strlen(target), 0) < 0) {
+    if (send(selectorSocket, targetArchitecture.c_str(), targetArchitecture.size(), 0) < 0) {
         std::cout << "[Scheduler] Errir: Failed to send name of target architecture ("
 		          << targetArchitecture
                   << ") to qselectorrunner_d"
@@ -132,7 +157,8 @@ int main(void) {
 
     // Send selector to qselectorrunner_d
     const char *selectorName   = "selectors/libselector_all.so";
-    ssize_t    fileSizeNetwork = htonl(strlen(selectorName));
+    
+    fileSizeNetwork = htonl(strlen(selectorName));
 
     std::cout << "[Scheduler] Sending selector " << selectorName << " to qselectorrunner_d" << std::endl;
 

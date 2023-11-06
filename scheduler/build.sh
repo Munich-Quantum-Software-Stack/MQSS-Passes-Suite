@@ -3,8 +3,13 @@
 # Set the script to exit on any non-zero status
 set -e
 
+# TODO
+cd ..
+bash qdmi/build.sh
+cd scheduler/
+
 # Install the dependencies
-sudo apt install -y cmake rabbitmq-server || true
+sudo apt install -y cmake llvm rabbitmq-server || true
 if [ -e /usr/local/lib/librabbitmq.so ]; then
     echo "RabbitMQ-C is already installed. Skipping installation."
 else
@@ -23,7 +28,8 @@ fi
 # Build the scheduler runner
 mkdir build/ 2> /dev/null || true
 cd build/
-cmake ..
+export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
+cmake -DCUSTOM_QDMI_PATH=../qdmi ..
 cmake --build .
 sudo make install
 

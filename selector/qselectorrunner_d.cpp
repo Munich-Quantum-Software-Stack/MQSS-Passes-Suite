@@ -160,6 +160,7 @@ void handleScheduler(int schedulerSocket) {
 
         dlclose(lib_handle);
         return;
+    }
 
     // Call the selector function
     int returnedValue = selector();

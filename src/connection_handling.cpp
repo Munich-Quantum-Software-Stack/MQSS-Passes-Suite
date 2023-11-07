@@ -3,9 +3,7 @@
 #include <iostream>
 
 int rabbitmq_new_connection(amqp_connection_state_t  *conn, 
-                            amqp_socket_t           **socket, 
-                            int                       SendChannel, 
-                            int                       ReceiveChannel) {
+                            amqp_socket_t           **socket) {
 
     *conn   = (amqp_new_connection());
     *socket = amqp_tcp_socket_new(*conn);
@@ -26,7 +24,7 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
 
     amqp_rpc_reply_t login_reply = amqp_login(*conn,                    // Establishing a login connection on the specified connection state
                                               AMQP_VHOST,               // Virtual host for RabbitMQ
-                                              2,                        // Channel number
+                                              1,                        // Channel number
                                               131072,                   // Frame max size (maximum size of frames to accept)
                                               0,                        // Heartbeat interval (0 to disable heartbeats, otherwise set in seconds)
                                               AMQP_SASL_METHOD_PLAIN,   // Authentication method (AMQP_SASL_METHOD_PLAIN for plain text) 
@@ -38,9 +36,8 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
         return 1;
     }
     
-    // Open the channels
-    amqp_channel_open(*conn, ReceiveChannel);
-    amqp_channel_open(*conn, SendChannel);
+    // Open the channel
+    amqp_channel_open(*conn, 1);
     amqp_rpc_reply_t channel_reply = amqp_get_rpc_reply(*conn);
     if (channel_reply.reply_type != AMQP_RESPONSE_NORMAL) {
         std::cout << "[qschedulerrunner_d] Error opening channels\n" << std::endl;
@@ -52,8 +49,7 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
 
 void send_message(amqp_connection_state_t *conn, 
                   char                    *message, 
-                  char const              *queue, 
-                  int                      SendChannel) {
+                  char const              *queue) {
 
     amqp_basic_properties_t props;
 
@@ -64,7 +60,7 @@ void send_message(amqp_connection_state_t *conn,
     props.delivery_mode = 2;
 
     auto success = amqp_basic_publish(*conn,                        // state
-                                      SendChannel,                  // channel
+                                      1,                            // channel
                                       amqp_empty_bytes,             // exchange
                                       amqp_cstring_bytes(queue),    // routing_key
                                       1,                            // mandatory
@@ -77,14 +73,13 @@ void send_message(amqp_connection_state_t *conn,
 }
 
 const char *receive_message(amqp_connection_state_t *conn, 
-                            char const               *queue, 
-                            int                       ReceiveChannel) {
+                            char const               *queue) {
 
     char *received_message = nullptr;
 
     // Declare the queue
     amqp_queue_declare(*conn,                        // state
-                       ReceiveChannel,              // channel
+                       1,                            // channel
                        amqp_cstring_bytes(queue),   // queue
                        1,                           // passive
                        1,                           // durable
@@ -97,8 +92,8 @@ const char *receive_message(amqp_connection_state_t *conn,
     if(rcp_reply.reply_type != AMQP_RESPONSE_NORMAL)
         return nullptr;
 
-    amqp_basic_consume(*conn,                        // state
-                       ReceiveChannel,              // channel
+    amqp_basic_consume(*conn,                       // state
+                       1,                           // channel
                        amqp_cstring_bytes(queue),   // queue
                        amqp_empty_bytes,            // consumer_tag
                        0,                           // no_local
@@ -124,7 +119,7 @@ const char *receive_message(amqp_connection_state_t *conn,
 
     if (res.reply_type == AMQP_RESPONSE_NORMAL) {
         // Acknowledge the received message
-        amqp_basic_ack(*conn, ReceiveChannel, envelope.delivery_tag, 0);
+        amqp_basic_ack(*conn, 1, envelope.delivery_tag, 0);
 
         received_message = new char[envelope.message.body.len + 1];  // +1 for the null terminator
         if (received_message) {
@@ -142,79 +137,8 @@ const char *receive_message(amqp_connection_state_t *conn,
     return nullptr;
 }
 
-//int start_consuming(amqp_connection_state_t *conn, 
-//                    char const              *ClientQueue,
-//                    char const              *DaemonQueue,
-//                    int                      ReceiveChannel,
-//                    int                      SendChannel) {
-//
-//    // Declare the client queue
-//    amqp_queue_declare(*conn,
-//                       ReceiveChannel, 
-//                       amqp_cstring_bytes(ClientQueue), 
-//                       0, 
-//                       1, 
-//                       0, 
-//                       0, 
-//                       amqp_empty_table);
-//
-//    // Declare the daemon queue
-//    amqp_queue_declare(*conn,
-//                       ReceiveChannel, 
-//                       amqp_cstring_bytes(DaemonQueue), 
-//                       0, 
-//                       1, 
-//                       0, 
-//                       0, 
-//                       amqp_empty_table);
-//
-//    amqp_rpc_reply_t consume_reply = amqp_get_rpc_reply(*conn);
-//
-//    if (consume_reply.reply_type != AMQP_RESPONSE_NORMAL) {
-//        std::cout << "[qschedulerrunner_d] Error starting to consume messages\n" << std::endl;
-//        return 1;
-//    }
-//
-//    std::cout << "[qschedulerrunner_d] Listening on queue " << DaemonQueue << std::endl << std::endl;
-//
-//    while (true) {
-//        auto *received_message = receive_message(conn,              // conn
-//                                                 DaemonQueue,       // queue
-//                                                 ReceiveChannel);   // SendChannel
-//
-//        if (received_message) {
-//            std::cout << "[qschedulerrunner_d] Scheduler received from a client " << std::endl;
-//
-//            /**
-//             * @todo Invoke the received scheduler
-//             */ 
-//
-//            // Inform the client if the sheduler was properly invoked or not
-//
-//            /**
-//             * @todo Check if the scheduler was properly invoked 
-//             */ 
-//
-//            const char *sent_message = "Target Platform: ";
-//
-//            send_message(conn,                  // conn
-//                        (char *)sent_message,   // message
-//                        ClientQueue,            // queue
-//                        SendChannel);           // SendChannel
-//
-//            std::cout << "[qschedulerrunner_d] Target platofrm sent to the client\n" << std::endl;
-//            delete[] received_message;
-//            
-//            std::cout << "[qschedulerrunner_d] Client disconnected " << std::endl;
-//        }
-//    }
-//    
-//    return 0;
-//}
-
-void close_connections(amqp_connection_state_t *conn, int ReceiveChannel, int SendChannel) {
-    amqp_channel_close(*conn, ReceiveChannel, AMQP_REPLY_SUCCESS);
-    amqp_channel_close(*conn, SendChannel, AMQP_REPLY_SUCCESS);
+void close_connections(amqp_connection_state_t *conn) {
+    amqp_channel_close(*conn, 1, AMQP_REPLY_SUCCESS);
     amqp_connection_close(*conn, AMQP_REPLY_SUCCESS);
     amqp_destroy_connection(*conn);
 }

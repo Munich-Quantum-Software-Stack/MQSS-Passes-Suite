@@ -1,10 +1,7 @@
 # Uninstall target
-if(NOT DEFINED LIB_DIR)
-  set(LIB_DIR "/usr/local/bin/src")
-endif()
-
 message("Uninstalling...")
 set(EXECUTABLE_NAME "@EXECUTABLE_NAME@")
-execute_process(COMMAND ${CMAKE_COMMAND} -E remove /usr/local/bin/${EXECUTABLE_NAME}
-                COMMAND ${CMAKE_COMMAND} -E remove_directory ${LIB_DIR})
+set(CMAKE_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@")
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_INSTALL_PREFIX}/bin/${EXECUTABLE_NAME}
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}/bin/src)
 

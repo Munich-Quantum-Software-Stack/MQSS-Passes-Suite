@@ -13,15 +13,10 @@ sudo apt install -y cmake llvm libopenmpi-dev g++ || true
 mkdir build/ 2> /dev/null || true
 cd build/
 export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
-sudo cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
-sudo cmake --build .
+cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
+cmake --build .
 sudo make install
 
-#sudo cmake -P -E copy ${CMAKE_SOURCE_DIR}/benchmarks/test.ll /usr/local/bin/src/schedulers/benchmarks/
-#sudo cp benchmarks/test.ll  /usr/local/bin/src/schedulers/benchmarks/
-
-#export LC_ALL=en_US.UTF-8
-
 # Run the pass runner
-qpassrunner_d log # usage: qpassrunner_d [screen|log]
+"$HOME/bin/daemon_d" log $HOME # usage: daemon_d [screen|log PATH]
 

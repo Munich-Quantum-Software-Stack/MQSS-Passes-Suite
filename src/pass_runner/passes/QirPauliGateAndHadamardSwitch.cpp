@@ -19,6 +19,7 @@ using namespace llvm;
 PreservedAnalyses
 QirPauliGateAndHadamardSwitchPass::run(Module &module,
                                        ModuleAnalysisManager & /*MAM*/) {
+  auto &Context = module.getContext();
   std::unordered_set<std::string> pauliGates = {"__quantum__qis__x__body",
                                                 "__quantum__qis__y__body",
                                                 "__quantum__qis__z__body"};
@@ -72,9 +73,13 @@ QirPauliGateAndHadamardSwitchPass::run(Module &module,
           gateToReplace->getCalledFunction()->getName().str();
       Function *newFunction = module.getFunction(correspondingGates[gateName]);
       if (!newFunction) {
-        continue;
+        StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
+        PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+        FunctionType *funcType =
+            FunctionType::get(Type::getVoidTy(Context), {qubitPtrType}, false);
+        newFunction = Function::Create(funcType, Function::ExternalLinkage,
+                                       correspondingGates[gateName], module);
       }
-
       CallInst *newInst =
           CallInst::Create(newFunction, {gateToReplace->getOperand(0)});
       ReplaceInstWithInst(gateToReplace, newInst);

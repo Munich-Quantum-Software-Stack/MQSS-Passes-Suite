@@ -1,12 +1,12 @@
 /**
- * @file QirHadamardAndPauliGateSwitch.cpp
- * @brief Implementation of the 'QirHadamardAndPauliGateSwitchPass' class. <a
- * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirHadamardAndPauliGateSwitch.cpp?ref_type=heads">Go
+ * @file QirSToSDagger.cpp
+ * @brief Implementation of the 'QirSToSDaggerPass' class. <a
+ * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirSToSDagger.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
  */
 
-#include "../headers/QirHadamardAndPauliGateSwitch.hpp"
+#include "../headers/QirSToSDagger.hpp"
 
 using namespace llvm;
 
@@ -16,21 +16,16 @@ using namespace llvm;
  * @param MAM The module analysis manager.
  * @return PreservedAnalyses
  */
-PreservedAnalyses
-QirHadamardAndPauliGateSwitchPass::run(Module &module,
-                                       ModuleAnalysisManager & /*MAM*/) {
+PreservedAnalyses QirSToSDaggerPass::run(Module &module,
+                                         ModuleAnalysisManager & /*MAM*/) {
   auto &Context = module.getContext();
   std::unordered_set<std::string> pauliGates = {"__quantum__qis__x__body",
                                                 "__quantum__qis__y__body",
                                                 "__quantum__qis__z__body"};
-  std::map<std::string, std::string> correspondingGates = {
-      {"__quantum__qis__x__body", "__quantum__qis__z__body"},
-      {"__quantum__qis__y__body", "__quantum__qis__y__body"},
-      {"__quantum__qis__z__body", "__quantum__qis__x__body"},
-  };
 
   for (auto &function : module) {
     std::vector<CallInst *> gatesToReplace;
+    std::vector<CallInst *> gatesToRemove;
 
     for (auto &block : function) {
       CallInst *prev_instruction = nullptr;
@@ -54,11 +49,11 @@ QirHadamardAndPauliGateSwitchPass::run(Module &module,
               if (prev_function) {
                 std::string previous_name = prev_function->getName().str();
 
-                if (previous_name == "__quantum__qis__h__body") {
-                  current_instruction->moveBefore(prev_instruction);
-                  gatesToReplace.push_back(current_instruction);
-                  errs() << "              Switching: " << previous_name
-                         << " and " << current_name << '\n';
+                if (previous_name == "__quantum__qis__s__body") {
+                  gatesToReplace.push_back(prev_instruction);
+                  if (current_name == "__quantum__qis__z__body")
+                    gatesToRemove.push_back(current_instruction);
+                  errs() << "              Replacing S with S dagger.\n";
                 }
               }
             }
@@ -71,29 +66,33 @@ QirHadamardAndPauliGateSwitchPass::run(Module &module,
       auto *gateToReplace = gatesToReplace.back();
       std::string gateName =
           gateToReplace->getCalledFunction()->getName().str();
-      Function *newFunction = module.getFunction(correspondingGates[gateName]);
+      Function *newFunction = module.getFunction("__quantum__qis__s__adj");
       if (!newFunction) {
         StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
         PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
         FunctionType *funcType =
             FunctionType::get(Type::getVoidTy(Context), {qubitPtrType}, false);
         newFunction = Function::Create(funcType, Function::ExternalLinkage,
-                                       correspondingGates[gateName], module);
+                                       "__quantum__qis__s__adj", module);
       }
       CallInst *newInst =
           CallInst::Create(newFunction, {gateToReplace->getOperand(0)});
       ReplaceInstWithInst(gateToReplace, newInst);
       gatesToReplace.pop_back();
     }
+
+    while (!gatesToRemove.empty()) {
+      auto *gateToRemove = gatesToRemove.back();
+      gateToRemove->eraseFromParent();
+      gatesToRemove.pop_back();
+    }
   }
   return PreservedAnalyses::none();
 }
 
 /**
- * @brief External function for loading the 'QirHadamardAndPauliGateSwitchPass'
- * as a 'PassModule'.
- * @return QirHadamardAndPauliGateSwitchPass
+ * @brief External function for loading the 'QirSToSDaggerPass' as a
+ * 'PassModule'.
+ * @return QirSToSDaggerPass
  */
-extern "C" PassModule *loadQirPass() {
-  return new QirHadamardAndPauliGateSwitchPass();
-}
+extern "C" PassModule *loadQirPass() { return new QirSToSDaggerPass(); }

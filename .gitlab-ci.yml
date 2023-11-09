@@ -33,7 +33,7 @@ execute:
     - curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
     - tar -xf v0.13.0.tar.gz
     - cd rabbitmq-c-0.13.0/
-    - mkdir
+    - mkdir build
     - cd build
     - cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
     - sudo cmake --build . --target install

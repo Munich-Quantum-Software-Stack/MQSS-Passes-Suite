@@ -65,7 +65,7 @@ PreservedAnalyses QirMergeRotationsPass::run(Module &module, ModuleAnalysisManag
                                     gatesToRemove.push_back(instruction);
                                 }
                             }
-                            errs() << "              Rotation gates can be merged: " << gateTypeToMerge << '\n';
+                            errs() << "[Pass].............Rotation gates can be merged: " << gateTypeToMerge << '\n';
                         }
 
                         gatesToMerge.clear();

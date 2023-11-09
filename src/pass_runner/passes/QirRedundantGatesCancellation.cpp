@@ -47,7 +47,7 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(Module &module, ModuleA
                             gatesToRemove.push_back(last_instruction);
                             gatesToRemove.push_back(current_instruction);
                             
-                            errs() << "              Redundant gate pair found: " << reversibleGate << '\n';
+                            errs() << "[Pass].............Redundant gate pair found: " << reversibleGate << '\n';
                         }
                         singletonContainer.clear();
                     }

@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <libgen.h>
 #include <dlfcn.h>
 
 std::vector<std::string> invokeSelector(const char *pathSelector);

@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 /**
  * @brief The main entry point of the program.
@@ -13,7 +14,7 @@
  *
  * @return std::vector<std::string>
  */
-std::vector<std::string> selector(void) {
+extern "C" std::vector<std::string> selector(void) {
     // Append the desired passes
     std::vector<std::string> passes {
         "libQirNormalizeArgAnglePass.so",
@@ -44,6 +45,9 @@ std::vector<std::string> selector(void) {
 	    "libQirMergeRotationsPass.so",
         "libQirDoubleCnotCancellationPass.so",
     };
+
+    std::cout << "[Selector].........Returning list of passes to the Selector Runner" 
+              << std::endl;
 
     return passes;
 }

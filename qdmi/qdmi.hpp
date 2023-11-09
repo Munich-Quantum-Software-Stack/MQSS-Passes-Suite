@@ -15,7 +15,9 @@
  * @return std::vector<std::string>
  * @todo To be implemented
  */
-std::vector<std::string> qdmi_available_platforms();
+extern "C" {
+    std::vector<std::string> qdmi_available_platforms();
+}
 
 /**
  * @brief Function that returns a vector with the
@@ -24,7 +26,9 @@ std::vector<std::string> qdmi_available_platforms();
  * @return std::vector<std::string>
  * @todo To be implemented
  */
-std::vector<std::string> qdmi_supported_gate_set(std::string);
+extern "C" {
+    std::vector<std::string> qdmi_supported_gate_set(std::string);
+}
 
 #endif // QDMI_HPP
 

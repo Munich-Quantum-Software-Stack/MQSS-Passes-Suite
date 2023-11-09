@@ -15,7 +15,7 @@ pages:
     paths:
       - public
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "Plugins"'
+    - if: '$CI_COMMIT_REF_NAME == "NoSockets"'
 
 analyze:
   stage: test
@@ -23,7 +23,7 @@ analyze:
     - apt update
     - apt install -y llvm libopenmpi-dev clang 
     - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
-    - find src selector -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ {} \;
+    - find src -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ {} \;
 
 execute:
   stage: test
@@ -37,32 +37,22 @@ execute:
     - cd build
     - cmake ..
     - make
+    - cd ../..
     - echo QDMI built successfully
     # ...
-    - cd ../../selector
     - mkdir build
     - cd build
-    - cmake -DCUSTOM_EXECUTABLE_NAME=qselectorrunner_d ..
-    - cmake --build .
-    - echo Selector Runner built successfully
-    - cd ../../tests
-    # ...
-    - mpic++ -std=c++14 test_selector.cpp -o test_selector
-    - echo Test built successfully
-    # ...
-    - cd ..
-    - mkdir build
-    - cd build
-    - cmake -DCUSTOM_EXECUTABLE_NAME=qpassrunner_d -DCUSTOM_QDMI_PATH=qdmi ..
+    - cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
     - cmake --build .
     - echo Pass Runner built successfully
-    - make install
-    - echo Pass Runner installed successfully
     # ...
-    - qpassrunner_d screen &
+    - cd tests
+    - g++ test.cpp ../src/connection_handling.cpp -o test -lrabbitmq
+    - echo Test built successfully
+    - cd ..
+    # ...
+    - cd build
+    - ./daemon_d screen &
     - sleep 1
-    - cd ../selector/build/
-    - ./qselectorrunner_d &
-    - sleep 1
-    - ../../tests/test_selector
+    - ../tests/test
 

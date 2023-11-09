@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(QuantumResourceManager
   VERSION 0.3
-  DESCRIPTION "Quantum Resource Manager")
+  DESCRIPTION "Quantum Resource Manager"
+)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 14)
@@ -44,10 +45,20 @@ add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 
 # Add the passes directory to include paths
-include_directories(src/pass_runner/headers src/scheduler_runner src/scheduler_runner)
+include_directories(
+    src/pass_runner/headers 
+    src/pass_runner
+    src/selector_runner 
+    src/scheduler_runner 
+    ${CUSTOM_QDMI_PATH})
 
-## Specify the path to QDMI using the CUSTOM_QDMI_PATH variable
-#set(QDMI_PATH ${CUSTOM_QDMI_PATH})
+#set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner/passes:${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner/selectors:${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner/schedulers:${CUSTOM_QDMI_PATH}/build")
+#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+#set(CMAKE_BUILD_RPATH "$ORIGIN/src/pass_runner:$ORIGIN/src/pass_runner/passes:$ORIGIN/src/selector_runner/selectors:$ORIGIN/src/scheduler_runner/schedulers")
+
+### Specify the path to QDMI using the CUSTOM_QDMI_PATH variable
+##set(QDMI_PATH ${CUSTOM_QDMI_PATH})
 
 # Specify the path to the directory containing libqdmi.so
 link_directories(${CUSTOM_QDMI_PATH}/build)
@@ -56,17 +67,45 @@ link_directories(${CUSTOM_QDMI_PATH}/build)
 include_directories(${CUSTOM_QDMI_PATH})
 
 # Build QirPassRunner as a shared library
-add_library(QirPassRunner SHARED src/pass_runner/QirPassRunner.cpp)
+add_library(QirPassRunner SHARED 
+    src/pass_runner/QirPassRunner.cpp
+    src/scheduler_runner/SchedulerRunner.cpp)
 
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/bin/src/passes")
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# Build PassRunner as a shared library
+add_library(PassRunner SHARED src/pass_runner/PassRunner.cpp)
+
+# Build SelectorRunner as a shared library
+add_library(SelectorRunner SHARED src/selector_runner/SelectorRunner.cpp)
+
+# Build SchedulerRunner as a shared library
+add_library(SchedulerRunner SHARED src/scheduler_runner/SchedulerRunner.cpp)
 
 # Link any necessary libraries (e.g., LLVM and QDMI)
 target_link_libraries(QirPassRunner PRIVATE LLVM)
 target_link_libraries(QirPassRunner PRIVATE qdmi)
+target_link_libraries(SchedulerRunner PRIVATE LLVM)
+target_link_libraries(SchedulerRunner PRIVATE qdmi)
 
-# Specify the output directory for the shared library
-set_target_properties(QirPassRunner PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/passes")
+# Specify the output directory for the shared libraries
+set_target_properties(QirPassRunner   
+    PROPERTIES 
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/pass_runner/passes"
+)
+
+set_target_properties(PassRunner      
+    PROPERTIES 
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/pass_runner"
+)
+
+set_target_properties(SelectorRunner  
+    PROPERTIES 
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/selector_runner"
+)
+
+set_target_properties(SchedulerRunner 
+    PROPERTIES 
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/scheduler_runner"
+)
 
 set(EXECUTABLE_NAME "daemon_d" CACHE STRING "" FORCE)
 
@@ -74,9 +113,9 @@ set(EXECUTABLE_NAME "daemon_d" CACHE STRING "" FORCE)
 set(SOURCES
     src/daemon_d.cpp
     src/connection_handling.cpp
-    src/scheduler_runner/SchedulerRunner.cpp
-    src/selector_runner/SelectorRunner.cpp
-    src/pass_runner/PassRunner.cpp
+    #src/scheduler_runner/SchedulerRunner.cpp
+    #src/selector_runner/SelectorRunner.cpp
+    #src/pass_runner/PassRunner.cpp
 )
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
@@ -84,10 +123,14 @@ add_executable(${EXECUTABLE_NAME} ${SOURCES})
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE LLVM)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Threads::Threads)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE QirPassRunner)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE PassRunner)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE SchedulerRunner)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE SelectorRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE rabbitmq)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE qdmi)
 
-# Include passes subdirectory
+# Include libraries subdirectories
+
 add_subdirectory(src/pass_runner/passes)
 add_subdirectory(src/selector_runner/selectors)
 add_subdirectory(src/scheduler_runner/schedulers)
@@ -95,20 +138,24 @@ add_subdirectory(src/scheduler_runner/schedulers)
 # Include RabbitMQ header files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE /usr/local/include)
 
-# Install the daemon
-install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
+## Install the daemon
+#install(TARGETS ${EXECUTABLE_NAME} DESTINATION bin)
+#
+## Install the QirPassRunner as a shared library
+#install(TARGETS QirPassRunner   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner)
+##install(TARGETS PassRunner      DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner)
+##install(TARGETS SchedulerRunner DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner)
+##install(TARGETS SelectorRunner  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner)
+#
+## Uninstall everything
+#configure_file(
+#  "${CMAKE_CURRENT_SOURCE_DIR}/uninstall.cmake.in"
+#  "${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake"
+#  IMMEDIATE @ONLY
+#)
+#
+#add_custom_target(uninstall
+#  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake
+#  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#)
 
-# Install the QirPassRunner as a shared library
-install(TARGETS QirPassRunner DESTINATION bin/src/passes)
-
-# Uninstall everything
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake"
-  IMMEDIATE @ONLY
-)
-
-add_custom_target(uninstall
-  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)

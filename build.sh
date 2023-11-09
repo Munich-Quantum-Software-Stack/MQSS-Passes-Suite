@@ -15,8 +15,8 @@ cd build/
 export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
 cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
 cmake --build .
-sudo make install
+#sudo make install
 
 # Run the pass runner
-"$HOME/bin/daemon_d" log $HOME # usage: daemon_d [screen|log PATH]
-
+#"$HOME/bin/daemon_d" log $HOME # usage: daemon_d [screen|log PATH]
+#./daemon_d log $HOME # usage: daemon_d [screen|log PATH]

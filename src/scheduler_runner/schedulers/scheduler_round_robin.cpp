@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <qdmi.hpp>
 
@@ -15,10 +16,13 @@
  *
  * @return const char *
  */
-std::string scheduler(void) {
+extern "C" std::string scheduler(void) {
     // Query the available platforms
     std::vector<std::string> platforms = qdmi_available_platforms();   
  
+    std::cout << "[Scheduler]........Returning target architecture to the Scheduler Runner"
+              << std::endl;
+
     // Choose the target architecture
     return platforms.back();
 }

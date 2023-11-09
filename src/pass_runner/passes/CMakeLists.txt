@@ -44,7 +44,7 @@ set(PASSES_SOURCE_FILES
 )
 
 # Set RPATH for the shared libraries in this directory
-set(CMAKE_INSTALL_RPATH "${PASS_RUNNER_DAEMON_INSTALL_PATH}/bin/src/passes")
+set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/src/pass_runner/passes")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Compile each pass as a shared object and link it to QDMI
@@ -66,6 +66,7 @@ list(APPEND PASSES_SOURCE_FILES QirAllocationAnalysis.cpp)
 foreach(src_file ${PASSES_SOURCE_FILES})
     get_filename_component(src_name ${src_file} NAME_WE)
     set(target_name "${src_name}Pass")
-    install(TARGETS ${target_name} DESTINATION "${PASS_RUNNER_DAEMON_INSTALL_PATH}/bin/src/passes")
+    #install(TARGETS ${target_name} DESTINATION "${INSTALL_PATH}/bin/src/pass_runner/passes")
+    install(TARGETS ${target_name} DESTINATION "${ORIGIN}/src/pass_runner/passes")
 endforeach()
 

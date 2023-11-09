@@ -16,13 +16,25 @@ using namespace llvm;
  * @return const char*
  */
 std::string invokeScheduler(const std::string &pathScheduler) {
+    size_t lastSlashPos = pathScheduler.find_last_of('/');
+    if (lastSlashPos != std::string::npos) {
+        std::string fileName = pathScheduler.substr(lastSlashPos + 1);
+        std::cout << "[Scheduler Runner].Invoking scheduler: "
+                  << fileName
+                  << std::endl;
+    } else {
+        std::cerr << "[Scheduler Runner].Invalid path to scheduler" 
+                  << std::endl;
+        return NULL;
+    }
+
     // Load the scheduler as a shared library
     std::string path = pathScheduler;
 
     void* lib_handle = dlopen(path.c_str(), RTLD_LAZY);
  
     if (!lib_handle) {
-        std::cerr << "[qschedulerrunner_d] Error loading scheduler as a shared library: " 
+        std::cerr << "[Scheduler Runner].Error loading scheduler as a shared library: " 
                   << dlerror() 
                   << std::endl;
 
@@ -34,7 +46,7 @@ std::string invokeScheduler(const std::string &pathScheduler) {
     SchedulerFunction scheduler = reinterpret_cast<SchedulerFunction>(dlsym(lib_handle, "scheduler"));
 
     if (!scheduler) {
-        std::cerr << "[qschedulerrunner_d] Error finding function in shared library: " 
+        std::cerr << "[Scheduler Runner].Error finding function in shared library: " 
                   << dlerror() 
                   << std::endl;
 

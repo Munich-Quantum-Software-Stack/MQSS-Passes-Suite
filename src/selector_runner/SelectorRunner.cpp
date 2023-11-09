@@ -11,15 +11,16 @@
  * @return std::vector<std::string>
  */
 std::vector<std::string> invokeSelector(const char *pathSelector) {
-    std::cout << "[Selector Runner] Attempting to invoke selector " 
-              << pathSelector 
+    const char *fileName = basename(const_cast<char*>(pathSelector));
+    std::cout << "[Selector Runner]..Invoking selector: " 
+              << fileName
               << std::endl;
 
     // Load the selector as a shared library
     void* lib_handle = dlopen(pathSelector, RTLD_LAZY);
  
     if (!lib_handle) {
-        std::cerr << "[Selector Runner] Error loading selector as a shared library: " 
+        std::cerr << "[Selector Runner]..Error loading selector as a shared library: " 
                   << dlerror() 
                   << std::endl;
 
@@ -31,7 +32,7 @@ std::vector<std::string> invokeSelector(const char *pathSelector) {
     SelectorFunction selector = reinterpret_cast<SelectorFunction>(dlsym(lib_handle, "selector"));
 
     if (!selector) {
-        std::cerr << "[Selector Runner] Error finding function in shared library: " 
+        std::cerr << "[Selector Runner]..Error finding function in shared library: " 
                   << dlerror() 
                   << std::endl;
 

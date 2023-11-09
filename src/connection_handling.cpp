@@ -9,7 +9,7 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
     *socket = amqp_tcp_socket_new(*conn);
     
     if (!*socket) {
-        std::cout << "[qschedulerrunner_d] Error creating socket\n" << std::endl;
+        std::cout << "[daemon_d] Error creating socket\n" << std::endl;
         return 1;
     }
 
@@ -18,7 +18,7 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
                                   AMQP_PORT);
 
     if (status) {
-        std::cout << "[qschedulerrunner_d] Error opening socket\n" << std::endl;
+        std::cout << "[daemon_d] Error opening socket\n" << std::endl;
         return 1;
     }
 
@@ -32,7 +32,7 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
                                               AMQP_PASSWORD);           // RabbitMQ password for authentication
 
     if (login_reply.reply_type != AMQP_RESPONSE_NORMAL) {
-        std::cout << "[qschedulerrunner_d] Login failed\n" << std::endl;
+        std::cout << "[daemon_d] Login failed\n" << std::endl;
         return 1;
     }
     
@@ -40,7 +40,7 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
     amqp_channel_open(*conn, 1);
     amqp_rpc_reply_t channel_reply = amqp_get_rpc_reply(*conn);
     if (channel_reply.reply_type != AMQP_RESPONSE_NORMAL) {
-        std::cout << "[qschedulerrunner_d] Error opening channels\n" << std::endl;
+        std::cout << "[daemon_d] Error opening channels\n" << std::endl;
         return 1;
     }
 
@@ -69,7 +69,7 @@ void send_message(amqp_connection_state_t *conn,
                                       amqp_cstring_bytes(message)); // body
 
     if (success > 0)
-        std::cout << "[qschedulerrunner_d] Message could not be delivered to client" << std::endl;
+        std::cout << "[daemon_d] Message could not be delivered to client" << std::endl;
 }
 
 const char *receive_message(amqp_connection_state_t *conn, 
@@ -104,7 +104,7 @@ const char *receive_message(amqp_connection_state_t *conn,
     amqp_rpc_reply_t consume_reply = amqp_get_rpc_reply(*conn);
 
     if (consume_reply.reply_type != AMQP_RESPONSE_NORMAL) {
-        std::cout << "[qschedulerrunner_d] Error starting to consume messages" << std::endl;
+        std::cout << "[daemon_d] Error starting to consume messages" << std::endl;
         return nullptr;
     }
     
@@ -128,7 +128,7 @@ const char *receive_message(amqp_connection_state_t *conn,
             amqp_destroy_envelope(&envelope);
         }
     } else {
-        std::cout << "[qschedulerrunner_d] No message received or an error occurred" << std::endl;
+        std::cout << "[daemon_d] No message received or an error occurred" << std::endl;
     }
 
     if (received_message)

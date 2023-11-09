@@ -29,7 +29,7 @@ execute:
   stage: test
   script:
     - apt update
-    - apt install -y cmake llvm rabbitmq-server g++
+    - apt install -y cmake llvm rabbitmq-server g++ curl
     - curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
     - tar -xf v0.13.0.tar.gz
     - cd rabbitmq-c-0.13.0/

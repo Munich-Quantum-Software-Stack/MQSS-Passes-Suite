@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['server_5fip_0',['SERVER_IP',['../selector__all_8cpp.html#a649c011c717a2442f33e4f7d534d0a41',1,'selector_all.cpp']]],
-  ['shouldremovecallattributes_1',['shouldRemoveCallAttributes',['../structQirMetadata.html#a5869b0d717d1531fd228ed961625cd46',1,'QirMetadata']]],
-  ['supportedgates_2',['supportedGates',['../structQirMetadata.html#a9d35a917515aae007b3212bb871acf80',1,'QirMetadata']]]
+  ['to_5fdelete_0',['to_delete',['../classllvm_1_1QirGroupingPass.html#a2753116e06d6c8374c68c89e1ea4e49e',1,'llvm::QirGroupingPass']]],
+  ['type_1',['type',['../structllvm_1_1AllocationAnalysis_1_1ResourceAccessLocation.html#aa2bb186fc4745430db14d8a4481677a9',1,'llvm::AllocationAnalysis::ResourceAccessLocation::type'],['../structllvm_1_1QirGroupingPass_1_1ResourceAnalysis.html#a71a29a748e8d027dafc7f7d114a1a77a',1,'llvm::QirGroupingPass::ResourceAnalysis::type']]]
 ];

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>qpassrunner_d (QIR Pass Runner daemon): src/QirPassRunner.hpp Source File</title>
+<title>qpassrunner_d (QIR Pass Runner daemon): src/pass_runner/QirPassRunner.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -76,7 +76,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_5b629ee7a458d0b297844d89578620d5.html">pass_runner</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -165,21 +165,20 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span> </div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classQirPassRunner.html#ae015c20a2e1c9d64be819e6aeda9d168">clearMetadata</a>();</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="comment">// Private constructor of the &#39;QirPassRunner&#39; class</span></div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <a class="code hl_function" href="classQirPassRunner.html#a39d874adc5a17a4651e870ffea040f9f">QirPassRunner</a>();</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="comment">// List of passes to be applied</span></div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="classQirPassRunner.html#a1ebf385202195c58afa4c9f09a7c772f">  201</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="classQirPassRunner.html#a1ebf385202195c58afa4c9f09a7c772f">passes_</a>;</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="comment">// Metadata reachable by all passes and the Pass Runner daemon</span></div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="classQirPassRunner.html#ac4c5d78409991e49b8c72ff05c69193c">  204</a></span>    <a class="code hl_struct" href="structQirMetadata.html">QirMetadata</a> <a class="code hl_variable" href="classQirPassRunner.html#ac4c5d78409991e49b8c72ff05c69193c">qirMetadata_</a>;</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>};</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="comment">// Private constructor of the &#39;QirPassRunner&#39; class</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <a class="code hl_function" href="classQirPassRunner.html#a39d874adc5a17a4651e870ffea040f9f">QirPassRunner</a>();</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="comment">// List of passes to be applied</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classQirPassRunner.html#a1ebf385202195c58afa4c9f09a7c772f">  200</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="classQirPassRunner.html#a1ebf385202195c58afa4c9f09a7c772f">passes_</a>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="comment">// Metadata reachable by all passes and the Pass Runner daemon</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno"><a class="line" href="classQirPassRunner.html#ac4c5d78409991e49b8c72ff05c69193c">  203</a></span>    <a class="code hl_struct" href="structQirMetadata.html">QirMetadata</a> <a class="code hl_variable" href="classQirPassRunner.html#ac4c5d78409991e49b8c72ff05c69193c">qirMetadata_</a>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>};</div>
 </div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="preprocessor">#endif </span><span class="comment">// QIR_MODULE_PASS_MANAGER_H</span></div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="preprocessor">#endif </span><span class="comment">// QIR_MODULE_PASS_MANAGER_H</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
 <div class="ttc" id="aPassModule_8hpp_html"><div class="ttname"><a href="PassModule_8hpp.html">PassModule.hpp</a></div><div class="ttdoc">Declaration of the 'PassModule' class.</div></div>
 <div class="ttc" id="aQirPassRunner_8hpp_html_a71d637ccd19904287584a26511b15876"><div class="ttname"><a href="QirPassRunner_8hpp.html#a71d637ccd19904287584a26511b15876">MetadataType</a></div><div class="ttdeci">MetadataType</div><div class="ttdoc">Enumerated type for appending information to the metadata.</div><div class="ttdef"><b>Definition</b> QirPassRunner.hpp:21</div></div>
 <div class="ttc" id="aQirPassRunner_8hpp_html_a71d637ccd19904287584a26511b15876a37652553ada199585087633dcfe28597"><div class="ttname"><a href="QirPassRunner_8hpp.html#a71d637ccd19904287584a26511b15876a37652553ada199585087633dcfe28597">REVERSIBLE_GATE</a></div><div class="ttdeci">@ REVERSIBLE_GATE</div><div class="ttdef"><b>Definition</b> QirPassRunner.hpp:23</div></div>
@@ -190,12 +189,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclassQirPassRunner_html"><div class="ttname"><a href="classQirPassRunner.html">QirPassRunner</a></div><div class="ttdoc">The 'QirPassRunner' class is a derived class of the 'PassModule' abstract class. This derived class k...</div><div class="ttdef"><b>Definition</b> QirPassRunner.hpp:121</div></div>
 <div class="ttc" id="aclassQirPassRunner_html_a10eb3758e82c831cb088a3fbfaf0ed79"><div class="ttname"><a href="classQirPassRunner.html#a10eb3758e82c831cb088a3fbfaf0ed79">QirPassRunner::setMetadata</a></div><div class="ttdeci">void setMetadata(const QirMetadata &amp;metadata)</div><div class="ttdoc">Saves 'metadata' as the private metadata ('qirMetadata_') of the 'QirPassRunner' class....</div><div class="ttdef"><b>Definition</b> QirPassRunner.cpp:32</div></div>
 <div class="ttc" id="aclassQirPassRunner_html_a14d6db8d9602edd6c29dae9514b401b8"><div class="ttname"><a href="classQirPassRunner.html#a14d6db8d9602edd6c29dae9514b401b8">QirPassRunner::getInstance</a></div><div class="ttdeci">static QirPassRunner &amp; getInstance()</div><div class="ttdoc">Returns a reference to a 'QirPassRuner' object. This object is created as a 'static' variable inside ...</div><div class="ttdef"><b>Definition</b> QirPassRunner.cpp:22</div></div>
-<div class="ttc" id="aclassQirPassRunner_html_a1ebf385202195c58afa4c9f09a7c772f"><div class="ttname"><a href="classQirPassRunner.html#a1ebf385202195c58afa4c9f09a7c772f">QirPassRunner::passes_</a></div><div class="ttdeci">std::vector&lt; std::string &gt; passes_</div><div class="ttdef"><b>Definition</b> QirPassRunner.hpp:201</div></div>
+<div class="ttc" id="aclassQirPassRunner_html_a1ebf385202195c58afa4c9f09a7c772f"><div class="ttname"><a href="classQirPassRunner.html#a1ebf385202195c58afa4c9f09a7c772f">QirPassRunner::passes_</a></div><div class="ttdeci">std::vector&lt; std::string &gt; passes_</div><div class="ttdef"><b>Definition</b> QirPassRunner.hpp:200</div></div>
 <div class="ttc" id="aclassQirPassRunner_html_a39d874adc5a17a4651e870ffea040f9f"><div class="ttname"><a href="classQirPassRunner.html#a39d874adc5a17a4651e870ffea040f9f">QirPassRunner::QirPassRunner</a></div><div class="ttdeci">QirPassRunner()</div><div class="ttdoc">Default constructor of the 'QirPassRunner' class.</div><div class="ttdef"><b>Definition</b> QirPassRunner.cpp:16</div></div>
 <div class="ttc" id="aclassQirPassRunner_html_a4d2f6b25d5e5e102c809ac5b53d91195"><div class="ttname"><a href="classQirPassRunner.html#a4d2f6b25d5e5e102c809ac5b53d91195">QirPassRunner::getMetadata</a></div><div class="ttdeci">QirMetadata &amp; getMetadata()</div><div class="ttdoc">Returns the private metadata of 'QirPassRunner', that is, 'qirMetadata_', as a 'QirMetadata' object....</div><div class="ttdef"><b>Definition</b> QirPassRunner.cpp:50</div></div>
 <div class="ttc" id="aclassQirPassRunner_html_a770cc7c29589c903a45a6584e171f743"><div class="ttname"><a href="classQirPassRunner.html#a770cc7c29589c903a45a6584e171f743">QirPassRunner::append</a></div><div class="ttdeci">void append(std::string pass)</div><div class="ttdoc">Fills the private vector 'passes_' with the names of the passes compiled as shared objects (....</div><div class="ttdef"><b>Definition</b> QirPassRunner.cpp:58</div></div>
 <div class="ttc" id="aclassQirPassRunner_html_a8e91a78bb782a110a79b528208946fd7"><div class="ttname"><a href="classQirPassRunner.html#a8e91a78bb782a110a79b528208946fd7">QirPassRunner::run</a></div><div class="ttdeci">void run(Module &amp;module, ModuleAnalysisManager &amp;MAM)</div><div class="ttdoc">Invokes each of the passes listed in the private vector 'passes_'. Use example:</div><div class="ttdef"><b>Definition</b> QirPassRunner.cpp:68</div></div>
-<div class="ttc" id="aclassQirPassRunner_html_ac4c5d78409991e49b8c72ff05c69193c"><div class="ttname"><a href="classQirPassRunner.html#ac4c5d78409991e49b8c72ff05c69193c">QirPassRunner::qirMetadata_</a></div><div class="ttdeci">QirMetadata qirMetadata_</div><div class="ttdef"><b>Definition</b> QirPassRunner.hpp:204</div></div>
+<div class="ttc" id="aclassQirPassRunner_html_ac4c5d78409991e49b8c72ff05c69193c"><div class="ttname"><a href="classQirPassRunner.html#ac4c5d78409991e49b8c72ff05c69193c">QirPassRunner::qirMetadata_</a></div><div class="ttdeci">QirMetadata qirMetadata_</div><div class="ttdef"><b>Definition</b> QirPassRunner.hpp:203</div></div>
 <div class="ttc" id="aclassQirPassRunner_html_ae015c20a2e1c9d64be819e6aeda9d168"><div class="ttname"><a href="classQirPassRunner.html#ae015c20a2e1c9d64be819e6aeda9d168">QirPassRunner::clearMetadata</a></div><div class="ttdeci">void clearMetadata()</div><div class="ttdoc">Empties all structures within the metadata. Use example:</div><div class="ttdef"><b>Definition</b> QirPassRunner.cpp:39</div></div>
 <div class="ttc" id="anamespacellvm_html"><div class="ttname"><a href="namespacellvm.html">llvm</a></div><div class="ttdef"><b>Definition</b> QirAllocationAnalysis.hpp:15</div></div>
 <div class="ttc" id="astructQirMetadata_html"><div class="ttname"><a href="structQirMetadata.html">QirMetadata</a></div><div class="ttdoc">This struct holds all required metadata shared amongst the QIR Pass Runner, the QIR Selector Runner,...</div><div class="ttdef"><b>Definition</b> QirPassRunner.hpp:34</div></div>

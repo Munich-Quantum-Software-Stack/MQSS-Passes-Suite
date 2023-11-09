@@ -1,12 +1,13 @@
 var searchData=
 [
-  ['passes_5f_0',['passes_',['../classQirPassRunner.html#a1ebf385202195c58afa4c9f09a7c772f',1,'QirPassRunner']]],
-  ['poisoned_5finstructions_1',['poisoned_instructions',['../structllvm_1_1FunctionValidation.html#a673c60161a17b96de66d663ad1562678',1,'llvm::FunctionValidation']]],
-  ['port_2',['port',['../qpassrunner__d_8cpp.html#a6dde884e19bdc8f342ffec8fc17e7c91',1,'PORT:&#160;qpassrunner_d.cpp'],['../qselectorrunner__d_8cpp.html#a11717c934f77ad5167dac5d28562d85a',1,'PORT:&#160;qselectorrunner_d.cpp'],['../selector__all_8cpp.html#a11717c934f77ad5167dac5d28562d85a',1,'PORT:&#160;selector_all.cpp']]],
-  ['post_5fclassical_5fblock_5f_3',['post_classical_block_',['../classllvm_1_1QirGroupingPass.html#aec8e41f3b36a50d1d7b731542bfa8dee',1,'llvm::QirGroupingPass']]],
-  ['post_5fclassical_5fbuilder_5f_4',['post_classical_builder_',['../classllvm_1_1QirGroupingPass.html#a138ba99c6562f1e53fc5ba6c601aa093',1,'llvm::QirGroupingPass']]],
-  ['pre_5fclassical_5fblock_5f_5',['pre_classical_block_',['../classllvm_1_1QirGroupingPass.html#aa61845b086cd69fb2a6d1ded4c82b325',1,'llvm::QirGroupingPass']]],
-  ['pre_5fclassical_5fbuilder_5f_6',['pre_classical_builder_',['../classllvm_1_1QirGroupingPass.html#aa32373f22d11217cfd2e87e7b317706d',1,'llvm::QirGroupingPass']]],
-  ['pure_5fquantum_5finstructions_5f_7',['pure_quantum_instructions_',['../classllvm_1_1QirGroupingPass.html#a205f311b61739d9c61796d6e87911ba3',1,'llvm::QirGroupingPass']]],
-  ['pure_5fquantum_5fmeasurement_5f_8',['pure_quantum_measurement_',['../classllvm_1_1QirGroupingPass.html#a092ef12f1ae687d508088fd07b1205fa',1,'llvm::QirGroupingPass']]]
+  ['qc_5fcc_5fblocks_0',['qc_cc_blocks',['../structllvm_1_1GroupAnalysis.html#aab4787cca66cf16dd995b6a433e48461',1,'llvm::GroupAnalysis']]],
+  ['qc_5fmc_5fcc_5fblocks_1',['qc_mc_cc_blocks',['../structllvm_1_1GroupAnalysis.html#acd2b07dd0046bb74697ba55d8b56ff55',1,'llvm::GroupAnalysis']]],
+  ['qir_5fruntime_5fprefix_2',['qir_runtime_prefix',['../classllvm_1_1QirGroupingPass.html#acfdb9b91e97a21b6f50d4a6310781da7',1,'llvm::QirGroupingPass']]],
+  ['qirmetadata_5f_3',['qirMetadata_',['../classQirPassRunner.html#ac4c5d78409991e49b8c72ff05c69193c',1,'QirPassRunner']]],
+  ['qis_5fstart_4',['qis_start',['../classllvm_1_1QirAnnotateUnsupportedGatesPass.html#a7b76044fae42dab482ea0cd0c1cc13da',1,'llvm::QirAnnotateUnsupportedGatesPass::QIS_START'],['../classllvm_1_1QirGroupingPass.html#a2208c7504eb6783bfabd6bc2055e59b8',1,'llvm::QirGroupingPass::QIS_START'],['../classllvm_1_1QirPlaceIrreversibleGatesInMetadataPass.html#ac6e90d49cd58872647758f9c1f4c4ee9',1,'llvm::QirPlaceIrreversibleGatesInMetadataPass::QIS_START'],['../PassRunner_8hpp.html#a105f2697a34f86b74239a0688bf4159a',1,'QIS_START:&#160;PassRunner.hpp']]],
+  ['quantum_5fblock_5f_5',['quantum_block_',['../classllvm_1_1QirGroupingPass.html#a005d6ad432d3e07035dff8cc928a0c5b',1,'llvm::QirGroupingPass']]],
+  ['quantum_5fblocks_5f_6',['quantum_blocks_',['../classllvm_1_1QirGroupingPass.html#a4891743903da58e8c3308e70aef3205e',1,'llvm::QirGroupingPass']]],
+  ['quantum_5fbuilder_5f_7',['quantum_builder_',['../classllvm_1_1QirGroupingPass.html#a017f05221470e82ec53095221fad8d0a',1,'llvm::QirGroupingPass']]],
+  ['quantum_5fregister_5ftypes_8',['quantum_register_types',['../classllvm_1_1QirGroupingPass.html#af29f2d475880cba5affa161c72ed64fd',1,'llvm::QirGroupingPass']]],
+  ['qubits_5fpresent_9',['qubits_present',['../structllvm_1_1FunctionValidation.html#a5d5eb665be38fb442a923dac777e14db',1,'llvm::FunctionValidation']]]
 ];

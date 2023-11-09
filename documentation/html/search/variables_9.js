@@ -1,15 +1,9 @@
 var searchData=
 [
-  ['qc_5fcc_5fblocks_0',['qc_cc_blocks',['../structllvm_1_1GroupAnalysis.html#aab4787cca66cf16dd995b6a433e48461',1,'llvm::GroupAnalysis']]],
-  ['qc_5fmc_5fcc_5fblocks_1',['qc_mc_cc_blocks',['../structllvm_1_1GroupAnalysis.html#acd2b07dd0046bb74697ba55d8b56ff55',1,'llvm::GroupAnalysis']]],
-  ['qir_5fruntime_5fprefix_2',['qir_runtime_prefix',['../classllvm_1_1QirGroupingPass.html#acfdb9b91e97a21b6f50d4a6310781da7',1,'llvm::QirGroupingPass']]],
-  ['qirmetadata_5f_3',['qirMetadata_',['../classQirPassRunner.html#ac4c5d78409991e49b8c72ff05c69193c',1,'QirPassRunner']]],
-  ['qis_5fstart_4',['qis_start',['../classllvm_1_1QirAnnotateUnsupportedGatesPass.html#a7b76044fae42dab482ea0cd0c1cc13da',1,'llvm::QirAnnotateUnsupportedGatesPass::QIS_START'],['../classllvm_1_1QirGroupingPass.html#a2208c7504eb6783bfabd6bc2055e59b8',1,'llvm::QirGroupingPass::QIS_START'],['../classllvm_1_1QirPlaceIrreversibleGatesInMetadataPass.html#ac6e90d49cd58872647758f9c1f4c4ee9',1,'llvm::QirPlaceIrreversibleGatesInMetadataPass::QIS_START'],['../qpassrunner__d_8cpp.html#a105f2697a34f86b74239a0688bf4159a',1,'QIS_START:&#160;qpassrunner_d.cpp']]],
-  ['qprsocket_5',['qprSocket',['../qpassrunner__d_8cpp.html#ab9e59174e414c2fdacc34a8925a4bdca',1,'qpassrunner_d.cpp']]],
-  ['qsrsocket_6',['qsrSocket',['../qselectorrunner__d_8cpp.html#a10bba47062df28411da444073cb83800',1,'qselectorrunner_d.cpp']]],
-  ['quantum_5fblock_5f_7',['quantum_block_',['../classllvm_1_1QirGroupingPass.html#a005d6ad432d3e07035dff8cc928a0c5b',1,'llvm::QirGroupingPass']]],
-  ['quantum_5fblocks_5f_8',['quantum_blocks_',['../classllvm_1_1QirGroupingPass.html#a4891743903da58e8c3308e70aef3205e',1,'llvm::QirGroupingPass']]],
-  ['quantum_5fbuilder_5f_9',['quantum_builder_',['../classllvm_1_1QirGroupingPass.html#a017f05221470e82ec53095221fad8d0a',1,'llvm::QirGroupingPass']]],
-  ['quantum_5fregister_5ftypes_10',['quantum_register_types',['../classllvm_1_1QirGroupingPass.html#af29f2d475880cba5affa161c72ed64fd',1,'llvm::QirGroupingPass']]],
-  ['qubits_5fpresent_11',['qubits_present',['../structllvm_1_1FunctionValidation.html#a5d5eb665be38fb442a923dac777e14db',1,'llvm::FunctionValidation']]]
+  ['read_5finstr_5fstart_0',['READ_INSTR_START',['../classllvm_1_1QirGroupingPass.html#accbe5d9b06aad04604ca8194c5c34dba',1,'llvm::QirGroupingPass']]],
+  ['readout_5fnames_5f_1',['readout_names_',['../classllvm_1_1QirDeferMeasurementPass.html#a6b02232860367a24dc0276ec3a9061be',1,'llvm::QirDeferMeasurementPass']]],
+  ['record_5finstr_5fend_2',['RECORD_INSTR_END',['../classllvm_1_1QirDeferMeasurementPass.html#a5b080bcae9a7dead5d9d1ca3bad73c2d',1,'llvm::QirDeferMeasurementPass']]],
+  ['resource_5faccess_3',['resource_access',['../structllvm_1_1AllocationAnalysis.html#ada05557106dca33c6f0453559a0b12bc',1,'llvm::AllocationAnalysis']]],
+  ['results_5fpresent_4',['results_present',['../structllvm_1_1FunctionValidation.html#af80f83019188cc6fd7238cc0b2157957',1,'llvm::FunctionValidation']]],
+  ['reversiblegates_5',['reversibleGates',['../structQirMetadata.html#ab6932fd9bf0de3cf16a75e96c5153d7c',1,'QirMetadata']]]
 ];

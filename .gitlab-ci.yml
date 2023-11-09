@@ -54,6 +54,7 @@ execute:
     - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
     - cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
     - cmake --build .
+    - cd ..
     - echo QRM built successfully
     # ...
     - cd tests

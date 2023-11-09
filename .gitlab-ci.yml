@@ -36,8 +36,8 @@ execute:
     - mkdir build
     - cd build
     - cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
-    - sudo cmake --build . --target install
-    - sudo ldconfig
+    - cmake --build . --target install
+    - ldconfig
     - cd ../..
     - rm -rf rabbitmq-c-0.13.0/
     # ...

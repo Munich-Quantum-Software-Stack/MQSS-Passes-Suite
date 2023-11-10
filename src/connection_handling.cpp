@@ -9,7 +9,8 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
     *socket = amqp_tcp_socket_new(*conn);
     
     if (!*socket) {
-        std::cout << "[daemon_d] Error creating socket\n" << std::endl;
+        std::cout << "[daemon_d] Error creating socket" 
+                  << std::endl;
         return 1;
     }
 
@@ -18,7 +19,9 @@ int rabbitmq_new_connection(amqp_connection_state_t  *conn,
                                   AMQP_PORT);
 
     if (status) {
-        std::cout << "[daemon_d] Error opening socket\n" << std::endl;
+        std::cout << "[daemon_d] Error opening socket: " 
+                  << amqp_error_string2(status)
+                  << std::endl;
         return 1;
     }
 

@@ -61,9 +61,21 @@ To compile `daemon_d` follow these steps:
    cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
    ```
 
-5. Build the project:
+6. Build the project:
    ```bash
    cmake --build .
+   ```
+
+7. Configure RabbitMQ:
+   ```bash
+   hosts_file="/etc/hosts"
+   hostname_entry="127.0.0.1 rabbitmq"
+   
+   if grep -qF "$hostname_entry" "$hosts_file"; then
+       echo "RabbitMQ is already configured in this system."
+   else
+       echo "$hostname_entry" | cat - "$hosts_file" > temp && sudo mv -f temp "$hosts_file"
+   fi
    ```
 
 <!--

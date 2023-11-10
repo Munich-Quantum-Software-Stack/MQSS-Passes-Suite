@@ -23,6 +23,16 @@ else
     rm -rf rabbitmq-c-0.13.0/
 fi
 
+# Configure RabbitMQ
+hosts_file="/etc/hosts"
+hostname_entry="127.0.0.1 rabbitmq"
+
+if grep -qF "$hostname_entry" "$hosts_file"; then
+    echo "RabbitMQ is already configured in this system."
+else
+    echo "$hostname_entry" | cat - "$hosts_file" > temp && sudo mv -f temp "$hosts_file"
+fi
+
 # Build the pass runner
 mkdir build/ 2> /dev/null || true
 cd build/

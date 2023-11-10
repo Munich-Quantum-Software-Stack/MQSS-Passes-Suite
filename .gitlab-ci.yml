@@ -8,7 +8,7 @@ variables:
 services:
  #- rabbitmq:latest
   - name: rabbitmq
-    alias: localhost
+    alias: rabbitmq #localhost
 
 before_script:
 
@@ -85,7 +85,7 @@ execute:
     - cd ..
     # ...
     - cd build
-    - ./daemon_d screen &
+    - ./daemon_d screen
     - sleep 1
     - ../tests/test
   artifacts:

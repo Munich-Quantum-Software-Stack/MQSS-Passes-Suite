@@ -8,7 +8,7 @@
 #include <cstring>
 
 // Define the RabbitMQ server connection information
-#define AMQP_SERVER   "localhost"
+#define AMQP_SERVER   "rabbitmq" //"localhost"
 #define AMQP_PORT     5672
 #define AMQP_USER     "guest"
 #define AMQP_PASSWORD "guest"

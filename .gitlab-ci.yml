@@ -3,10 +3,12 @@ image: ubuntu:latest
 variables:
   RABBITMQ_DEFAULT_USER: guest
   RABBITMQ_DEFAULT_PASS: guest
-  AMQP_URL: 'amqp://guest:guest@rabbitmq:5672'
+ #AMQP_URL: 'amqp://guest:guest@rabbitmq:5672'
 
 services:
-  - rabbitmq:latest
+ #- rabbitmq:latest
+  - name: rabbitmq
+    alias: rabbitmq_host
 
 before_script:
 
@@ -47,6 +49,7 @@ execute:
     - cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
     - cmake --build . --target install
     - ldconfig
+    - export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
     - cd ../..
     - rm -rf rabbitmq-c-0.13.0/
    # ...

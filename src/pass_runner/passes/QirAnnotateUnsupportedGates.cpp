@@ -4,8 +4,6 @@
  *
  * This pass inserts an "unsupported" attribute to the appropriate gates 
  * after querying the target platform using QDMI.
- *
- * @todo libQirAnnotateUnsupportedGatesPass.so cannot be loaded even though it exists
  */
 
 #include "../headers/QirAnnotateUnsupportedGates.hpp"

@@ -24,7 +24,7 @@
   <td id="projectalign">
    <div id="projectname">Quantum Resource Manager (QRM) daemon
    </div>
-   <div id="projectbrief">This project consists of the Pass and the Selector runners</div>
+   <div id="projectbrief">This project consists of the Scheduler Runner, the Selector Runner, and the Pass Runner</div>
   </td>
  </tr>
  </tbody>
@@ -112,9 +112,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keywordtype">void</span>        <a class="code hl_function" href="connection__handling_8hpp.html#ac51c5d88535be7c3cc668c4e2209b6be">close_connections</a>(amqp_connection_state_t *<a class="code hl_variable" href="daemon__d_8cpp.html#a3d71ee93207c462b1690738e98283208">conn</a>);</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="ttc" id="aconnection__handling_8hpp_html_a67ee72e821deb193336da9119b78271a"><div class="ttname"><a href="connection__handling_8hpp.html#a67ee72e821deb193336da9119b78271a">receive_message</a></div><div class="ttdeci">const char * receive_message(amqp_connection_state_t *conn, char const *queue)</div><div class="ttdef"><b>Definition</b> connection_handling.cpp:75</div></div>
-<div class="ttc" id="aconnection__handling_8hpp_html_ac51c5d88535be7c3cc668c4e2209b6be"><div class="ttname"><a href="connection__handling_8hpp.html#ac51c5d88535be7c3cc668c4e2209b6be">close_connections</a></div><div class="ttdeci">void close_connections(amqp_connection_state_t *conn)</div><div class="ttdef"><b>Definition</b> connection_handling.cpp:140</div></div>
-<div class="ttc" id="aconnection__handling_8hpp_html_acbd983c6977d2df07e3bd1e6d9b4b245"><div class="ttname"><a href="connection__handling_8hpp.html#acbd983c6977d2df07e3bd1e6d9b4b245">send_message</a></div><div class="ttdeci">void send_message(amqp_connection_state_t *conn, char *message, char const *queue)</div><div class="ttdef"><b>Definition</b> connection_handling.cpp:50</div></div>
+<div class="ttc" id="aconnection__handling_8hpp_html_a67ee72e821deb193336da9119b78271a"><div class="ttname"><a href="connection__handling_8hpp.html#a67ee72e821deb193336da9119b78271a">receive_message</a></div><div class="ttdeci">const char * receive_message(amqp_connection_state_t *conn, char const *queue)</div><div class="ttdef"><b>Definition</b> connection_handling.cpp:78</div></div>
+<div class="ttc" id="aconnection__handling_8hpp_html_ac51c5d88535be7c3cc668c4e2209b6be"><div class="ttname"><a href="connection__handling_8hpp.html#ac51c5d88535be7c3cc668c4e2209b6be">close_connections</a></div><div class="ttdeci">void close_connections(amqp_connection_state_t *conn)</div><div class="ttdef"><b>Definition</b> connection_handling.cpp:143</div></div>
+<div class="ttc" id="aconnection__handling_8hpp_html_acbd983c6977d2df07e3bd1e6d9b4b245"><div class="ttname"><a href="connection__handling_8hpp.html#acbd983c6977d2df07e3bd1e6d9b4b245">send_message</a></div><div class="ttdeci">void send_message(amqp_connection_state_t *conn, char *message, char const *queue)</div><div class="ttdef"><b>Definition</b> connection_handling.cpp:53</div></div>
 <div class="ttc" id="aconnection__handling_8hpp_html_aed3e3e3a82d9e98138a476500e386687"><div class="ttname"><a href="connection__handling_8hpp.html#aed3e3e3a82d9e98138a476500e386687">rabbitmq_new_connection</a></div><div class="ttdeci">int rabbitmq_new_connection(amqp_connection_state_t *conn, amqp_socket_t **socket)</div><div class="ttdef"><b>Definition</b> connection_handling.cpp:5</div></div>
 <div class="ttc" id="adaemon__d_8cpp_html_a3d71ee93207c462b1690738e98283208"><div class="ttname"><a href="daemon__d_8cpp.html#a3d71ee93207c462b1690738e98283208">conn</a></div><div class="ttdeci">amqp_connection_state_t conn</div><div class="ttdoc">TODO.</div><div class="ttdef"><b>Definition</b> daemon_d.cpp:36</div></div>
 </div><!-- fragment --></div><!-- contents -->

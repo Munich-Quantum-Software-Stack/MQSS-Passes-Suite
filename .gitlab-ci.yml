@@ -8,13 +8,23 @@ variables:
 services:
  #- rabbitmq:latest
   - name: rabbitmq
-    alias: rabbitmq_host
+    alias: localhost
 
 before_script:
 
 stages:
   - deploy
   - test
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - build/src/pass_runner
+    - build/src/pass_runner/passes
+    - build/src/selector_runner
+    - build/src/selector_runner/selectors
+    - build/src/scheduler_runner
+    - build/src/scheduler_runner/schedulers
 
 pages:
   stage: deploy
@@ -78,4 +88,11 @@ execute:
     - ./daemon_d screen &
     - sleep 1
     - ../tests/test
-
+  artifacts:
+    paths:
+      - build/src/pass_runner/libPassRunner.so
+      - build/src/pass_runner/passes/*.so
+      - build/src/selector_runner/libSelectorRunner.so
+      - build/src/selector_runner/selectors/*.so
+      - build/src/scheduler_runner/libSchedulerRunner.so
+      - build/src/scheduler_runner/schedulers/*.so

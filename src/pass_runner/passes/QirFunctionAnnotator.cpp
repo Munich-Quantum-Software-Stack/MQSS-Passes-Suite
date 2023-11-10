@@ -38,6 +38,10 @@ PreservedAnalyses QirFunctionAnnotatorPass::run(Module& module, ModuleAnalysisMa
     }
 
 	// Adding replaceWith as requested
+    /**
+     * @todo Don't traverse the functions in the module but the
+     * annotations vector
+     */
     for (auto& function : module) {
          auto name = static_cast<std::string>(function.getName());
 
@@ -50,7 +54,7 @@ PreservedAnalyses QirFunctionAnnotatorPass::run(Module& module, ModuleAnalysisMa
          changed = true;
      }
 
-	  if (changed)
+	 if (changed)
          return PreservedAnalyses::none();
 
      return PreservedAnalyses::all();

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 /**
  * @brief The main entry point of the program.
@@ -49,6 +50,7 @@ extern "C" std::vector<std::string> selector(void) {
     std::cout << "[Selector].........Returning list of passes to the Selector Runner" 
               << std::endl;
 
+    std::reverse(passes.begin(), passes.end());
     return passes;
 }
 

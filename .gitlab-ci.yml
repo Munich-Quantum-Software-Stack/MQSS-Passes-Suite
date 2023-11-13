@@ -3,12 +3,10 @@ image: ubuntu:latest
 variables:
   RABBITMQ_DEFAULT_USER: guest
   RABBITMQ_DEFAULT_PASS: guest
- #AMQP_URL: 'amqp://guest:guest@rabbitmq:5672'
 
 services:
- #- rabbitmq:latest
   - name: rabbitmq
-    alias: rabbitmq #localhost
+    alias: rabbitmq
 
 before_script:
 
@@ -49,7 +47,6 @@ execute:
   stage: test
   script:
     - apt update
-   #- apt install -y cmake llvm g++
     - apt install -y cmake llvm rabbitmq-server g++ curl
     - curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
     - tar -xf v0.13.0.tar.gz

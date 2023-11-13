@@ -1,6 +1,6 @@
-# daemon_d (Quantum Resource Manager (QRM) daemon)
+# Quantum Resource Manager (QRM)
 
-`daemon_d` is a daemon for executing LLVM passes on a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)). This README provides instructions for compiling<!--, installing, and uninstalling the--> `daemon_d`.
+The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is the `daemon_d` daemon . This README provides instructions for compiling<!--, installing, and uninstalling the--> `daemon_d`.
 
 ## Compilation
 
@@ -14,8 +14,8 @@ To compile `daemon_d` follow these steps:
    curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
    tar -xf v0.13.0.tar.gz
    cd rabbitmq-c-0.13.0/
-   mkdir build/ 2> /dev/null || true
-   cd build/
+   mkdir build
+   cd build
    cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
    sudo cmake --build . --target install
    sudo ldconfig
@@ -56,7 +56,7 @@ To compile `daemon_d` follow these steps:
    export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
    ```
 
-5. Configure the project using CMake, specifying the custom executable name and the path to the chosen QDMI compiled in step 1:
+5. Configure the project using CMake, specifying the custom path for <!--installation and for --> locating the passes and the path to the chosen QDMI compiled in step 1:
    ```bash
    cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
    ```
@@ -66,16 +66,9 @@ To compile `daemon_d` follow these steps:
    cmake --build .
    ```
 
-7. Configure RabbitMQ:
-   ```bash
-   hosts_file="/etc/hosts"
-   hostname_entry="127.0.0.1 rabbitmq"
-   
-   if grep -qF "$hostname_entry" "$hosts_file"; then
-       echo "RabbitMQ is already configured in this system."
-   else
-       echo "$hostname_entry" | cat - "$hosts_file" > temp && sudo mv -f temp "$hosts_file"
-   fi
+7. Configure RabbitMQ. Make sure the file `/etc/hosts` exists and contains the following line:
+   ```vim
+   127.0.0.1 rabbitmq
    ```
 
 <!--
@@ -116,11 +109,13 @@ This will remove `daemon_d` from your system.
 
 This section provides links to project documentation and additional resources:
 
-- [Documentation](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/files.html): Detailed documentation about the `daemon_d` project.
+- [Documentation](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/files.html): Detailed documentation about the `Quantum Resource Manager`.
 - [Wiki](https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/wikis/home): Project wiki with additional information and guides.
 - [Contributing Guidelines](CONTRIBUTING.md): Document to understand the process for contributing to our project.
+<!--
 - Flowchart of the QIR Pass Runner daemon: 
 ![Alt](flowcharts/flow.png)
+-->
 
 ## Building Documentation
 
@@ -170,11 +165,11 @@ Alternatively, you can manually open the file `documentation/html/index.html` wi
 
 ## Running Examples
 
-You can run the QIR Pass Runner daemon and a test client as follows:
+You can run the Quantum Resource Manager daemon and a test client as follows:
 
-1. If `daemon_d` is already compiled<!-- installed-->:
+1. Build<!-- and install--> `daemon_d` as shown above. Then:
 
-   - Simply run the Quantum Resource Manager (QRM) daemon:
+   - Simply run the daemon:
      ```bash
      cd build/
      ./daemon_d log ${HOME}
@@ -224,7 +219,7 @@ You can run the QIR Pass Runner daemon and a test client as follows:
     ```
 -->
 
-2. To compile and run a test client for submitting a Quantum Circuit described in QIR to the Quantum Resource Manager (QRM) daemon, navigate to the `tests` directory using a second terminal:
+2. To compile and run a test client for submitting a Quantum Circuit described in QIR to the daemon, navigate to the `tests` directory using a second terminal:
    ```bash
    cd qir_passes/tests/
    ```

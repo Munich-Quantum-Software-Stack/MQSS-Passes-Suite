@@ -43,12 +43,11 @@ amqp_connection_state_t conn;
  * @param receivedScheduler TODO
  * @param receivedSelector TODO
  */
-void handleCircuit(amqp_connection_state_t                &conn,
-                   char const                             *ClientQueue,
-                   std::unique_ptr<char[]> /*char const*/ receivedQirModule,
-                   std::unique_ptr<char[]> /*char const*/ receivedScheduler,
-                   std::unique_ptr<char[]> /*char const*/ receivedSelector) {
-                   //std::promise<void> &p) {
+void handleCircuit(amqp_connection_state_t &conn,
+                   char const              *ClientQueue,
+                   std::unique_ptr<char[]> receivedQirModule,
+                   std::unique_ptr<char[]> receivedScheduler,
+                   std::unique_ptr<char[]> receivedSelector) {
 
     // Invoke the scheduler
     std::string scheduler;
@@ -64,6 +63,9 @@ void handleCircuit(amqp_connection_state_t                &conn,
     scheduler.append(receivedScheduler.get());
 
     std::string targetArchitecture = invokeScheduler(scheduler);
+    std::cout << "[daemon_d].........Target architecture: "
+              << targetArchitecture
+              << std::endl;
 
     // Invoke the selector
     std::string selector;
@@ -108,9 +110,6 @@ void handleCircuit(amqp_connection_state_t                &conn,
 
     std::cout << "[daemon_d].........Adapted QIR sent to the client" 
               << std::endl;
-
-    // This thread has compleated its task
-    //p.set_value();
 }
 
 /**
@@ -287,37 +286,19 @@ int main(int argc, char* argv[]) {
         // Create a new thread that executes 'handleCircuit' to run
         // the received scheduler, and the received selector targeting
         // the received QIR
-        //std::promise<void> threadPromise;
-        //std::future<void>  threadFuture = threadPromise.get_future();
-
         std::thread clientThread(handleCircuit,
                                  std::ref(conn),
                                  ClientQueue,
                                  std::move(receivedQirModule),
                                  std::move(receivedScheduler),
                                  std::move(receivedSelector));
-                                 //std::ref(threadPromise));
-
-        std::cout << "[daemon_d].........I will join this thread"
-                  << std::endl;
-
-        //std::this_thread::sleep_for(std::chrono::seconds(1));
-        //clientThread.join();
 
         delete[] receivedQirModule.get();
         delete[] receivedScheduler.get();
         delete[] receivedSelector.get();
 
-        std::cout << "[daemon_d].........I will detach this thread"
-                  << std::endl;
-
         // Detach from this thread once done
         clientThread.detach();
-
-        std::cout << "[daemon_d].........I detach this thread"
-                  << std::endl;
-
-        //std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     return 1;

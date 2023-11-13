@@ -2,26 +2,51 @@
 
 The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is the `daemon_d` daemon . This README provides instructions for compiling<!--, installing, and uninstalling the--> `daemon_d`.
 
-## Compilation
+## Compilation and Installation
 
 <!--Before you can install `daemon_d`, you need to compile the project. To do this, follow the steps below:-->
 
-To compile `daemon_d` follow these steps:
+To install the Quantum Resource Manager daemon system wide, follow these steps:
 
 1. Install the required dependencies:
-   ```bash
-   sudo apt install -y cmake llvm rabbitmq-server g++
-   curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
-   tar -xf v0.13.0.tar.gz
-   cd rabbitmq-c-0.13.0/
-   mkdir build
-   cd build
-   cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
-   sudo cmake --build . --target install
-   sudo ldconfig
-   cd ../..
-   rm -rf rabbitmq-c-0.13.0/
-   ```
+   - Install CMake, LLVM, RabbitMQ, and GNU's C++ frontend:
+      ```bash
+      sudo apt install -y cmake llvm rabbitmq-server g++
+      ```
+
+   - Download RabbitMQ-C:
+      ```bash
+      curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
+      ```
+
+   - Extract the file: 
+      ```bash   
+      tar -xf v0.13.0.tar.gz
+      ```
+
+   - Enter the extracted directory:
+      ```bash
+      cd rabbitmq-c-0.13.0/
+      ```
+
+   - Create a `build` directory:
+      ```bash
+      mkdir build/
+      cd build/
+      ```
+
+   - Configure the project using CMake:
+      ```bash
+      cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
+      ```
+
+   - Build the project, return to the `qir_passes` directory, and delete the extracted directory:
+      ```bash
+      sudo cmake --build . --target install
+      sudo ldconfig
+      cd ../..
+      rm -rf rabbitmq-c-0.13.0/
+      ```
 
 2. Compile the chosen Quantum Device Management Interface (QDMI), for example:
    - Navigate to the `qdmi` directory which contains a dummy QDMI:
@@ -63,30 +88,14 @@ To compile `daemon_d` follow these steps:
 
 6. Build the project:
    ```bash
-   cmake --build .
+   sudo cmake --build . --target install
+   sudo ldconfig
    ```
 
 7. Configure RabbitMQ. Make sure the file `/etc/hosts` exists and contains the following line:
    ```vim
    127.0.0.1 rabbitmq
    ```
-
-<!--
-## Installation
-
-Once the project is compiled, you can install `daemon_d` system-wide with the following steps:
-
-1. Navigate to the `build` directory (if you are not already there):
-   ```bash
-   cd build/
-   ```
-
-2. Install `daemon_d` using sudo to ensure the necessary permissions for system-wide installation:
-   ```bash
-   sudo make install
-   ```
-
-`daemon_d` should now be installed and ready to use on your system.
 
 ## Uninstallation
 
@@ -103,13 +112,12 @@ If you ever need to uninstall `daemon_d`, follow these steps:
    ```
 
 This will remove `daemon_d` from your system.
--->
 
 ## Documentation and Resources
 
 This section provides links to project documentation and additional resources:
 
-- [Documentation](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/files.html): Detailed documentation about the `Quantum Resource Manager`.
+- [Documentation](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/files.html): Detailed documentation about the Quantum Resource Manager.
 - [Wiki](https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/wikis/home): Project wiki with additional information and guides.
 - [Contributing Guidelines](CONTRIBUTING.md): Document to understand the process for contributing to our project.
 <!--
@@ -167,57 +175,18 @@ Alternatively, you can manually open the file `documentation/html/index.html` wi
 
 You can run the Quantum Resource Manager daemon and a test client as follows:
 
-1. Build<!-- and install--> `daemon_d` as shown above. Then:
-
-   - Simply run the daemon:
-     ```bash
-     cd build/
-     ./daemon_d log ${HOME}
-     ```
-
-<!--
-2. If `daemon_d` is not installed, you can either 1) install it as described in the [Installation Section](#installation) and run it as shown in the above step or 2) compile it as explained in the [Compilation Section](#compilation) and then run it as follows:
-
-   - Navigate to the `qir_passes` directory (if you are not already there):
-     ```bash
-     cd qir_passes/
-     ```
-
-   - And run the QIR Pass Runner daemon:
-     ```bash
-     ./daemon_d
-     ```
-
-5. Install the required dependencies:
+1. Install `daemon_d` as shown above. 
+   - Then simply run the daemon specifying a path for the log file:
    ```bash
-   sudo apt install -y cmake
+   daemon_d log ${HOME}
    ```
 
-6. Configure the project using CMake, specifying the custom executable name:
+   <span style="color:gray">
+   - One may also run the daemon specifying the terminal as the standard output stream and no log file:
    ```bash
-   cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
+   daemon_d screen
    ```
-
-7. Build the project:
-   ```bash
-   cmake --build .
-   ```
-
-8. Run the Quantum Resource Manager (QRM) daemon:
-   ```bash
-   ./qselectorrunner_d
-   ```
-
-9. To compile and run a test client for submitting a Quantum Circuit described in QIR to the Quantum Resource Manager (QRM) daemon, as well as a toy pass selector, navigate to the `tests` directory using a third terminal:
-   ```bash
-   cd qir_passes/tests/
-   ```
-
-10. Compile the test client using mpic++:
-    ```bash
-    mpic++ -std=c++14 test.cpp -o test
-    ```
--->
+   </span>
 
 2. To compile and run a test client for submitting a Quantum Circuit described in QIR to the daemon, navigate to the `tests` directory using a second terminal:
    ```bash
@@ -225,12 +194,12 @@ You can run the Quantum Resource Manager daemon and a test client as follows:
    ```
 
 3. Compile the test client:
-    ```bash
-    g++ test.cpp ../src/connection_handling.cpp -o test -lrabbitmq
-    ```
+   ```bash
+   g++ test.cpp ../src/connection_handling.cpp -o test -lrabbitmq
+   ```
 
-4. <!--11. -->Run the test client:
-    ```bash
-    ./test
-    ```
+4. Run the test client:
+   ```bash
+   ./test
+   ```
 

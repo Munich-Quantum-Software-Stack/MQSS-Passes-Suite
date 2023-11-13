@@ -60,7 +60,7 @@ int main() {
 
     if (adaptedQir) {
         std::cout << "[Client]...........Received adapted QIR: " 
-                  << std::endl;
+                  << std::endl
                   << adaptedQir 
                   << std::endl;
 

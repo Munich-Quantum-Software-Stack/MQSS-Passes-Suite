@@ -5,7 +5,7 @@ project(QDMI
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_library(qdmi SHARED qdmi.cpp)
+add_library(QDMI SHARED qdmi.cpp)
 
-target_include_directories(qdmi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(QDMI PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

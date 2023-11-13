@@ -96,14 +96,7 @@ execute:
     - cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCUSTOM_QDMI_PATH=$QDMI_PATH ..
     - cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCUSTOM_QDMI_PATH=$QDMI_PATH ..
     - ldconfig
-    - daemon_d screen
+    - ./daemon_d screen
     - sleep 1
     - ../tests/test
-  artifacts:
-    paths:
-      - build/src/pass_runner/libPassRunner.so
-      - build/src/pass_runner/passes/*.so
-      - build/src/selector_runner/libSelectorRunner.so
-      - build/src/selector_runner/selectors/*.so
-      - build/src/scheduler_runner/libSchedulerRunner.so
-      - build/src/scheduler_runner/schedulers/*.so
+

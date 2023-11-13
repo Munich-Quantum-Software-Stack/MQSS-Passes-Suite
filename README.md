@@ -48,10 +48,29 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
       rm -rf rabbitmq-c-0.13.0/
       ```
 
-2. Compile the chosen Quantum Device Management Interface (QDMI), for example:
+2. Configure the environment:
+   - Set the installation path of the QRM, the location of the chose QDMI, and the path to locate LLVM's CMake configuration:
+      ```bash
+      export INSTALL_PREFIX=$HOME
+      export QDMI_PATH=$PWD/qdmi
+      export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
+      ```
+   
+   - Set the `LD_LIBRARY_PATH` environment variable with the location of the dynamic libraries:
+      ```bash
+      export LD_LIBRARY_PATH=$QDMI_PATH/build:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner/passes:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner/selectors:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner/schedulers:$LD_LIBRARY_PATH
+      ```
+
+3. Compile the chosen Quantum Device Management Interface (QDMI), for example:
    - Navigate to the `qdmi` directory which contains a dummy QDMI:
       ```bash
-      cd qdmi
+      cd $QDMI_PATH
       ```
 
    - Create a `build` directory:
@@ -67,18 +86,12 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
    - Build the project and return to the `qir_passes` directory: 
       ```bash
       make
-      cd ../..
       ```
 
-3. Create a `build` directory:
+4. Navigate to the `qir_passes` directory (if you are not already there) and create a `build` directory:
    ```bash
    mkdir build/
    cd build/
-   ```
-
-4. Set the CMake prefix path to locate LLVM's CMake configuration:
-   ```bash
-   export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
    ```
 
 5. Configure the project using CMake, specifying the custom path for <!--installation and for --> locating the passes and the path to the chosen QDMI compiled in step 1:

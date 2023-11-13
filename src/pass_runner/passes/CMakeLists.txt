@@ -47,7 +47,7 @@ set(PASSES_SOURCE_FILES
 set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/src/pass_runner/passes")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# Compile each pass as a shared object and link it to QDMI
+# Compile each pass as a shared object and link it to qdmi 
 foreach(src_file ${PASSES_SOURCE_FILES})
     get_filename_component(src_name ${src_file} NAME_WE)
     set(target_name "${src_name}Pass")

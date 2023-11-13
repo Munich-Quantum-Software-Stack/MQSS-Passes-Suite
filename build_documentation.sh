@@ -8,9 +8,9 @@ sudo apt install -y flex bison || true
 
 # Check if doxygen is installed
 if command -v "doxygen"; then
-    echo "doxygen is already installed"
+    echo "Doxygen is already installed"
 else
-    echo "Installing doxygen"
+    echo "Installing Doxygen"
     git clone https://github.com/doxygen/doxygen.git
     cd doxygen
     mkdir build/ 2> /dev/null || true

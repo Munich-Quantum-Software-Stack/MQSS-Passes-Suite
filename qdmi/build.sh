@@ -7,7 +7,7 @@ set -e
 sudo apt install -y cmake || true
 
 # Build qdmi
-cd qdmi
+cd qdmi 
 mkdir build/ 2> /dev/null || true
 cd build
 cmake ..

@@ -181,12 +181,10 @@ You can run the Quantum Resource Manager daemon and a test client as follows:
    daemon_d log ${HOME}
    ```
 
-   <span style="color:gray">
    - One may also run the daemon specifying the terminal as the standard output stream and no log file:
    ```bash
    daemon_d screen
    ```
-   </span>
 
 2. To compile and run a test client for submitting a Quantum Circuit described in QIR to the daemon, navigate to the `tests` directory using a second terminal:
    ```bash

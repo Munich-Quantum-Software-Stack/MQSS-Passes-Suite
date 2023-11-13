@@ -49,7 +49,7 @@ include_directories(
     src/pass_runner/headers 
     src/pass_runner
     src/selector_runner 
-    src/scheduler_runner 
+    src/scheduler_runner
     ${CUSTOM_QDMI_PATH})
 
 # Specify the path to the directory containing libqdmi.so
@@ -71,9 +71,9 @@ add_library(SchedulerRunner SHARED
 
 # Link any necessary libraries (e.g., LLVM and QDMI)
 target_link_libraries(QirPassRunner   PRIVATE LLVM)
-target_link_libraries(QirPassRunner   PRIVATE QDMI)
+target_link_libraries(QirPassRunner   PRIVATE qdmi)
 target_link_libraries(SchedulerRunner PRIVATE LLVM)
-target_link_libraries(SchedulerRunner PRIVATE QDMI)
+target_link_libraries(SchedulerRunner PRIVATE qdmi)
 
 # Specify the output directory for the shared libraries
 set_target_properties(QirPassRunner   
@@ -107,7 +107,7 @@ set(SOURCES
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
-    INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner;${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner/passes;${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner;${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner/selectors;${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner;${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner/schedulers"
+    INSTALL_RPATH "${CUSTOM_QDMI_PATH}/build;${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner;${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner/passes;${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner;${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner/selectors;${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner;${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner/schedulers"
     BUILD_WITH_INSTALL_RPATH TRUE
 )
 
@@ -119,7 +119,7 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE PassRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE SchedulerRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE SelectorRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE rabbitmq)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE QDMI)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE qdmi)
 
 # Include libraries subdirectories
 add_subdirectory(src/pass_runner/passes)

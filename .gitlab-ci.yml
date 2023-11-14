@@ -11,6 +11,17 @@ services:
 before_script:
   - export INSTALL_PREFIX=$HOME
   - export QDMI_PATH=$PWD/qdmi
+  - export PATH=$PATH:$INSTALL_PREFIX/bin
+  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
+  - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
+  - export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+  - export LD_LIBRARY_PATH=$QDMI_PATH/build:$LD_LIBRARY_PATH
+  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner:$LD_LIBRARY_PATH
+  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner/passes:$LD_LIBRARY_PATH
+  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner:$LD_LIBRARY_PATH
+  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner/selectors:$LD_LIBRARY_PATH
+  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner:$LD_LIBRARY_PATH
+  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner/schedulers:$LD_LIBRARY_PATH
 
 stages:
   - deploy
@@ -42,7 +53,6 @@ analyze:
   script:
     - apt update
     - apt install -y llvm libopenmpi-dev clang 
-    - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
     - find src -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ {} \;
 
 execute:
@@ -58,7 +68,6 @@ execute:
     - cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
     - cmake --build . --target install
     - ldconfig
-    - export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
     - cd ../..
     - rm -rf rabbitmq-c-0.13.0/
    # ...
@@ -70,34 +79,18 @@ execute:
     - cd ../..
     - echo QDMI built successfully
     # ...
-    - mkdir build
-    - cd build
-    - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
-    - cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
-    - cmake --build .
-    - cd ..
-    - echo QRM built successfully
-    # ...
     - cd tests
     - g++ test.cpp ../src/connection_handling.cpp -o test -lrabbitmq
     - echo Test built successfully
     - cd ..
     # ...
+    - mkdir build
     - cd build
-    - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
-    - export LD_LIBRARY_PATH=$QDMI_PATH/build:$LD_LIBRARY_PATH
-    - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner:$LD_LIBRARY_PATH
-    - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner/passes:$LD_LIBRARY_PATH
-    - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner:$LD_LIBRARY_PATH
-    - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner/selectors:$LD_LIBRARY_PATH
-    - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner:$LD_LIBRARY_PATH
-    - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner/schedulers:$LD_LIBRARY_PATH
-    # ...
     - cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCUSTOM_QDMI_PATH=$QDMI_PATH ..
     - cmake --build . --target install
     - ldconfig
-    - ls $INSTALL_PREFIX/bin/src/pass_runner/passes
-    - daemon_d screen
+    - echo QRM installed successfully
+    - daemon_d screen &
     - sleep 1
     - ../tests/test
 

@@ -49,6 +49,16 @@ export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner/selectors:$LD_LIB
 export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner/schedulers:$LD_LIBRARY_PATH
 #
+#if [[ ":$PATH:" != *":$INSTALL_PREFIX/bin:"* ]]; then
+if [ "$(echo $PATH | tr ':' '\n' | grep -c "$INSTALL_PREFIX/bin")" -eq 0 ]; then
+    export PATH=$PATH:$INSTALL_PREFIX/bin
+    echo "PATH set to: "
+    echo $PATH
+else
+    echo "PATH is set to: "
+    echo $PATH
+fi
+
 cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCUSTOM_QDMI_PATH=$QDMI_PATH ..
 sudo cmake --build . --target install
 sudo ldconfig

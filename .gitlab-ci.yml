@@ -9,20 +9,22 @@ services:
     alias: rabbitmq
 
 before_script:
+  - export INSTALL_PREFIX=$HOME
+  - export QDMI_PATH=$PWD/qdmi
 
 stages:
   - deploy
   - test
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - build/src/pass_runner
-    - build/src/pass_runner/passes
-    - build/src/selector_runner
-    - build/src/selector_runner/selectors
-    - build/src/scheduler_runner
-    - build/src/scheduler_runner/schedulers
+#cache:
+#  key: ${CI_COMMIT_REF_SLUG}
+#  paths:
+#    - $INSTALL_PREFIX/bin/src/pass_runner
+#    - $INSTALL_PREFIX/bin/src/pass_runner/passes
+#    - $INSTALL_PREFIX/bin/src/selector_runner
+#    - $INSTALL_PREFIX/bin/src/selector_runner/selectors
+#    - $INSTALL_PREFIX/bin/src/scheduler_runner
+#    - $INSTALL_PREFIX/bin/src/scheduler_runner/schedulers
 
 pages:
   stage: deploy
@@ -81,8 +83,6 @@ execute:
     - echo Test built successfully
     - cd ..
     # ...
-    - export INSTALL_PREFIX=$HOME
-    - export QDMI_PATH=$PWD/qdmi
     - cd build
     - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
     - export LD_LIBRARY_PATH=$QDMI_PATH/build:$LD_LIBRARY_PATH
@@ -94,9 +94,10 @@ execute:
     - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner/schedulers:$LD_LIBRARY_PATH
     # ...
     - cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCUSTOM_QDMI_PATH=$QDMI_PATH ..
-    - cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCUSTOM_QDMI_PATH=$QDMI_PATH ..
+    - cmake --build . --target install
     - ldconfig
-    - ./daemon_d screen
+    - ls $INSTALL_PREFIX/bin/src/pass_runner/passes
+    - daemon_d screen
     - sleep 1
     - ../tests/test
 

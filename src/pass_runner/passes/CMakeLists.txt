@@ -21,12 +21,15 @@ set(PASSES_SOURCE_FILES
     QirFunctionValidation.cpp
     # G
     QirGrouping.cpp
+    # H
+    QirHadamardAndPauliGateSwitch.cpp
     # M
     QirMergeRotations.cpp
     # N
     QirNormalizeArgAngle.cpp
     QirNullRotationCancellation.cpp
     # P
+    QirPauliGateAndHadamardSwitch.cpp
     QirPlaceIrreversibleGatesInMetadata.cpp
     # Q
     QirQubitRemap.cpp
@@ -37,10 +40,15 @@ set(PASSES_SOURCE_FILES
     QirReplaceConstantBranches.cpp
     QirResourceAnnotation.cpp
     QirRzToRxRyRxDecomposition.cpp
+    # S
+    QirSDaggerToS.cpp
+    QirSToSDagger.cpp
     # U
     QirU3ToRzRyRzDecomposition.cpp
     # X
     QirXCnotXReduction.cpp
+    # Z
+    QirZExtTransform.cpp
 )
 
 # Set RPATH for the shared libraries in this directory

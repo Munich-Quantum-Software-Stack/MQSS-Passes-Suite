@@ -52,6 +52,28 @@ entry:
   ; calls to check Z and Cnot commutes
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__z__body(%Qubit* null)
+  ; calls to check if Hadamard and Pauli gates are switching
+  call void @__quantum__qis__h__body(%Qubit* null)
+  call void @__quantum__qis__x__body(%Qubit* null)
+  call void @__quantum__qis__h__body(%Qubit* null)
+  call void @__quantum__qis__y__body(%Qubit* null)
+  call void @__quantum__qis__h__body(%Qubit* null)
+  call void @__quantum__qis__z__body(%Qubit* null)
+  call void @__quantum__qis__h__body(%Qubit* null)
+  ; calls to check changing S to S dagger
+  call void @__quantum__qis__s__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__x__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__s__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__y__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__s__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__z__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  ; calls to check changing S dagger to S
+  call void @__quantum__qis__s__adj(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__x__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__s__adj(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__y__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__s__adj(%Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__z__body(%Qubit* inttoptr (i64 1 to %Qubit*))
   ; calls to record the program output
   call void @__quantum__rt__tuple_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @0, i32 0, i32 0))
@@ -87,7 +109,13 @@ declare void @__quantum__qis__rx__body(double, %Qubit*)
 
 declare void @__quantum__qis__x__body(%Qubit*)
 
+declare void @__quantum__qis__y__body(%Qubit*)
+
 declare void @__quantum__qis__z__body(%Qubit*)
+
+declare void @__quantum__qis__s__body(%Qubit*)
+
+declare void @__quantum__qis__s__adj(%Qubit*)
 
 declare void @__quantum__qis__cnot__body(%Qubit*, %Qubit*)
 

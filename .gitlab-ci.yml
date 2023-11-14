@@ -12,8 +12,6 @@ before_script:
   - export INSTALL_PREFIX=$HOME
   - export QDMI_PATH=$PWD/qdmi
   - export PATH=$PATH:$INSTALL_PREFIX/bin
-  - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
-  - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
   - export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
   - export LD_LIBRARY_PATH=$QDMI_PATH/build:$LD_LIBRARY_PATH
   - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner:$LD_LIBRARY_PATH
@@ -53,6 +51,7 @@ analyze:
   script:
     - apt update
     - apt install -y llvm libopenmpi-dev clang 
+    - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
     - find src -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ {} \;
 
 execute:
@@ -60,6 +59,7 @@ execute:
   script:
     - apt update
     - apt install -y cmake llvm rabbitmq-server g++ curl
+    - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
     - curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
     - tar -xf v0.13.0.tar.gz
     - cd rabbitmq-c-0.13.0/

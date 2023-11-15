@@ -24,7 +24,7 @@ else
 	TARGET_DOXYGEN := build_docs
 endif
 
-.PHONY: all build_qrm set_environment_qrm qrm install docs
+.PHONY: install docs clean 
 
 all: install docs clean
 
@@ -72,7 +72,7 @@ set_environment_qrm: build_qrm
 	fi;
 
 qrm: set_environment_qrm
-	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) -DCUSTOM_QDMI_PATH=$(QDMI_PATH)
+	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) -DBUILD_WITH_DOCS=OFF -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) -DCUSTOM_QDMI_PATH=$(QDMI_PATH)
 	sudo cmake --build $(BUILD_DIR) --target install
 	sudo ldconfig
 
@@ -88,7 +88,7 @@ build_docs:
 	cmake --build doxygen/build
 	$(MAKE) -C doxygen install
 
-docs: $(TARGET_DOXYGEN)
+docs: set_environment_qrm $(TARGET_DOXYGEN)
 	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) -DBUILD_WITH_DOCS=ON -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) -DCUSTOM_QDMI_PATH=$(QDMI_PATH)
 	sudo cmake --build $(BUILD_DIR) --target install
 	sudo ldconfig

@@ -52,7 +52,7 @@ set(PASSES_SOURCE_FILES
 )
 
 # Set RPATH for the shared libraries in this directory
-set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/src/pass_runner/passes")
+set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/bin/src/pass_runner/passes")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Compile each pass as a shared object and link it to qdmi 

@@ -42,7 +42,6 @@ find_package(LLVM REQUIRED CONFIG)
 
 # Set up LLVM-specific flags
 add_definitions(${LLVM_DEFINITIONS})
-include_directories(${LLVM_INCLUDE_DIRS})
 
 # Add the passes directory to include paths
 include_directories(
@@ -50,7 +49,8 @@ include_directories(
     src/pass_runner
     src/selector_runner 
     src/scheduler_runner
-    ${CUSTOM_QDMI_PATH})
+    ${CUSTOM_QDMI_PATH}
+	${LLVM_INCLUDE_DIRS})
 
 # Specify the path to the directory containing libqdmi.so
 link_directories(${CUSTOM_QDMI_PATH}/build)

@@ -186,7 +186,8 @@ int main(int argc, char* argv[]) {
     // Change the working directory to root to avoid locking the current directory
     chdir("/");
 
-    signal(SIGTERM, signalHandler);  // Set up a signal handler for graceful termination
+	// Set up a signal handler for graceful termination
+    signal(SIGTERM, signalHandler); 
 
     // Set the output stream
     if (stream == "log") {
@@ -203,12 +204,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Start listening for incomming selectors
-    const char *ClientQueue    = "client_queue";
-    const char *DaemonQueue    = "daemon_queue";
-
     // Establish a connection to the RabbitMQ server
-    amqp_socket_t *socket = NULL;
+    const char    *ClientQueue = "client_queue";
+    const char    *DaemonQueue = "daemon_queue";
+    amqp_socket_t *socket      = NULL;
 
     rabbitmq_new_connection(&conn, &socket);
 
@@ -245,20 +244,23 @@ int main(int argc, char* argv[]) {
 
     while (true) {
         // Receive a QIR module as a binary blob
-        auto *qirmodule = receive_message(&conn,             // conn
-                                          DaemonQueue);      // queue
+        auto *qirmodule = receive_message(&conn,		// conn
+                                          DaemonQueue);	// queue
+
         auto receivedQirModule = std::make_unique<char[]>(strlen(qirmodule) + 1);
         strcpy(receivedQirModule.get(), qirmodule);
 
         // Receive name of the desired scheduler
-        auto *scheduler = receive_message(&conn,             // conn
-                                          DaemonQueue);      // queue
+        auto *scheduler = receive_message(&conn,		// conn
+                                          DaemonQueue);	// queue
+
         auto receivedScheduler = std::make_unique<char[]>(strlen(scheduler) + 1);
         strcpy(receivedScheduler.get(), scheduler);
 
         // Receive name of the desired selector
-        auto *selector  = receive_message(&conn,             // conn
-                                          DaemonQueue);      // queue
+        auto *selector  = receive_message(&conn,		// conn
+                                          DaemonQueue);	// queue
+
         auto receivedSelector  = std::make_unique<char[]>(strlen(selector) + 1);
         strcpy(receivedSelector.get(), selector);
 
@@ -268,6 +270,16 @@ int main(int argc, char* argv[]) {
 
             std::cerr << "[daemon_d].........Failed to receive the job"
                       << std::endl;
+
+			if (receivedQirModule.get())
+				delete[] receivedQirModule.get();
+
+			if (receivedScheduler.get())
+        		delete[] receivedScheduler.get();
+
+			if (receivedSelector.get())
+        		delete[] receivedSelector.get();
+
             continue;
         }
 

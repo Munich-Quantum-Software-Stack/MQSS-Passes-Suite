@@ -7,13 +7,10 @@
 
 using namespace llvm;
 
-// Define a mutex for protecting shared resources
-//std::mutex sharedMutex;
-
 /**
  * @brief TODO
  * @param pathScheduler TODO
- * @return const char*
+ * @return std::string
  */
 std::string invokeScheduler(const std::string &pathScheduler) {
     size_t lastSlashPos = pathScheduler.find_last_of('/');

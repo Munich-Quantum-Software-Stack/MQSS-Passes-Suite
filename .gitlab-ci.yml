@@ -25,21 +25,11 @@ stages:
   - deploy
   - test
 
-#cache:
-#  key: ${CI_COMMIT_REF_SLUG}
-#  paths:
-#    - $INSTALL_PREFIX/bin/src/pass_runner
-#    - $INSTALL_PREFIX/bin/src/pass_runner/passes
-#    - $INSTALL_PREFIX/bin/src/selector_runner
-#    - $INSTALL_PREFIX/bin/src/selector_runner/selectors
-#    - $INSTALL_PREFIX/bin/src/scheduler_runner
-#    - $INSTALL_PREFIX/bin/src/scheduler_runner/schedulers
-
 pages:
   stage: deploy
   script:
     - mkdir public
-    - cp -r documentation/html/* public/
+    - cp -r docs/html/* public/
   artifacts:
     paths:
       - public

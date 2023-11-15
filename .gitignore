@@ -1,4 +1,6 @@
 .DS_Store
+uninstall.cmake
+
 build/
 tests/test
 

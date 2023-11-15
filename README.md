@@ -18,9 +18,9 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
    cd qir_passes/
    ```
 
-3. Run make specifying the installation path ($HOME is set as default):
+3. Run make specifying the installation path (`$HOME` is set as default) and a building directory (`build` is set as default):
    ```bash
-   make INSTALL_PREFIX=$HOME install
+   make INSTALL_PATH=$HOME BUILD_DIR=build  install
    ```
 
 ## Uninstallation

@@ -141,7 +141,7 @@ install(TARGETS SchedulerRunner
 install(TARGETS SelectorRunner 
     DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner)
 
-# Uninstall everything
+# Uninstall the Quantum Resource Manager
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake"
@@ -152,4 +152,12 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+# Build the documentation
+option(BUILD_WITH_DOCS "Generate Docs" OFF)
+if(BUILD_WITH_DOCS)
+  message("Building documentation.")
+  set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/docs)
+endif()
 

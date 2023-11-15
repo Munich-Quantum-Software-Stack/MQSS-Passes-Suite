@@ -139,6 +139,8 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirGroupingPass.html">QirGroupingPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This pass groups the instructions into purely-quantum and purely-classical blocks.  <a href="classllvm_1_1QirGroupingPass.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirHadamardAndPauliGateSwitchPass.html">QirHadamardAndPauliGateSwitchPass</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirMergeRotationsPass.html">QirMergeRotationsPass</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirNormalizeArgAnglePass.html">QirNormalizeArgAnglePass</a></td></tr>
@@ -146,6 +148,8 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirNullRotationCancellationPass.html">QirNullRotationCancellationPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This pass merges equivalent rotation gates into single rotation.  <a href="classllvm_1_1QirNullRotationCancellationPass.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirPauliGateAndHadamardSwitchPass.html">QirPauliGateAndHadamardSwitchPass</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirPlaceIrreversibleGatesInMetadataPass.html">QirPlaceIrreversibleGatesInMetadataPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This pass inserts gate reversibility information into metadata.  <a href="classllvm_1_1QirPlaceIrreversibleGatesInMetadataPass.html#details">More...</a><br /></td></tr>
@@ -171,11 +175,17 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirRzToRxRyRxDecompositionPass.html">QirRzToRxRyRxDecompositionPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This pass decomposes an Rz gate into Rx and Ry gates.  <a href="classllvm_1_1QirRzToRxRyRxDecompositionPass.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirSDaggerToSPass.html">QirSDaggerToSPass</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirSToSDaggerPass.html">QirSToSDaggerPass</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirU3ToRzRyRzDecompositionPass.html">QirU3ToRzRyRzDecompositionPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This pass decomposes a U3 gate into Rx and Ry gates.  <a href="classllvm_1_1QirU3ToRzRyRzDecompositionPass.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirXCnotXReductionPass.html">QirXCnotXReductionPass</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">This pass removes X gates surrounding a CNOT gate.  <a href="classllvm_1_1QirXCnotXReductionPass.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classllvm_1_1QirZExtTransformPass.html">QirZExtTransformPass</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

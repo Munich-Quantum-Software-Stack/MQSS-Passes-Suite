@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>qpassrunner_d (QIR Pass Runner daemon): selector Directory Reference</title>
+<title>Quantum Resource Manager (QRM) daemon: QirHadamardAndPauliGateSwitch Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,9 +22,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">qpassrunner_d (QIR Pass Runner daemon)
+   <div id="projectname">Quantum Resource Manager (QRM) daemon
    </div>
-   <div id="projectbrief">This project consists of the Pass and the Selector runners</div>
+   <div id="projectbrief">This project consists of the Scheduler Runner, the Selector Runner, and the Pass Runner</div>
   </td>
  </tr>
  </tbody>
@@ -69,27 +69,21 @@ $(function() {
 </div>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_8d62b8f2c30cb6a24030ca4526cf925a.html">selector</a></li>  </ul>
-</div>
 </div><!-- top -->
 <div class="header">
-  <div class="headertitle"><div class="title">selector Directory Reference</div></div>
+  <div class="headertitle"><div class="title">QirHadamardAndPauliGateSwitch Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="subdirs" name="subdirs"></a>
-Directories</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_7ab5f311c5b77acac972cf8b49d3b4e0.html">selectors</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="files" name="files"></a>
-Files</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="icondoc"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="qselectorrunner__d_8cpp.html">qselectorrunner_d.cpp</a></td></tr>
-<tr class="memdesc:qselectorrunner__d_8cpp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of the QIR Selector Runner daemon. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table>
+
+<p>This pass swaps adjacent H and Pauli gates whenever found in this order. As a result, Pauli gate is changed accordingly.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="QirHadamardAndPauliGateSwitch_8hpp_source.html">QirHadamardAndPauliGateSwitch.hpp</a>&gt;</code></p>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>This pass swaps adjacent H and Pauli gates whenever found in this order. As a result, Pauli gate is changed accordingly. </p>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
+<li>src/pass_runner/headers/<a class="el" href="QirHadamardAndPauliGateSwitch_8hpp_source.html">QirHadamardAndPauliGateSwitch.hpp</a></li>
+</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

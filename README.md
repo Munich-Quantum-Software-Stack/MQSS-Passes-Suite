@@ -9,114 +9,27 @@ The entry point of the Quantum Resource Manager for selecting and applying LLVM 
 To install the Quantum Resource Manager daemon system wide, follow these steps:
 
 1. Install the required dependencies:
-   - Install CMake, LLVM, RabbitMQ, and GNU's C++ frontend:
-      ```bash
-      sudo apt install -y cmake llvm rabbitmq-server g++
-      ```
-
-   - Download RabbitMQ-C:
-      ```bash
-      curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
-      ```
-
-   - Extract the file: 
-      ```bash   
-      tar -xf v0.13.0.tar.gz
-      ```
-
-   - Enter the extracted directory:
-      ```bash
-      cd rabbitmq-c-0.13.0/
-      ```
-
-   - Create a `build` directory:
-      ```bash
-      mkdir build/
-      cd build/
-      ```
-
-   - Configure the project using CMake:
-      ```bash
-      cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
-      ```
-
-   - Build the project, return to the `qir_passes` directory, and delete the extracted directory:
-      ```bash
-      sudo cmake --build . --target install
-      sudo ldconfig
-      cd ../..
-      rm -rf rabbitmq-c-0.13.0/
-      ```
-
-2. Configure the environment:
-   - Set the installation path of the QRM, the location of the chose QDMI, and the path to locate LLVM's CMake configuration:
-      ```bash
-      export INSTALL_PREFIX=$HOME
-      export QDMI_PATH=$PWD/qdmi
-      export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
-      ```
-   
-   - Set the `LD_LIBRARY_PATH` environment variable with the location of the dynamic libraries:
-      ```bash
-      export LD_LIBRARY_PATH=$QDMI_PATH/build:$LD_LIBRARY_PATH
-      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner:$LD_LIBRARY_PATH
-      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner/passes:$LD_LIBRARY_PATH
-      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner:$LD_LIBRARY_PATH
-      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner/selectors:$LD_LIBRARY_PATH
-      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner:$LD_LIBRARY_PATH
-      export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner/schedulers:$LD_LIBRARY_PATH
-      ```
-
-3. Compile the chosen Quantum Device Management Interface (QDMI), for example:
-   - Navigate to the `qdmi` directory which contains a dummy QDMI:
-      ```bash
-      cd $QDMI_PATH
-      ```
-
-   - Create a `build` directory:
-      ```bash
-      mkdir build/
-      cd build/
-      ```
-
-   - Configure the project using CMake:
-      ```bash
-      cmake ..
-      ```
-   - Build the project and return to the `qir_passes` directory: 
-      ```bash
-      make
-      ```
-
-4. Navigate to the `qir_passes` directory (if you are not already there) and create a `build` directory:
    ```bash
-   mkdir build/
-   cd build/
+   sudo apt install -y cmake llvm rabbitmq-server g++
    ```
 
-5. Configure the project using CMake, specifying the custom path for <!--installation and for --> locating the passes and the path to the chosen QDMI compiled in step 1:
+2. Navigate to the `qir_passes` directory (if you are not already there):
    ```bash
-   cmake -DCMAKE_INSTALL_PREFIX=$HOME -DCUSTOM_QDMI_PATH=qdmi ..
+   cd qir_passes/
    ```
 
-6. Build the project:
+3. Run make specifying the installation path ($HOME is set as default):
    ```bash
-   sudo cmake --build . --target install
-   sudo ldconfig
-   ```
-
-7. Configure RabbitMQ. Make sure the file `/etc/hosts` exists and contains the following line:
-   ```vim
-   127.0.0.1 rabbitmq
+   make INSTALL_PREFIX=$HOME install
    ```
 
 ## Uninstallation
 
 If you ever need to uninstall `daemon_d`, follow these steps:
 
-1. Navigate to the `build` directory (if you are not already there):
+1. Navigate to the `qir_passes` directory (if you are not already there):
    ```bash
-   cd build/
+   cd qir_passes/
    ```
 
 2. Run the uninstall target using sudo:
@@ -142,45 +55,20 @@ This section provides links to project documentation and additional resources:
 
 You can build the documentation locally using Doxygen. 
 
-1. If Doxygen is not installed, you can install it with the following steps:
+1. Install the required dependencies for Doxygen:
+   ```bash
+   sudo apt install -y flex bison
+   ```
 
-   - Install the required dependencies for Doxygen:
-     ```bash
-     sudo apt install -y flex bison
-     ```
+2. Run make:
+   ```bash
+   make docs
+   ```
 
-   - Clone the Doxygen repository:
-      ```bash
-      git clone https://github.com/doxygen/doxygen.git
-      ```
-   
-   - Create a `build` directory
-      ```bash
-      cd doxygen
-      mkdir build/
-      cd build/
-      ```
-   
-   - Run cmake with the makefile generator
-      ```bash
-      cmake -G "Unix Makefiles" ..
-      make
-      sudo make install
-      cd ../..
-      rm -rf doxygen
-      ```
-
-2. If Doxygen is already installed you can continue with the following steps:
-
-   - Generate the documentation with Doxygen:
-      ```bash
-      doxygen Doxyfile
-      ```
-   
-   - Open the generated documentation in a web browser:
-      ```bash
-      xdg-open documentation/html/index.html
-      ```
+3. Open the generated documentation in a web browser:
+   ```bash
+   xdg-open documentation/html/index.html
+   ```
 
 Alternatively, you can manually open the file `documentation/html/index.html` with your preferred web browser.
 

@@ -1,6 +1,6 @@
 # Quantum Resource Manager (QRM)
 
-The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is `daemon_d`. This README provides instructions for installing and uninstalling `daemon_d`.
+The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is `daemon_d`. This README provides instructions for installing and uninstalling `daemon_d`, as well as for running an example submitting a quantum task<!--Not to be confused with a qcommon QuantumTask-->.
 
 ## Compilation and Installation
 
@@ -8,6 +8,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 
 1. Install the required dependencies:
    ```bash
+   sudo apt update
    sudo apt install -y cmake llvm rabbitmq-server g++
    ```
 

@@ -1,6 +1,6 @@
 # Quantum Resource Manager (QRM)
 
-The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is the `daemon_d` daemon . This README provides instructions for installing and uninstalling `daemon_d`.
+The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is `daemon_d`. This README provides instructions for installing and uninstalling `daemon_d`.
 
 ## Compilation and Installation
 
@@ -16,7 +16,13 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
    cd qir_passes/
    ```
 
-3. Run make specifying the installation path (`$HOME` is set as default) and a building directory (`build` is set as default):
+3. Run `make` to install `daemon_d`:
+   - One can install the daemon in the default directory, i.e., `$HOME/bin`, with the following command:
+   ```bash
+   make install
+   ```
+
+   - Optionally, you can specify the installation path and a directory where the build files can be written to. Note that the equivalent command to the one above is:
    ```bash
    make INSTALL_PATH=$HOME BUILD_DIR=build install
    ```
@@ -74,29 +80,13 @@ Alternatively, you can manually open the file `documentation/html/index.html` wi
 
 You can run the Quantum Resource Manager daemon and a test client as follows:
 
-1. Install `daemon_d` as shown above. 
-   - Then simply run the daemon specifying a path for the log file:
+1. Navigate to the `qir_passes` directory (if you are not already there):
    ```bash
-   daemon_d log ${HOME}
+   cd qir_passes/
    ```
 
-   - One may also run the daemon specifying the terminal as the standard output stream and no log file:
+2. Run the following command:
    ```bash
-   daemon_d screen
-   ```
-
-2. To compile and run a test client for submitting a Quantum Circuit described in QIR to the daemon, navigate to the `tests` directory using a second terminal:
-   ```bash
-   cd qir_passes/tests/
-   ```
-
-3. Compile the test client:
-   ```bash
-   g++ test.cpp ../src/connection_handling.cpp -o test -lrabbitmq
-   ```
-
-4. Run the test client:
-   ```bash
-   ./test
+   make test
    ```
 

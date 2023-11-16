@@ -58,24 +58,33 @@ This section provides links to project documentation and additional resources:
 
 ## Building Documentation
 
-You can build the documentation locally using Doxygen. 
+You can build the Quantum Resource Manager and generate its documentation locally using Doxygen:
 
 1. Install the required dependencies for Doxygen:
    ```bash
-   sudo apt install -y flex bison
+   sudo apt update
+   sudo apt install -y cmake llvm rabbitmq-server g++ flex bison
    ```
 
 2. Run make:
+   - One can install the daemon in the default directory, i.e., `$HOME/bin`, and generate its documentation with the following command:
    ```bash
    make docs
    ```
 
+   - Optionally, you can specify the installation path and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   ```bash
+   make INSTALL_PATH=$HOME BUILD_DIR=build docs
+   ```
+
 3. Open the generated documentation in a web browser:
    ```bash
-   xdg-open documentation/html/index.html
+   xdg-open docs/html/index.html
    ```
 
 Alternatively, you can manually open the file `documentation/html/index.html` with your preferred web browser.
+
+4. Once the forked branch is merged, the up-to-date documentation can be accessed online [here](https://lrz-qct-qis.gitlabpages.devweb.mwn.de/quantum_intermediate_representation/qir_passes/index.html).
 
 ## Running Examples
 

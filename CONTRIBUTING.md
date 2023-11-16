@@ -18,9 +18,9 @@ Before you get started, please take a moment to read this document to understand
    git checkout -b custom-pass/name-of-pass
    ```
 
-4. **Create a custom pass**: Once your contribution is ready you need to register the custom pass. Let `MyOptimization` be the name of your new pass. It shall then be located at `src/passes/QirMyOptimization.cpp`, whereas its header shall be located at `src/headers/QirMyOptimization.hpp`.
+4. **Create a custom pass**: Once your contribution is ready you need to register the custom pass. Let `MyOptimization` be the name of your new pass. It shall then be located at `src/pass_runner/passes/QirMyOptimization.cpp`, whereas its header shall be located at `src/pass_runner/headers/QirMyOptimization.hpp`.
 
-   - Add the name of the pass to the `src/passes/CMakeLists.txt` file:
+   - Add the name of the pass to the `src/pass_runner/passes/CMakeLists.txt` file:
       ```cmake
       set(PASSES_SOURCE_FILES
           # ...
@@ -29,7 +29,7 @@ Before you get started, please take a moment to read this document to understand
       )
       ```
 
-   - Add the name of the pass compiled as a shared library to the selector `selector/selectors/selector_all.cpp` for CI testing purposes:
+   - Add the name of the pass compiled as a shared library to the selector `src/selector_runner/selectors/selector_all.cpp` for CI testing purposes:
       ```cpp
       std::vector<std::string> passes {
           // ...

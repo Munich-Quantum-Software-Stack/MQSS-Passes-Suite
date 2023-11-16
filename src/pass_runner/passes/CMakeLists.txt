@@ -1,46 +1,46 @@
 # Include all new passes here
 set(PASSES_SOURCE_FILES
-    ## A
-    #QirAnnotateUnsupportedGates.cpp
-    ## B
-    #QirBarrierBeforeFinalMeasurements.cpp
-    ## C
-    #QirCNotToHCZHDecomposition.cpp
-    #QirCommuteCnotRx.cpp
-    #QirCommuteRxCnot.cpp
-    #QirCommuteCnotX.cpp
-    #QirCommuteXCnot.cpp
-    #QirCommuteCnotZ.cpp
-    #QirCommuteZCnot.cpp
-    ## D
-    #QirDeferMeasurement.cpp
-    #QirDivisionByZero.cpp
-    #QirDoubleCnotCancellation.cpp
-    ## F
-    #QirFunctionAnnotator.cpp
-    #QirFunctionReplacement.cpp
-    #QirFunctionValidation.cpp
-    ## G
-    #QirGrouping.cpp
-    ## M
-    #QirMergeRotations.cpp
-    ## N
-    #QirNormalizeArgAngle.cpp
-    #QirNullRotationCancellation.cpp
-    ## P
-    #QirPlaceIrreversibleGatesInMetadata.cpp
-    ## Q
-    #QirQubitRemap.cpp
-    ## R
-    #QirRedundantGatesCancellation.cpp
-    #QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
-    #QirRemoveNonEntrypointFunctions.cpp
-    #QirReplaceConstantBranches.cpp
-    #QirResourceAnnotation.cpp
-    #QirRzToRxRyRxDecomposition.cpp
-    ## U
-    #QirU3ToRzRyRzDecomposition.cpp
-    ## X
+    # A
+    QirAnnotateUnsupportedGates.cpp
+    # B
+    QirBarrierBeforeFinalMeasurements.cpp
+    # C
+    QirCNotToHCZHDecomposition.cpp
+    QirCommuteCnotRx.cpp
+    QirCommuteRxCnot.cpp
+    QirCommuteCnotX.cpp
+    QirCommuteXCnot.cpp
+    QirCommuteCnotZ.cpp
+    QirCommuteZCnot.cpp
+    # D
+    QirDeferMeasurement.cpp
+    QirDivisionByZero.cpp
+    QirDoubleCnotCancellation.cpp
+    # F
+    QirFunctionAnnotator.cpp
+    QirFunctionReplacement.cpp
+    QirFunctionValidation.cpp
+    # G
+    QirGrouping.cpp
+    # M
+    QirMergeRotations.cpp
+    # N
+    QirNormalizeArgAngle.cpp
+    QirNullRotationCancellation.cpp
+    # P
+    QirPlaceIrreversibleGatesInMetadata.cpp
+    # Q
+    QirQubitRemap.cpp
+    # R
+    QirRedundantGatesCancellation.cpp
+    QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
+    QirRemoveNonEntrypointFunctions.cpp
+    QirReplaceConstantBranches.cpp
+    QirResourceAnnotation.cpp
+    QirRzToRxRyRxDecomposition.cpp
+    # U
+    QirU3ToRzRyRzDecomposition.cpp
+    # X
     QirXCnotXReduction.cpp
 )
 

@@ -31,6 +31,7 @@ QirPauliGateAndHadamardSwitchPass::run(Module &module,
 
   for (auto &function : module) {
     std::vector<CallInst *> gatesToReplace;
+    std::vector<CallInst *> currentGates;
 
     for (auto &block : function) {
       CallInst *prev_instruction = nullptr;
@@ -55,7 +56,7 @@ QirPauliGateAndHadamardSwitchPass::run(Module &module,
                 std::string previous_name = prev_function->getName().str();
 
                 if (pauliGates.find(previous_name) != pauliGates.end()) {
-                  current_instruction->moveBefore(prev_instruction);
+                  currentGates.push_back(current_instruction);
                   gatesToReplace.push_back(prev_instruction);
                   errs() << "              Switching: " << previous_name
                          << " and " << current_name << '\n';
@@ -69,6 +70,7 @@ QirPauliGateAndHadamardSwitchPass::run(Module &module,
     }
     while (!gatesToReplace.empty()) {
       auto *gateToReplace = gatesToReplace.back();
+      auto *currentGate = currentGates.back();
       std::string gateName =
           gateToReplace->getCalledFunction()->getName().str();
       Function *newFunction = module.getFunction(correspondingGates[gateName]);
@@ -82,8 +84,10 @@ QirPauliGateAndHadamardSwitchPass::run(Module &module,
       }
       CallInst *newInst =
           CallInst::Create(newFunction, {gateToReplace->getOperand(0)});
-      ReplaceInstWithInst(gateToReplace, newInst);
+      gateToReplace->eraseFromParent();
+      newInst->insertAfter(currentGate);
       gatesToReplace.pop_back();
+      currentGates.pop_back();
     }
   }
   return PreservedAnalyses::none();

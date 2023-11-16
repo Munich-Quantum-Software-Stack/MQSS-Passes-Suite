@@ -53,7 +53,7 @@ void invokePasses(std::unique_ptr<Module>  &module,
 
     std::string pathPass = std::string(buffer);
     size_t lastSlash = pathPass.find_last_of("/\\");
-    pathPass = pathPass.substr(0, lastSlash) + "/src/pass_runner/passes/";
+    pathPass = pathPass.substr(0, lastSlash) + "/lib/pass_runner/passes/";
     for (std::string pass : passes) {
         std::string libPass = pathPass + pass;
         QPR.append(libPass);

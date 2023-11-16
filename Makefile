@@ -1,10 +1,18 @@
 INSTALL_PATH ?= $(HOME)
-EXEC_PATH    := $(INSTALL_PATH)/bin/src
-QDMI_PATH    := $(shell pwd)/qdmi
-QDMI         := $(wildcard $(QDMI_PATH)/build/libqdmi.so)
+EXEC_PATH    := $(INSTALL_PATH)/bin/lib
+QDMI_PATH    := $(CURDIR)/qdmi
 BUILD_DIR    := build
-DOXYGEN      := $(shell command -v doxygen 2> /dev/null)
+
+QDMI         := $(wildcard $(QDMI_PATH)/build/libqdmi.so)
+QRM          := $(wildcard $(INSTALL_PATH)/bin/daemon_d)
 RABBITMQ     := $(wildcard /usr/local/lib/librabbitmq.so)
+DOXYGEN      := $(shell command -v doxygen 2> /dev/null)
+
+ifdef QRM
+	TARGET_QRM := built_qrm
+else
+	TARGET_QRM := build_qrm
+endif
 
 ifdef QDMI
 	TARGET_QDMI := built_qdmi
@@ -24,7 +32,7 @@ else
 	TARGET_DOXYGEN := build_docs
 endif
 
-.PHONY: install docs clean 
+.PHONY: install docs clean test
 
 all: install docs clean
 
@@ -33,8 +41,9 @@ built_qdmi:
 
 build_qdmi:
 	@echo "Installing QDMI."
-	cmake -B qdmi/build -S qdmi
-	cmake --build qdmi/build
+	cmake -B $(QDMI_PATH)/build -S $(QDMI_PATH) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH)
+	cmake --build $(QDMI_PATH)/build
+	cmake --install $(QDMI_PATH)/build
 
 built_rabbitmq:
 	@echo "RabbitMQ is already installed. Skipping installation."
@@ -56,27 +65,32 @@ configure_rabbitmq:
 	    echo "$$hostname_entry" | cat - "$$hosts_file" > temp && sudo mv -f temp "$$hosts_file"; \
 	fi
 
-build_qrm: $(TARGET_QDMI) $(TARGET_RABBITMQ) configure_rabbitmq
+dependencies_qrm: $(TARGET_QDMI) $(TARGET_RABBITMQ) configure_rabbitmq
 
-set_environment_qrm: build_qrm
-	@export LD_LIBRARY_PATH=$(QDMI_PATH)/build:$$LD_LIBRARY_PATH; \
-	export LD_LIBRARY_PATH=$(EXEC_PATH)/pass_runner:$$LD_LIBRARY_PATH; \
-	export LD_LIBRARY_PATH=$(EXEC_PATH)/pass_runner/passes:$$LD_LIBRARY_PATH; \
-	export LD_LIBRARY_PATH=$(EXEC_PATH)/selector_runner:$$LD_LIBRARY_PATH; \
-	export LD_LIBRARY_PATH=$(EXEC_PATH)/selector_runner/selectors:$$LD_LIBRARY_PATH; \
-	export LD_LIBRARY_PATH=$(EXEC_PATH)/scheduler_runner:$$LD_LIBRARY_PATH; \
-	export LD_LIBRARY_PATH=$(EXEC_PATH)/scheduler_runner/schedulers:$$LD_LIBRARY_PATH
-	
-	@if [ "$$(echo $$PATH | tr ':' '\n' | grep -c "$(INSTALL_PATH)/bin")" -eq 0 ]; then \
-		export PATH=$$PATH:$(INSTALL_PATH)/bin; \
-	fi;
-
-qrm: set_environment_qrm
-	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) -DBUILD_WITH_DOCS=OFF -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) -DCUSTOM_QDMI_PATH=$(QDMI_PATH)
-	sudo cmake --build $(BUILD_DIR) --target install
+qrm: dependencies_qrm
+	export LD_LIBRARY_PATH="$(QDMI_PATH)/build:\
+		$(EXEC_PATH)/pass_runner:\
+		$(EXEC_PATH)/pass_runner/passes:\
+		$(EXEC_PATH)/selector_runner:\
+		$(EXEC_PATH)/selector_runner/selectors:\
+		$(EXEC_PATH)/scheduler_runner:\
+		$(EXEC_PATH)/scheduler_runner/schedulers:$$LD_LIBRARY_PATH" && \
+	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) \
+		-DBUILD_WITH_DOCS=OFF \
+		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) \
+		-DCUSTOM_QDMI_PATH=$(QDMI_PATH) && \
+	sudo cmake --build $(BUILD_DIR) --target install --config Release && \
 	sudo ldconfig
 
 install: qrm
+	@echo ""
+	@echo "Please add $(INSTALL_PATH)/bin to your PATH variable."
+	@echo ""
+
+uninstall:
+	cd build && sudo make uninstall && cd ..
+	rm -rf build
+	rm -rf $(QDMI_PATH)/build
 
 built_docs:
 	@echo "Doxygen is already installed. Skipping installation."
@@ -88,11 +102,40 @@ build_docs:
 	cmake --build doxygen/build
 	$(MAKE) -C doxygen install
 
-docs: set_environment_qrm $(TARGET_DOXYGEN)
-	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) -DBUILD_WITH_DOCS=ON -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) -DCUSTOM_QDMI_PATH=$(QDMI_PATH)
-	sudo cmake --build $(BUILD_DIR) --target install
+docs: dependencies_qrm $(TARGET_DOXYGEN)
+	export LD_LIBRARY_PATH="$(QDMI_PATH)/build:\
+		$(EXEC_PATH)/pass_runner:\
+		$(EXEC_PATH)/pass_runner/passes:\
+		$(EXEC_PATH)/selector_runner:\
+		$(EXEC_PATH)/selector_runner/selectors:\
+		$(EXEC_PATH)/scheduler_runner:\
+		$(EXEC_PATH)/scheduler_runner/schedulers:$$LD_LIBRARY_PATH" && \
+	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) \
+		-DBUILD_WITH_DOCS=ON \
+		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) \
+		-DCUSTOM_QDMI_PATH=$(QDMI_PATH) && \
+	sudo cmake --build $(BUILD_DIR) --target install --config Release && \
 	sudo ldconfig
 
+	@echo ""
+	@echo "Please add $(INSTALL_PATH)/bin to your PATH variable."
+	@echo ""
+
+built_qrm: dependencies_qrm
+	@echo "Quantum Resource Manager is already installed. Skipping installation."
+
+build_qrm: qrm
+
+run: $(TARGET_QRM)
+	@if [ "$$(echo $$PATH | tr ':' '\n' | grep -c "$(INSTALL_PATH)/bin")" -eq 0 ]; then \
+    	export PATH=$$PATH:$(INSTALL_PATH)/bin; \
+	fi; \
+	daemon_d screen
+
+test: run
+	@g++ tests/test.cpp src/connection_handling.cpp -o ./tests/test -I./src -lrabbitmq || (echo "Compilation failed"; exit 1); \
+	./tests/test
+
 clean:
-	rm -rf rabbitmq-c-0.13.0 v0.13.0.tar.gz doxygen
+	rm -rf rabbitmq-c-0.13.0 v0.13.0.tar.gz doxygen 
 

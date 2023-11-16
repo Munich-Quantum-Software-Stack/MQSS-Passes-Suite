@@ -44,43 +44,8 @@ analyze:
     - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
     - find src -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Iqdmi/ {} \;
 
-execute:
+run_tests:
   stage: test
   script:
-    - apt update
-    - apt install -y cmake llvm rabbitmq-server g++ curl
-    - export CMAKE_PREFIX_PATH=$(llvm-config --libdir)/cmake/llvm
-    - curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
-    - tar -xf v0.13.0.tar.gz
-    - cd rabbitmq-c-0.13.0/
-    - mkdir build
-    - cd build
-    - cmake -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF ..
-    - cmake --build . --target install
-    - ldconfig
-    - cd ../..
-    - rm -rf rabbitmq-c-0.13.0/
-   # ...
-    - cd qdmi
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make
-    - cd ../..
-    - echo QDMI built successfully
-    # ...
-    - cd tests
-    - g++ test.cpp ../src/connection_handling.cpp -o test -lrabbitmq
-    - echo Test built successfully
-    - cd ..
-    # ...
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCUSTOM_QDMI_PATH=$QDMI_PATH ..
-    - cmake --build . --target install
-    - ldconfig
-    - echo QRM installed successfully
-    - daemon_d screen &
-    - sleep 1
-    - ../tests/test
+    - make test
 

@@ -43,14 +43,16 @@ find_package(LLVM REQUIRED CONFIG)
 # Set up LLVM-specific flags
 add_definitions(${LLVM_DEFINITIONS})
 
-# Add the passes directory to include paths
+# Add the include paths
 include_directories(
     src/pass_runner/headers 
     src/pass_runner
     src/selector_runner 
     src/scheduler_runner
     ${CUSTOM_QDMI_PATH}
-	${LLVM_INCLUDE_DIRS})
+    ${LLVM_INCLUDE_DIRS})
+
+message(STATUS "Using libqdmi.so in: ${CUSTOM_QDMI_PATH}/build")
 
 # Specify the path to the directory containing libqdmi.so
 link_directories(${CUSTOM_QDMI_PATH}/build)
@@ -69,32 +71,32 @@ add_library(SelectorRunner SHARED
 add_library(SchedulerRunner SHARED 
     src/scheduler_runner/SchedulerRunner.cpp)
 
-# Link any necessary libraries (e.g., LLVM and QDMI)
-target_link_libraries(QirPassRunner   PRIVATE LLVM)
-target_link_libraries(QirPassRunner   PRIVATE qdmi)
-target_link_libraries(SchedulerRunner PRIVATE LLVM)
-target_link_libraries(SchedulerRunner PRIVATE qdmi)
+## Link any necessary libraries (e.g., LLVM and QDMI)
+#target_link_libraries(QirPassRunner   PRIVATE LLVM)
+#target_link_libraries(QirPassRunner   PRIVATE qdmi)
+#target_link_libraries(SchedulerRunner PRIVATE LLVM)
+#target_link_libraries(SchedulerRunner PRIVATE qdmi)
 
-# Specify the output directory for the shared libraries
-set_target_properties(QirPassRunner   
-    PROPERTIES 
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/pass_runner/passes"
-)
-
-set_target_properties(PassRunner
-    PROPERTIES 
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/pass_runner"
-)
-
-set_target_properties(SelectorRunner  
-    PROPERTIES 
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/selector_runner"
-)
-
-set_target_properties(SchedulerRunner 
-    PROPERTIES 
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/src/scheduler_runner"
-)
+## Specify the output directory for the shared libraries
+#set_target_properties(QirPassRunner   
+#    PROPERTIES 
+#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/pass_runner"
+#)
+#
+#set_target_properties(PassRunner
+#    PROPERTIES 
+#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/pass_runner"
+#)
+#
+#set_target_properties(SelectorRunner  
+#    PROPERTIES 
+#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/selector_runner"
+#)
+#
+#set_target_properties(SchedulerRunner 
+#    PROPERTIES 
+#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/scheduler_runner"
+#)
 
 set(EXECUTABLE_NAME "daemon_d" CACHE STRING "" FORCE)
 
@@ -104,10 +106,16 @@ set(SOURCES
     src/connection_handling.cpp
 )
 
+# Build the executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
+# Set the output directory for the executable during build
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
-    INSTALL_RPATH "${CUSTOM_QDMI_PATH}/build;${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner;${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner/passes;${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner;${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner/selectors;${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner;${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner/schedulers"
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)
+
+# Set the INSTALL_RPATH for the executable
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES
+    INSTALL_RPATH "${CUSTOM_QDMI_PATH}/build;${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner;${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner/passes;${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner;${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner/selectors;${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner;${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner/schedulers"
     BUILD_WITH_INSTALL_RPATH TRUE
 )
 
@@ -133,13 +141,13 @@ target_include_directories(${EXECUTABLE_NAME} PRIVATE /usr/local/include)
 install(TARGETS ${EXECUTABLE_NAME} 
     DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 install(TARGETS QirPassRunner
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner)
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner)
 install(TARGETS PassRunner 
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/pass_runner)
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner)
 install(TARGETS SchedulerRunner 
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/scheduler_runner)
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner)
 install(TARGETS SelectorRunner 
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/src/selector_runner)
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner)
 
 # Uninstall the Quantum Resource Manager
 configure_file(

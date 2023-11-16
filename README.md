@@ -1,10 +1,8 @@
 # Quantum Resource Manager (QRM)
 
-The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is the `daemon_d` daemon . This README provides instructions for compiling<!--, installing, and uninstalling the--> `daemon_d`.
+The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is the `daemon_d` daemon . This README provides instructions for installing and uninstalling `daemon_d`.
 
 ## Compilation and Installation
-
-<!--Before you can install `daemon_d`, you need to compile the project. To do this, follow the steps below:-->
 
 To install the Quantum Resource Manager daemon system wide, follow these steps:
 

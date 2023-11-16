@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_nosockets.git/src/scheduler_runner/SchedulerRunner.hpp File Reference</title>
+<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_nosockets.git/src/pass_runner/passes/QirDivisionByZero.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -71,72 +71,46 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_66939201a639155f007fe7b3b4586b5a.html">scheduler_runner</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_5b629ee7a458d0b297844d89578620d5.html">pass_runner</a></li><li class="navelem"><a class="el" href="dir_38be1eada994345e1a4ab304b4daefa4.html">passes</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">SchedulerRunner.hpp File Reference</div></div>
+  <div class="headertitle"><div class="title">QirDivisionByZero.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>TODO.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;iostream&gt;</code><br />
-<code>#include &lt;csignal&gt;</code><br />
-<code>#include &lt;sys/socket.h&gt;</code><br />
-<code>#include &lt;unistd.h&gt;</code><br />
-<code>#include &lt;netinet/in.h&gt;</code><br />
-<code>#include &lt;arpa/inet.h&gt;</code><br />
-<code>#include &lt;thread&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
-<code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;fstream&gt;</code><br />
-<code>#include &lt;sys/stat.h&gt;</code><br />
-<code>#include &lt;sys/types.h&gt;</code><br />
-<code>#include &lt;signal.h&gt;</code><br />
-<code>#include &lt;fcntl.h&gt;</code><br />
-<code>#include &lt;dlfcn.h&gt;</code><br />
-<code>#include &lt;mutex&gt;</code><br />
-<code>#include &quot;<a class="el" href="llvm_8hpp_source.html">llvm.hpp</a>&quot;</code><br />
-</div>
-<p><a href="SchedulerRunner_8hpp_source.html">Go to the source code of this file.</a></p>
-<table class="memberdecls">
+<div class="textblock"><code>#include &quot;<a class="el" href="QirDivisionByZero_8hpp_source.html">../headers/QirDivisionByZero.hpp</a>&quot;</code><br />
+</div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac2869dcbf4998e455e1a2a809ab91068" id="r_ac2869dcbf4998e455e1a2a809ab91068"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2869dcbf4998e455e1a2a809ab91068">invokeScheduler</a> (const std::string &amp;pathScheduler)</td></tr>
-<tr class="memdesc:ac2869dcbf4998e455e1a2a809ab91068"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
-<tr class="separator:ac2869dcbf4998e455e1a2a809ab91068"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bbac7ecbf3ce5b98eef4d349c4cb084" id="r_a2bbac7ecbf3ce5b98eef4d349c4cb084"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classPassModule.html">PassModule</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2bbac7ecbf3ce5b98eef4d349c4cb084">loadQirPass</a> ()</td></tr>
+<tr class="memdesc:a2bbac7ecbf3ce5b98eef4d349c4cb084"><td class="mdescLeft">&#160;</td><td class="mdescRight">External function for loading the 'QirDivisionByZeroPass' as a '<a class="el" href="classPassModule.html" title="This class derives from &#39;LLVM::ModulePassManager&#39;. The &#39;PassModule&#39; class is an abstract class....">PassModule</a>'.  <br /></td></tr>
+<tr class="separator:a2bbac7ecbf3ce5b98eef4d349c4cb084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>TODO. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ac2869dcbf4998e455e1a2a809ab91068" name="ac2869dcbf4998e455e1a2a809ab91068"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2869dcbf4998e455e1a2a809ab91068">&#9670;&#160;</a></span>invokeScheduler()</h2>
+<a id="a2bbac7ecbf3ce5b98eef4d349c4cb084" name="a2bbac7ecbf3ce5b98eef4d349c4cb084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bbac7ecbf3ce5b98eef4d349c4cb084">&#9670;&#160;</a></span>loadQirPass()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string invokeScheduler </td>
+          <td class="memname"><a class="el" href="classPassModule.html">PassModule</a> * loadQirPass </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>pathScheduler</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>TODO. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">pathScheduler</td><td>TODO </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>std::string </dd></dl>
+<p>External function for loading the 'QirDivisionByZeroPass' as a '<a class="el" href="classPassModule.html" title="This class derives from &#39;LLVM::ModulePassManager&#39;. The &#39;PassModule&#39; class is an abstract class....">PassModule</a>'. </p>
+<dl class="section return"><dt>Returns</dt><dd>QirDivisionByZeroPass </dd></dl>
 
 </div>
 </div>

@@ -58,7 +58,7 @@ void handleCircuit(amqp_connection_state_t &conn,
         buffer[len] = '\0';
         scheduler = std::string(buffer);
         size_t lastSlash = scheduler.find_last_of("/\\");
-        scheduler = scheduler.substr(0, lastSlash) + "/src/scheduler_runner/schedulers/";
+        scheduler = scheduler.substr(0, lastSlash) + "/lib/scheduler_runner/schedulers/";
     }
     scheduler.append(receivedScheduler.get());
 
@@ -76,7 +76,7 @@ void handleCircuit(amqp_connection_state_t &conn,
         selector_buffer[len] = '\0';
         selector = std::string(selector_buffer);
         size_t lastSlash = selector.find_last_of("/\\");
-        selector = selector.substr(0, lastSlash) + "/src/selector_runner/selectors/";
+        selector = selector.substr(0, lastSlash) + "/lib/selector_runner/selectors/";
     }
     selector.append(receivedSelector.get());
 
@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
     pid_t pid = fork();
 
     if (pid < 0) {
-        std::cerr << "[daemon_d] Failed to fork" << std::endl;
+        std::cerr << "[daemon_d].........Failed to fork" << std::endl;
         return 1;
     }
 
@@ -173,9 +173,9 @@ int main(int argc, char* argv[]) {
         filePath = std::string(argv[2]) + "/logs/daemon_d.log";
 
     if (pid > 0) {
-        std::cout << "[daemon_d] To stop this daemon type: kill -15 " << pid << std::endl;
+        std::cout << "[daemon_d].........To stop this daemon type: kill -15 " << pid << std::endl;
         if (stream == "log")
-            std::cout << "[daemon_d] The log can be found in " << filePath  << std::endl;
+            std::cout << "[daemon_d].........The log can be found in " << filePath  << std::endl;
 
         return 0;
     }
@@ -186,7 +186,7 @@ int main(int argc, char* argv[]) {
     // Change the working directory to root to avoid locking the current directory
     chdir("/");
 
-	// Set up a signal handler for graceful termination
+    // Set up a signal handler for graceful termination
     signal(SIGTERM, signalHandler); 
 
     // Set the output stream
@@ -196,7 +196,7 @@ int main(int argc, char* argv[]) {
         logFileDescriptor = open(filePath.c_str(), O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
 
         if (logFileDescriptor == -1) {
-            std::cerr << "[daemon_d] Warning: Could not open the log file" << std::endl;
+            std::cerr << "[daemon_d].........Warning: Could not open the log file" << std::endl;
         }
         else {
             dup2(logFileDescriptor, STDOUT_FILENO);
@@ -244,22 +244,22 @@ int main(int argc, char* argv[]) {
 
     while (true) {
         // Receive a QIR module as a binary blob
-        auto *qirmodule = receive_message(&conn,		// conn
-                                          DaemonQueue);	// queue
+        auto *qirmodule = receive_message(&conn,        // conn
+                                          DaemonQueue); // queue
 
         auto receivedQirModule = std::make_unique<char[]>(strlen(qirmodule) + 1);
         strcpy(receivedQirModule.get(), qirmodule);
 
         // Receive name of the desired scheduler
-        auto *scheduler = receive_message(&conn,		// conn
+        auto *scheduler = receive_message(&conn,        // conn
                                           DaemonQueue);	// queue
 
         auto receivedScheduler = std::make_unique<char[]>(strlen(scheduler) + 1);
         strcpy(receivedScheduler.get(), scheduler);
 
         // Receive name of the desired selector
-        auto *selector  = receive_message(&conn,		// conn
-                                          DaemonQueue);	// queue
+        auto *selector  = receive_message(&conn,        // conn
+                                          DaemonQueue); // queue
 
         auto receivedSelector  = std::make_unique<char[]>(strlen(selector) + 1);
         strcpy(receivedSelector.get(), selector);
@@ -272,13 +272,13 @@ int main(int argc, char* argv[]) {
                       << std::endl;
 
 			if (receivedQirModule.get())
-				delete[] receivedQirModule.get();
+                delete[] receivedQirModule.get();
 
 			if (receivedScheduler.get())
-        		delete[] receivedScheduler.get();
+                delete[] receivedScheduler.get();
 
 			if (receivedSelector.get())
-        		delete[] receivedSelector.get();
+                delete[] receivedSelector.get();
 
             continue;
         }

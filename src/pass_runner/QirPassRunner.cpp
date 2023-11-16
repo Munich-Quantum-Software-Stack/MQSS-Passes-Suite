@@ -79,6 +79,7 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module, ModuleAnalysisMana
         if(!lib_handle) {
             std::cout << "[Pass Runner]......Warning: Could not load shared library: " 
                       << pass 
+                      << dlerror()
                       << std::endl;
 
             passes_.pop_back();

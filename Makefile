@@ -56,6 +56,7 @@ build_rabbitmq:
 	cmake --build rabbitmq-c-0.13.0/build --target install
 	ldconfig
 
+ifndef CI
 configure_rabbitmq:
 	@hosts_file="/etc/hosts"; \
 	hostname_entry="127.0.0.1 rabbitmq"; \
@@ -64,6 +65,10 @@ configure_rabbitmq:
 	else \
 		echo "$$hostname_entry" | cat - "$$hosts_file" > temp && sudo mv -f temp "$$hosts_file"; \
 	fi
+else
+configure_rabbitmq:
+	@echo "Using rabbitmq as a service."
+endif
 
 dependencies_qrm: $(TARGET_QDMI) $(TARGET_RABBITMQ) configure_rabbitmq
 

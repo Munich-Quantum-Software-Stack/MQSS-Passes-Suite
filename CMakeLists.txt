@@ -52,10 +52,8 @@ include_directories(
     ${CUSTOM_QDMI_PATH}
     ${LLVM_INCLUDE_DIRS})
 
-message(STATUS "Using libqdmi.so in: ${CUSTOM_QDMI_PATH}/build")
-
 # Specify the path to the directory containing libqdmi.so
-link_directories(${CUSTOM_QDMI_PATH}/build)
+link_directories(${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi)
 
 # Include the directory containing qdmi.hpp
 include_directories(${CUSTOM_QDMI_PATH})
@@ -70,33 +68,6 @@ add_library(SelectorRunner SHARED
     src/selector_runner/SelectorRunner.cpp)
 add_library(SchedulerRunner SHARED 
     src/scheduler_runner/SchedulerRunner.cpp)
-
-## Link any necessary libraries (e.g., LLVM and QDMI)
-#target_link_libraries(QirPassRunner   PRIVATE LLVM)
-#target_link_libraries(QirPassRunner   PRIVATE qdmi)
-#target_link_libraries(SchedulerRunner PRIVATE LLVM)
-#target_link_libraries(SchedulerRunner PRIVATE qdmi)
-
-## Specify the output directory for the shared libraries
-#set_target_properties(QirPassRunner   
-#    PROPERTIES 
-#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/pass_runner"
-#)
-#
-#set_target_properties(PassRunner
-#    PROPERTIES 
-#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/pass_runner"
-#)
-#
-#set_target_properties(SelectorRunner  
-#    PROPERTIES 
-#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/selector_runner"
-#)
-#
-#set_target_properties(SchedulerRunner 
-#    PROPERTIES 
-#    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/scheduler_runner"
-#)
 
 set(EXECUTABLE_NAME "daemon_d" CACHE STRING "" FORCE)
 
@@ -114,10 +85,18 @@ set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Set the INSTALL_RPATH for the executable
+set(INSTALL_PATHS
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner;"
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner/passes;"
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner;"
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner/selectors;"
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner;"
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner/schedulers")
+string(REPLACE ";" "\\;" RPATHS "${INSTALL_PATHS}")
+message(STATUS "INSTALL_RPATH: ${RPATHS}")
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
-    INSTALL_RPATH "${CUSTOM_QDMI_PATH}/build;${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner;${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner/passes;${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner;${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner/selectors;${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner;${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner/schedulers"
-    BUILD_WITH_INSTALL_RPATH TRUE
-)
+    INSTALL_RPATH ${RPATHS}
+    BUILD_WITH_INSTALL_RPATH TRUE)
 
 # Link the executable with LLVM and Threads libraries
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE LLVM)

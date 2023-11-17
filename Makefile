@@ -32,7 +32,7 @@ else
 	TARGET_DOXYGEN := build_docs
 endif
 
-.PHONY: install docs clean test
+.PHONY: install clean uninstall docs test
 
 all: install docs clean
 
@@ -87,10 +87,16 @@ install: qrm
 	@echo "Please add $(INSTALL_PATH)/bin to your PATH variable."
 	@echo ""
 
-uninstall:
-	cd build && sudo make uninstall && cd ..
-	rm -rf build
+clean:
+	@rm -rf rabbitmq-c-0.13.0 v0.13.0.tar.gz doxygen 
+
+uninstall: clean
+	@if [ -d "$(BUILD_DIR)" ]; then \
+    	cd build && sudo make uninstall && cd ..; \
+    	rm -rf $(BUILD_DIR); \
+	fi; \
 	rm -rf $(QDMI_PATH)/build
+	@echo "Quantum Resource Manager uninstalled successfully"
 
 built_docs:
 	@echo "Doxygen is already installed. Skipping installation."
@@ -135,7 +141,4 @@ run: $(TARGET_QRM)
 test: run
 	@g++ tests/test.cpp src/connection_handling.cpp -o ./tests/test -I./src -lrabbitmq || (echo "Compilation failed"; exit 1); \
 	./tests/test
-
-clean:
-	rm -rf rabbitmq-c-0.13.0 v0.13.0.tar.gz doxygen 
 

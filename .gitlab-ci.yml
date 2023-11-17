@@ -1,4 +1,5 @@
-image: ubuntu:latest
+#image: ubuntu:latest
+image: dockerhub.quantum.lrz.de/cpp-dev
 
 variables:
   RABBITMQ_DEFAULT_USER: guest
@@ -9,21 +10,11 @@ services:
     alias: rabbitmq
 
 before_script:
-  - export INSTALL_PREFIX=$HOME
-  - export QDMI_PATH=$PWD/qdmi
-  - export PATH=$PATH:$INSTALL_PREFIX/bin
-  - export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-  - export LD_LIBRARY_PATH=$QDMI_PATH/build:$LD_LIBRARY_PATH
-  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner:$LD_LIBRARY_PATH
-  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/pass_runner/passes:$LD_LIBRARY_PATH
-  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner:$LD_LIBRARY_PATH
-  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/selector_runner/selectors:$LD_LIBRARY_PATH
-  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner:$LD_LIBRARY_PATH
-  - export LD_LIBRARY_PATH=$INSTALL_PREFIX/bin/src/scheduler_runner/schedulers:$LD_LIBRARY_PATH
 
 stages:
   - deploy
   - test
+  - analysis
 
 pages:
   stage: deploy
@@ -47,5 +38,13 @@ analyze:
 run_tests:
   stage: test
   script:
+    - apt update
+    - apt install -y cmake llvm rabbitmq-server g++
     - make test
+
+check-format:
+  stage: analysis
+  script:
+    - files_list=$(find . -type f -regex '.*\.\(c\|cc\|cxx\|cpp\|h\|hpp\|hxx\)$')
+    - clang-format ${files_list} --style=LLVM --Werror --dry-run --verbose --ferror-limit=5
 

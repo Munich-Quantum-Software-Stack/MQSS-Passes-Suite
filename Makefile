@@ -86,8 +86,8 @@ qrm: dependencies_qrm
 		-DBUILD_WITH_DOCS=OFF \
 		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) \
 		-DCUSTOM_QDMI_PATH=$(QDMI_PATH) && \
-	sudo cmake --build $(BUILD_DIR) --target install --config Release && \
-	sudo ldconfig
+	cmake --build $(BUILD_DIR) --target install --config Release && \
+	ldconfig
 
 install: qrm
 	@echo ""
@@ -127,8 +127,8 @@ docs: dependencies_qrm $(TARGET_DOXYGEN)
 		-DBUILD_WITH_DOCS=ON \
 		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) \
 		-DCUSTOM_QDMI_PATH=$(QDMI_PATH) && \
-	sudo cmake --build $(BUILD_DIR) --target install --config Release && \
-	sudo ldconfig
+	cmake --build $(BUILD_DIR) --target install --config Release && \
+	ldconfig
 
 	@echo ""
 	@echo "Please add $(INSTALL_PATH)/bin to your PATH variable."

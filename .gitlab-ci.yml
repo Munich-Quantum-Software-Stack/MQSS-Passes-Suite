@@ -1,5 +1,5 @@
-#image: ubuntu:latest
-image: dockerhub.quantum.lrz.de/cpp-dev
+image: ubuntu:latest
+#image: dockerhub.quantum.lrz.de/cpp-dev
 
 variables:
   RABBITMQ_DEFAULT_USER: guest

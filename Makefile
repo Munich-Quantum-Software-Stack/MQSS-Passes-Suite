@@ -48,14 +48,13 @@ build_qdmi:
 built_rabbitmq:
 	@echo "RabbitMQ is already installed. Skipping installation."
 
-ifndef CI
 build_rabbitmq:
 	@echo "Installing RabbitMQ."
 	curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
 	tar -xf v0.13.0.tar.gz
 	cmake -B rabbitmq-c-0.13.0/build -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -DENABLE_SSL_SUPPORT=OFF -S rabbitmq-c-0.13.0
-	sudo cmake --build rabbitmq-c-0.13.0/build --target install
-	sudo ldconfig
+	cmake --build rabbitmq-c-0.13.0/build --target install
+	ldconfig
 
 configure_rabbitmq:
 	@hosts_file="/etc/hosts"; \
@@ -63,14 +62,8 @@ configure_rabbitmq:
 	if grep -qF "$$hostname_entry" "$$hosts_file"; then \
 		echo "RabbitMQ is already configured in this system."; \
 	else \
-		echo "$$hostname_entry" | cat - "$$hosts_file" > temp && sudo mv -f temp "$$hosts_file"; \
+		echo "$$hostname_entry" | cat - "$$hosts_file" > temp && mv -f temp "$$hosts_file"; \
 	fi
-else
-build_rabbitmq:
-	@echo "Using rabbitmq service"
-
-configure_rabbitmq: build_rabbitmq
-endif
 
 dependencies_qrm: $(TARGET_QDMI) $(TARGET_RABBITMQ) configure_rabbitmq
 
@@ -99,7 +92,7 @@ clean:
 
 uninstall: clean
 	@if [ -d "$(BUILD_DIR)" ]; then \
-    	cd build && sudo make uninstall && cd ..; \
+    	cd build && make uninstall && cd ..; \
     	rm -rf $(BUILD_DIR); \
 	fi; \
 	rm -rf $(QDMI_PATH)/build

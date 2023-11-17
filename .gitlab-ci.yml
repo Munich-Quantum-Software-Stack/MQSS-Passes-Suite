@@ -39,7 +39,7 @@ run_tests:
   stage: test
   script:
     - apt update
-    - apt install -y cmake llvm rabbitmq-server g++
+    - apt install -y cmake llvm rabbitmq-server g++ curl
     - make test
 
 check-format:

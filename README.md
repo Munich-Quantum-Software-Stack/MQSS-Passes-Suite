@@ -9,7 +9,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 1. Install the required dependencies:
    ```bash
    sudo apt update
-   sudo apt install -y cmake llvm rabbitmq-server g++
+   sudo apt install -y cmake llvm rabbitmq-server g++ curl
    ```
 
 2. Navigate to the `qir_passes` directory (if you are not already there):

@@ -62,7 +62,7 @@ configure_rabbitmq:
 	if grep -qF "$$hostname_entry" "$$hosts_file"; then \
 		echo "RabbitMQ is already configured in this system."; \
 	else \
-		echo "$$hostname_entry" | cat - "$$hosts_file" > temp && mv -f temp "$$hosts_file"; \
+		echo "$$hostname_entry" | cat - "$$hosts_file" > temp && sudo mv -f temp "$$hosts_file"; \
 	fi
 
 dependencies_qrm: $(TARGET_QDMI) $(TARGET_RABBITMQ) configure_rabbitmq

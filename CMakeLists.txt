@@ -93,7 +93,6 @@ set(INSTALL_PATHS
     "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner;"
     "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner/schedulers")
 string(REPLACE ";" "\\;" RPATHS "${INSTALL_PATHS}")
-message(STATUS "INSTALL_RPATH: ${RPATHS}")
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     INSTALL_RPATH ${RPATHS}
     BUILD_WITH_INSTALL_RPATH TRUE)

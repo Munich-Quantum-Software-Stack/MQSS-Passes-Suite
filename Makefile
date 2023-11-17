@@ -48,6 +48,7 @@ build_qdmi:
 built_rabbitmq:
 	@echo "RabbitMQ is already installed. Skipping installation."
 
+ifndef CI
 build_rabbitmq:
 	@echo "Installing RabbitMQ."
 	curl -LO https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
@@ -60,10 +61,16 @@ configure_rabbitmq:
 	@hosts_file="/etc/hosts"; \
 	hostname_entry="127.0.0.1 rabbitmq"; \
 	if grep -qF "$$hostname_entry" "$$hosts_file"; then \
-	    echo "RabbitMQ is already configured in this system."; \
+		echo "RabbitMQ is already configured in this system."; \
 	else \
-	    echo "$$hostname_entry" | cat - "$$hosts_file" > temp && sudo mv -f temp "$$hosts_file"; \
+		echo "$$hostname_entry" | cat - "$$hosts_file" > temp && sudo mv -f temp "$$hosts_file"; \
 	fi
+else
+build_rabbitmq:
+	@echo "Using rabbitmq service"
+
+configure_rabbitmq: build_rabbitmq
+endif
 
 dependencies_qrm: $(TARGET_QDMI) $(TARGET_RABBITMQ) configure_rabbitmq
 

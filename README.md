@@ -69,12 +69,12 @@ You can build the Quantum Resource Manager and generate its documentation locall
 2. Run make:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, and generate its documentation with the following command:
       ```bash
-      sudo make docs
+      make docs
       ```
 
    - Optionally, you can specify the installation path and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      sudo make INSTALL_PATH=$HOME BUILD_DIR=build docs
+      make INSTALL_PATH=$HOME BUILD_DIR=build docs
       ```
 
 3. Open the generated documentation in a web browser:

@@ -140,7 +140,7 @@ else
 build_qrm: qrm
 endif
 
-run: $(TARGET_QRM)
+run: build_qrm
 	@if [ "$$(echo $$PATH | tr ':' '\n' | grep -c "$(INSTALL_PATH)/bin")" -eq 0 ]; then \
     	export PATH=$$PATH:$(INSTALL_PATH)/bin; \
 	fi; \

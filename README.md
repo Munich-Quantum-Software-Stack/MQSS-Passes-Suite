@@ -97,6 +97,6 @@ You can run the Quantum Resource Manager daemon and a test client as follows:
 
 2. Run the following command:
    ```bash
-   sudo make test
+   make test
    ```
 

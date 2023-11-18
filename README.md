@@ -20,12 +20,12 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 3. Run `make` to install `daemon_d`:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, with the following command:
       ```bash
-      sudo make install
+      make install
       ```
 
    - Optionally, you can specify the installation path and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      sudo make INSTALL_PATH=$HOME BUILD_DIR=build install
+      make INSTALL_PATH=$HOME BUILD_DIR=build install
       ```
 
 ## Uninstallation
@@ -69,12 +69,12 @@ You can build the Quantum Resource Manager and generate its documentation locall
 2. Run make:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, and generate its documentation with the following command:
       ```bash
-      make docs
+      sudo make docs
       ```
 
    - Optionally, you can specify the installation path and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME BUILD_DIR=build docs
+      sudo make INSTALL_PATH=$HOME BUILD_DIR=build docs
       ```
 
 3. Open the generated documentation in a web browser:

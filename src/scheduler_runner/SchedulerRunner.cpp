@@ -18,7 +18,7 @@ std::string invokeScheduler(const std::string &pathScheduler) {
               << std::endl;
   } else {
     std::cerr << "[Scheduler Runner].Invalid path to scheduler" << std::endl;
-    return NULL;
+    return "";
   }
 
   // Load the scheduler as a shared library
@@ -31,7 +31,7 @@ std::string invokeScheduler(const std::string &pathScheduler) {
         << "[Scheduler Runner].Error loading scheduler as a shared library: "
         << dlerror() << std::endl;
 
-    return NULL;
+    return "";
   }
 
   // Dynamic loading and linking of the shared library
@@ -44,7 +44,7 @@ std::string invokeScheduler(const std::string &pathScheduler) {
               << dlerror() << std::endl;
 
     dlclose(lib_handle);
-    return NULL;
+    return "";
   }
 
   // Call the scheduler function

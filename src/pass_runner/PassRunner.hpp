@@ -8,22 +8,22 @@
 
 #include "QirPassRunner.hpp"
 
-#include <iostream>
-#include <cstring>
-#include <csignal>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <thread>
-#include <string>
-#include <vector>
 #include <algorithm>
+#include <csignal>
+#include <cstring>
+#include <fcntl.h>
 #include <fstream>
+#include <iostream>
+#include <netinet/in.h>
+#include <signal.h>
+#include <string>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <signal.h>
-#include <fcntl.h>
+#include <thread>
+#include <unistd.h>
+#include <vector>
 
 /**
  * @var QIS_START
@@ -31,7 +31,7 @@
  */
 const std::string QIS_START = "__quantum__qis_";
 
-void invokePasses(std::unique_ptr<Module>  &module,
-                  std::vector<std::string>  passes);
+void invokePasses(std::unique_ptr<Module> &module,
+                  std::vector<std::string> passes);
 
 #endif // PASSRUNNER_HPP

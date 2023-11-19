@@ -6,8 +6,8 @@
 #ifndef QDMI_HPP
 #define QDMI_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
 
 /**
  * @brief Function that returns a vector with the
@@ -16,7 +16,7 @@
  * @todo To be implemented
  */
 extern "C" {
-    std::vector<std::string> qdmi_available_platforms();
+std::vector<std::string> qdmi_available_platforms();
 }
 
 /**
@@ -27,8 +27,7 @@ extern "C" {
  * @todo To be implemented
  */
 extern "C" {
-    std::vector<std::string> qdmi_supported_gate_set(std::string);
+std::vector<std::string> qdmi_supported_gate_set(std::string);
 }
 
 #endif // QDMI_HPP
-

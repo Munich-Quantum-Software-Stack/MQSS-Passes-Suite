@@ -1,5 +1,5 @@
 /**
- * @file QirCNotToHCZHDecomposition.hpp 
+ * @file QirCNotToHCZHDecomposition.hpp
  * @brief Declaration of the 'QirCNotToHCZHDecompositionPass' class.
  */
 
@@ -10,20 +10,19 @@
 namespace llvm {
 
 /**
- * @class QirCNotToHCZHDecompositionPass 
- * @brief This pass decomposes a CNot gate into H, Cz, H gates. 
+ * @class QirCNotToHCZHDecompositionPass
+ * @brief This pass decomposes a CNot gate into H, Cz, H gates.
  */
 class QirCNotToHCZHDecompositionPass : public PassModule {
 public:
-    /**
-     * @brief Applies this pass to the QIR's LLVM module.
-     *
-     * @param module The module of the submitted QIR.
-     * @param MAM The module analysis manager.
-     * @return PreservedAnalyses
-     */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
+  /**
+   * @brief Applies this pass to the QIR's LLVM module.
+   *
+   * @param module The module of the submitted QIR.
+   * @param MAM The module analysis manager.
+   * @return PreservedAnalyses
+   */
+  PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
-}
-
+} // namespace llvm

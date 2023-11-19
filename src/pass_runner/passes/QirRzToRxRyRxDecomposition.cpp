@@ -1,6 +1,8 @@
 /**
  * @file QirRzToRxRyRxDecomposition.cpp
- * @brief Implementation of the 'QirRzToRxRyRxDecompositionPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRzDecomposition.cpp?ref_type=heads">Go to the source code of this file.</a>
+ * @brief Implementation of the 'QirRzToRxRyRxDecompositionPass' class. <a
+ * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirRzDecomposition.cpp?ref_type=heads">Go
+ * to the source code of this file.</a>
  *
  * This pass decomposes an Rz gate into Rx and Ry gates.
  */
@@ -15,125 +17,90 @@ using namespace llvm;
  * @param MAM The module analysis manager.
  * @return PreservedAnalyses
  */
-PreservedAnalyses QirRzToRxRyRxDecompositionPass::run(Module &module, ModuleAnalysisManager &MAM) {
-    auto& Context = module.getContext();
+PreservedAnalyses
+QirRzToRxRyRxDecompositionPass::run(Module &module,
+                                    ModuleAnalysisManager &MAM) {
+  auto &Context = module.getContext();
 
-    Function *functionKey = module.getFunction("__quantum__qis__rz__body");
-    
-    if (!functionKey)
-        return PreservedAnalyses::all();
+  Function *functionKey = module.getFunction("__quantum__qis__rz__body");
 
-    Function *function = module.getFunction("__quantum__qis__rz_to_rxryrx__body");
+  if (!functionKey)
+    return PreservedAnalyses::all();
 
-    if (function)
-        return PreservedAnalyses::all();
+  Function *function = module.getFunction("__quantum__qis__rz_to_rxryrx__body");
 
-    Type        *doubleType   = Type::getDoubleTy(Context);
-    StructType  *qubitType    = StructType::getTypeByName(Context, "Qubit");
-    PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+  if (function)
+    return PreservedAnalyses::all();
 
-    FunctionType *funcType = FunctionType::get(
-        Type::getVoidTy(Context),
-        {
-            doubleType,
-            qubitPtrType
-        },
-        false
-    );
+  Type *doubleType = Type::getDoubleTy(Context);
+  StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
+  PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
 
-    function = Function::Create(
-        funcType,
-        Function::ExternalLinkage,
-        "__quantum__qis__rz_to_rxryrx__body",
-        module
-    );
+  FunctionType *funcType = FunctionType::get(Type::getVoidTy(Context),
+                                             {doubleType, qubitPtrType}, false);
 
-    BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
-    IRBuilder<> builder(entryBlock);
+  function = Function::Create(funcType, Function::ExternalLinkage,
+                              "__quantum__qis__rz_to_rxryrx__body", module);
 
-    Function *qis_rx_body = module.getFunction("__quantum__qis__rx__body");
-    Function *qis_ry_body = module.getFunction("__quantum__qis__ry__body");
+  BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
+  IRBuilder<> builder(entryBlock);
 
-    if (!qis_rx_body) {
-        FunctionType *funcTypeRx = FunctionType::get(
-            Type::getVoidTy(Context),
-            {
-                doubleType,
-                qubitPtrType
-            },
-            false
-        );
+  Function *qis_rx_body = module.getFunction("__quantum__qis__rx__body");
+  Function *qis_ry_body = module.getFunction("__quantum__qis__ry__body");
 
-        qis_rx_body = Function::Create(
-            funcTypeRx,
-            Function::ExternalLinkage,
-            "__quantum__qis__rx__body",
-            module
-        );
-    }
+  if (!qis_rx_body) {
+    FunctionType *funcTypeRx = FunctionType::get(
+        Type::getVoidTy(Context), {doubleType, qubitPtrType}, false);
 
-    if (!qis_ry_body) {
-        FunctionType *funcTypeRy = FunctionType::get(
-            Type::getVoidTy(Context),
-            {
-                doubleType,
-                qubitPtrType
-            },
-            false
-        );
+    qis_rx_body = Function::Create(funcTypeRx, Function::ExternalLinkage,
+                                   "__quantum__qis__rx__body", module);
+  }
 
-        qis_ry_body = Function::Create(
-            funcTypeRy,
-            Function::ExternalLinkage,
-            "__quantum__qis__ry__body",
-            module
-        );
-    }
+  if (!qis_ry_body) {
+    FunctionType *funcTypeRy = FunctionType::get(
+        Type::getVoidTy(Context), {doubleType, qubitPtrType}, false);
 
-    Value *a = function->getArg(0);
-    Value *q = function->getArg(1);
+    qis_ry_body = Function::Create(funcTypeRy, Function::ExternalLinkage,
+                                   "__quantum__qis__ry__body", module);
+  }
 
-    const double pi_div_2       =  3.14159265358979323846 / 2.0;
-    const double minus_pi_div_2 = -3.14159265358979323846 / 2.0;
+  Value *a = function->getArg(0);
+  Value *q = function->getArg(1);
 
-    Value *pi_over_2       = ConstantFP::get(Context, APFloat(pi_div_2));
-    Value *minus_pi_over_2 = ConstantFP::get(Context, APFloat(minus_pi_div_2));
+  const double pi_div_2 = 3.14159265358979323846 / 2.0;
+  const double minus_pi_div_2 = -3.14159265358979323846 / 2.0;
 
-    builder.CreateCall(
-        qis_rx_body,
-        {pi_over_2, q}
-    );
-    builder.CreateCall(
-        qis_ry_body,    
-        {a, q}
-    );
-    builder.CreateCall(
-        qis_rx_body,
-        {minus_pi_over_2, q}
-    );
+  Value *pi_over_2 = ConstantFP::get(Context, APFloat(pi_div_2));
+  Value *minus_pi_over_2 = ConstantFP::get(Context, APFloat(minus_pi_div_2));
 
-    builder.CreateRetVoid();
+  builder.CreateCall(qis_rx_body, {pi_over_2, q});
+  builder.CreateCall(qis_ry_body, {a, q});
+  builder.CreateCall(qis_rx_body, {minus_pi_over_2, q});
 
-    QirPassRunner &QPR = QirPassRunner::getInstance();
-    QirMetadata &qirMetadata = QPR.getMetadata();
+  builder.CreateRetVoid();
 
-    Function *functionValue = module.getFunction("__quantum__qis__rz_to_rxryrx__body");
-    if (functionValue) {
-        auto key   = static_cast<std::string>(functionKey->getName());
-        auto value = static_cast<std::string>(functionValue->getName());
-        qirMetadata.injectAnnotation(key, value);
-        qirMetadata.setRemoveCallAttributes(false);
-    }
+  QirPassRunner &QPR = QirPassRunner::getInstance();
+  QirMetadata &qirMetadata = QPR.getMetadata();
 
-    QPR.setMetadata(qirMetadata);    
+  Function *functionValue =
+      module.getFunction("__quantum__qis__rz_to_rxryrx__body");
+  if (functionValue) {
+    auto key = static_cast<std::string>(functionKey->getName());
+    auto value = static_cast<std::string>(functionValue->getName());
+    qirMetadata.injectAnnotation(key, value);
+    qirMetadata.setRemoveCallAttributes(false);
+  }
 
-    return PreservedAnalyses::none();
+  QPR.setMetadata(qirMetadata);
+
+  return PreservedAnalyses::none();
 }
 
 /**
- * @brief External function for loading the 'QirRzToRxRyRxDecompositionPass' as a 'PassModule'.
- * @return QirRzToRxRyRxDecompositionPass 
+ * @brief External function for loading the 'QirRzToRxRyRxDecompositionPass' as
+ * a 'PassModule'.
+ * @return QirRzToRxRyRxDecompositionPass
  */
-extern "C" PassModule* loadQirPass() {
-    return new QirRzToRxRyRxDecompositionPass();
+extern "C" PassModule *loadQirPass() {
+  return new QirRzToRxRyRxDecompositionPass();
 }

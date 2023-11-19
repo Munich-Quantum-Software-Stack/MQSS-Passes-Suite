@@ -35,7 +35,7 @@ PreservedAnalyses QirCommuteCnotRxPass::run(Module &module,
           std::string current_name = current_function->getName().str();
 
           if (current_name == "__quantum__qis__rx__body") {
-            if (prev_instruction) {
+            if (prev_instruction != nullptr) {
               auto *prev_function =
                   dyn_cast<CallInst>(prev_instruction)->getCalledFunction();
 

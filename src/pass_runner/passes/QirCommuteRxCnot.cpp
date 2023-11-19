@@ -36,20 +36,23 @@ PreservedAnalyses QirCommuteRxCnotPass::run(Module &module,
 
           if (current_name == "__quantum__qis__cnot__body") {
             if (prev_instruction) {
-              auto *prev_function =
-                  dyn_cast<CallInst>(prev_instruction)->getCalledFunction();
+              if (auto *callInst = dyn_cast<CallInst>(prev_instruction)) {
+                if (auto *prev_function = callInst->getCalledFunction()) {
+                  if (prev_function) {
+                    std::string previous_name = prev_function->getName().str();
 
-              if (prev_function) {
-                std::string previous_name = prev_function->getName().str();
+                    if (previous_name == "__quantum__qis__rx__body") {
+                      Value *previous_arg = prev_instruction->getArgOperand(1);
+                      Value *current_arg =
+                          current_instruction->getArgOperand(1);
 
-                if (previous_name == "__quantum__qis__rx__body") {
-                  Value *previous_arg = prev_instruction->getArgOperand(1);
-                  Value *current_arg = current_instruction->getArgOperand(1);
-
-                  if (previous_arg == current_arg) {
-                    current_instruction->moveBefore(prev_instruction);
-                    errs() << "[Pass].............Commuting: " << previous_name
-                           << " and " << current_name << '\n';
+                      if (previous_arg == current_arg) {
+                        current_instruction->moveBefore(prev_instruction);
+                        errs()
+                            << "[Pass].............Commuting: " << previous_name
+                            << " and " << current_name << '\n';
+                      }
+                    }
                   }
                 }
               }

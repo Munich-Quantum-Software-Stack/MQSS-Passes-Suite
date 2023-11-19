@@ -38,21 +38,23 @@ QirDoubleCnotCancellationPass::run(Module &module,
 
           if (current_name == "__quantum__qis__cnot__body") {
             if (prev_instruction) {
-              auto *prev_function =
-                  dyn_cast<CallInst>(prev_instruction)->getCalledFunction();
+              if (auto *callInst = dyn_cast<CallInst>(prev_instruction)) {
+                if (auto *prev_function = callInst->getCalledFunction()) {
+                  if (prev_function) {
+                    std::string previous_name = prev_function->getName().str();
 
-              if (prev_function) {
-                std::string previous_name = prev_function->getName().str();
+                    if (previous_name == "__quantum__qis__cnot__body") {
+                      if (prev_instruction->getArgOperand(0) ==
+                              current_instruction->getArgOperand(0) &&
+                          prev_instruction->getArgOperand(1) ==
+                              current_instruction->getArgOperand(1)) {
+                        gatesToRemove.push_back(prev_instruction);
+                        gatesToRemove.push_back(current_instruction);
 
-                if (previous_name == "__quantum__qis__cnot__body") {
-                  if (prev_instruction->getArgOperand(0) ==
-                          current_instruction->getArgOperand(0) &&
-                      prev_instruction->getArgOperand(1) ==
-                          current_instruction->getArgOperand(1)) {
-                    gatesToRemove.push_back(prev_instruction);
-                    gatesToRemove.push_back(current_instruction);
-
-                    errs() << "[Pass].............A pair of Cnot gates found\n";
+                        errs() << "[Pass].............A pair of Cnot gates "
+                                  "found\n";
+                      }
+                    }
                   }
                 }
               }

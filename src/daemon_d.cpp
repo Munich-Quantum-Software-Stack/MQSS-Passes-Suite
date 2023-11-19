@@ -63,7 +63,7 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
   scheduler.append(receivedScheduler.get());
 
   std::string targetArchitecture = invokeScheduler(scheduler);
-  if (targetArchitecture == "")
+  if (targetArchitecture == "") {
     std::cout << "[daemon_d].........Warning: There was an error obtaining "
                  "the target architecture"
               << std::endl;

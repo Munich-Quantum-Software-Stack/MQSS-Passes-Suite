@@ -5,8 +5,6 @@
 
 #include "SchedulerRunner.hpp"
 
-using namespace llvm;
-
 /**
  * @brief TODO
  * @param pathScheduler TODO

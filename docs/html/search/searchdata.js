@@ -1,6 +1,6 @@
 var indexSectionsWithContent =
 {
-  0: "abcdefghilmnopqrstuv~",
+  0: ":abcdefghilmnopqrstuv~",
   1: "afgpqr",
   2: "l",
   3: "cdlpqs",
@@ -42,11 +42,3 @@ var indexSectionLabels =
   9: "Macros",
   10: "Pages"
 };
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-
->>>>>>> e4782a5 (Formatting source code)

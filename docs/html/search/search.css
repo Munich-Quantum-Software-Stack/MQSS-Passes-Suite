@@ -192,15 +192,7 @@ iframe#MSearchResults {
 
 
 #SRIndex {
-<<<<<<< HEAD
-<<<<<<< HEAD
     clear:both;
-=======
-    clear:both;
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-    clear:both;
->>>>>>> e4782a5 (Formatting source code)
 }
 
 .SREntry {
@@ -219,15 +211,7 @@ div.SRPage {
 }
 
 .SRChildren {
-<<<<<<< HEAD
-<<<<<<< HEAD
     padding-left: 3ex; padding-bottom: .5em
-=======
-    padding-left: 3ex; padding-bottom: .5em
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-    padding-left: 3ex; padding-bottom: .5em
->>>>>>> e4782a5 (Formatting source code)
 }
 
 .SRPage .SRChildren {
@@ -304,11 +288,3 @@ div.searchresults {
 .searchpages {
     margin-top: 10px;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-
->>>>>>> e4782a5 (Formatting source code)

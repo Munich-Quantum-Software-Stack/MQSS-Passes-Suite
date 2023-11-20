@@ -814,15 +814,7 @@ img.light-mode-visible {
 }
 
 img.formulaDsp {
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-
->>>>>>> e4782a5 (Formatting source code)
 }
 
 img.formulaInl, img.inline {
@@ -891,26 +883,6 @@ span.xmlcdata {
 	color: var(--code-xml-cdata-color);
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-span.vhdldigit {
-=======
-span.vhdldigit {
->>>>>>> e4782a5 (Formatting source code)
-	color: var(--code-vhdl-digit-color);
-}
-
-span.vhdlchar {
-	color: var(--code-vhdl-char-color);
-}
-
-span.vhdlkeyword {
-	color: var(--code-vhdl-keyword-color);
-}
-
-<<<<<<< HEAD
-span.vhdllogic {
-=======
 span.vhdldigit {
 	color: var(--code-vhdl-digit-color);
 }
@@ -924,10 +896,6 @@ span.vhdlkeyword {
 }
 
 span.vhdllogic {
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-span.vhdllogic {
->>>>>>> e4782a5 (Formatting source code)
 	color: var(--code-vhdl-logic-color);
 }
 
@@ -1652,29 +1620,12 @@ dl.section dd {
 	vertical-align: bottom;
 	border-collapse: separate;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-
->>>>>>> e4782a5 (Formatting source code)
-#projectlogo img
-{
-	border: 0px none;
-}
-<<<<<<< HEAD
-
-=======
 
 #projectlogo img
 {
 	border: 0px none;
 }
 
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-
->>>>>>> e4782a5 (Formatting source code)
 #projectalign
 {
         vertical-align: middle;
@@ -2126,11 +2077,3 @@ body {
 ::-webkit-scrollbar-corner {
         background-color: var(--scrollbar-background-color);
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-
->>>>>>> e4782a5 (Formatting source code)

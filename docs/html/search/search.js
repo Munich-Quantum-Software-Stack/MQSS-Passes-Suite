@@ -357,15 +357,7 @@ function SearchBox(name, resultsPath, extension)
         createResults(resultsPath);
         document.getElementById("NoMatches").style.display="none";
       }
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
-
->>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
-=======
-
->>>>>>> e4782a5 (Formatting source code)
       if (idx!=-1) {
         searchResults.Search(searchValue);
       } else { // no file with search results => force empty search results

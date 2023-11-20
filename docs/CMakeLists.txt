@@ -5,13 +5,17 @@ set(DOXYGEN_PROJECT_BRIEF
     "This project consists of the Scheduler Runner, the Selector Runner, and the Pass Runner."
 )
 
-set(DOXYGEN_INPUT_DIR ${CMAKE_SOURCE_DIR}/src)
+message(STATUS "CMAKE_SOURCE_DIR/src?: ${CMAKE_SOURCE_DIR}/src")
+
 if(BUILD_DOCS_STANDALONE)
+  set(DOXYGEN_INPUT_DIR ${CMAKE_SOURCE_DIR}/../src)
   set(DOXYGEN_OUTPUT_DIR ${CMAKE_SOURCE_DIR})
+  set(DOXYGEN_INDEX_FILE ${CMAKE_SOURCE_DIR}/html/index.xml)
 else()
+  set(DOXYGEN_INPUT_DIR ${CMAKE_SOURCE_DIR}/src)
   set(DOXYGEN_OUTPUT_DIR ${CMAKE_SOURCE_DIR}/docs)
+  set(DOXYGEN_INDEX_FILE ${CMAKE_SOURCE_DIR}/docs/html/index.xml)
 endif()
-set(DOXYGEN_INDEX_FILE ${CMAKE_SOURCE_DIR}/docs/html/index.xml)
 set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
 set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 

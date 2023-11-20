@@ -21,10 +21,13 @@ set(PASSES_SOURCE_FILES
     QirFunctionReplacement.cpp
     # G
     QirGrouping.cpp
+<<<<<<< HEAD
     # H
     QirHadamardAndXGateSwitch.cpp
     QirHadamardAndYGateSwitch.cpp
     QirHadamardAndZGateSwitch.cpp
+=======
+>>>>>>> 5356c34 (Resolving conflicts against NoSockets branch)
     # M
     QirMergeRotations.cpp
     # N

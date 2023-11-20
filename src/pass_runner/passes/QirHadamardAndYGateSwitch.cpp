@@ -1,8 +1,12 @@
 /**
  * @file QirHadamardAndYGateSwitch.cpp
+<<<<<<< HEAD
  * @brief Implementation of the 'QirHadamardAndYGateSwitchPass' class. <a
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirHadamardAndYGateSwitch.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
+=======
+ * @brief Implementation of the 'QirHadamardAndYGateSwitchPass' class. <a href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirHadamardAndYGateSwitch.cpp?ref_type=heads">Go to the source code of this file.</a>
+>>>>>>> 5356c34 (Resolving conflicts against NoSockets branch)
  *
  */
 
@@ -16,6 +20,7 @@ using namespace llvm;
  * @param MAM The module analysis manager.
  * @return PreservedAnalyses
  */
+<<<<<<< HEAD
 PreservedAnalyses
 QirHadamardAndYGateSwitchPass::run(Module &module,
                                    ModuleAnalysisManager & /*MAM*/) {
@@ -78,4 +83,63 @@ QirHadamardAndYGateSwitchPass::run(Module &module,
  */
 extern "C" PassModule *loadQirPass() {
   return new QirHadamardAndYGateSwitchPass();
+=======
+PreservedAnalyses QirHadamardAndYGateSwitchPass::run(Module &module, ModuleAnalysisManager &/*MAM*/) {
+    auto& Context = module.getContext();
+
+    for (auto &function : module) {
+        std::vector<CallInst*> currentGates;
+        std::vector<CallInst*> previousGates;
+
+        for (auto &block : function) {
+            CallInst *prev_instruction = nullptr;
+
+            for (auto &instruction : block) {
+                auto *current_instruction = dyn_cast<CallInst>(&instruction);
+
+                if (current_instruction) {
+                    auto *current_function = current_instruction->getCalledFunction();
+                
+                    if (current_function == nullptr)
+                        continue;
+                
+                    std::string current_name = current_function->getName().str();
+                
+                    if (current_name == "__quantum__qis__y__body") {
+                        if (prev_instruction) {
+                            auto *prev_function = dyn_cast<CallInst>(prev_instruction)->getCalledFunction();
+                            
+                            if (prev_function) {
+                                std::string previous_name = prev_function->getName().str();
+
+                                if (previous_name == "__quantum__qis__h__body") {
+                                    previousGates.push_back(prev_instruction);
+                                    currentGates.push_back(current_instruction);
+                                    errs() << "              Switching: " << previous_name << " and " << current_name << '\n';
+                                }
+                            }
+                        }
+                    }
+                }
+                prev_instruction = current_instruction;
+            }
+        }
+        while (!currentGates.empty()) {
+            auto *currentGate = currentGates.back();
+            auto *prevGate = previousGates.back();
+            currentGate->moveBefore(prevGate);
+            currentGates.pop_back();
+            previousGates.pop_back();
+        }
+    }
+    return PreservedAnalyses::none();
+}
+
+/**
+ * @brief External function for loading the 'QirHadamardAndYGateSwitchPass' as a 'PassModule'.
+ * @return QirHadamardAndYGateSwitchPass
+ */
+extern "C" PassModule* loadQirPass() {
+    return new QirHadamardAndYGateSwitchPass();
+>>>>>>> 5356c34 (Resolving conflicts against NoSockets branch)
 }

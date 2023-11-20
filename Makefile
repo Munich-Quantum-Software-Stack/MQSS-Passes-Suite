@@ -151,9 +151,7 @@ test: run
 	./tests/test
 
 pre-commit:
-	source ~/.bashrc; \
 	pre-commit run --all-files
 
 format:
-	source ~/.bashrc; \
 	pre-commit run clang-format --all-files

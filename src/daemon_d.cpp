@@ -3,12 +3,11 @@
  * @brief TODO
  */
 
+#include "connection_handling.hpp"
 #include "pass_runner/PassRunner.hpp"
 #include "pass_runner/QirPassRunner.hpp"
 #include "scheduler_runner/SchedulerRunner.hpp"
 #include "selector_runner/SelectorRunner.hpp"
-
-#include "connection_handling.hpp"
 
 #include <algorithm>
 #include <chrono>

@@ -43,6 +43,10 @@ var indexSectionLabels =
   10: "Pages"
 };
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
+=======
+
+>>>>>>> e4782a5 (Formatting source code)

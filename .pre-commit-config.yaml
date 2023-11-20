@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+  - repo: local
+    hooks:
+    - id: clang-format
+      name: clang-format
+      description: Format C code using clang-format.
+      language: system
+      files: \b(src\/.*\.(c|cc|cxx|cpp|h|hpp|hxx))\b
+      entry: clang-format -i
+      args: ["-style=LLVM"]
+    - id: cmake-format
+      name: cmake-format
+      description: cmake-format can format your listfiles nicely so that they don't look like crap.
+      entry: cmake-format
+      args: [--in-place]
+      language: python
+      types: [cmake]

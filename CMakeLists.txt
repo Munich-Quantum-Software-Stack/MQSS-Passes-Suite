@@ -130,6 +130,7 @@ add_custom_target(
 # Build the documentation
 option(BUILD_WITH_DOCS "Generate Docs" OFF)
 if(BUILD_WITH_DOCS)
+  set(BUILD_DOCS_STANDALONE OFF)
   message("Building documentation.")
   set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/docs)

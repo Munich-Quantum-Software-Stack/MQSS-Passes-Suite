@@ -2,6 +2,7 @@
 uninstall.cmake
 
 build/
+docs/build/
 tests/test
 
 *~

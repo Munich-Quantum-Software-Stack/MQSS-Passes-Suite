@@ -99,7 +99,8 @@ The project structure is the following:
 ├─ flowcharts
 │  ├─ flow.drawio
 │  └─ flow.png
-├─ llvm_formatting.sh
+├─ scripts
+│  └─ generate_docs.sh
 ├─ src
 │  ├─ connection_handling.cpp
 │  ├─ connection_handling.hpp

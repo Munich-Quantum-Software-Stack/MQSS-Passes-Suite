@@ -23,9 +23,9 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
       make install
       ```
 
-   - Optionally, you can specify the installation path and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Optionally, you may also specify the installation path, the directory with the chosen Quantum Device Management Interface (QDMI), and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME BUILD_DIR=build install
+      make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build install
       ```
 
 ## Uninstallation
@@ -43,6 +43,63 @@ If you ever need to uninstall `daemon_d`, follow these steps:
    ```
 
 This will remove `daemon_d` from your system.
+
+## Project Structure
+
+The project structure is the following:
+
+```
+├─ .gitignore
+├─ .gitlab-ci.yml
+├─ CMakeLists.txt
+├─ CODE_OF_CONDUCT.md
+├─ CONTRIBUTING.md
+├─ LICENSE
+├─ Makefile
+├─ README.md
+├─ benchmarks
+│  └─ test.ll
+├─ cmake
+│  └─ FindSphinx.cmake
+├─ docs
+│  ├─ CMakeLists.txt
+│  ├─ Doxyfile.in
+│  └─ html
+│     ├─ index.html
+│     └─ ...
+├─ flowcharts
+│  ├─ flow.drawio
+│  └─ flow.png
+├─ llvm_formatting.sh
+├─ src
+│  ├─ connection_handling.cpp
+│  ├─ connection_handling.hpp
+│  ├─ daemon_d.cpp
+│  ├─ pass_runner
+│  │  ├─ headers
+│  │  │  ├─ llvm.hpp
+│  │  │  └─ ...
+│  │  ├─ PassRunner.cpp
+│  │  └─ passes
+│  │     ├─ CMakeLists.txt
+│  │     └─ ...
+│  ├─ scheduler_runner
+│  │  ├─ schedulers
+│  │  │  ├─ CMakeLists.txt
+│  │  │  ├─ scheduler_round_robin.cpp
+│  │  │  └─ ...
+│  │  ├─ SchedulerRunner.cpp
+│  │  └─ SchedulerRunner.hpp
+│  └─ selector_runner
+│     ├─ selectors
+│     │  ├─ CMakeLists.txt
+│     │  ├─ selector_all.cpp
+│     │  └─ ...
+│     ├─ SelectorRunner.cpp
+│     └─ SelectorRunner.hpp
+└─ tests
+   └─ test.cpp
+```
 
 ## Documentation and Resources
 

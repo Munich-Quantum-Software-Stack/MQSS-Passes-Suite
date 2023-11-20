@@ -1,6 +1,6 @@
 INSTALL_PATH ?= $(HOME)
 EXEC_PATH    := $(INSTALL_PATH)/bin/lib
-QDMI_PATH    := $(CURDIR)/qdmi
+QDMI_PATH    ?= $(CURDIR)/qdmi
 BUILD_DIR    ?= build
 
 QDMI         := $(wildcard $(QDMI_PATH)/build/libqdmi.so)

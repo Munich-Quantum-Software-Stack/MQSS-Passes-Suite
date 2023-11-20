@@ -1,3 +1,9 @@
+/**
+ * @file connection_handling.hpp
+ * @brief TODO
+ * @todo Comment this source code
+ */
+
 #pragma once
 
 #include "rabbitmq-c/amqp.h"

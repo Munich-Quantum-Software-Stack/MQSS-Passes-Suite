@@ -357,7 +357,11 @@ function SearchBox(name, resultsPath, extension)
         createResults(resultsPath);
         document.getElementById("NoMatches").style.display="none";
       }
- 
+<<<<<<< HEAD
+
+=======
+
+>>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
       if (idx!=-1) {
         searchResults.Search(searchValue);
       } else { // no file with search results => force empty search results

@@ -10,6 +10,7 @@
 namespace llvm {
 
 /**
+<<<<<<< HEAD
 <<<<<<<< HEAD:src/pass_runner/headers/QirHadamardAndPauliGateSwitch.hpp
  * @class QirHadamardAndPauliGateSwitch
  * @brief This pass swaps adjacent H and Pauli gates whenever found in this
@@ -20,6 +21,11 @@ namespace llvm {
 As a result, X gate is changed into Z gate.
 >>>>>>>> e4a2254 (Hadamard and Pauli gate switching split separately for each
 gate):src/pass_runner/headers/QirHadamardAndXGateSwitch.hpp
+=======
+ * @class QirHadamardAndXGateSwitch
+ * @brief This pass swaps adjacent H and X gates whenever found in this order.
+ * As a result, X gate is changed into Z gate.
+>>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
  */
 class QirHadamardAndXGateSwitchPass : public PassModule {
 public:

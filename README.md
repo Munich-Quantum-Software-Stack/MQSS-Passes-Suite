@@ -48,10 +48,10 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 3. Run `make` to install `daemon_d`:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, with the following command:
       ```bash
-      make install
+      make QDMI_PATH=qdmi install
       ```
 
-   - Optionally, you may also specify the installation path, the directory with the chosen Quantum Device Management Interface (QDMI), and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directory with the chosen Quantum Device Management Interface (QDMI), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
       make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build install
       ```
@@ -156,10 +156,10 @@ You can build the Quantum Resource Manager and generate its documentation locall
 2. Run make:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, and generate its documentation with the following command:
       ```bash
-      make docs
+      make QDMI_PATH=qdmi docs
       ```
 
-   - Optionally, you can specify the installation path and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directory with the chosen Quantum Device Management Interface (QDMI), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
       make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build docs
       ```

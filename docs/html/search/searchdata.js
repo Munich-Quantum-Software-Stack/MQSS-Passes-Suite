@@ -42,4 +42,7 @@ var indexSectionLabels =
   9: "Macros",
   10: "Pages"
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> c768a51 (Resolving conflicts against NoSockets branch)

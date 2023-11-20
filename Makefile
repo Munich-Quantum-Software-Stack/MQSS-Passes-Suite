@@ -95,7 +95,7 @@ uninstall: clean
     	cd build && make uninstall && cd ..; \
     	rm -rf $(BUILD_DIR); \
 	fi; \
-	rm -rf $(QDMI_PATH)/build
+	rm -rf $(QDMI_PATH)/build docs/build
 	@echo "Quantum Resource Manager uninstalled successfully"
 
 ifdef DOXYGEN

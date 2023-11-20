@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(qdmi
-        VERSION 0.0
-        DESCRIPTION "Quantum Device Management Interface")
+project(
+  qdmi
+  VERSION 0.0
+  DESCRIPTION "Quantum Device Management Interface")
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -19,4 +20,3 @@ message(STATUS "Installing libqdmi.so in: ${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi")
 
 # Set installation rules
 install(TARGETS qdmi LIBRARY DESTINATION "${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi")
-

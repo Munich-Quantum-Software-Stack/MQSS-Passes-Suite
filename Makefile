@@ -37,7 +37,7 @@ build_rabbitmq:
         -DBUILD_TESTING=OFF \
         -DBUILD_EXAMPLES=OFF \
         -DENABLE_SSL_SUPPORT=OFF \
-        -S rabbitmq-c-0.13.0 
+        -S rabbitmq-c-0.13.0
 	if [ -n "$$CI" ]; then \
 		cmake --build rabbitmq-c-0.13.0/build --target install; \
 		ldconfig; \
@@ -88,7 +88,7 @@ install: qrm
 	@echo ""
 
 clean:
-	@rm -rf rabbitmq-c-0.13.0 v0.13.0.tar.gz doxygen 
+	@rm -rf rabbitmq-c-0.13.0 v0.13.0.tar.gz doxygen
 
 uninstall: clean
 	@if [ -d "$(BUILD_DIR)" ]; then \
@@ -150,3 +150,10 @@ test: run
 	@g++ tests/test.cpp src/connection_handling.cpp -o ./tests/test -I./src -lrabbitmq || (echo "Compilation failed"; exit 1); \
 	./tests/test
 
+pre-commit:
+	source ~/.bashrc; \
+	pre-commit run --all-files
+
+format:
+	source ~/.bashrc; \
+	pre-commit run clang-format --all-files

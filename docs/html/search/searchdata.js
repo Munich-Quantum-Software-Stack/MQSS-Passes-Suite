@@ -42,4 +42,3 @@ var indexSectionLabels =
   9: "Macros",
   10: "Pages"
 };
-

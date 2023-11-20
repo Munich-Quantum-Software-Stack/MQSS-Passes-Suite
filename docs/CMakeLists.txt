@@ -1,7 +1,9 @@
 find_package(Doxygen REQUIRED)
 
 set(DOXYGEN_PROJECT_NAME "Quantum Resource Manager (QRM) daemon")
-set(DOXYGEN_PROJECT_BRIEF "This project consists of the Scheduler Runner, the Selector Runner, and the Pass Runner.")
+set(DOXYGEN_PROJECT_BRIEF
+    "This project consists of the Scheduler Runner, the Selector Runner, and the Pass Runner."
+)
 
 set(DOXYGEN_INPUT_DIR ${CMAKE_SOURCE_DIR}/src)
 set(DOXYGEN_OUTPUT_DIR ${CMAKE_SOURCE_DIR}/docs)
@@ -27,4 +29,3 @@ add_custom_command(
 
 # Create CMake Target for generating doc.
 add_custom_target(docs ALL DEPENDS ${DOXYGEN_INDEX_FILE})
-

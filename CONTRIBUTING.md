@@ -40,21 +40,26 @@ Before you get started, please take a moment to read this document to understand
 
 5. **Test**: Ensure that your changes work as intended and don't introduce any new issues.
 
-6. **Commit Your Changes**: Commit your changes with a clear and concise message:
+6. **Format**: Apply the right formatting to your code base by manually triggering `clang-format` `pre-commit` hook.
+   ```shell
+   make format
+   ```
+
+7. **Commit Your Changes**: Commit your changes with a clear and concise message:
    ```shell
    git commit -m "Added name-of-pass"
    ```
 
-7. **Push to Your Fork**: Push your changes to your fork on GitHub:
+8. **Push to Your Fork**: Push your changes to your fork on GitHub:
    ```shell
    git push origin custom-pass/name-of-pass
    ```
 
-8. **Create a Pull Request**: Open a pull request from your branch to the `Plugins` branch in the original repository.
+9. **Create a Pull Request**: Open a pull request from your branch to the `Plugins` branch in the original repository.
 
-9. **Discuss and Revise**: Engage in any discussions or changes requested by the maintainers.
+10. **Discuss and Revise**: Engage in any discussions or changes requested by the maintainers.
 
-10. **Get Your Pull Request Merged**: Once your contribution is approved, it will be merged into the project.
+11. **Get Your Pull Request Merged**: Once your contribution is approved, it will be merged into the project.
 
 ## Code Style and Guidelines
 
@@ -77,4 +82,3 @@ Thank you for your contributions to qir_passes!
 ## License
 
 By contributing to this project, you agree to the terms and conditions of the [License](LICENSE) for qir_passes.
-

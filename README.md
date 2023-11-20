@@ -2,7 +2,35 @@
 
 The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is `daemon_d`. This README provides instructions for installing and uninstalling `daemon_d`, as well as for running an example submitting a quantum task<!--Not to be confused with a qcommon QuantumTask-->.
 
-## Compilation and Installation
+## Downloading
+
+1. To clone this repository to your local machine, use the following command:
+   ```bash
+   git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes.git
+   ```
+
+2. After cloning, move into the repository directory and checkout the `NoSockets` branch:
+   ```bash
+   cd qir_passes
+   git checkout NoSockets
+   ```
+
+3. Install `pre-commit` using `pip` (Python's package manager) and other required dependencies:
+   ```bash
+   sudo apt update
+   sudo apt install -y cmake clang-format pre-commit cmakelang python3-pip
+   pip3 install cmake_format
+   echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+   source ~/.bashrc
+   ```
+
+4. After installing `pre-commit`, set up the hooks specified in `.pre-commit-config.yaml`:
+   ```bash
+   pre-commit install
+   make pre-commit
+   ```
+
+## Building
 
 To install the Quantum Resource Manager daemon system wide, follow these steps:
 
@@ -51,6 +79,7 @@ The project structure is the following:
 ```
 ├─ .gitignore
 ├─ .gitlab-ci.yml
+├─ .pre-commit-config.yaml
 ├─ CMakeLists.txt
 ├─ CODE_OF_CONDUCT.md
 ├─ CONTRIBUTING.md
@@ -109,7 +138,7 @@ This section provides links to project documentation and additional resources:
 - [Wiki](https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/wikis/home): Project wiki with additional information and guides.
 - [Contributing Guidelines](CONTRIBUTING.md): Document to understand the process for contributing to our project.
 <!--
-- Flowchart of the QIR Pass Runner daemon: 
+- Flowchart of the QIR Pass Runner daemon:
 ![Alt](flowcharts/flow.png)
 -->
 
@@ -156,4 +185,3 @@ You can run the Quantum Resource Manager daemon and a test client as follows:
    ```bash
    make test
    ```
-

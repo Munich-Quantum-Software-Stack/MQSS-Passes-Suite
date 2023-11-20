@@ -11,7 +11,6 @@ repos:
       name: clang-format
       description: Format C code using clang-format.
       language: system
-#      files: \b(src\/.*\.(c|cc|cxx|cpp|h|hpp|hxx))\b
       files: \.(c|cc|cxx|cpp|h|hpp|hxx)$
       entry: clang-format -i
       args: ["-style=LLVM"]

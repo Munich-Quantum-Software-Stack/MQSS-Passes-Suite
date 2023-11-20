@@ -9,7 +9,7 @@
 @1 = internal constant [3 x i8] c"r2\00"
 
 @d0 = internal constant double 0.0
-@d1 = internal constant double 17.2787595947 
+@d1 = internal constant double 17.2787595947
 @d2 = internal constant double 12.56637061435917295384
 
 ; entry point definition
@@ -36,7 +36,7 @@ entry:
   call void @__quantum__qis__mz__body(%Qubit* null, %Result* writeonly null)
   call void @__quantum__qis__mz__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Result* writeonly inttoptr (i64 1 to %Result*))
   call void @__quantum__qis__id__body(%Qubit* null)
-  ; calls to check double Cnot cancellation  
+  ; calls to check double Cnot cancellation
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   ; calls to check null rotation cancellation
@@ -149,4 +149,3 @@ attributes #2 = { "qir_profiles"="base_profile" }
 !1 = !{i32 7, !"qir_minor_version", i32 0}
 !2 = !{i32 1, !"dynamic_qubit_management", i1 false}
 !3 = !{i32 1, !"dynamic_result_management", i1 false}
-

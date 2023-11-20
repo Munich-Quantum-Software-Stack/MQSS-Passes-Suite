@@ -1,8 +1,8 @@
 /**
  * @file QirPassRunner.cpp
  * @brief Implementation of the 'QirPassRunner' class. <a
- * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/QirPassRunner.cpp?ref_type=heads">Go to the
- * source code of this file.</a>
+ * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/QirPassRunner.cpp?ref_type=heads">Go
+ * to the source code of this file.</a>
  */
 
 #include "QirPassRunner.hpp"

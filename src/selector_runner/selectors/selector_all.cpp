@@ -46,6 +46,14 @@ extern "C" std::vector<std::string> selector(void) {
       "libQirNullRotationCancellationPass.so",
       "libQirMergeRotationsPass.so",
       "libQirDoubleCnotCancellationPass.so",
+      "libQirHadamardAndXGateSwitchPass.so",
+      "libQirHadamardAndYGateSwitchPass.so",
+      "libQirHadamardAndZGateSwitchPass.so",
+      "libQirXGateAndHadamardSwitchPass.so",
+      "libQirYGateAndHadamardSwitchPass.so",
+      "libQirZGateAndHadamardSwitchPass.so",
+      "libQirSToSDaggerPass.so",
+      "libQirSDaggerToSPass.so",
   };
 
   std::cout

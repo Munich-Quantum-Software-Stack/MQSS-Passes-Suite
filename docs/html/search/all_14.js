@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['_7epassmodule_0',['~PassModule',['../classPassModule.html#ae9262236a5f85f466005f6dbc118b5e0',1,'PassModule']]],
-  ['_7eqirdivisionbyzeropass_1',['~QirDivisionByZeroPass',['../classllvm_1_1QirDivisionByZeroPass.html#a141e70fef66f2b7b2512faf95a247493',1,'llvm::QirDivisionByZeroPass']]]
+  ['validationresult_0',['ValidationResult',['../classllvm_1_1QirFunctionValidationPass.html#a9886456990e2a778e81c773d6fe66420',1,'llvm::QirFunctionValidationPass']]],
+  ['visited_5fblocks_5f_1',['visited_blocks_',['../classllvm_1_1QirGroupingPass.html#a95cd9fcc74d1d0172714c8e6829c3c19',1,'llvm::QirGroupingPass']]]
 ];

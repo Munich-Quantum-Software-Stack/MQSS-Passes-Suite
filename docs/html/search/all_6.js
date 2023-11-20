@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['getinstance_0',['getInstance',['../classQirPassRunner.html#a14d6db8d9602edd6c29dae9514b401b8',1,'QirPassRunner']]],
-  ['getmetadata_1',['getMetadata',['../classQirPassRunner.html#a4d2f6b25d5e5e102c809ac5b53d91195',1,'QirPassRunner']]],
-  ['groupanalysis_2',['groupanalysis',['../structllvm_1_1GroupAnalysis.html',1,'llvm::GroupAnalysis'],['../structllvm_1_1GroupAnalysis.html#ac32434ecded5d9f38796f7df72e34ac0',1,'llvm::GroupAnalysis::GroupAnalysis()']]]
+  ['functionmap_0',['FunctionMap',['../structllvm_1_1FunctionRegister.html#ac893f1e956f4725f66b22e637e29389a',1,'llvm::FunctionRegister']]],
+  ['functionregister_1',['FunctionRegister',['../structllvm_1_1FunctionRegister.html',1,'llvm']]],
+  ['functions_5fto_5freplace_2',['functions_to_replace',['../structllvm_1_1FunctionRegister.html#a478fb483977d3a0c6309226f4edc0731',1,'llvm::FunctionRegister']]],
+  ['functionvalidation_3',['FunctionValidation',['../structllvm_1_1FunctionValidation.html',1,'llvm']]]
 ];

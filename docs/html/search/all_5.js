@@ -1,7 +1,10 @@
 var searchData=
 [
-  ['functionmap_0',['FunctionMap',['../structllvm_1_1FunctionRegister.html#ac893f1e956f4725f66b22e637e29389a',1,'llvm::FunctionRegister']]],
-  ['functionregister_1',['FunctionRegister',['../structllvm_1_1FunctionRegister.html',1,'llvm']]],
-  ['functions_5fto_5freplace_2',['functions_to_replace',['../structllvm_1_1FunctionRegister.html#a478fb483977d3a0c6309226f4edc0731',1,'llvm::FunctionRegister']]],
-  ['functionvalidation_3',['FunctionValidation',['../structllvm_1_1FunctionValidation.html',1,'llvm']]]
+  ['ec_5fqir_5fdivision_5fby_5fzero_0',['EC_QIR_DIVISION_BY_ZERO',['../classllvm_1_1QirDivisionByZeroPass.html#a7972e34208348c8111b1ec6b935ab53b',1,'llvm::QirDivisionByZeroPass']]],
+  ['ec_5freport_5ffunction_1',['EC_REPORT_FUNCTION',['../classllvm_1_1QirDivisionByZeroPass.html#afa3d1bbabf562edc20de0066eefcbdfb',1,'llvm::QirDivisionByZeroPass']]],
+  ['ec_5fvariable_5fname_2',['EC_VARIABLE_NAME',['../classllvm_1_1QirDivisionByZeroPass.html#a31115028a1295cef9edfb83e7441f907',1,'llvm::QirDivisionByZeroPass']]],
+  ['error_5fvariable_5f_3',['error_variable_',['../classllvm_1_1QirDivisionByZeroPass.html#a077228250b2c8562deae866dc137bc86',1,'llvm::QirDivisionByZeroPass']]],
+  ['expandbasedondest_4',['expandBasedOnDest',['../classllvm_1_1QirGroupingPass.html#a3b3f7d797930b5accd4a4c39e742758a',1,'llvm::QirGroupingPass']]],
+  ['expandbasedonsource_5',['expandBasedOnSource',['../classllvm_1_1QirGroupingPass.html#a844ce7149bbde5484746dfeabc98e4f2',1,'llvm::QirGroupingPass']]],
+  ['extractresourceid_6',['extractResourceId',['../classllvm_1_1QirAllocationAnalysisPass.html#afa44c69104aa8f7bb635927e30a5da35',1,'llvm::QirAllocationAnalysisPass']]]
 ];

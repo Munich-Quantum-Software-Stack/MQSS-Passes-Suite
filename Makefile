@@ -17,7 +17,7 @@ build_qdmi:
 	@echo "QDMI is already installed. Skipping installation."
 else
 build_qdmi:
-	@echo "Installing QDMI."
+	@echo "Installing QDMI"
 	cmake -B $(QDMI_PATH)/build -S $(QDMI_PATH) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH)
 	cmake --build $(QDMI_PATH)/build
 	cmake --install $(QDMI_PATH)/build

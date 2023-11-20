@@ -15,7 +15,7 @@ The entry point of the Quantum Resource Manager for selecting and applying LLVM 
    git checkout NoSockets
    ```
 
-3. Install `pre-commit` using `pip` (Python's package manager) and other required dependencies:
+3. Install `pre-commit` using `pip` (Python's package manager) and other required dependencies using `apt`:
    ```bash
    sudo apt update
    sudo apt install -y cmake clang-format pre-commit cmakelang python3-pip
@@ -160,7 +160,7 @@ You can build the Quantum Resource Manager and generate its documentation locall
 
    - Optionally, you can specify the installation path and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME BUILD_DIR=build docs
+      make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build docs
       ```
 
 3. Open the generated documentation in a web browser:

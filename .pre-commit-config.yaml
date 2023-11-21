@@ -7,10 +7,10 @@ repos:
     - id: trailing-whitespace
   - repo: local
     hooks:
-    - id: generate-docs
-      name: Generate Documentation
-      entry: scripts/generate_docs.sh
-      language: script
+#    - id: generate-docs
+#      name: Generate Documentation
+#      entry: scripts/generate_docs.sh
+#      language: script
     - id: clang-format
       name: clang-format
       description: Format C code using clang-format.

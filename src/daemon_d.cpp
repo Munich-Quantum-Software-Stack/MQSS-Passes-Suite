@@ -146,6 +146,8 @@ void signalHandler(int signum) {
  * @return int
  */
 int main(int argc, char *argv[]) {
+  setbuf(stdout, NULL);
+
   if (argc != 2 && argc != 3) {
     std::cerr << "[daemon_d] Usage: daemon_d [screen|log PATH]" << std::endl;
     return 1;

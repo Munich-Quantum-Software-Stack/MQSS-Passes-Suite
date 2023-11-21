@@ -4,6 +4,8 @@
 #include <iostream>
 
 int main() {
+  setbuf(stdout, NULL);
+
   const char *ClientQueue = "client_queue";
   const char *DaemonQueue = "daemon_queue";
 
@@ -19,7 +21,7 @@ int main() {
             << std::endl;
 
   // Open the QIR file
-  const char *filename = "benchmarks/test.ll";
+  const char *filename = "../../benchmarks/test.ll";
   std::ifstream file(filename, std::ios::binary);
   if (!file.is_open()) {
     std::cerr << "[Client]...........Failed to open file: " << filename

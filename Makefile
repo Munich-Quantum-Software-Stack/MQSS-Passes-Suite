@@ -34,7 +34,6 @@ build_rabbitmq:
 	tar -xf v0.13.0.tar.gz
 	cmake \
         -B rabbitmq-c-0.13.0/build \
-        -DBUILD_TESTING=OFF \
         -DBUILD_EXAMPLES=OFF \
         -DENABLE_SSL_SUPPORT=OFF \
         -S rabbitmq-c-0.13.0
@@ -147,8 +146,8 @@ run: build_qrm
 	daemon_d screen
 
 test: run
-	@g++ tests/test.cpp src/connection_handling.cpp -o ./tests/test -I./src -lrabbitmq || (echo "Compilation failed"; exit 1); \
-	./tests/test
+	cd build/ && \
+	ctest -C Release -VV run_tests
 
 pre-commit:
 	pre-commit run --all-files

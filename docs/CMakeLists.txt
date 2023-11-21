@@ -5,8 +5,6 @@ set(DOXYGEN_PROJECT_BRIEF
     "This project consists of the Scheduler Runner, the Selector Runner, and the Pass Runner."
 )
 
-message(STATUS "CMAKE_SOURCE_DIR/src?: ${CMAKE_SOURCE_DIR}/src")
-
 if(BUILD_DOCS_STANDALONE)
   set(DOXYGEN_INPUT_DIR ${CMAKE_SOURCE_DIR}/../src)
   set(DOXYGEN_OUTPUT_DIR ${CMAKE_SOURCE_DIR})

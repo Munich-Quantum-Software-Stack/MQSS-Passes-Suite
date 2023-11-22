@@ -145,7 +145,10 @@ run: build_qrm
 	fi; \
 	daemon_d screen
 
-test: run
+kill_daemons:
+	bash scripts/kill_daemons.sh
+
+test: kill_daemons run
 	cd build/ && \
 	ctest -C Release -VV run_tests
 

@@ -12,6 +12,7 @@ set(PASSES_SOURCE_FILES
     QirCommuteXCnot.cpp
     QirCommuteCnotZ.cpp
     QirCommuteZCnot.cpp
+    QirCZToHCnotHDecomposition.cpp
     # D
     QirDeferMeasurement.cpp
     QirDivisionByZero.cpp
@@ -44,6 +45,7 @@ set(PASSES_SOURCE_FILES
     # S
     QirSDaggerToS.cpp
     QirSToSDagger.cpp
+    QirSwapToCnotsDecomposition.cpp
     # U
     QirU3ToRzRyRzDecomposition.cpp
     # X

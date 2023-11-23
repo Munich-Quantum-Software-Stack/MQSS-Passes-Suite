@@ -4,7 +4,6 @@
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirCZToHCnotHDecomposition.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
- * Adapted from: https://quantumcomputing.stackexchange.com/a/13784
  */
 
 #include "../headers/QirCZToHCnotHDecomposition.hpp"

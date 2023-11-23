@@ -33,7 +33,15 @@ QirAnnotateUnsupportedGatesPass::run(Module &module,
   bool changed = false;
 
   // Fetch the supported gate set using qdmi
-  auto supported_gate_set = qdmi_supported_gate_set("Q5");
+  QirPassRunner &QPR = QirPassRunner::getInstance();
+  QirMetadata &qirMetadata = QPR.getMetadata();
+  auto targetArchitecture = qirMetadata.targetPlatform;
+
+  auto supported_gate_set = qdmi_supported_gate_set(targetArchitecture);
+  int gate_set_size = fomac_gate_set_size(targetArchitecture);
+
+  errs() << "[Pass].............Size of supported gate set: " << gate_set_size
+         << '\n';
 
   // Adding  as requested
   for (auto &function : module) {

@@ -1,6 +1,5 @@
 # Include all new selectors here
-set(SELECTORS_SOURCE_FILES selector_all.cpp
-                           # selector1.cpp ... selectorN.cpp
+set(SELECTORS_SOURCE_FILES selector_all.cpp # selector1.cpp ... selectorN.cpp
 )
 
 # Set RPATH for the shared libraries in this directory

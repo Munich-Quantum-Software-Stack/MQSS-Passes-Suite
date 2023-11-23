@@ -18,6 +18,7 @@
 extern "C" std::vector<std::string> selector(void) {
   // Append the desired passes
   std::vector<std::string> passes{
+      "libQirAnnotateUnsupportedGatesPass.so",
       "libQirDivisionByZeroPass.so",
       "libQirNormalizeArgAnglePass.so",
       "libQirXCnotXReductionPass.so",
@@ -28,7 +29,6 @@ extern "C" std::vector<std::string> selector(void) {
       "libQirCommuteCnotZPass.so",
       "libQirCommuteZCnotPass.so",
       "libQirPlaceIrreversibleGatesInMetadataPass.so",
-      "libQirAnnotateUnsupportedGatesPass.so",
       "libQirU3ToRzRyRzDecompositionPass.so",
       "libQirRzToRxRyRxDecompositionPass.so",
       "libQirCNotToHCZHDecompositionPass.so",

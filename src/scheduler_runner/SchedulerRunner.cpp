@@ -10,7 +10,7 @@
  * @param pathScheduler TODO
  * @return std::string
  */
-std::string invokeScheduler(const std::string &pathScheduler) {
+int invokeScheduler(const std::string &pathScheduler) {
   size_t lastSlashPos = pathScheduler.find_last_of('/');
   if (lastSlashPos != std::string::npos) {
     std::string fileName = pathScheduler.substr(lastSlashPos + 1);
@@ -18,7 +18,7 @@ std::string invokeScheduler(const std::string &pathScheduler) {
               << std::endl;
   } else {
     std::cerr << "[Scheduler Runner].Invalid path to scheduler" << std::endl;
-    return "";
+    return 1;
   }
 
   // Load the scheduler as a shared library
@@ -31,11 +31,11 @@ std::string invokeScheduler(const std::string &pathScheduler) {
         << "[Scheduler Runner].Error loading scheduler as a shared library: "
         << dlerror() << std::endl;
 
-    return "";
+    return 1;
   }
 
   // Dynamic loading and linking of the shared library
-  typedef std::string (*SchedulerFunction)();
+  typedef void (*SchedulerFunction)();
   SchedulerFunction scheduler =
       reinterpret_cast<SchedulerFunction>(dlsym(lib_handle, "scheduler"));
 
@@ -44,9 +44,10 @@ std::string invokeScheduler(const std::string &pathScheduler) {
               << dlerror() << std::endl;
 
     dlclose(lib_handle);
-    return "";
   }
 
   // Call the scheduler function
-  return scheduler();
+  scheduler();
+
+  return 0;
 }

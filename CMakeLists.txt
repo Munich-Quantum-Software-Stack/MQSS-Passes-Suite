@@ -46,14 +46,16 @@ add_definitions(${LLVM_DEFINITIONS})
 
 # Add the include paths
 include_directories(
-  src/pass_runner/headers src/pass_runner src/selector_runner
-  src/scheduler_runner ${CUSTOM_QDMI_PATH} ${LLVM_INCLUDE_DIRS})
+  src/pass_runner/headers
+  src/pass_runner
+  src/selector_runner
+  src/scheduler_runner
+  src/qdmi
+  ${CUSTOM_FOMAC_PATH}
+  ${LLVM_INCLUDE_DIRS})
 
-# Specify the path to the directory containing libqdmi.so
-link_directories(${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi)
-
-# Include the directory containing qdmi.hpp
-include_directories(${CUSTOM_QDMI_PATH})
+# Specify the path to the directory containing libFoMaC.so
+link_directories(${CMAKE_INSTALL_PREFIX}/bin/lib/fomac)
 
 # Build shared libraries
 add_library(QirPassRunner SHARED src/pass_runner/QirPassRunner.cpp
@@ -61,6 +63,7 @@ add_library(QirPassRunner SHARED src/pass_runner/QirPassRunner.cpp
 add_library(PassRunner SHARED src/pass_runner/PassRunner.cpp)
 add_library(SelectorRunner SHARED src/selector_runner/SelectorRunner.cpp)
 add_library(SchedulerRunner SHARED src/scheduler_runner/SchedulerRunner.cpp)
+add_library(qdmi SHARED src/qdmi/qdmi.cpp)
 
 set(EXECUTABLE_NAME
     "daemon_d"
@@ -83,7 +86,8 @@ set(INSTALL_PATHS
     "${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner;"
     "${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner/selectors;"
     "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner;"
-    "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner/schedulers")
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner/schedulers;"
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi")
 string(REPLACE ";" "\\;" RPATHS "${INSTALL_PATHS}")
 set_target_properties(
   ${EXECUTABLE_NAME} PROPERTIES INSTALL_RPATH ${RPATHS} BUILD_WITH_INSTALL_RPATH
@@ -96,13 +100,15 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE QirPassRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE PassRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE SchedulerRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE SelectorRunner)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE rabbitmq)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE qdmi)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE rabbitmq)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE FoMaC)
 
 # Include libraries subdirectories
 add_subdirectory(src/pass_runner/passes)
 add_subdirectory(src/selector_runner/selectors)
 add_subdirectory(src/scheduler_runner/schedulers)
+# add_subdirectory(src/qdmi)
 
 # Include RabbitMQ header files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE /usr/local/include)
@@ -117,6 +123,7 @@ install(TARGETS SchedulerRunner
         DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner)
 install(TARGETS SelectorRunner
         DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner)
+install(TARGETS qdmi DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi)
 
 # Uninstall the Quantum Resource Manager
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/uninstall.cmake.in"

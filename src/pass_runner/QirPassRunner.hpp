@@ -22,7 +22,7 @@ enum MetadataType {
   SUPPORTED_GATE,     /**< A supported gate. */
   REVERSIBLE_GATE,    /**< A reversible gate. */
   IRREVERSIBLE_GATE,  /**< An irreversile gate. */
-  AVAILABLE_PLATFORM, /**< An available platfirm. */
+  AVAILABLE_PLATFORM, /**< An available platform. */
   UNKNOWN             /**< Unknown value. */
 };
 
@@ -38,11 +38,12 @@ struct QirMetadata {
       irreversibleGates;                   /**< Vector of irreversible gates. */
   std::vector<std::string> supportedGates; /**< Vector of supported gates. */
   std::vector<std::string>
-      availablePlatforms; /**< Vectors of available platforms. */
+      availablePlatforms;     /**< Vectors of available platforms. */
+  std::string targetPlatform; /**< Target architecture. */
   std::unordered_map<std::string, std::string>
       injectedAnnotations;         /**< Map of injected annotations. */
   bool shouldRemoveCallAttributes; /**< Boolean value for controlling the
-                                      removal of call attributes. */
+                                        removal of call attributes. */
 
   /**
    * @brief Adds entries to multiple vectors of the metadata. Use example:
@@ -108,6 +109,12 @@ struct QirMetadata {
   void setRemoveCallAttributes(const bool value) {
     shouldRemoveCallAttributes = value;
   }
+
+  /**
+   * @brief TODO
+   * @param TODO
+   */
+  void setTargetPlatform(std::string platform) { targetPlatform = platform; }
 };
 
 /**

@@ -1,10 +1,9 @@
 INSTALL_PATH ?= $(HOME)
 EXEC_PATH    := $(INSTALL_PATH)/bin/lib
-QDMI_PATH    ?= $(CURDIR)/qdmi
+FOMAC_PATH   ?= $(CURDIR)/fomac
 BUILD_DIR    ?= build
 
-QDMI         := $(wildcard $(QDMI_PATH)/build/libqdmi.so)
-QRM          := $(wildcard $(INSTALL_PATH)/bin/daemon_d)
+FOMAC        := $(wildcard $(FOMAC_PATH)/build/libFoMaC.so)
 RABBITMQ     := $(wildcard /usr/local/lib/librabbitmq.so)
 DOXYGEN      := $(shell command -v doxygen 2> /dev/null)
 
@@ -12,15 +11,15 @@ DOXYGEN      := $(shell command -v doxygen 2> /dev/null)
 
 all: install docs clean
 
-ifdef QDMI
-build_qdmi:
-	@echo "QDMI is already installed. Skipping installation."
+ifdef FOMAC
+build_fomac:
+	@echo "FOMAC is already installed. Skipping installation."
 else
-build_qdmi:
-	@echo "Installing QDMI"
-	cmake -B $(QDMI_PATH)/build -S $(QDMI_PATH) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH)
-	cmake --build $(QDMI_PATH)/build
-	cmake --install $(QDMI_PATH)/build
+build_fomac:
+	@echo "Installing FOMAC"
+	cmake -B $(FOMAC_PATH)/build -S $(FOMAC_PATH) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH)
+	cmake --build $(FOMAC_PATH)/build
+	cmake --install $(FOMAC_PATH)/build
 endif
 
 ifdef RABBITMQ
@@ -60,20 +59,21 @@ configure_rabbitmq:
 	@echo "Using rabbitmq as a service."
 endif
 
-dependencies_qrm: build_qdmi build_rabbitmq configure_rabbitmq
+dependencies_qrm: build_fomac build_rabbitmq configure_rabbitmq
 
 qrm: dependencies_qrm
-	export LD_LIBRARY_PATH="$(QDMI_PATH)/build:\
+	export LD_LIBRARY_PATH="$(FOMAC_PATH)/build:\
 		$(EXEC_PATH)/pass_runner:\
 		$(EXEC_PATH)/pass_runner/passes:\
 		$(EXEC_PATH)/selector_runner:\
 		$(EXEC_PATH)/selector_runner/selectors:\
 		$(EXEC_PATH)/scheduler_runner:\
-		$(EXEC_PATH)/scheduler_runner/schedulers:$$LD_LIBRARY_PATH" && \
+		$(EXEC_PATH)/scheduler_runner/schedulers:\
+		$(EXEC_PATH)/qdmi:$$LD_LIBRARY_PATH" && \
 	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) \
 		-DBUILD_WITH_DOCS=OFF \
 		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) \
-		-DCUSTOM_QDMI_PATH=$(QDMI_PATH) && \
+		-DCUSTOM_FOMAC_PATH=$(FOMAC_PATH) && \
 	cmake --build $(BUILD_DIR) --target install --config Release && \
 	if [ -n "$$CI" ]; then \
 		ldconfig; \
@@ -94,7 +94,7 @@ uninstall: clean
     	cd build && make uninstall && cd ..; \
     	rm -rf $(BUILD_DIR); \
 	fi; \
-	rm -rf $(QDMI_PATH)/build docs/build
+	rm -rf $(FOMAC_PATH)/build docs/build
 	@echo "Quantum Resource Manager uninstalled successfully"
 
 ifdef DOXYGEN
@@ -110,17 +110,18 @@ build_docs:
 endif
 
 docs: dependencies_qrm build_docs
-	export LD_LIBRARY_PATH="$(QDMI_PATH)/build:\
+	export LD_LIBRARY_PATH="$(FOMAC_PATH)/build:\
 		$(EXEC_PATH)/pass_runner:\
 		$(EXEC_PATH)/pass_runner/passes:\
 		$(EXEC_PATH)/selector_runner:\
 		$(EXEC_PATH)/selector_runner/selectors:\
 		$(EXEC_PATH)/scheduler_runner:\
-		$(EXEC_PATH)/scheduler_runner/schedulers:$$LD_LIBRARY_PATH" && \
+		$(EXEC_PATH)/scheduler_runner/schedulers:\
+		$(EXEC_PATH)/qdmi:$$LD_LIBRARY_PATH" && \
 	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) \
 		-DBUILD_WITH_DOCS=ON \
 		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) \
-		-DCUSTOM_QDMI_PATH=$(QDMI_PATH) && \
+		-DCUSTOM_FOMAC_PATH=$(FOMAC_PATH) && \
 	cmake --build $(BUILD_DIR) --target install --config Release && \
 	if [ -n "$$CI" ]; then \
 		ldconfig; \
@@ -132,12 +133,7 @@ docs: dependencies_qrm build_docs
 	@echo "Please add $(INSTALL_PATH)/bin to your PATH variable."
 	@echo ""
 
-ifdef QRM
-build_qrm: dependencies_qrm
-	@echo "Quantum Resource Manager is already installed. Skipping installation."
-else
 build_qrm: qrm
-endif
 
 run: build_qrm
 	@if [ "$$(echo $$PATH | tr ':' '\n' | grep -c "$(INSTALL_PATH)/bin")" -eq 0 ]; then \

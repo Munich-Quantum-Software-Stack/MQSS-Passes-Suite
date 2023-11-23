@@ -7,6 +7,9 @@
 #define SCHEDULERRUNNER_HPP
 
 #include "llvm.hpp"
+#include <fomac.hpp>
+#include <qdmi.hpp>
+
 #include <algorithm>
 #include <arpa/inet.h>
 #include <csignal>
@@ -25,6 +28,6 @@
 #include <unistd.h>
 #include <vector>
 
-std::string invokeScheduler(const std::string &pathScheduler);
+int invokeScheduler(const std::string &pathScheduler);
 
 #endif // SCHEDULERRUNNER_HPP

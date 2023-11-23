@@ -48,12 +48,12 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 3. Run `make` to install `daemon_d`:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, with the following command:
       ```bash
-      make QDMI_PATH=qdmi install
+      make FOMAC_PATH=fomac install
       ```
 
-   - Besides the directory with the chosen Quantum Device Management Interface (QDMI), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directory with the chosen Figure of Merits and Constraints library (FoMaC), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build install
+      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BUILD_DIR=build install
       ```
 
 ## Uninstallation
@@ -99,7 +99,12 @@ The project structure is the following:
 ├─ flowcharts
 │  ├─ flow.drawio
 │  └─ flow.png
+├─ fomac
+│  ├─ CMakeLists.txt
+│  ├─ fomac.cpp
+│  └─ fomac.hpp
 ├─ scripts
+│  ├─ kill_daemons.sh
 │  └─ generate_docs.sh
 ├─ src
 │  ├─ connection_handling.cpp
@@ -113,6 +118,9 @@ The project structure is the following:
 │  │  └─ passes
 │  │     ├─ CMakeLists.txt
 │  │     └─ ...
+│  ├─ qdmi
+│  │  ├─ qdmi.cpp
+│  │  └─ qdmi.hpp
 │  ├─ scheduler_runner
 │  │  ├─ schedulers
 │  │  │  ├─ CMakeLists.txt
@@ -156,12 +164,12 @@ You can build the Quantum Resource Manager and generate its documentation locall
 2. Run make:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, and generate its documentation with the following command:
       ```bash
-      make QDMI_PATH=qdmi docs
+      make FOMAC_PATH=fomac docs
       ```
 
-   - Besides the directory with the chosen Quantum Device Management Interface (QDMI), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directory with the chosen Figures of Merit and Constraints library (FOMAC), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build docs
+      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BUILD_DIR=build docs
       ```
 
 3. Open the generated documentation in a web browser:

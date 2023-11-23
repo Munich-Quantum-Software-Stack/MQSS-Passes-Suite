@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "PassModule.hpp"
+
+#include <fomac.hpp>
 #include <qdmi.hpp>
 
 /**
@@ -16,14 +19,17 @@
  *
  * @return const char *
  */
-extern "C" std::string scheduler(void) {
+extern "C" void scheduler(void) {
   // Query the available platforms
   std::vector<std::string> platforms = qdmi_available_platforms();
 
-  std::cout << "[Scheduler]........Returning target architecture to the "
-               "Scheduler Runner"
+  std::cout << "[Scheduler]........Writing target architecture in the "
+               "metadata"
             << std::endl;
 
   // Choose the target architecture
-  return platforms.back();
+  QirPassRunner &QPR = QirPassRunner::getInstance();
+  QirMetadata &qirMetadata = QPR.getMetadata();
+  qirMetadata.setTargetPlatform(platforms.back());
+  QPR.setMetadata(qirMetadata);
 }

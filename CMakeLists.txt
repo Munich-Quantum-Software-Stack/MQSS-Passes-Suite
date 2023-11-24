@@ -52,10 +52,14 @@ include_directories(
   src/scheduler_runner
   src/qdmi
   ${CUSTOM_FOMAC_PATH}
-  ${LLVM_INCLUDE_DIRS})
+  ${LLVM_INCLUDE_DIRS}
+  backends)
 
-# Specify the path to the directory containing libFoMaC.so
+# Specify the path to the directory containing FoMaC
 link_directories(${CMAKE_INSTALL_PREFIX}/bin/lib/fomac)
+
+# Specify the path to the directory containing the backends
+link_directories(${CMAKE_INSTALL_PREFIX}/bin/lib/backends)
 
 # Build shared libraries
 add_library(QirPassRunner SHARED src/pass_runner/QirPassRunner.cpp
@@ -70,10 +74,12 @@ set(EXECUTABLE_NAME
     CACHE STRING "" FORCE)
 
 # Build the executable
-set(SOURCES src/daemon_d.cpp src/connection_handling.cpp)
+set(SOURCES src/daemon_d.cpp src/connection_handling.cpp src/qdmi/qdmi.cpp)
 
 # Build the executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
+
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE Backends)
 
 # Set the output directory for the executable during build
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
@@ -87,11 +93,18 @@ set(INSTALL_PATHS
     "${CMAKE_INSTALL_PREFIX}/bin/lib/selector_runner/selectors;"
     "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner;"
     "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner/schedulers;"
-    "${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi")
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi;"
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/backends")
 string(REPLACE ";" "\\;" RPATHS "${INSTALL_PATHS}")
 set_target_properties(
   ${EXECUTABLE_NAME} PROPERTIES INSTALL_RPATH ${RPATHS} BUILD_WITH_INSTALL_RPATH
                                                         TRUE)
+
+# Include libraries subdirectories
+add_subdirectory(src/pass_runner/passes)
+add_subdirectory(src/selector_runner/selectors)
+add_subdirectory(src/scheduler_runner/schedulers)
+add_subdirectory(backends)
 
 # Link the executable with LLVM and Threads libraries
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE LLVM)
@@ -103,12 +116,6 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE SelectorRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE qdmi)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE rabbitmq)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE FoMaC)
-
-# Include libraries subdirectories
-add_subdirectory(src/pass_runner/passes)
-add_subdirectory(src/selector_runner/selectors)
-add_subdirectory(src/scheduler_runner/schedulers)
-# add_subdirectory(src/qdmi)
 
 # Include RabbitMQ header files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE /usr/local/include)

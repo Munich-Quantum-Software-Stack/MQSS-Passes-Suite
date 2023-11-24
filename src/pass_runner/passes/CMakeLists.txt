@@ -41,6 +41,7 @@ set(PASSES_SOURCE_FILES
     QirRemoveNonEntrypointFunctions.cpp
     QirReplaceConstantBranches.cpp
     QirResourceAnnotation.cpp
+    QirReverseCnot.cpp
     QirRzToRxRyRxDecomposition.cpp
     # S
     QirSDaggerToS.cpp

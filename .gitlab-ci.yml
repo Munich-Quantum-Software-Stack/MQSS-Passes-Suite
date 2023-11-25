@@ -40,7 +40,7 @@ run_tests:
   script:
     - apt update
     - apt install -y cmake llvm rabbitmq-server g++ curl
-    - make test
+    - make FOMAC_PATH=fomac BACKENDS_PATH=backends test
 
 check-format:
   stage: analysis

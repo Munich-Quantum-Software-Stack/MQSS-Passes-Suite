@@ -2,15 +2,17 @@
 #include <iostream>
 
 int IQMBackend::close_backend() {
-  std::cerr << "IQMBackend close_backend() - should not be called directly!"
-            << std::endl;
+  std::cerr << "[Backend].........IQMBackend close_backend()"
+            << " - should not be called directly!" << std::endl;
+
   return -1;
 }
 
 std::vector<int> IQMBackend::run_job(std::unique_ptr<Module> &module,
                                      int n_shots) {
-  std::cerr << "IQMBackend run_job() - should not be called directly!"
-            << std::endl;
+  std::cerr << "[Backend].........IQMBackend run_job()"
+            << " - should not be called directly!" << std::endl;
+
   return {-1};
 }
 

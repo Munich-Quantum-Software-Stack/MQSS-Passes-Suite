@@ -3,4 +3,6 @@ message("Uninstalling...")
 set(EXECUTABLE_NAME "@EXECUTABLE_NAME@")
 set(CMAKE_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@")
 execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_INSTALL_PREFIX}/bin/${EXECUTABLE_NAME}
-                COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}/bin/lib)
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}/bin/lib
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/fomac/build
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/backends/build)

@@ -10,7 +10,8 @@
 class IQMBackend : public JobRunner {
 public:
   virtual int close_backend() override;
-  virtual void run_job(const std::string &circuit, int n_shots) override;
+  virtual std::vector<int> run_job(std::unique_ptr<Module> &module,
+                                   int n_shots) override;
 
   static std::shared_ptr<IQMBackend> create_instance(const std::string &url);
 };
@@ -18,14 +19,16 @@ public:
 // Declarations for Q5Backend
 class Q5Backend : public IQMBackend {
 public:
-  void run_job(const std::string &circuit, int n_shots) override;
+  std::vector<int> run_job(std::unique_ptr<Module> &module,
+                           int n_shots) override;
   int close_backend() override;
 };
 
 // Declarations for Q20Backend
 class Q20Backend : public IQMBackend {
 public:
-  void run_job(const std::string &circuit, int n_shots) override;
+  std::vector<int> run_job(std::unique_ptr<Module> &module,
+                           int n_shots) override;
   int close_backend() override;
 };
 

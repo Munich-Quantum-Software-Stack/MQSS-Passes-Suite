@@ -86,6 +86,13 @@ The project structure is the following:
 ├─ LICENSE
 ├─ Makefile
 ├─ README.md
+├─ backends
+│  ├─ CMakeLists.txt
+│  ├─ JobRunner.hpp
+│  ├─ IQMBackend.cpp
+│  ├─ IQMBackend.hpp
+│  ├─ Q5Backend.hpp
+│  └─ Q20Backend.hpp
 ├─ benchmarks
 │  └─ test.ll
 ├─ cmake

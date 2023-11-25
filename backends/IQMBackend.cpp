@@ -7,9 +7,11 @@ int IQMBackend::close_backend() {
   return -1;
 }
 
-void IQMBackend::run_job(const std::string &circuit, int n_shots) {
+std::vector<int> IQMBackend::run_job(std::unique_ptr<Module> &module,
+                                     int n_shots) {
   std::cerr << "IQMBackend run_job() - should not be called directly!"
             << std::endl;
+  return {-1};
 }
 
 std::shared_ptr<IQMBackend>

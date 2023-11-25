@@ -69,6 +69,21 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
     return;
   }
 
+  // Fetch the supported gate set using qdmi
+  QirPassRunner &QPR = QirPassRunner::getInstance();
+  QirMetadata &qirMetadata = QPR.getMetadata();
+  auto targetArchitecture = qirMetadata.targetPlatform;
+
+  // Obtain handle of the target architecture
+  std::shared_ptr<JobRunner> backend_handle =
+      qdmi_backend_open(targetArchitecture);
+
+  if (!backend_handle) {
+    std::cout << "[daemon_d].........Warning: Unavailable target architecture: "
+              << targetArchitecture << std::endl;
+    return;
+  }
+
   // Invoke the selector
   std::string selector;
   char selector_buffer[PATH_MAX];
@@ -104,7 +119,15 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
   // Invoke the passes
   invokePasses(module, passes);
 
-  // Send the adapted QIR back to the client
+  // Submit the adapted QIR to the target platform
+  int n_shots = 10000;
+  std::vector<int> results = qdmi_launch_qir(backend_handle, module, n_shots);
+
+  for (int measurement : results) {
+    std::cout << "Measurement: " << measurement << std::endl;
+  }
+
+  // Send the results back to the client
   std::string str;
   raw_string_ostream OS(str);
   OS << *module;
@@ -112,7 +135,7 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
   const char *qir = str.data();
 
   send_message(&conn,        // conn
-               (char *)qir,  // message
+               (char *)qir,  // message TODO: Send results
                ClientQueue); // queue
 
   std::cout << "[daemon_d].........Adapted QIR sent to the client" << std::endl;

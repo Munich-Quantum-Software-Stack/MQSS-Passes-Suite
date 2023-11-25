@@ -34,7 +34,7 @@ if(NOT LLVM_CONFIG_DIR)
   )
 endif()
 
-message(STATUS "Using LLVMConfig.cmake in: ${LLVM_CONFIG_DIR}")
+message(STATUS "LLVM include directories: ${LLVM_INCLUDE_DIRS}")
 
 # Include LLVMConfig.cmake
 list(APPEND CMAKE_PREFIX_PATH "${LLVM_CONFIG_DIR}")
@@ -69,6 +69,9 @@ add_library(SelectorRunner SHARED src/selector_runner/SelectorRunner.cpp)
 add_library(SchedulerRunner SHARED src/scheduler_runner/SchedulerRunner.cpp)
 add_library(qdmi SHARED src/qdmi/qdmi.cpp)
 
+target_include_directories(qdmi PRIVATE ${LLVM_INCLUDE_DIRS})
+# target_include_directories(FoMaC PRIVATE ${LLVM_INCLUDE_DIRS})
+
 set(EXECUTABLE_NAME
     "daemon_d"
     CACHE STRING "" FORCE)
@@ -94,7 +97,7 @@ set(INSTALL_PATHS
     "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner;"
     "${CMAKE_INSTALL_PREFIX}/bin/lib/scheduler_runner/schedulers;"
     "${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi;"
-    "${CMAKE_INSTALL_PREFIX}/bin/lib/backends")
+    "${CMAKE_INSTALL_PREFIX}/bin/lib/backends") # TODO SHOULD THIS BE HERE?
 string(REPLACE ";" "\\;" RPATHS "${INSTALL_PATHS}")
 set_target_properties(
   ${EXECUTABLE_NAME} PROPERTIES INSTALL_RPATH ${RPATHS} BUILD_WITH_INSTALL_RPATH
@@ -104,7 +107,7 @@ set_target_properties(
 add_subdirectory(src/pass_runner/passes)
 add_subdirectory(src/selector_runner/selectors)
 add_subdirectory(src/scheduler_runner/schedulers)
-add_subdirectory(backends)
+add_subdirectory(backends) # TODO SHOULD THIS BE HERE?
 
 # Link the executable with LLVM and Threads libraries
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE LLVM)

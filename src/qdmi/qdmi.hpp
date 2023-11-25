@@ -7,11 +7,14 @@
 #define QDMI_HPP
 
 #include <iostream>
+//#include <llvm/IR/Module.h>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "../../backends/IQMBackend.hpp"
+
+using namespace llvm;
 
 /**
  * @brief Function that returns a vector with the
@@ -52,8 +55,8 @@ qdmi_backend_open(const std::string &target_platform);
  * @todo To be implemented
  */
 extern "C" {
-void qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
-                     const std::string &circuit, int n_shots);
+std::vector<int> qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
+                                 std::unique_ptr<Module> &module, int n_shots);
 }
 
 /**

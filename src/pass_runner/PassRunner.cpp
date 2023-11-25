@@ -65,7 +65,4 @@ void invokePasses(std::unique_ptr<Module> &module,
 
   // Free memory
   QPR.clearMetadata();
-
-  // Return the adapted QIR's module
-  // return module;
 }

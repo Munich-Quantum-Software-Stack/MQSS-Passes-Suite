@@ -87,16 +87,20 @@ qdmi_backend_open(const std::string &target_platform) {
  * @param TODO
  * @todo To be implemented
  */
-void qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
-                     const std::string &circuit, int n_shots) {
+std::vector<int> qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
+                                 std::unique_ptr<Module> &module, int n_shots) {
 
-  if (handle) {
-    std::cout << "I will try to run the circuit" << std::endl;
-    handle->run_job(circuit, n_shots);
-    std::cout << "I managed to run the circuit" << std::endl;
-  } else {
-    std::cerr << "Invalid backend handle." << std::endl;
+  if (!module) {
+    std::cout << "[QDMI].............Warning: Corrupt QIR module " << std::endl;
+    return {-1};
   }
+
+  if (!handle) {
+    std::cerr << "[QDMI].............Invalid backend handle." << std::endl;
+    return {-1};
+  }
+
+  return handle->run_job(module, n_shots);
 }
 
 /**

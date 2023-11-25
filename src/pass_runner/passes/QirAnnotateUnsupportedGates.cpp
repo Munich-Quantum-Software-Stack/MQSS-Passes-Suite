@@ -40,21 +40,6 @@ QirAnnotateUnsupportedGatesPass::run(Module &module,
   auto supported_gate_set = qdmi_supported_gate_set(targetArchitecture);
   int gate_set_size = fomac_gate_set_size(targetArchitecture);
 
-  std::shared_ptr<JobRunner> backend_handle =
-      qdmi_backend_open(targetArchitecture);
-  if (backend_handle) {
-    std::string circuit = "QIR circuit";
-    int n_shots = 10000;
-
-    // Submit a job
-    qdmi_launch_qir(backend_handle, circuit, n_shots);
-
-    // Close the backend
-    qdmi_backend_close(backend_handle);
-  } else {
-    errs() << "[Pass].............Failed to open the backend.\n";
-  }
-
   errs() << "[Pass].............Size of supported gate set: " << gate_set_size
          << '\n';
 

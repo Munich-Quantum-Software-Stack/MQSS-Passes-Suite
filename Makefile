@@ -1,9 +1,11 @@
-INSTALL_PATH ?= $(HOME)
-EXEC_PATH    := $(INSTALL_PATH)/bin/lib
-FOMAC_PATH   ?= $(CURDIR)/fomac
-BUILD_DIR    ?= build
+INSTALL_PATH  ?= $(HOME)
+EXEC_PATH     := $(INSTALL_PATH)/bin/lib
+FOMAC_PATH    ?= $(CURDIR)/fomac
+BUILD_DIR     ?= build
+BACKENDS_PATH ?= $(CURDIR)/backends
 
 FOMAC        := $(wildcard $(FOMAC_PATH)/build/libFoMaC.so)
+BACKENDS     := $(wildcard $(BACKENDS_PATH)/build/libBackends.so)
 RABBITMQ     := $(wildcard /usr/local/lib/librabbitmq.so)
 DOXYGEN      := $(shell command -v doxygen 2> /dev/null)
 
@@ -13,13 +15,24 @@ all: install docs clean
 
 ifdef FOMAC
 build_fomac:
-	@echo "FOMAC is already installed. Skipping installation."
+	@echo "FoMaC is already installed. Skipping installation."
 else
 build_fomac:
-	@echo "Installing FOMAC"
-	cmake -B $(FOMAC_PATH)/build -S $(FOMAC_PATH) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH)
+	@echo "Installing FoMaC"
+	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B $(FOMAC_PATH)/build -S $(FOMAC_PATH) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH)
 	cmake --build $(FOMAC_PATH)/build
 	cmake --install $(FOMAC_PATH)/build
+endif
+
+ifdef BACKENDS
+build_backends:
+	@echo "All backends are already installed. Skipping installation."
+else
+build_backends:
+	@echo "Installing Backends"
+	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B $(BACKENDS_PATH)/build -S $(BACKENDS_PATH) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH)
+	cmake --build $(BACKENDS_PATH)/build
+	cmake --install $(BACKENDS_PATH)/build
 endif
 
 ifdef RABBITMQ
@@ -32,6 +45,7 @@ build_rabbitmq:
 		https://github.com/alanxz/rabbitmq-c/archive/refs/tags/v0.13.0.tar.gz
 	tar -xf v0.13.0.tar.gz
 	cmake \
+        \
         -B rabbitmq-c-0.13.0/build \
         -DBUILD_EXAMPLES=OFF \
         -DENABLE_SSL_SUPPORT=OFF \
@@ -59,7 +73,7 @@ configure_rabbitmq:
 	@echo "Using rabbitmq as a service."
 endif
 
-dependencies_qrm: build_fomac build_rabbitmq configure_rabbitmq
+dependencies_qrm: build_fomac build_backends build_rabbitmq configure_rabbitmq
 
 qrm: dependencies_qrm
 	export LD_LIBRARY_PATH="$(FOMAC_PATH)/build:\

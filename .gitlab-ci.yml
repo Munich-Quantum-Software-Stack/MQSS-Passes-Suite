@@ -33,7 +33,7 @@ analyze:
     - apt install -y llvm rabbitmq-server libopenmpi-dev clang
     - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
     - make build_rabbitmq
-    - find src -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Isrc/pass_runner/headers -Iqdmi/ {} \;
+    - find src -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Isrc/pass_runner/headers -Isrc/qdmi {} \;
 
 run_tests:
   stage: test

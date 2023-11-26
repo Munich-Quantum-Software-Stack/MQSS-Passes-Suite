@@ -46,6 +46,7 @@ set(PASSES_SOURCE_FILES
     # S
     QirSDaggerToS.cpp
     QirSToSDagger.cpp
+    QirSwapAndCnotReplacement.cpp
     QirSwapToCnotsDecomposition.cpp
     # U
     QirU3ToRzRyRzDecomposition.cpp

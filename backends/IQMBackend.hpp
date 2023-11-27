@@ -3,18 +3,12 @@
 
 #include "JobRunner.hpp"
 
-#include <chrono>
-#include <iostream>
-#include <memory>
-#include <string>
-#include <thread>
-
 class IQMBackend : public JobRunner
 {
   public:
     virtual int close_backend() override;
-    virtual std::vector<int> run_job(std::unique_ptr<Module> &module,
-                                     int n_shots) override;
+    virtual std::unordered_map<std::string, int>
+    run_job(std::unique_ptr<Module> &module, int n_shots) override;
 
     static std::shared_ptr<IQMBackend> create_instance(const std::string &url);
 };
@@ -23,8 +17,8 @@ class IQMBackend : public JobRunner
 class Q5Backend : public IQMBackend
 {
   public:
-    std::vector<int> run_job(std::unique_ptr<Module> &module,
-                             int n_shots) override;
+    std::unordered_map<std::string, int>
+    run_job(std::unique_ptr<Module> &module, int n_shots) override;
     int close_backend() override;
 };
 
@@ -32,8 +26,8 @@ class Q5Backend : public IQMBackend
 class Q20Backend : public IQMBackend
 {
   public:
-    std::vector<int> run_job(std::unique_ptr<Module> &module,
-                             int n_shots) override;
+    std::unordered_map<std::string, int>
+    run_job(std::unique_ptr<Module> &module, int n_shots) override;
     int close_backend() override;
 };
 

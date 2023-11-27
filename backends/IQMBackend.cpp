@@ -9,13 +9,13 @@ int IQMBackend::close_backend()
     return -1;
 }
 
-std::vector<int> IQMBackend::run_job(std::unique_ptr<Module> &module,
-                                     int n_shots)
+std::unordered_map<std::string, int>
+IQMBackend::run_job(std::unique_ptr<Module> &module, int n_shots)
 {
     std::cerr << "   [Backend]...........IQMBackend run_job()"
               << " - should not be called directly!" << std::endl;
 
-    return {-1};
+    return std::unordered_map<std::string, int>{};
 }
 
 std::shared_ptr<IQMBackend> IQMBackend::create_instance(const std::string &url)

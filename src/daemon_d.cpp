@@ -3,24 +3,25 @@
  * @brief TODO
  */
 
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <signal.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <algorithm>
 #include <chrono>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <fcntl.h>
 #include <fstream>
 #include <iostream>
+#include <netinet/in.h>
+#include <nlohmann/json.hpp>
+#include <signal.h>
 #include <string>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <thread>
+#include <unistd.h>
+#include <unordered_map>
 #include <vector>
 
 #include "connection_handling.hpp"
@@ -28,6 +29,8 @@
 #include "pass_runner/QirPassRunner.hpp"
 #include "scheduler_runner/SchedulerRunner.hpp"
 #include "selector_runner/SelectorRunner.hpp"
+
+using json = nlohmann::json;
 
 /**
  * @var conn
@@ -129,24 +132,22 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
 
     // Submit the adapted QIR to the target platform
     int n_shots = 10000;
-    std::vector<int> results = qdmi_launch_qir(backend_handle, module, n_shots);
+    std::unordered_map<std::string, int> results =
+        qdmi_launch_qir(backend_handle, module, n_shots);
 
-    for (int measurement : results)
-    {
-        std::cout << "   [daemon_d]..........Measurement: " << measurement
-                  << std::endl;
-    }
+    // std::string str;
+    // raw_string_ostream OS(str);
+    // OS << *module;
+    // OS.flush();
+    // const char *qir = str.data();
 
     // Send the results back to the client
-    std::string str;
-    raw_string_ostream OS(str);
-    OS << *module;
-    OS.flush();
-    const char *qir = str.data();
+    json resultsJsonObject(results);
+    std::string resultsJsonString = resultsJsonObject.dump();
 
-    send_message(&conn,        // conn
-                 (char *)qir,  // message TODO: Send results
-                 ClientQueue); // queue
+    send_message(&conn,                     // conn
+                 resultsJsonString.c_str(), // message
+                 ClientQueue);              // queue
 
     std::cout << "   [daemon_d]..........Adapted QIR sent to the client"
               << std::endl;

@@ -39,11 +39,11 @@ run_tests:
   stage: test
   script:
     - apt update
-    - apt install -y cmake llvm rabbitmq-server g++ curl
+    - apt install -y cmake llvm rabbitmq-server g++ curl nlohmann-json3-dev
     - make FOMAC_PATH=fomac BACKENDS_PATH=backends test
 
 check-format:
   stage: analysis
   script:
     - files_list=$(find src -type f -regex '.*\.\(c\|cc\|cxx\|cpp\|h\|hpp\|hxx\)$')
-    - clang-format ${files_list} --style=LLVM --Werror --dry-run --verbose --ferror-limit=5
+    - clang-format --style=file --Werror --dry-run --verbose --ferror-limit=5 ${files_list}

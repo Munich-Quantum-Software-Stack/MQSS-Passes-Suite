@@ -7,9 +7,9 @@
 #define QDMI_HPP
 
 #include <iostream>
-//#include <llvm/IR/Module.h>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "../../backends/IQMBackend.hpp"
@@ -59,9 +59,9 @@ extern "C"
  */
 extern "C"
 {
-    std::vector<int> qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
-                                     std::unique_ptr<Module> &module,
-                                     int n_shots);
+    std::unordered_map<std::string, int>
+    qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
+                    std::unique_ptr<Module> &module, int n_shots);
 }
 
 /**

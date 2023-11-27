@@ -2,6 +2,44 @@
 
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
+#include <string>
+#include <unordered_map>
+
+using json = nlohmann::json;
+
+std::unordered_map<std::string, int> JSONToMap(const char *jsonString)
+{
+    std::unordered_map<std::string, int> resultMap;
+
+    try
+    {
+        json jsonObject = json::parse(jsonString);
+
+        if (jsonObject.is_object())
+        {
+            for (auto &element : jsonObject.items())
+            {
+                std::string key = element.key();
+                int value = element.value().get<int>();
+                resultMap[key] = value;
+            }
+        }
+        else
+        {
+            std::cout
+                << "[Client]............Corrupt message received from the QRM."
+                << std::endl;
+        }
+    }
+    catch (const json::parse_error &e)
+    {
+        std::cout << "[Client]............JSON parsing error: " << e.what()
+                  << std::endl;
+    }
+
+    return resultMap;
+}
 
 int main()
 {
@@ -56,20 +94,23 @@ int main()
     send_message(&conn, (char *)selectorName, DaemonQueue);
 
     // Receive the response from the daemon
-    const char *adaptedQir = receive_message(&conn, ClientQueue);
+    const char *results = receive_message(&conn, ClientQueue);
 
-    if (adaptedQir)
+    if (results)
     {
-        std::cout << "[Client]............Received adapted QIR: " << std::endl
-                  << std::endl
-                  << adaptedQir << std::endl;
+        std::unordered_map<std::string, int> measurements = JSONToMap(results);
 
-        delete[] adaptedQir;
+        std::cout << "[Client]............Received results: " << std::endl;
+        for (const auto &measurement : measurements)
+        {
+            std::cout << "[Client]............|" << measurement.first
+                      << "\u27E9 : " << measurement.second << std::endl;
+        }
     }
     else
     {
         std::cout
-            << "[Client]............Error: Failed to receive the adapted QIR"
+            << "[Client]............Error: Failed to receive the measurements"
             << std::endl;
     }
 

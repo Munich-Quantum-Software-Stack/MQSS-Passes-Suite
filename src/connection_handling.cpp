@@ -63,7 +63,7 @@ int rabbitmq_new_connection(amqp_connection_state_t *conn,
     return 0;
 }
 
-void send_message(amqp_connection_state_t *conn, char *message,
+void send_message(amqp_connection_state_t *conn, const char *message,
                   char const *queue)
 {
 

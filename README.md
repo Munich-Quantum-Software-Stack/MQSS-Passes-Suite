@@ -9,7 +9,7 @@ The entry point of the Quantum Resource Manager for selecting and applying LLVM 
    git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes.git
    ```
 
-2. After cloning, move into the repository directory and checkout the `NoSockets` branch:
+2. After cloning, make sure you are the right branch:
    ```bash
    cd qir_passes
    git checkout NoSockets
@@ -37,7 +37,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 1. Install the required dependencies:
    ```bash
    sudo apt update
-   sudo apt install -y cmake llvm rabbitmq-server g++ curl
+   sudo apt install -y cmake llvm rabbitmq-server g++ curl nlohmann-json3-dev
    ```
 
 2. Navigate to the `qir_passes` directory (if you are not already there):
@@ -77,6 +77,7 @@ This will remove `daemon_d` from your system.
 The project structure is the following:
 
 ```
+├─ .clang-format
 ├─ .gitignore
 ├─ .gitlab-ci.yml
 ├─ .pre-commit-config.yaml

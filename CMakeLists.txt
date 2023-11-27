@@ -18,6 +18,9 @@ set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
 # Create the daemon_d.log file
 file(WRITE ${CMAKE_INSTALL_PREFIX}/logs/daemon_d.log "")
 
+# Find nlohmann_json package
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
 # Find the Threads package
 find_package(Threads REQUIRED)
 
@@ -82,8 +85,6 @@ set(SOURCES src/daemon_d.cpp src/connection_handling.cpp src/qdmi/qdmi.cpp)
 # Build the executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})
 
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE Backends)
-
 # Set the output directory for the executable during build
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                                     ${CMAKE_INSTALL_PREFIX}/bin)
@@ -118,6 +119,8 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE SchedulerRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE SelectorRunner)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE qdmi)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE rabbitmq)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE Backends)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 # Include RabbitMQ header files
 target_include_directories(${EXECUTABLE_NAME} PRIVATE /usr/local/include)

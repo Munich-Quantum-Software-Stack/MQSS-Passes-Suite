@@ -9,7 +9,7 @@ The entry point of the Quantum Resource Manager for selecting and applying LLVM 
    git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes.git
    ```
 
-2. After cloning, make sure you are the right branch:
+2. After cloning, make sure you are at the right branch:
    ```bash
    cd qir_passes
    git checkout NoSockets

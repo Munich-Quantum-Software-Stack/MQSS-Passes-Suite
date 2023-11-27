@@ -53,7 +53,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 
    - Besides the directories with the chosen Figure of Merits and Constraints library (FoMaC) and the available backends, one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BUILD_DIR=build install
+      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BACKENDS_PATH=backends BUILD_DIR=build install
       ```
 
 ## Uninstallation

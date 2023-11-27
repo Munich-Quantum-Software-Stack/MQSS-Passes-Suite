@@ -76,8 +76,9 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module,
     void *lib_handle = dlopen(pass.c_str(), RTLD_LAZY);
 
     if (!lib_handle) {
-      std::cout << "[Pass Runner]......Warning: Could not load shared library: "
-                << pass << dlerror() << std::endl;
+      std::cout
+          << "   [Pass Runner].......Warning: Could not load shared library: "
+          << pass << dlerror() << std::endl;
 
       passes_.pop_back();
       continue;
@@ -89,7 +90,7 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module,
     size_t lastDot = passName.find_last_of('.');
     std::string passNameWithoutExt = passName.substr(0, lastDot);
 
-    std::cout << "[Pass Runner]......Applying pass: " << passNameWithoutExt
+    std::cout << "   [Pass Runner].......Applying pass: " << passNameWithoutExt
               << std::endl;
 
     // Pointer to 'loadQirPass' function returning a pointer to the 'PassModule'
@@ -101,9 +102,10 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module,
         reinterpret_cast<passLoader>(dlsym(lib_handle, "loadQirPass"));
 
     if (!loadQirPass) {
-      std::cout << "[Pass Runner]......Warning: Could not get factory function "
-                   "of pass: "
-                << pass << std::endl;
+      std::cout
+          << "   [Pass Runner].......Warning: Could not get factory function "
+             "of pass: "
+          << pass << std::endl;
 
       passes_.pop_back();
       dlclose(lib_handle);

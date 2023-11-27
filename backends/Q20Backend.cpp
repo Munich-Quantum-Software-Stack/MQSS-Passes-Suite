@@ -2,7 +2,7 @@
 
 std::vector<int> Q20Backend::run_job(std::unique_ptr<Module> &module,
                                      int n_shots) {
-  std::cout << "[Backend].........Running Q20Backend job with " << n_shots
+  std::cout << "   [Backend]...........Running Q20Backend job with " << n_shots
             << " shots." << std::endl;
 
   std::chrono::seconds duration(3);
@@ -12,7 +12,7 @@ std::vector<int> Q20Backend::run_job(std::unique_ptr<Module> &module,
 }
 
 int Q20Backend::close_backend() {
-  std::cout << "[Backend].........Closing Q20Backend: " << std::endl;
+  std::cout << "   [Backend]...........Closing Q20Backend: " << std::endl;
 
   return 0;
 }

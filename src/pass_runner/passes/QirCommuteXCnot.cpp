@@ -48,8 +48,8 @@ PreservedAnalyses QirCommuteXCnotPass::run(Module &module,
                       if (previous_arg == current_arg) {
                         current_instruction->moveBefore(prev_instruction);
                         errs()
-                            << "[Pass].............Commuting: " << previous_name
-                            << " and " << current_name << '\n';
+                            << "   [Pass]..............Commuting: "
+                            << previous_name << " and " << current_name << '\n';
                       }
                     }
                   }

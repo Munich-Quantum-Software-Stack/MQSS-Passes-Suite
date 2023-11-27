@@ -51,7 +51,7 @@ QirDoubleCnotCancellationPass::run(Module &module,
                         gatesToRemove.push_back(prev_instruction);
                         gatesToRemove.push_back(current_instruction);
 
-                        errs() << "[Pass].............A pair of Cnot gates "
+                        errs() << "   [Pass]..............A pair of Cnot gates "
                                   "found\n";
                       }
                     }

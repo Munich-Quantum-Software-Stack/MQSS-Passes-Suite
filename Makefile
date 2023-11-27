@@ -1,7 +1,7 @@
 INSTALL_PATH  ?= $(HOME)
 EXEC_PATH     := $(INSTALL_PATH)/bin/lib
-FOMAC_PATH    ?= $(CURDIR)/fomac
 BUILD_DIR     ?= build
+FOMAC_PATH    ?= $(CURDIR)/fomac
 BACKENDS_PATH ?= $(CURDIR)/backends
 
 FOMAC        := $(wildcard $(FOMAC_PATH)/build/libFoMaC.so)
@@ -87,6 +87,7 @@ qrm: dependencies_qrm
 	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) \
 		-DBUILD_WITH_DOCS=OFF \
 		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) \
+		-DCUSTOM_BACKENDS_PATH=$(BACKENDS_PATH) \
 		-DCUSTOM_FOMAC_PATH=$(FOMAC_PATH) && \
 	cmake --build $(BUILD_DIR) --target install --config Release && \
 	if [ -n "$$CI" ]; then \
@@ -107,8 +108,7 @@ uninstall: clean
 	@if [ -d "$(BUILD_DIR)" ]; then \
     	cd build && make uninstall && cd ..; \
     	rm -rf $(BUILD_DIR); \
-	fi; \
-	rm -rf $(FOMAC_PATH)/build docs/build
+	fi;
 	@echo "Quantum Resource Manager uninstalled successfully"
 
 ifdef DOXYGEN
@@ -125,6 +125,7 @@ endif
 
 docs: dependencies_qrm build_docs
 	export LD_LIBRARY_PATH="$(FOMAC_PATH)/build:\
+        $(BACKENDS_PATH)/build:\
 		$(EXEC_PATH)/pass_runner:\
 		$(EXEC_PATH)/pass_runner/passes:\
 		$(EXEC_PATH)/selector_runner:\
@@ -135,6 +136,7 @@ docs: dependencies_qrm build_docs
 	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) \
 		-DBUILD_WITH_DOCS=ON \
 		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) \
+		-DCUSTOM_BACKENDS_PATH=$(BACKENDS_PATH) \
 		-DCUSTOM_FOMAC_PATH=$(FOMAC_PATH) && \
 	cmake --build $(BUILD_DIR) --target install --config Release && \
 	if [ -n "$$CI" ]; then \

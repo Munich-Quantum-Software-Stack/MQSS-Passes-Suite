@@ -73,9 +73,9 @@ PreservedAnalyses QirDeferMeasurementPass::run(Module &module,
           instr->replaceAllUsesWith(new_instr);
 
           if (!instr->use_empty()) {
-            errs()
-                << "[Pass].............Error: unexpected uses of instruction "
-                   "while moving records to the bottom of the block\n";
+            errs() << "   [Pass]..............Error: unexpected uses of "
+                      "instruction "
+                      "while moving records to the bottom of the block\n";
             return PreservedAnalyses::none();
           }
 

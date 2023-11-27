@@ -56,9 +56,9 @@ extern "C" std::vector<std::string> selector(void) {
       "libQirSDaggerToSPass.so",
   };
 
-  std::cout
-      << "[Selector].........Returning list of passes to the Selector Runner"
-      << std::endl;
+  std::cout << "   [Selector]..........Returning list of passes to the "
+               "Selector Runner"
+            << std::endl;
 
   std::reverse(passes.begin(), passes.end());
   return passes;

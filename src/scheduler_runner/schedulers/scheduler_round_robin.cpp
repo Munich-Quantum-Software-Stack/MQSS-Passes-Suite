@@ -23,7 +23,7 @@ extern "C" void scheduler(void) {
   // Query the available platforms
   std::vector<std::string> platforms = qdmi_backend_available_platforms();
 
-  std::cout << "[Scheduler]........Writing target architecture in the "
+  std::cout << "   [Scheduler].........Writing target architecture in the "
                "metadata"
             << std::endl;
 

@@ -15,8 +15,11 @@ foreach(src_file ${SCHEDULERS_SOURCE_FILES})
 
   # Set RPATH for this scheduler
   set_target_properties(
-    ${src_name} PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/bin/lib/fomac"
-                           INSTALL_RPATH_USE_LINK_PATH TRUE)
+    ${src_name}
+    PROPERTIES
+      INSTALL_RPATH
+      "${CMAKE_INSTALL_PREFIX}/bin/lib/fomac:${CMAKE_INSTALL_PREFIX}/bin/lib/qdmi"
+      INSTALL_RPATH_USE_LINK_PATH TRUE)
 
   # Set include directories for the library
   target_include_directories(${src_name} PRIVATE ${CMAKE_SOURCE_DIR}/src/qdmi

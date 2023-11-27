@@ -17,14 +17,14 @@ int main() {
   rabbitmq_new_connection(&conn, &socket);
 
   // Send the generic QIR to the daemon
-  std::cout << "[Client]...........Sending generic QIR to the daemon"
+  std::cout << "[Client]............Sending generic QIR to the daemon"
             << std::endl;
 
   // Open the QIR file
   const char *filename = "../../benchmarks/test.ll";
   std::ifstream file(filename, std::ios::binary);
   if (!file.is_open()) {
-    std::cerr << "[Client]...........Failed to open file: " << filename
+    std::cerr << "[Client]............Failed to open file: " << filename
               << std::endl;
     return 1;
   }
@@ -43,13 +43,13 @@ int main() {
 
   // Send the desired scheduler to the dameon
   const char *schedulerName = "libscheduler_round_robin.so";
-  std::cout << "[Client]...........Sending scheduler " << schedulerName
+  std::cout << "[Client]............Sending scheduler " << schedulerName
             << " to the daemon" << std::endl;
   send_message(&conn, (char *)schedulerName, DaemonQueue);
 
   // Send the desired selector to the dameon
   const char *selectorName = "libselector_all.so";
-  std::cout << "[Client]...........Sending selector " << selectorName
+  std::cout << "[Client]............Sending selector " << selectorName
             << " to the daemon" << std::endl;
   send_message(&conn, (char *)selectorName, DaemonQueue);
 
@@ -57,12 +57,13 @@ int main() {
   const char *adaptedQir = receive_message(&conn, ClientQueue);
 
   if (adaptedQir) {
-    std::cout << "[Client]...........Received adapted QIR: " << std::endl
+    std::cout << "[Client]............Received adapted QIR: " << std::endl
+              << std::endl
               << adaptedQir << std::endl;
 
     delete[] adaptedQir;
   } else {
-    std::cout << "[Client]...........Error: Failed to receive the adapted QIR"
+    std::cout << "[Client]............Error: Failed to receive the adapted QIR"
               << std::endl;
   }
 

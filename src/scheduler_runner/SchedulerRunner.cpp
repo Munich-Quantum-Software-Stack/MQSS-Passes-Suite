@@ -14,10 +14,11 @@ int invokeScheduler(const std::string &pathScheduler) {
   size_t lastSlashPos = pathScheduler.find_last_of('/');
   if (lastSlashPos != std::string::npos) {
     std::string fileName = pathScheduler.substr(lastSlashPos + 1);
-    std::cout << "[Scheduler Runner].Invoking scheduler: " << fileName
+    std::cout << "   [Scheduler Runner]..Invoking scheduler: " << fileName
               << std::endl;
   } else {
-    std::cerr << "[Scheduler Runner].Invalid path to scheduler" << std::endl;
+    std::cerr << "   [Scheduler Runner]..Invalid path to scheduler"
+              << std::endl;
     return 1;
   }
 
@@ -27,9 +28,9 @@ int invokeScheduler(const std::string &pathScheduler) {
   void *lib_handle = dlopen(path.c_str(), RTLD_LAZY);
 
   if (!lib_handle) {
-    std::cerr
-        << "[Scheduler Runner].Error loading scheduler as a shared library: "
-        << dlerror() << std::endl;
+    std::cerr << "   [Scheduler Runner]..Error loading scheduler as a shared "
+                 "library: "
+              << dlerror() << std::endl;
 
     return 1;
   }
@@ -40,8 +41,9 @@ int invokeScheduler(const std::string &pathScheduler) {
       reinterpret_cast<SchedulerFunction>(dlsym(lib_handle, "scheduler"));
 
   if (!scheduler) {
-    std::cerr << "[Scheduler Runner].Error finding function in shared library: "
-              << dlerror() << std::endl;
+    std::cerr
+        << "   [Scheduler Runner]..Error finding function in shared library: "
+        << dlerror() << std::endl;
 
     dlclose(lib_handle);
   }

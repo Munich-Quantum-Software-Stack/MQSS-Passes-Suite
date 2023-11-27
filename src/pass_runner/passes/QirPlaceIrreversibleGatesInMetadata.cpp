@@ -42,10 +42,11 @@ QirPlaceIrreversibleGatesInMetadataPass::run(Module &module,
       auto name = static_cast<std::string>(function.getName());
       if (!function.hasFnAttribute("irreversible")) {
         qirMetadata.append(REVERSIBLE_GATE, name);
-        errs() << "[Pass].............Reversible gate found: " << name << '\n';
+        errs() << "   [Pass]..............Reversible gate found: " << name
+               << '\n';
       } else {
         qirMetadata.append(IRREVERSIBLE_GATE, name);
-        errs() << "[Pass].............Irreversible gate found: " << name
+        errs() << "   [Pass]..............Irreversible gate found: " << name
                << '\n';
       }
     }

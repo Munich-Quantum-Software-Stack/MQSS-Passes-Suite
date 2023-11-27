@@ -48,10 +48,10 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 3. Run `make` to install `daemon_d`:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, with the following command:
       ```bash
-      make FOMAC_PATH=fomac install
+      make FOMAC_PATH=fomac BACKENDS_PATH=backends install
       ```
 
-   - Besides the directory with the chosen Figure of Merits and Constraints library (FoMaC), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directories with the chosen Figure of Merits and Constraints library (FoMaC) and the available backends, one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
       make INSTALL_PATH=$HOME FOMAC_PATH=fomac BUILD_DIR=build install
       ```
@@ -171,12 +171,12 @@ You can build the Quantum Resource Manager and generate its documentation locall
 2. Run make:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, and generate its documentation with the following command:
       ```bash
-      make FOMAC_PATH=fomac docs
+      make FOMAC_PATH=fomac BACKENDS_PATH=backends docs
       ```
 
    - Besides the directory with the chosen Figures of Merit and Constraints library (FOMAC), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BUILD_DIR=build docs
+      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BACKENDS_PATH=backends BUILD_DIR=build docs
       ```
 
 3. Open the generated documentation in a web browser:

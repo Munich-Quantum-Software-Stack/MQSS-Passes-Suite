@@ -63,7 +63,7 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
   scheduler.append(receivedScheduler.get());
 
   if (invokeScheduler(scheduler) > 0) {
-    std::cout << "[daemon_d].........Warning: There was an error obtaining "
+    std::cout << "   [daemon_d]..........Warning: There was an error obtaining "
                  "the target architecture"
               << std::endl;
     return;
@@ -79,8 +79,9 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
       qdmi_backend_open(targetArchitecture);
 
   if (!backend_handle) {
-    std::cout << "[daemon_d].........Warning: Unavailable target architecture: "
-              << targetArchitecture << std::endl;
+    std::cout
+        << "   [daemon_d]..........Warning: Unavailable target architecture: "
+        << targetArchitecture << std::endl;
     return;
   }
 
@@ -110,9 +111,10 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
   MemoryBufferRef QIRRef = *memoryBuffer;
   std::unique_ptr<Module> module = parseIR(QIRRef, error, Context);
   if (!module) {
-    std::cout << "[daemon_d].........Warning: There was an error parsing the "
-                 "generic QIR"
-              << std::endl;
+    std::cout
+        << "   [daemon_d]..........Warning: There was an error parsing the "
+           "generic QIR"
+        << std::endl;
     return;
   }
 
@@ -124,7 +126,8 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
   std::vector<int> results = qdmi_launch_qir(backend_handle, module, n_shots);
 
   for (int measurement : results) {
-    std::cout << "Measurement: " << measurement << std::endl;
+    std::cout << "   [daemon_d]..........Measurement: " << measurement
+              << std::endl;
   }
 
   // Send the results back to the client
@@ -138,7 +141,8 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
                (char *)qir,  // message TODO: Send results
                ClientQueue); // queue
 
-  std::cout << "[daemon_d].........Adapted QIR sent to the client" << std::endl;
+  std::cout << "   [daemon_d]..........Adapted QIR sent to the client"
+            << std::endl;
 }
 
 /**
@@ -148,7 +152,7 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
  */
 void signalHandler(int signum) {
   if (signum == SIGTERM) {
-    std::cerr << "[daemon_d].........Stoping" << std::endl;
+    std::cerr << "   [daemon_d]..........Stoping" << std::endl;
 
     // Close the connections
     close_connections(&conn);
@@ -168,7 +172,8 @@ int main(int argc, char *argv[]) {
   setbuf(stdout, NULL);
 
   if (argc != 2 && argc != 3) {
-    std::cerr << "[daemon_d] Usage: daemon_d [screen|log PATH]" << std::endl;
+    std::cerr << "   [daemon_d]. Usage: daemon_d [screen|log PATH]"
+              << std::endl;
     return 1;
   }
 
@@ -177,7 +182,8 @@ int main(int argc, char *argv[]) {
   if (argc == 2) {
     stream = argv[1];
     if (stream != "screen") {
-      std::cerr << "[daemon_d] Usage: daemon_d [screen|log PATH]" << std::endl;
+      std::cerr << "   [daemon_d]. Usage: daemon_d [screen|log PATH]"
+                << std::endl;
       return 1;
     }
   }
@@ -185,7 +191,8 @@ int main(int argc, char *argv[]) {
   if (argc == 3) {
     stream = argv[1];
     if (stream != "log") {
-      std::cerr << "[daemon_d] Usage: daemon_d [screen|log PATH]" << std::endl;
+      std::cerr << "   [daemon_d]. Usage: daemon_d [screen|log PATH]"
+                << std::endl;
       return 1;
     }
   }
@@ -194,7 +201,7 @@ int main(int argc, char *argv[]) {
   pid_t pid = fork();
 
   if (pid < 0) {
-    std::cerr << "[daemon_d].........Failed to fork" << std::endl;
+    std::cerr << "   [daemon_d]..........Failed to fork" << std::endl;
     return 1;
   }
 
@@ -204,10 +211,10 @@ int main(int argc, char *argv[]) {
     filePath = std::string(argv[2]) + "/logs/daemon_d.log";
 
   if (pid > 0) {
-    std::cout << "[daemon_d].........To stop this daemon type: kill -15 " << pid
-              << std::endl;
+    std::cout << "   [daemon_d]..........To stop this daemon type: kill -15 "
+              << pid << std::endl;
     if (stream == "log")
-      std::cout << "[daemon_d].........The log can be found in " << filePath
+      std::cout << "   [daemon_d]..........The log can be found in " << filePath
                 << std::endl;
 
     return 0;
@@ -230,7 +237,7 @@ int main(int argc, char *argv[]) {
         open(filePath.c_str(), O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
 
     if (logFileDescriptor == -1) {
-      std::cerr << "[daemon_d].........Warning: Could not open the log file"
+      std::cerr << "   [daemon_d]..........Warning: Could not open the log file"
                 << std::endl;
     } else {
       dup2(logFileDescriptor, STDOUT_FILENO);
@@ -256,12 +263,12 @@ int main(int argc, char *argv[]) {
   amqp_rpc_reply_t consume_reply = amqp_get_rpc_reply(conn);
 
   if (consume_reply.reply_type != AMQP_RESPONSE_NORMAL) {
-    std::cout << "[daemon_d].........Error starting to consume messages"
+    std::cout << "   [daemon_d]..........Error starting to consume messages"
               << std::endl;
     return 1;
   }
 
-  std::cout << "[daemon_d].........Listening on queue " << DaemonQueue
+  std::cout << "   [daemon_d]..........Listening on queue " << DaemonQueue
             << std::endl;
 
   while (true) {
@@ -289,7 +296,8 @@ int main(int argc, char *argv[]) {
     if (!(receivedQirModule.get() && receivedScheduler.get() &&
           receivedSelector.get())) {
 
-      std::cerr << "[daemon_d].........Failed to receive the job" << std::endl;
+      std::cerr << "   [daemon_d]..........Failed to receive the job"
+                << std::endl;
 
       if (receivedQirModule.get())
         delete[] receivedQirModule.get();
@@ -303,14 +311,14 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
-    std::cout << "[daemon_d].........Received a QIR module"
+    std::cout << "   [daemon_d]..........Received a QIR module"
               //<< nameOfQir
               << std::endl;
 
-    std::cout << "[daemon_d].........Received a scheduler: "
+    std::cout << "   [daemon_d]..........Received a scheduler: "
               << receivedScheduler.get() << std::endl;
 
-    std::cout << "[daemon_d].........Received a selector: "
+    std::cout << "   [daemon_d]..........Received a selector: "
               << receivedSelector.get() << std::endl;
 
     // Create a new thread that executes 'handleCircuit' to run

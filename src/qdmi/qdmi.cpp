@@ -91,12 +91,13 @@ std::vector<int> qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
                                  std::unique_ptr<Module> &module, int n_shots) {
 
   if (!module) {
-    std::cout << "[QDMI].............Warning: Corrupt QIR module " << std::endl;
+    std::cout << "   [QDMI].............Warning: Corrupt QIR module "
+              << std::endl;
     return {-1};
   }
 
   if (!handle) {
-    std::cerr << "[QDMI].............Invalid backend handle." << std::endl;
+    std::cerr << "   [QDMI].............Invalid backend handle." << std::endl;
     return {-1};
   }
 
@@ -114,7 +115,7 @@ int qdmi_backend_close(std::shared_ptr<JobRunner> handle) {
     handle->close_backend();
     return 0;
   } else {
-    std::cerr << "Invalid backend handle." << std::endl;
+    std::cerr << "   [QDMI].............Invalid backend handle." << std::endl;
     return 1;
   }
 }

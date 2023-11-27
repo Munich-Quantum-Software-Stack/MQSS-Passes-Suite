@@ -74,7 +74,7 @@ QirNullRotationCancellationPass::run(Module &module,
 
             if (angleFP->isZero() || checkDoublePiMultiplies(angle)) {
               rotationGatesToRemove.push_back(current_instruction);
-              errs() << "[Pass].............Redundant rotation found: "
+              errs() << "   [Pass]..............Redundant rotation found: "
                      << current_name << '\n';
             }
           }

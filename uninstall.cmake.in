@@ -1,8 +1,20 @@
 # Uninstall target
 message("Uninstalling...")
+
 set(EXECUTABLE_NAME "@EXECUTABLE_NAME@")
 set(CMAKE_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@")
+
+get_filename_component(TOPLEVEL "${CMAKE_CURRENT_LIST_FILE}" DIRECTORY)
+get_filename_component(TOPLEVEL "${TOPLEVEL}" DIRECTORY)
+
+message(STATUS "Removig ${CMAKE_INSTALL_PREFIX}/bin/${EXECUTABLE_NAME}")
+message(STATUS "Removig ${CMAKE_INSTALL_PREFIX}/bin/lib directory")
+message(STATUS "Removig ${TOPLEVEL}/fomac/build directory")
+message(STATUS "Removig ${TOPLEVEL}/backends/build directory")
+message(STATUS "Removig ${TOPLEVEL}/docs/build directory")
+
 execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_INSTALL_PREFIX}/bin/${EXECUTABLE_NAME}
                 COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_INSTALL_PREFIX}/bin/lib
-                COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/fomac/build
-                COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/backends/build)
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${TOPLEVEL}/fomac/build
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${TOPLEVEL}/backends/build
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${TOPLEVEL}/docs/build)

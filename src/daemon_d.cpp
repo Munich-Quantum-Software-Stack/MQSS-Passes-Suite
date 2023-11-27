@@ -293,23 +293,23 @@ int main(int argc, char *argv[]) {
     auto receivedSelector = std::make_unique<char[]>(strlen(selector) + 1);
     strcpy(receivedSelector.get(), selector);
 
-    if (!(receivedQirModule.get() && receivedScheduler.get() &&
-          receivedSelector.get())) {
+    // if (!(receivedQirModule.get() && receivedScheduler.get() &&
+    //       receivedSelector.get())) {
 
-      std::cerr << "   [daemon_d]..........Failed to receive the job"
-                << std::endl;
+    //  std::cerr << "   [daemon_d]..........Failed to receive the job"
+    //            << std::endl;
 
-      if (receivedQirModule.get())
-        delete[] receivedQirModule.get();
+    //  if (receivedQirModule.get())
+    //    delete[] receivedQirModule.get();
 
-      if (receivedScheduler.get())
-        delete[] receivedScheduler.get();
+    //  if (receivedScheduler.get())
+    //    delete[] receivedScheduler.get();
 
-      if (receivedSelector.get())
-        delete[] receivedSelector.get();
+    //  if (receivedSelector.get())
+    //    delete[] receivedSelector.get();
 
-      continue;
-    }
+    //  continue;
+    //}
 
     std::cout << "   [daemon_d]..........Received a QIR module"
               //<< nameOfQir
@@ -329,9 +329,9 @@ int main(int argc, char *argv[]) {
                              std::move(receivedScheduler),
                              std::move(receivedSelector));
 
-    delete[] receivedQirModule.get();
-    delete[] receivedScheduler.get();
-    delete[] receivedSelector.get();
+    // delete[] receivedQirModule.get();
+    // delete[] receivedScheduler.get();
+    // delete[] receivedSelector.get();
 
     // Detach from this thread once done
     clientThread.detach();

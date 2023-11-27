@@ -1,6 +1,6 @@
 /**
- * @file QirHadamardAndYGateSwitch.hpp
- * @brief Declaration of the 'QirHadamardAndYGateSwitch' class.
+ * @file QirPauliGateAndHadamardSwitch.cpp
+ * @brief Declaration of the 'QirPauliGateAndHadamardSwitchPass' class.
  */
 
 #pragma once
@@ -10,17 +10,11 @@
 namespace llvm {
 
 /**
-<<<<<<<< HEAD:src/pass_runner/headers/QirPauliGateAndHadamardSwitch.hpp
- * @class QirPauliGateAndHadamardSwitch
+ * @class QirPauliGateAndHadamardSwitchPass
  * @brief This pass swaps adjacent Pauli gates and H whenever found in this
  * order. As a result, Pauli gate is changed accordingly.
-========
- * @class QirHadamardAndYGateSwitch
- * @brief This pass swaps adjacent H and Y gates whenever found in this order.
->>>>>>>> e4a2254 (Hadamard and Pauli gate switching split separately for each
-gate):src/pass_runner/headers/QirHadamardAndYGateSwitch.hpp
  */
-class QirHadamardAndYGateSwitchPass : public PassModule {
+class QirPauliGateAndHadamardSwitchPass : public PassModule {
 public:
   /**
    * @brief Applies this pass to the QIR's LLVM module.

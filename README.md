@@ -37,7 +37,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 1. Install the required dependencies:
    ```bash
    sudo apt update
-   sudo apt install -y cmake llvm rabbitmq-server g++ curl nlohmann-json3-dev
+   sudo apt install -y cmake llvm rabbitmq-server g++ curl libgtest-dev nlohmann-json3-dev
    ```
 
 2. Navigate to the `qir_passes` directory (if you are not already there):
@@ -166,7 +166,7 @@ You can build the Quantum Resource Manager and generate its documentation locall
 1. Install the required dependencies for Doxygen:
    ```bash
    sudo apt update
-   sudo apt install -y cmake llvm rabbitmq-server g++ flex bison
+   sudo apt install -y cmake llvm rabbitmq-server g++ curl flex bison libgtest-dev nlohmann-json3-dev
    ```
 
 2. Run make:

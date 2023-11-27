@@ -9,29 +9,32 @@
 #include <string>
 #include <thread>
 
-class IQMBackend : public JobRunner {
-public:
-  virtual int close_backend() override;
-  virtual std::vector<int> run_job(std::unique_ptr<Module> &module,
-                                   int n_shots) override;
+class IQMBackend : public JobRunner
+{
+  public:
+    virtual int close_backend() override;
+    virtual std::vector<int> run_job(std::unique_ptr<Module> &module,
+                                     int n_shots) override;
 
-  static std::shared_ptr<IQMBackend> create_instance(const std::string &url);
+    static std::shared_ptr<IQMBackend> create_instance(const std::string &url);
 };
 
 // Declarations for Q5Backend
-class Q5Backend : public IQMBackend {
-public:
-  std::vector<int> run_job(std::unique_ptr<Module> &module,
-                           int n_shots) override;
-  int close_backend() override;
+class Q5Backend : public IQMBackend
+{
+  public:
+    std::vector<int> run_job(std::unique_ptr<Module> &module,
+                             int n_shots) override;
+    int close_backend() override;
 };
 
 // Declarations for Q20Backend
-class Q20Backend : public IQMBackend {
-public:
-  std::vector<int> run_job(std::unique_ptr<Module> &module,
-                           int n_shots) override;
-  int close_backend() override;
+class Q20Backend : public IQMBackend
+{
+  public:
+    std::vector<int> run_job(std::unique_ptr<Module> &module,
+                             int n_shots) override;
+    int close_backend() override;
 };
 
 #endif /* IQMBACKEND_HPP */

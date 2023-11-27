@@ -18,50 +18,56 @@ using namespace llvm;
  * @param MAM The module analysis manager.
  * @return PreservedAnalyses
  */
-PreservedAnalyses
-QirFunctionAnnotatorPass::run(Module &module, ModuleAnalysisManager & /*MAM*/) {
-  QirPassRunner &QPR = QirPassRunner::getInstance();
-  QirMetadata &qirMetadata = QPR.getMetadata();
+PreservedAnalyses QirFunctionAnnotatorPass::run(Module &module,
+                                                ModuleAnalysisManager & /*MAM*/)
+{
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
 
-  bool changed = false;
-  auto annotations = qirMetadata.injectedAnnotations;
+    bool changed = false;
+    auto annotations = qirMetadata.injectedAnnotations;
 
-  // Removing all function call attributes
-  if (qirMetadata.shouldRemoveCallAttributes) {
-    for (auto &function : module) {
-      for (auto &block : function) {
-        for (auto &instr : block) {
-          auto call_instr = dyn_cast<CallBase>(&instr);
-          if (!call_instr)
-            continue;
-          call_instr->setAttributes({});
-          changed = true;
+    // Removing all function call attributes
+    if (qirMetadata.shouldRemoveCallAttributes)
+    {
+        for (auto &function : module)
+        {
+            for (auto &block : function)
+            {
+                for (auto &instr : block)
+                {
+                    auto call_instr = dyn_cast<CallBase>(&instr);
+                    if (!call_instr)
+                        continue;
+                    call_instr->setAttributes({});
+                    changed = true;
+                }
+            }
         }
-      }
     }
-  }
 
-  // Adding replaceWith as requested
-  /**
-   * @todo Don't traverse the functions in the module but the
-   * annotations vector
-   */
-  for (auto &function : module) {
-    auto name = static_cast<std::string>(function.getName());
+    // Adding replaceWith as requested
+    /**
+     * @todo Don't traverse the functions in the module but the
+     * annotations vector
+     */
+    for (auto &function : module)
+    {
+        auto name = static_cast<std::string>(function.getName());
 
-    // Adding annotation if requested
-    auto it = annotations.find(name);
-    if (it == annotations.end())
-      continue;
+        // Adding annotation if requested
+        auto it = annotations.find(name);
+        if (it == annotations.end())
+            continue;
 
-    function.addFnAttr("replaceWith", it->second);
-    changed = true;
-  }
+        function.addFnAttr("replaceWith", it->second);
+        changed = true;
+    }
 
-  if (changed)
-    return PreservedAnalyses::none();
+    if (changed)
+        return PreservedAnalyses::none();
 
-  return PreservedAnalyses::all();
+    return PreservedAnalyses::all();
 }
 
 /**

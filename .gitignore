@@ -3,7 +3,8 @@ uninstall.cmake
 
 build/
 docs/build/
-docs/latex/
+fomac/build/
+backends/build/
 tests/test
 
 *~

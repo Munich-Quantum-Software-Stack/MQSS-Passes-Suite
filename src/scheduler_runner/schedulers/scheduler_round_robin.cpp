@@ -19,17 +19,18 @@
  *
  * @return const char *
  */
-extern "C" void scheduler(void) {
-  // Query the available platforms
-  std::vector<std::string> platforms = qdmi_backend_available_platforms();
+extern "C" void scheduler(void)
+{
+    // Query the available platforms
+    std::vector<std::string> platforms = qdmi_backend_available_platforms();
 
-  std::cout << "   [Scheduler].........Writing target architecture in the "
-               "metadata"
-            << std::endl;
+    std::cout << "   [Scheduler].........Writing target architecture in the "
+                 "metadata"
+              << std::endl;
 
-  // Choose the target architecture
-  QirPassRunner &QPR = QirPassRunner::getInstance();
-  QirMetadata &qirMetadata = QPR.getMetadata();
-  qirMetadata.setTargetPlatform(platforms.back());
-  QPR.setMetadata(qirMetadata);
+    // Choose the target architecture
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
+    qirMetadata.setTargetPlatform(platforms.back());
+    QPR.setMetadata(qirMetadata);
 }

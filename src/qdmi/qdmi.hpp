@@ -22,8 +22,9 @@ using namespace llvm;
  * @return std::vector<std::string>
  * @todo To be implemented
  */
-extern "C" {
-std::vector<std::string> qdmi_backend_available_platforms();
+extern "C"
+{
+    std::vector<std::string> qdmi_backend_available_platforms();
 }
 
 /**
@@ -33,8 +34,9 @@ std::vector<std::string> qdmi_backend_available_platforms();
  * @return std::vector<std::string>
  * @todo To be implemented
  */
-extern "C" {
-std::vector<std::string> qdmi_supported_gate_set(std::string);
+extern "C"
+{
+    std::vector<std::string> qdmi_supported_gate_set(std::string);
 }
 
 /**
@@ -43,9 +45,10 @@ std::vector<std::string> qdmi_supported_gate_set(std::string);
  * @return TODO
  * @todo To be implemented
  */
-extern "C" {
-std::shared_ptr</*void*/ JobRunner>
-qdmi_backend_open(const std::string &target_platform);
+extern "C"
+{
+    std::shared_ptr</*void*/ JobRunner>
+    qdmi_backend_open(const std::string &target_platform);
 }
 
 /**
@@ -54,9 +57,11 @@ qdmi_backend_open(const std::string &target_platform);
  * @return TODO
  * @todo To be implemented
  */
-extern "C" {
-std::vector<int> qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
-                                 std::unique_ptr<Module> &module, int n_shots);
+extern "C"
+{
+    std::vector<int> qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
+                                     std::unique_ptr<Module> &module,
+                                     int n_shots);
 }
 
 /**
@@ -65,8 +70,9 @@ std::vector<int> qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
  * @return TODO
  * @todo To be implemented
  */
-extern "C" {
-int qdmi_backend_close(std::shared_ptr<JobRunner> handle);
+extern "C"
+{
+    int qdmi_backend_close(std::shared_ptr<JobRunner> handle);
 }
 
 #endif // QDMI_HPP

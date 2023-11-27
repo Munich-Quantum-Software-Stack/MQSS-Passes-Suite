@@ -14,8 +14,9 @@
  * @return TODO
  * @todo To be implemented
  */
-extern "C" {
-int fomac_gate_set_size(std::string target_platform);
+extern "C"
+{
+    int fomac_gate_set_size(std::string target_platform);
 }
 
 #endif // FOMAC_HPP

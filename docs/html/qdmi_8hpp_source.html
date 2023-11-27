@@ -97,35 +97,41 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespacellvm.html">llvm</a>;</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>std::vector&lt;std::string&gt; <a class="code hl_function" href="qdmi_8hpp.html#a9757092ca6f68c1eb0175b755dfa1a9e">qdmi_backend_available_platforms</a>();</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>std::vector&lt;std::string&gt; <a class="code hl_function" href="qdmi_8hpp.html#a7965f780fce7731d9a068b361c077a6d">qdmi_supported_gate_set</a>(std::string);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>}</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>std::shared_ptr&lt;<span class="comment">/*void*/</span> JobRunner&gt;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><a class="code hl_function" href="qdmi_8hpp.html#a4edc8fe4f978619417433be16b2b1311">qdmi_backend_open</a>(<span class="keyword">const</span> std::string &amp;target_platform);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>std::vector&lt;int&gt; <a class="code hl_function" href="qdmi_8hpp.html#afcb9b27bed381df52d585e748e16aec5">qdmi_launch_qir</a>(std::shared_ptr&lt;JobRunner&gt; handle,</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                 std::unique_ptr&lt;Module&gt; &amp;module, <span class="keywordtype">int</span> n_shots);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keywordtype">int</span> <a class="code hl_function" href="qdmi_8hpp.html#ad2bd2c990616a3c0e6cc8964df6ce53f">qdmi_backend_close</a>(std::shared_ptr&lt;JobRunner&gt; handle);</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#endif </span><span class="comment">// QDMI_HPP</span></div>
-<div class="ttc" id="anamespacellvm_html"><div class="ttname"><a href="namespacellvm.html">llvm</a></div><div class="ttdef"><b>Definition</b> QirAllocationAnalysis.hpp:15</div></div>
-<div class="ttc" id="aqdmi_8hpp_html_a4edc8fe4f978619417433be16b2b1311"><div class="ttname"><a href="qdmi_8hpp.html#a4edc8fe4f978619417433be16b2b1311">qdmi_backend_open</a></div><div class="ttdeci">std::shared_ptr&lt; JobRunner &gt; qdmi_backend_open(const std::string &amp;target_platform)</div><div class="ttdoc">TODO.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:53</div></div>
-<div class="ttc" id="aqdmi_8hpp_html_a7965f780fce7731d9a068b361c077a6d"><div class="ttname"><a href="qdmi_8hpp.html#a7965f780fce7731d9a068b361c077a6d">qdmi_supported_gate_set</a></div><div class="ttdeci">std::vector&lt; std::string &gt; qdmi_supported_gate_set(std::string)</div><div class="ttdoc">Function that returns a vector with the supported gate set of a given target platform.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:30</div></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="qdmi_8hpp.html#a9757092ca6f68c1eb0175b755dfa1a9e">qdmi_backend_available_platforms</a>();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::vector&lt;std::string&gt; <a class="code hl_function" href="qdmi_8hpp.html#a7965f780fce7731d9a068b361c077a6d">qdmi_supported_gate_set</a>(std::string);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>{</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    std::shared_ptr&lt;<span class="comment">/*void*/</span> JobRunner&gt;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_function" href="qdmi_8hpp.html#a4edc8fe4f978619417433be16b2b1311">qdmi_backend_open</a>(<span class="keyword">const</span> std::string &amp;target_platform);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    std::vector&lt;int&gt; <a class="code hl_function" href="qdmi_8hpp.html#afcb9b27bed381df52d585e748e16aec5">qdmi_launch_qir</a>(std::shared_ptr&lt;JobRunner&gt; handle,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                     std::unique_ptr&lt;Module&gt; &amp;module,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                                     <span class="keywordtype">int</span> n_shots);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>{</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="qdmi_8hpp.html#ad2bd2c990616a3c0e6cc8964df6ce53f">qdmi_backend_close</a>(std::shared_ptr&lt;JobRunner&gt; handle);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#endif </span><span class="comment">// QDMI_HPP</span></div>
+<div class="ttc" id="anamespacellvm_html"><div class="ttname"><a href="namespacellvm.html">llvm</a></div><div class="ttdef"><b>Definition</b> QirAllocationAnalysis.hpp:16</div></div>
+<div class="ttc" id="aqdmi_8hpp_html_a4edc8fe4f978619417433be16b2b1311"><div class="ttname"><a href="qdmi_8hpp.html#a4edc8fe4f978619417433be16b2b1311">qdmi_backend_open</a></div><div class="ttdeci">std::shared_ptr&lt; JobRunner &gt; qdmi_backend_open(const std::string &amp;target_platform)</div><div class="ttdoc">TODO.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:54</div></div>
+<div class="ttc" id="aqdmi_8hpp_html_a7965f780fce7731d9a068b361c077a6d"><div class="ttname"><a href="qdmi_8hpp.html#a7965f780fce7731d9a068b361c077a6d">qdmi_supported_gate_set</a></div><div class="ttdeci">std::vector&lt; std::string &gt; qdmi_supported_gate_set(std::string)</div><div class="ttdoc">Function that returns a vector with the supported gate set of a given target platform.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:31</div></div>
 <div class="ttc" id="aqdmi_8hpp_html_a9757092ca6f68c1eb0175b755dfa1a9e"><div class="ttname"><a href="qdmi_8hpp.html#a9757092ca6f68c1eb0175b755dfa1a9e">qdmi_backend_available_platforms</a></div><div class="ttdeci">std::vector&lt; std::string &gt; qdmi_backend_available_platforms()</div><div class="ttdoc">Function that returns a vector with the list of availble quantum platforms.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:14</div></div>
-<div class="ttc" id="aqdmi_8hpp_html_ad2bd2c990616a3c0e6cc8964df6ce53f"><div class="ttname"><a href="qdmi_8hpp.html#ad2bd2c990616a3c0e6cc8964df6ce53f">qdmi_backend_close</a></div><div class="ttdeci">int qdmi_backend_close(std::shared_ptr&lt; JobRunner &gt; handle)</div><div class="ttdoc">TODO.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:112</div></div>
-<div class="ttc" id="aqdmi_8hpp_html_afcb9b27bed381df52d585e748e16aec5"><div class="ttname"><a href="qdmi_8hpp.html#afcb9b27bed381df52d585e748e16aec5">qdmi_launch_qir</a></div><div class="ttdeci">std::vector&lt; int &gt; qdmi_launch_qir(std::shared_ptr&lt; JobRunner &gt; handle, std::unique_ptr&lt; Module &gt; &amp;module, int n_shots)</div><div class="ttdoc">TODO.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:90</div></div>
+<div class="ttc" id="aqdmi_8hpp_html_ad2bd2c990616a3c0e6cc8964df6ce53f"><div class="ttname"><a href="qdmi_8hpp.html#ad2bd2c990616a3c0e6cc8964df6ce53f">qdmi_backend_close</a></div><div class="ttdeci">int qdmi_backend_close(std::shared_ptr&lt; JobRunner &gt; handle)</div><div class="ttdoc">TODO.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:122</div></div>
+<div class="ttc" id="aqdmi_8hpp_html_afcb9b27bed381df52d585e748e16aec5"><div class="ttname"><a href="qdmi_8hpp.html#afcb9b27bed381df52d585e748e16aec5">qdmi_launch_qir</a></div><div class="ttdeci">std::vector&lt; int &gt; qdmi_launch_qir(std::shared_ptr&lt; JobRunner &gt; handle, std::unique_ptr&lt; Module &gt; &amp;module, int n_shots)</div><div class="ttdoc">TODO.</div><div class="ttdef"><b>Definition</b> qdmi.cpp:96</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

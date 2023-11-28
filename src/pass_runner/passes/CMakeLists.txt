@@ -1,5 +1,6 @@
 # Include all transformation passes here
 set(PASSES_SOURCE_FILES
+    #[[
     # A
     QirAnnotateUnsupportedGates.cpp
     # B
@@ -52,18 +53,40 @@ set(PASSES_SOURCE_FILES
     # Y
     QirYGateAndHadamardSwitch.cpp
     # Z
-    QirZGateAndHadamardSwitch.cpp)
+    QirZGateAndHadamardSwitch.cpp
+]]
+    #
+    QirZYZTransform.cpp)
+
+include_directories(${CMAKE_SOURCE_DIR}/../headers)
 
 # Include all analysis passes here
+#[[
 set(ANALYSIS_PASSES_SOURCE_FILES
     # A
     QirAllocationAnalysis.cpp
     # F
     QirFunctionValidation.cpp)
+]]
+#
+
+set(ADDITIONAL_CODE utilities.cpp)
 
 # Set RPATH for the shared libraries in this directory
 set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/bin/lib/pass_runner/passes")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+foreach(src_file ${ADDITIONAL_CODE})
+  get_filename_component(src_name ${src_file} NAME_WE)
+  set(target_name "${src_name}")
+
+  add_library(${target_name} SHARED ${src_file})
+
+  # Install the shared library
+  install(TARGETS ${target_name}
+          DESTINATION "${INSTALL_PATH}/bin/lib/pass_runner/passes")
+
+endforeach()
 
 # Compile each pass as a shared object and link it to qdmi
 foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
@@ -89,7 +112,6 @@ foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
           DESTINATION "${INSTALL_PATH}/bin/lib/pass_runner/passes")
 
 endforeach()
-
 # Compile each pass as a shared object and link it to qdmi and all analysis
 # passes
 set(INSTALL_LIB_PATHS "${CMAKE_INSTALL_PREFIX}/bin/lib/pass_runner/passes;"
@@ -120,7 +142,8 @@ endforeach()
 
 # Analysis passes invoked from custom passes have to be linked to the custom
 # pass
-target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
+target_link_libraries(QirZYZTransformPass PRIVATE utilities)
+# target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
 
-target_link_libraries(QirResourceAnnotationPass
-                      PRIVATE QirAllocationAnalysisPass)
+# target_link_libraries(QirResourceAnnotationPass PRIVATE
+# QirAllocationAnalysisPass)

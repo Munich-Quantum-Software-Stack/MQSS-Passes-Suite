@@ -54,6 +54,7 @@ extern "C" std::vector<std::string> selector(void) {
       "libQirZGateAndHadamardSwitchPass.so",
       "libQirSToSDaggerPass.so",
       "libQirSDaggerToSPass.so",
+      "libQirZYZTransformPass.so",
   };
 
   std::cout

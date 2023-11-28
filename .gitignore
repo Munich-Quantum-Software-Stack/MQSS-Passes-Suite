@@ -1,6 +1,7 @@
 .DS_Store
 uninstall.cmake
 
+rabbitmq*/
 build/
 docs/build/
 docs/latex/

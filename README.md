@@ -79,6 +79,11 @@ The project structure is the following:
 ```
 ├─ .clang-format
 ├─ .gitignore
+├─ .gitlab
+│  ├─ issue_templates
+│  │  └─ new_issue.md
+│  └─ merge_request_templates
+│     └─ new_merge_request.md
 ├─ .gitlab-ci.yml
 ├─ .pre-commit-config.yaml
 ├─ CMakeLists.txt

@@ -50,7 +50,7 @@ using namespace llvm;
 PreservedAnalyses QirMyPass::run(Module &module, ModuleAnalysisManager &MAM)
 {
     // Your pass goes here
-	return PreservedAnalyses::none();
+    return PreservedAnalyses::none();
 }
 
 extern "C" PassModule *loadQirPass()

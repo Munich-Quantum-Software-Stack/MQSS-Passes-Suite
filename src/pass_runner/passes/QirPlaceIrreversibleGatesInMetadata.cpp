@@ -29,31 +29,38 @@ std::string const QirPlaceIrreversibleGatesInMetadataPass::QIS_START =
  */
 PreservedAnalyses
 QirPlaceIrreversibleGatesInMetadataPass::run(Module &module,
-                                             ModuleAnalysisManager &MAM) {
-  QirPassRunner &QPR = QirPassRunner::getInstance();
-  QirMetadata &qirMetadata = QPR.getMetadata();
+                                             ModuleAnalysisManager &MAM)
+{
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
 
-  for (auto &function : module) {
-    auto name = static_cast<std::string>(function.getName());
-    bool is_quantum = (name.size() >= QIS_START.size() &&
-                       name.substr(0, QIS_START.size()) == QIS_START);
+    for (auto &function : module)
+    {
+        auto name = static_cast<std::string>(function.getName());
+        bool is_quantum = (name.size() >= QIS_START.size() &&
+                           name.substr(0, QIS_START.size()) == QIS_START);
 
-    if (is_quantum) {
-      auto name = static_cast<std::string>(function.getName());
-      if (!function.hasFnAttribute("irreversible")) {
-        qirMetadata.append(REVERSIBLE_GATE, name);
-        errs() << "[Pass].............Reversible gate found: " << name << '\n';
-      } else {
-        qirMetadata.append(IRREVERSIBLE_GATE, name);
-        errs() << "[Pass].............Irreversible gate found: " << name
-               << '\n';
-      }
+        if (is_quantum)
+        {
+            auto name = static_cast<std::string>(function.getName());
+            if (!function.hasFnAttribute("irreversible"))
+            {
+                qirMetadata.append(REVERSIBLE_GATE, name);
+                errs() << "   [Pass]..............Reversible gate found: "
+                       << name << '\n';
+            }
+            else
+            {
+                qirMetadata.append(IRREVERSIBLE_GATE, name);
+                errs() << "   [Pass]..............Irreversible gate found: "
+                       << name << '\n';
+            }
+        }
     }
-  }
 
-  QPR.setMetadata(qirMetadata);
+    QPR.setMetadata(qirMetadata);
 
-  return PreservedAnalyses::all();
+    return PreservedAnalyses::all();
 }
 
 /**
@@ -61,6 +68,7 @@ QirPlaceIrreversibleGatesInMetadataPass::run(Module &module,
  * 'QirPlaceIrreversibleGatesInMetadataPass' as a 'PassModule'.
  * @return QirPlaceIrreversibleGatesInMetadataPass
  */
-extern "C" PassModule *loadQirPass() {
-  return new QirPlaceIrreversibleGatesInMetadataPass();
+extern "C" PassModule *loadQirPass()
+{
+    return new QirPlaceIrreversibleGatesInMetadataPass();
 }

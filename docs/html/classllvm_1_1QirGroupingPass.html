@@ -119,7 +119,7 @@ Public Types</h2></td></tr>
 &#160;&#160;<a class="el" href="#a8bb19c75ee621ae2ae9e6c56f1d0aa07ad4be874485edc2211efd15b87e7241a2">PureClassical</a> = 0
 , <a class="el" href="#a8bb19c75ee621ae2ae9e6c56f1d0aa07af2bfc82c85c585a2790a39ff6c0c6296">SourceQuantum</a> = 1
 , <a class="el" href="#a8bb19c75ee621ae2ae9e6c56f1d0aa07a8ee74ae7b92481f0c339d5c53bfb58f8">DestQuantum</a> = 2
-, <a class="el" href="#a8bb19c75ee621ae2ae9e6c56f1d0aa07a0405db39dec981e8b826bcc40d834f9a">PureQuantum</a> = SourceQuantum | DestQuantum
+, <a class="el" href="#a8bb19c75ee621ae2ae9e6c56f1d0aa07a0405db39dec981e8b826bcc40d834f9a">PureQuantum</a>
 , <br />
 &#160;&#160;<a class="el" href="#a8bb19c75ee621ae2ae9e6c56f1d0aa07ab9a1fa1933cb9cb614c18fac85bae70f">TransferClassicalToQuantum</a>
 , <a class="el" href="#a8bb19c75ee621ae2ae9e6c56f1d0aa07a8df2fc9bd8165d381933a9aac2dcc5d0">TransferQuantumToClassical</a>
@@ -209,7 +209,7 @@ Private Attributes</h2></td></tr>
 <tr class="separator:adab2b1f0106081d67c12017970ad3870"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1e9f7e40ccb7c5a10f5780211a30b29" id="r_ab1e9f7e40ccb7c5a10f5780211a30b29"><td class="memItemLeft" align="right" valign="top">std::unordered_set&lt; BasicBlock * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1e9f7e40ccb7c5a10f5780211a30b29">pure_quantum_measurement_</a> {}</td></tr>
 <tr class="separator:ab1e9f7e40ccb7c5a10f5780211a30b29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af29f2d475880cba5affa161c72ed64fd" id="r_af29f2d475880cba5affa161c72ed64fd"><td class="memItemLeft" align="right" valign="top">std::unordered_set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af29f2d475880cba5affa161c72ed64fd">quantum_register_types</a> = {&quot;Qubit&quot;, &quot;Result&quot;}</td></tr>
+<tr class="memitem:af29f2d475880cba5affa161c72ed64fd" id="r_af29f2d475880cba5affa161c72ed64fd"><td class="memItemLeft" align="right" valign="top">std::unordered_set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af29f2d475880cba5affa161c72ed64fd">quantum_register_types</a></td></tr>
 <tr class="separator:af29f2d475880cba5affa161c72ed64fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfdb9b91e97a21b6f50d4a6310781da7" id="r_acfdb9b91e97a21b6f50d4a6310781da7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acfdb9b91e97a21b6f50d4a6310781da7">qir_runtime_prefix</a> = &quot;__quantum__rt__&quot;</td></tr>
 <tr class="separator:acfdb9b91e97a21b6f50d4a6310781da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1007,7 +1007,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_set&lt;std::string&gt; llvm::QirGroupingPass::quantum_register_types = {&quot;Qubit&quot;, &quot;Result&quot;}</td>
+          <td class="memname">std::unordered_set&lt;std::string&gt; llvm::QirGroupingPass::quantum_register_types</td>
         </tr>
       </table>
   </td>
@@ -1016,7 +1016,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
+<b>Initial value:</b><div class="fragment"><div class="line">= {<span class="stringliteral">&quot;Qubit&quot;</span>,</div>
+<div class="line">                                                              <span class="stringliteral">&quot;Result&quot;</span>}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="accbe5d9b06aad04604ca8194c5c34dba" name="accbe5d9b06aad04604ca8194c5c34dba"></a>
@@ -1091,8 +1093,8 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/ubuntu/qir_passes_nosockets.git/src/pass_runner/headers/<a class="el" href="QirGrouping_8hpp_source.html">QirGrouping.hpp</a></li>
-<li>/home/ubuntu/qir_passes_nosockets.git/src/pass_runner/passes/<a class="el" href="QirGrouping_8cpp.html">QirGrouping.cpp</a></li>
+<li>/home/ubuntu/qir_passes_fomac.git/src/pass_runner/headers/<a class="el" href="QirGrouping_8hpp_source.html">QirGrouping.hpp</a></li>
+<li>/home/ubuntu/qir_passes_fomac.git/src/pass_runner/passes/<a class="el" href="QirGrouping_8cpp.html">QirGrouping.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

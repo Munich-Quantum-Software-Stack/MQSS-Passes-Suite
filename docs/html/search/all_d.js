@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['operand_0',['operand',['../structllvm_1_1AllocationAnalysis_1_1ResourceAccessLocation.html#a2e8050a422c2b6c3387b06b316dc73cb',1,'llvm::AllocationAnalysis::ResourceAccessLocation']]],
-  ['operand_5fid_1',['operand_id',['../structllvm_1_1AllocationAnalysis_1_1ResourceAccessLocation.html#a98e72139d51d6b205037be8d545e73a5',1,'llvm::AllocationAnalysis::ResourceAccessLocation']]],
-  ['operandanalysis_2',['operandAnalysis',['../classllvm_1_1QirGroupingPass.html#abd4371a3cc0571498232c82d27be6a5a',1,'llvm::QirGroupingPass']]],
-  ['order_20as_20a_20result_20pauli_20gate_20is_20changed_20accordingly_3',['order as a result pauli gate is changed accordingly',['../classQirHadamardAndPauliGateSwitch.html#autotoc_md0',1,'order. As a result, Pauli gate is changed accordingly.'],['../classQirHadamardAndPauliGateSwitch.html#autotoc_md1',1,'order. As a result, Pauli gate is changed accordingly.'],['../classQirPauliGateAndHadamardSwitch.html#autotoc_md3',1,'order. As a result, Pauli gate is changed accordingly.'],['../classQirPauliGateAndHadamardSwitch.html#autotoc_md5',1,'order. As a result, Pauli gate is changed accordingly.']]]
+  ['name_5fto_5ffunction_5fpointer_0',['name_to_function_pointer',['../structllvm_1_1FunctionRegister.html#a41b32b59b7c30001464a9383ef29f492',1,'llvm::FunctionRegister']]],
+  ['nextquantumcycle_1',['nextQuantumCycle',['../classllvm_1_1QirGroupingPass.html#ae493d86dcff5b2307ba46dcdf89fa267',1,'llvm::QirGroupingPass']]],
+  ['none_2',['none',['../classllvm_1_1QirQubitRemapPass.html#a3a6b795886c6ec4e44c14df286a5b0cbae92a2b2427a4348682f77d82d31f324e',1,'llvm::QirQubitRemapPass::None'],['../classllvm_1_1QirResourceAnnotationPass.html#a1a2026cb7ef7d5656c2eb122d6480bc1a682629fa2e4f5a8ab8409e0ba93dbe9a',1,'llvm::QirResourceAnnotationPass::None']]],
+  ['notresource_3',['NotResource',['../structllvm_1_1AllocationAnalysis.html#ae0fbc1fe1aaa02ee6b28c920b72f61d6a40b1eacf3f9a5d1c193b37679cfdb64a',1,'llvm::AllocationAnalysis']]]
 ];

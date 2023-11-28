@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_nosockets.git/src/pass_runner/headers/QirReplaceConstantBranches.hpp Source File</title>
+<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_fomac.git/src/pass_runner/headers/QirReplaceConstantBranches.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,21 +88,23 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="PassModule_8hpp.html">PassModule.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacellvm.html">llvm</a> {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
-<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="classllvm_1_1QirReplaceConstantBranchesPass.html">   17</a></span><span class="keyword">class </span><a class="code hl_class" href="classllvm_1_1QirReplaceConstantBranchesPass.html">QirReplaceConstantBranchesPass</a> : <span class="keyword">public</span> <a class="code hl_class" href="classPassModule.html">PassModule</a> {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  PreservedAnalyses <a class="code hl_function" href="classllvm_1_1QirReplaceConstantBranchesPass.html#a61bc043e9dc9c9a34c111dd1e36689ec">run</a>(Module &amp;module, ModuleAnalysisManager &amp;MAM);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacellvm.html">llvm</a></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classllvm_1_1QirReplaceConstantBranchesPass.html">   18</a></span><span class="keyword">class </span><a class="code hl_class" href="classllvm_1_1QirReplaceConstantBranchesPass.html">QirReplaceConstantBranchesPass</a> : <span class="keyword">public</span> <a class="code hl_class" href="classPassModule.html">PassModule</a></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    PreservedAnalyses <a class="code hl_function" href="classllvm_1_1QirReplaceConstantBranchesPass.html#a61bc043e9dc9c9a34c111dd1e36689ec">run</a>(Module &amp;module, ModuleAnalysisManager &amp;MAM);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
 </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>} <span class="comment">// namespace llvm</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>} <span class="comment">// namespace llvm</span></div>
 <div class="ttc" id="aPassModule_8hpp_html"><div class="ttname"><a href="PassModule_8hpp.html">PassModule.hpp</a></div><div class="ttdoc">Declaration of the 'PassModule' class.</div></div>
-<div class="ttc" id="aclassPassModule_html"><div class="ttname"><a href="classPassModule.html">PassModule</a></div><div class="ttdoc">This class derives from 'LLVM::ModulePassManager'. The 'PassModule' class is an abstract class....</div><div class="ttdef"><b>Definition</b> PassModule.hpp:22</div></div>
-<div class="ttc" id="aclassllvm_1_1QirReplaceConstantBranchesPass_html"><div class="ttname"><a href="classllvm_1_1QirReplaceConstantBranchesPass.html">llvm::QirReplaceConstantBranchesPass</a></div><div class="ttdoc">This pass removes those blocks with conditional branching terminators with hard-coded conditions.</div><div class="ttdef"><b>Definition</b> QirReplaceConstantBranches.hpp:17</div></div>
+<div class="ttc" id="aclassPassModule_html"><div class="ttname"><a href="classPassModule.html">PassModule</a></div><div class="ttdoc">This class derives from 'LLVM::ModulePassManager'. The 'PassModule' class is an abstract class....</div><div class="ttdef"><b>Definition</b> PassModule.hpp:23</div></div>
+<div class="ttc" id="aclassllvm_1_1QirReplaceConstantBranchesPass_html"><div class="ttname"><a href="classllvm_1_1QirReplaceConstantBranchesPass.html">llvm::QirReplaceConstantBranchesPass</a></div><div class="ttdoc">This pass removes those blocks with conditional branching terminators with hard-coded conditions.</div><div class="ttdef"><b>Definition</b> QirReplaceConstantBranches.hpp:19</div></div>
 <div class="ttc" id="aclassllvm_1_1QirReplaceConstantBranchesPass_html_a61bc043e9dc9c9a34c111dd1e36689ec"><div class="ttname"><a href="classllvm_1_1QirReplaceConstantBranchesPass.html#a61bc043e9dc9c9a34c111dd1e36689ec">llvm::QirReplaceConstantBranchesPass::run</a></div><div class="ttdeci">PreservedAnalyses run(Module &amp;module, ModuleAnalysisManager &amp;MAM)</div><div class="ttdoc">Applies this pass to the QIR's LLVM module.</div><div class="ttdef"><b>Definition</b> QirReplaceConstantBranches.cpp:22</div></div>
-<div class="ttc" id="anamespacellvm_html"><div class="ttname"><a href="namespacellvm.html">llvm</a></div><div class="ttdef"><b>Definition</b> QirAllocationAnalysis.hpp:15</div></div>
+<div class="ttc" id="anamespacellvm_html"><div class="ttname"><a href="namespacellvm.html">llvm</a></div><div class="ttdef"><b>Definition</b> QirAllocationAnalysis.hpp:16</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -24,7 +24,7 @@
 int rabbitmq_new_connection(amqp_connection_state_t *conn,
                             amqp_socket_t **socket);
 
-void send_message(amqp_connection_state_t *conn, char *message,
+void send_message(amqp_connection_state_t *conn, const char *message,
                   char const *queue);
 
 const char *receive_message(amqp_connection_state_t *conn, char const *queue);

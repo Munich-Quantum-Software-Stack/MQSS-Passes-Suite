@@ -2,7 +2,7 @@ var searchData=
 [
   ['calllist_0',['CallList',['../structllvm_1_1FunctionRegister.html#a34d48d751eb410fc48fa6ad3cfab5a1a',1,'llvm::FunctionRegister']]],
   ['calls_5fto_5freplace_1',['calls_to_replace',['../structllvm_1_1FunctionRegister.html#aa625712acc283201dbcdab05b99f831c',1,'llvm::FunctionRegister']]],
-  ['changed_20accordingly_2',['changed accordingly',['../classQirPauliGateAndHadamardSwitch.html#autotoc_md5',1,'order. As a result, Pauli gate is changed accordingly.'],['../classQirPauliGateAndHadamardSwitch.html#autotoc_md3',1,'order. As a result, Pauli gate is changed accordingly.'],['../classQirHadamardAndPauliGateSwitch.html#autotoc_md0',1,'order. As a result, Pauli gate is changed accordingly.'],['../classQirHadamardAndPauliGateSwitch.html#autotoc_md1',1,'order. As a result, Pauli gate is changed accordingly.']]],
+  ['changed_20accordingly_2',['order. As a result, Pauli gate is changed accordingly.',['../classQirPauliGateAndHadamardSwitch.html#autotoc_md0',1,'']]],
   ['checkdoublepimultiplies_3',['checkDoublePiMultiplies',['../QirNullRotationCancellation_8cpp.html#a8d6f3d9efcfebfaa8b84fbfa31b35bde',1,'QirNullRotationCancellation.cpp']]],
   ['classical_5fblocks_5f_4',['classical_blocks_',['../classllvm_1_1QirGroupingPass.html#a228f17cd230b8f8e17ba615cccf254fe',1,'llvm::QirGroupingPass']]],
   ['classifyinstruction_5',['classifyInstruction',['../classllvm_1_1QirGroupingPass.html#aedd1db72ecea323d01b76e4e1b62b70d',1,'llvm::QirGroupingPass']]],

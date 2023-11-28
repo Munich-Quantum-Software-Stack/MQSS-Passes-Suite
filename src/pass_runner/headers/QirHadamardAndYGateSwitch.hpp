@@ -7,7 +7,8 @@
 
 #include "PassModule.hpp"
 
-namespace llvm {
+namespace llvm
+{
 
 /**
 <<<<<<< HEAD
@@ -25,16 +26,17 @@ gate):src/pass_runner/headers/QirHadamardAndYGateSwitch.hpp
  * @brief This pass swaps adjacent H and Y gates whenever found in this order.
 >>>>>>> c768a51 (Resolving conflicts against NoSockets branch)
  */
-class QirHadamardAndYGateSwitchPass : public PassModule {
-public:
-  /**
-   * @brief Applies this pass to the QIR's LLVM module.
-   *
-   * @param module The module of the submitted QIR.
-   * @param MAM The module analysis manager.
-   * @return PreservedAnalyses
-   */
-  PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
+class QirHadamardAndYGateSwitchPass : public PassModule
+{
+  public:
+    /**
+     * @brief Applies this pass to the QIR's LLVM module.
+     *
+     * @param module The module of the submitted QIR.
+     * @param MAM The module analysis manager.
+     * @return PreservedAnalyses
+     */
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

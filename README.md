@@ -9,7 +9,7 @@ The entry point of the Quantum Resource Manager for selecting and applying LLVM 
    git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes.git
    ```
 
-2. After cloning, move into the repository directory and checkout the `NoSockets` branch:
+2. After cloning, make sure you are at the right branch:
    ```bash
    cd qir_passes
    git checkout NoSockets
@@ -37,7 +37,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 1. Install the required dependencies:
    ```bash
    sudo apt update
-   sudo apt install -y cmake llvm rabbitmq-server g++ curl
+   sudo apt install -y cmake llvm rabbitmq-server g++ curl libgtest-dev nlohmann-json3-dev
    ```
 
 2. Navigate to the `qir_passes` directory (if you are not already there):
@@ -48,12 +48,12 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 3. Run `make` to install `daemon_d`:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, with the following command:
       ```bash
-      make QDMI_PATH=qdmi install
+      make FOMAC_PATH=fomac BACKENDS_PATH=backends install
       ```
 
-   - Besides the directory with the chosen Quantum Device Management Interface (QDMI), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directories with the chosen Figure of Merits and Constraints library (FoMaC) and the available backends, one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build install
+      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BACKENDS_PATH=backends BUILD_DIR=build install
       ```
 
 ## Uninstallation
@@ -77,7 +77,13 @@ This will remove `daemon_d` from your system.
 The project structure is the following:
 
 ```
+├─ .clang-format
 ├─ .gitignore
+├─ .gitlab
+│  ├─ issue_templates
+│  │  └─ new_issue.md
+│  └─ merge_request_templates
+│     └─ new_merge_request.md
 ├─ .gitlab-ci.yml
 ├─ .pre-commit-config.yaml
 ├─ CMakeLists.txt
@@ -86,6 +92,13 @@ The project structure is the following:
 ├─ LICENSE
 ├─ Makefile
 ├─ README.md
+├─ backends
+│  ├─ CMakeLists.txt
+│  ├─ JobRunner.hpp
+│  ├─ IQMBackend.cpp
+│  ├─ IQMBackend.hpp
+│  ├─ Q5Backend.hpp
+│  └─ Q20Backend.hpp
 ├─ benchmarks
 │  └─ test.ll
 ├─ cmake
@@ -99,7 +112,12 @@ The project structure is the following:
 ├─ flowcharts
 │  ├─ flow.drawio
 │  └─ flow.png
+├─ fomac
+│  ├─ CMakeLists.txt
+│  ├─ fomac.cpp
+│  └─ fomac.hpp
 ├─ scripts
+│  ├─ kill_daemons.sh
 │  └─ generate_docs.sh
 ├─ src
 │  ├─ connection_handling.cpp
@@ -113,6 +131,9 @@ The project structure is the following:
 │  │  └─ passes
 │  │     ├─ CMakeLists.txt
 │  │     └─ ...
+│  ├─ qdmi
+│  │  ├─ qdmi.cpp
+│  │  └─ qdmi.hpp
 │  ├─ scheduler_runner
 │  │  ├─ schedulers
 │  │  │  ├─ CMakeLists.txt
@@ -150,18 +171,18 @@ You can build the Quantum Resource Manager and generate its documentation locall
 1. Install the required dependencies for Doxygen:
    ```bash
    sudo apt update
-   sudo apt install -y cmake llvm rabbitmq-server g++ flex bison
+   sudo apt install -y cmake llvm rabbitmq-server g++ curl flex bison libgtest-dev nlohmann-json3-dev
    ```
 
 2. Run make:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, and generate its documentation with the following command:
       ```bash
-      make QDMI_PATH=qdmi docs
+      make FOMAC_PATH=fomac BACKENDS_PATH=backends docs
       ```
 
-   - Besides the directory with the chosen Quantum Device Management Interface (QDMI), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directory with the chosen Figures of Merit and Constraints library (FOMAC), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build docs
+      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BACKENDS_PATH=backends BUILD_DIR=build docs
       ```
 
 3. Open the generated documentation in a web browser:

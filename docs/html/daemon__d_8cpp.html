@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_nosockets.git/src/daemon_d.cpp File Reference</title>
+<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_fomac.git/src/daemon_d.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -76,6 +76,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">daemon_d.cpp File Reference</div></div>
@@ -84,12 +85,7 @@ $(function() {
 
 <p>TODO.
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="PassRunner_8hpp_source.html">pass_runner/PassRunner.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="QirPassRunner_8hpp_source.html">pass_runner/QirPassRunner.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="SchedulerRunner_8hpp_source.html">scheduler_runner/SchedulerRunner.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="SelectorRunner_8hpp_source.html">selector_runner/SelectorRunner.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="connection__handling_8hpp_source.html">connection_handling.hpp</a>&quot;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;chrono&gt;</code><br />
 <code>#include &lt;csignal&gt;</code><br />
 <code>#include &lt;cstdlib&gt;</code><br />
@@ -98,6 +94,7 @@ $(function() {
 <code>#include &lt;fstream&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;netinet/in.h&gt;</code><br />
+<code>#include &lt;nlohmann/json.hpp&gt;</code><br />
 <code>#include &lt;signal.h&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;sys/ioctl.h&gt;</code><br />
@@ -106,8 +103,19 @@ $(function() {
 <code>#include &lt;sys/types.h&gt;</code><br />
 <code>#include &lt;thread&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="connection__handling_8hpp_source.html">connection_handling.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PassRunner_8hpp_source.html">pass_runner/PassRunner.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="QirPassRunner_8hpp_source.html">pass_runner/QirPassRunner.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SchedulerRunner_8hpp_source.html">scheduler_runner/SchedulerRunner.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SelectorRunner_8hpp_source.html">selector_runner/SelectorRunner.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ab701e3ac61a85b337ec5c1abaad6742d" id="r_ab701e3ac61a85b337ec5c1abaad6742d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = nlohmann::json</td></tr>
+<tr class="separator:ab701e3ac61a85b337ec5c1abaad6742d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:adfec16770c30ee60ec84d36667dac102" id="r_adfec16770c30ee60ec84d36667dac102"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfec16770c30ee60ec84d36667dac102">handleCircuit</a> (amqp_connection_state_t &amp;<a class="el" href="#a3d71ee93207c462b1690738e98283208">conn</a>, char const *ClientQueue, std::unique_ptr&lt; char[]&gt; receivedQirModule, std::unique_ptr&lt; char[]&gt; receivedScheduler, std::unique_ptr&lt; char[]&gt; receivedSelector)</td></tr>
@@ -128,7 +136,22 @@ Variables</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>TODO. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="ab701e3ac61a85b337ec5c1abaad6742d" name="ab701e3ac61a85b337ec5c1abaad6742d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab701e3ac61a85b337ec5c1abaad6742d">&#9670;&#160;</a></span>json</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = nlohmann::json</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
 <a id="adfec16770c30ee60ec84d36667dac102" name="adfec16770c30ee60ec84d36667dac102"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adfec16770c30ee60ec84d36667dac102">&#9670;&#160;</a></span>handleCircuit()</h2>
 

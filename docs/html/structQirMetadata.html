@@ -95,6 +95,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a69115d6e8cb5ef63c09d22e7a01ac4db" id="r_a69115d6e8cb5ef63c09d22e7a01ac4db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a69115d6e8cb5ef63c09d22e7a01ac4db">setRemoveCallAttributes</a> (const bool value)</td></tr>
 <tr class="memdesc:a69115d6e8cb5ef63c09d22e7a01ac4db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function for removing all attributes associated to LLVM functions. Use example:  <br /></td></tr>
 <tr class="separator:a69115d6e8cb5ef63c09d22e7a01ac4db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35a82ac468ca65803c9b232cf4732799" id="r_a35a82ac468ca65803c9b232cf4732799"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35a82ac468ca65803c9b232cf4732799">setTargetPlatform</a> (std::string platform)</td></tr>
+<tr class="memdesc:a35a82ac468ca65803c9b232cf4732799"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
+<tr class="separator:a35a82ac468ca65803c9b232cf4732799"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -106,6 +109,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a9d35a917515aae007b3212bb871acf80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1effd5d360c6cc4fe522e186d66409ce" id="r_a1effd5d360c6cc4fe522e186d66409ce"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1effd5d360c6cc4fe522e186d66409ce">availablePlatforms</a></td></tr>
 <tr class="separator:a1effd5d360c6cc4fe522e186d66409ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5f36af8cd7b508cfdcf9ca2424eb303" id="r_ad5f36af8cd7b508cfdcf9ca2424eb303"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad5f36af8cd7b508cfdcf9ca2424eb303">targetPlatform</a></td></tr>
+<tr class="separator:ad5f36af8cd7b508cfdcf9ca2424eb303"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7db510f74bd15b8c463b9c86b66b6d8a" id="r_a7db510f74bd15b8c463b9c86b66b6d8a"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7db510f74bd15b8c463b9c86b66b6d8a">injectedAnnotations</a></td></tr>
 <tr class="separator:a7db510f74bd15b8c463b9c86b66b6d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5869b0d717d1531fd228ed961625cd46" id="r_a5869b0d717d1531fd228ed961625cd46"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5869b0d717d1531fd228ed961625cd46">shouldRemoveCallAttributes</a></td></tr>
@@ -252,6 +257,40 @@ QPR.setMetadata(qirMetadata);
 
 </div>
 </div>
+<a id="a35a82ac468ca65803c9b232cf4732799" name="a35a82ac468ca65803c9b232cf4732799"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35a82ac468ca65803c9b232cf4732799">&#9670;&#160;</a></span>setTargetPlatform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void QirMetadata::setTargetPlatform </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>platform</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>TODO. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">TODO</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a1effd5d360c6cc4fe522e186d66409ce" name="a1effd5d360c6cc4fe522e186d66409ce"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1effd5d360c6cc4fe522e186d66409ce">&#9670;&#160;</a></span>availablePlatforms</h2>
@@ -343,8 +382,23 @@ QPR.setMetadata(qirMetadata);
 
 </div>
 </div>
+<a id="ad5f36af8cd7b508cfdcf9ca2424eb303" name="ad5f36af8cd7b508cfdcf9ca2424eb303"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5f36af8cd7b508cfdcf9ca2424eb303">&#9670;&#160;</a></span>targetPlatform</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string QirMetadata::targetPlatform</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Target architecture. </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/ubuntu/qir_passes_nosockets.git/src/pass_runner/<a class="el" href="QirPassRunner_8hpp_source.html">QirPassRunner.hpp</a></li>
+<li>/home/ubuntu/qir_passes_fomac.git/src/pass_runner/<a class="el" href="QirPassRunner_8hpp_source.html">QirPassRunner.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

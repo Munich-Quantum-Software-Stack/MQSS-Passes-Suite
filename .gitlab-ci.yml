@@ -24,26 +24,26 @@ pages:
     paths:
       - public
   rules:
-    - if: '$CI_COMMIT_REF_NAME == "NoSockets"'
+    - if: '$CI_COMMIT_REF_NAME == "FoMaC"'
 
 analyze:
   stage: test
   script:
     - apt update
-    - apt install -y llvm rabbitmq-server libopenmpi-dev clang
+    - apt install -y llvm rabbitmq-server libopenmpi-dev clang nlohmann-json3-dev
     - export LLVM_INCLUDE_PATH=$(llvm-config --includedir)
     - make build_rabbitmq
-    - find src -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Isrc/pass_runner/headers -Iqdmi/ {} \;
+    - find src -name "*.cpp" -exec clang --analyze -I$LLVM_INCLUDE_PATH -Isrc/pass_runner/headers -Isrc/qdmi -Ifomac -Ibackends -Xclang -analyzer-output=text {} \; 2>&1 | grep -E '(warning|error):'
 
 run_tests:
   stage: test
   script:
     - apt update
-    - apt install -y cmake llvm rabbitmq-server g++ curl
-    - make test
+    - apt install -y cmake llvm rabbitmq-server g++ curl nlohmann-json3-dev
+    - make FOMAC_PATH=fomac BACKENDS_PATH=backends test
 
 check-format:
   stage: analysis
   script:
     - files_list=$(find src -type f -regex '.*\.\(c\|cc\|cxx\|cpp\|h\|hpp\|hxx\)$')
-    - clang-format ${files_list} --style=LLVM --Werror --dry-run --verbose --ferror-limit=5
+    - clang-format --style=file --Werror --dry-run --verbose --ferror-limit=5 ${files_list}

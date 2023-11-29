@@ -33,10 +33,66 @@
 using json = nlohmann::json;
 
 /**
+ * @todo Comment this
+ */
+struct QuantumTask
+{
+    int task_id;
+    int n_qbits;
+    int n_shots;
+    std::string circuit_file;
+    std::string circuit_file_type;
+    std::string result_destination;
+    std::string preferred_qpu;
+    std::string scheduled_qpu;
+    int priority;
+    int optimisation_level;
+    bool no_modify;
+    bool transpiler_flag;
+    int result_type;
+    std::string submit_time;
+    std::string circuit_qiskit;
+    std::string additional_information;
+    std::string change_selector;
+    std::string change_scheduler;
+};
+
+/**
  * @var conn
  * @brief TODO
  */
 amqp_connection_state_t conn;
+
+/**
+ * @todo Comment this function
+ */
+QuantumTask JSONToQuantumTask(const char *QuantumTask_str)
+{
+    QuantumTask task;
+
+    json QuantumTask_json = json::parse(QuantumTask_str);
+
+    task.task_id = QuantumTask_json["task_id"];
+    task.n_qbits = QuantumTask_json["n_qbits"];
+    task.n_shots = QuantumTask_json["n_shots"];
+    task.circuit_file = QuantumTask_json["circuit_file"];
+    task.circuit_file_type = QuantumTask_json["circuit_file_type"];
+    task.result_destination = QuantumTask_json["result_destination"];
+    task.preferred_qpu = QuantumTask_json["preferred_qpu"];
+    task.scheduled_qpu = QuantumTask_json["scheduled_qpu"];
+    task.priority = QuantumTask_json["priority"];
+    task.optimisation_level = QuantumTask_json["optimisation_level"];
+    task.no_modify = QuantumTask_json["no_modify"];
+    task.transpiler_flag = QuantumTask_json["transpiler_flag"];
+    task.result_type = QuantumTask_json["result_type"];
+    task.submit_time = QuantumTask_json["submit_time"];
+    task.circuit_qiskit = QuantumTask_json["circuit_qiskit"];
+    task.additional_information = QuantumTask_json["additional_information"];
+    task.change_selector = QuantumTask_json["change_selector"];
+    task.change_scheduler = QuantumTask_json["change_scheduler"];
+
+    return task;
+}
 
 /**
  * @brief TODO
@@ -47,24 +103,34 @@ amqp_connection_state_t conn;
  * @param receivedSelector TODO
  */
 void handleQuantumDaemon(amqp_connection_state_t &conn, char const *QDQueue,
-                         std::unique_ptr<char[]> receivedQirModule,
-                         std::unique_ptr<char[]> receivedScheduler,
-                         std::unique_ptr<char[]> receivedSelector)
+                         const QuantumTask &quantumTask)
 {
     // Invoke the scheduler
     std::string scheduler;
-    char buffer[PATH_MAX];
-
-    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
-    if (len != -1)
+    if (quantumTask.change_scheduler != "")
     {
-        buffer[len] = '\0';
-        scheduler = std::string(buffer);
-        size_t lastSlash = scheduler.find_last_of("/\\");
-        scheduler = scheduler.substr(0, lastSlash) +
-                    "/lib/scheduler_runner/schedulers/";
+        scheduler = quantumTask.change_scheduler;
+        /*std::string scheduler;
+        char buffer[PATH_MAX];
+
+        ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+        if (len != -1)
+        {
+            buffer[len] = '\0';
+            scheduler = std::string(buffer);
+            size_t lastSlash = scheduler.find_last_of("/\\");
+            scheduler = scheduler.substr(0, lastSlash) +
+                        "/lib/scheduler_runner/schedulers/";
+        }
+        //scheduler.append(receivedScheduler.get());
+        scheduler.append(quantumTask.change_scheduler);
+
+        if (invokeScheduler(scheduler) > 0)*/
     }
-    scheduler.append(receivedScheduler.get());
+    else
+    {
+        scheduler = "libscheduler_round_robin.so";
+    }
 
     if (invokeScheduler(scheduler) > 0)
     {
@@ -75,7 +141,60 @@ void handleQuantumDaemon(amqp_connection_state_t &conn, char const *QDQueue,
         return;
     }
 
-    // Fetch the supported gate set using qdmi
+    // Invoke the selector
+    std::string selector;
+    if (quantumTask.change_selector != "")
+    {
+        selector = quantumTask.change_selector;
+        /*std::string selector;
+        char selector_buffer[PATH_MAX];
+
+        len = readlink("/proc/self/exe", selector_buffer,
+                       sizeof(selector_buffer) - 1);
+        if (len != -1)
+        {
+            selector_buffer[len] = '\0';
+            selector = std::string(selector_buffer);
+            size_t lastSlash = selector.find_last_of("/\\");
+            selector =
+                selector.substr(0, lastSlash) +
+        "/lib/selector_runner/selectors/";
+        }
+        selector.append(receivedSelector.get());
+
+        std::vector<std::string> passes = invokeSelector(selector.c_str());*/
+    }
+    else
+    {
+        selector = "libselector_all.so";
+    }
+
+    std::vector<std::string> passes = invokeSelector(selector);
+
+    // Parse generic QIR into an LLVM module
+    LLVMContext Context;
+    SMDiagnostic error;
+
+    auto memoryBuffer =
+        // MemoryBuffer::getMemBuffer(receivedQirModule.get(), "QIR (LRZ)",
+        // false);
+        MemoryBuffer::getMemBuffer(quantumTask.circuit_qiskit, "QIR (LRZ)",
+                                   false);
+    MemoryBufferRef QIRRef = *memoryBuffer;
+    std::unique_ptr<Module> module = parseIR(QIRRef, error, Context);
+    if (!module)
+    {
+        std::cout << "   [qresourcemanager_d]..Warning: There was an error "
+                     "parsing the "
+                     "generic QIR"
+                  << std::endl;
+        return;
+    }
+
+    // Invoke the passes
+    invokePasses(module, passes);
+
+    // Fetch the target architecture from the metadata
     QirPassRunner &QPR = QirPassRunner::getInstance();
     QirMetadata &qirMetadata = QPR.getMetadata();
     auto targetArchitecture = qirMetadata.targetPlatform;
@@ -91,46 +210,8 @@ void handleQuantumDaemon(amqp_connection_state_t &conn, char const *QDQueue,
         return;
     }
 
-    // Invoke the selector
-    std::string selector;
-    char selector_buffer[PATH_MAX];
-
-    len = readlink("/proc/self/exe", selector_buffer,
-                   sizeof(selector_buffer) - 1);
-    if (len != -1)
-    {
-        selector_buffer[len] = '\0';
-        selector = std::string(selector_buffer);
-        size_t lastSlash = selector.find_last_of("/\\");
-        selector =
-            selector.substr(0, lastSlash) + "/lib/selector_runner/selectors/";
-    }
-    selector.append(receivedSelector.get());
-
-    std::vector<std::string> passes = invokeSelector(selector.c_str());
-
-    // Parse generic QIR into an LLVM module
-    LLVMContext Context;
-    SMDiagnostic error;
-
-    auto memoryBuffer =
-        MemoryBuffer::getMemBuffer(receivedQirModule.get(), "QIR (LRZ)", false);
-    MemoryBufferRef QIRRef = *memoryBuffer;
-    std::unique_ptr<Module> module = parseIR(QIRRef, error, Context);
-    if (!module)
-    {
-        std::cout << "   [qresourcemanager_d]..Warning: There was an error "
-                     "parsing the "
-                     "generic QIR"
-                  << std::endl;
-        return;
-    }
-
-    // Invoke the passes
-    invokePasses(module, passes);
-
     // Submit the adapted QIR to the target platform
-    int n_shots = 10000;
+    int n_shots = quantumTask.n_shots;
     auto start = std::chrono::steady_clock::now();
     std::unordered_map<std::string, int> results =
         qdmi_launch_qir(backend, module, n_shots);
@@ -315,49 +396,67 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        // Receive a QIR module as a binary blob
-        auto *qirmodule = receive_message(&conn,     // conn
-                                          QRMQueue); // queue
+        // Receive a QuantumTask
+        auto *task = receive_message(&conn,     // conn
+                                     QRMQueue); // queue
 
-        auto receivedQirModule =
-            std::make_unique<char[]>(strlen(qirmodule) + 1);
-        strcpy(receivedQirModule.get(), qirmodule);
+        if (task)
+        {
+            QuantumTask quantumTask = JSONToQuantumTask(task);
 
-        // Receive name of the desired scheduler
-        auto *scheduler = receive_message(&conn,     // conn
-                                          QRMQueue); // queue
+            //// Receive a QIR module as a binary blob
+            // auto *qirmodule = receive_message(&conn,     // conn
+            //                                   QRMQueue); // queue
 
-        auto receivedScheduler =
-            std::make_unique<char[]>(strlen(scheduler) + 1);
-        strcpy(receivedScheduler.get(), scheduler);
+            // auto receivedQirModule =
+            //     std::make_unique<char[]>(strlen(qirmodule) + 1);
+            // strcpy(receivedQirModule.get(), qirmodule);
 
-        // Receive name of the desired selector
-        auto *selector = receive_message(&conn,     // conn
-                                         QRMQueue); // queue
+            //// Receive name of the desired scheduler
+            // auto *scheduler = receive_message(&conn,     // conn
+            //                                   QRMQueue); // queue
 
-        auto receivedSelector = std::make_unique<char[]>(strlen(selector) + 1);
-        strcpy(receivedSelector.get(), selector);
+            // auto receivedScheduler =
+            //     std::make_unique<char[]>(strlen(scheduler) + 1);
+            // strcpy(receivedScheduler.get(), scheduler);
 
-        std::cout << "   [qresourcemanager_d]..Received a QIR module"
-                  //<< nameOfQir
-                  << std::endl;
+            //// Receive name of the desired selector
+            // auto *selector = receive_message(&conn,     // conn
+            //                                  QRMQueue); // queue
 
-        std::cout << "   [qresourcemanager_d]..Received a scheduler: "
-                  << receivedScheduler.get() << std::endl;
+            // auto receivedSelector = std::make_unique<char[]>(strlen(selector)
+            // + 1); strcpy(receivedSelector.get(), selector);
 
-        std::cout << "   [qresourcemanager_d]..Received a selector: "
-                  << receivedSelector.get() << std::endl;
+            std::cout << "   [qresourcemanager_d]..Received a QuantumTask"
+                      << std::endl;
 
-        // Create a new thread that executes 'handleQuantumDaemon' to run
-        // the received scheduler, and the received selector targeting
-        // the received QIR
-        std::thread QuantumDaemonThread(handleQuantumDaemon, std::ref(conn),
-                                        QDQueue, std::move(receivedQirModule),
-                                        std::move(receivedScheduler),
-                                        std::move(receivedSelector));
+            // std::cout << "   [qresourcemanager_d]..Received a QIR module"
+            //           << std::endl;
 
-        // Detach from this thread once done
-        QuantumDaemonThread.detach();
+            // std::cout << "   [qresourcemanager_d]..Received a scheduler: "
+            //           << receivedScheduler.get() << std::endl;
+
+            // std::cout << "   [qresourcemanager_d]..Received a selector: "
+            //           << receivedSelector.get() << std::endl;
+
+            // Create a new thread that executes 'handleQuantumDaemon' to run
+            // the received scheduler, and the received selector targeting
+            // the received QIR
+            std::thread QuantumDaemonThread(handleQuantumDaemon, std::ref(conn),
+                                            QDQueue, quantumTask);
+            // std::move(receivedQirModule),
+            // std::move(receivedScheduler),
+            // std::move(receivedSelector));
+
+            // Detach from this thread once done
+            QuantumDaemonThread.detach();
+        }
+        else
+        {
+            std::cout
+                << "   [qresourcemanager_d]..Error: Failed to receive the task"
+                << std::endl;
+        }
     }
 
     return 1;

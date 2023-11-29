@@ -1,6 +1,7 @@
 #include "../src/connection_handling.hpp"
 
 #include <cstdlib>
+#include <ctime>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -44,27 +45,21 @@ int main(int argc, char *argv[])
 {
     setbuf(stdout, NULL);
 
+    // Establish a connection to the RabbitMQ server
     const char *QDQueue = "qd_queue";
     const char *QRMQueue = "qrm_queue";
 
-    // Establish a connection to the RabbitMQ server
     amqp_connection_state_t conn;
-
     amqp_socket_t *socket = NULL;
-
     rabbitmq_new_connection(&conn, &socket);
-
-    // Send the generic QIR to the daemon
-    std::cout << "[Quantum Daemon]......Sending generic QIR to the daemon"
-              << std::endl;
 
     // Open the QIR file
     const char *filename = "../../benchmarks/test.ll";
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open())
     {
-        std::cerr << "[Quantum Daemon]......Failed to open file: " << filename
-                  << std::endl;
+        std::cerr << "[Quantum Daemon]......Failed to open file with QIR: "
+                  << filename << std::endl;
         return 1;
     }
 
@@ -78,19 +73,41 @@ int main(int argc, char *argv[])
     file.read(genericQir, fileSize);
     file.close();
 
-    send_message(&conn, genericQir, QRMQueue);
+    // Create JSON string to send to the Quantum Resource Manager
+    std::time_t currentTime = std::time(nullptr);
+    const int bufferSize = 80;
+    char buffer[bufferSize];
+    std::strftime(buffer, bufferSize, "%Y-%m-%d %H:%M:%S",
+                  std::localtime(&currentTime));
+    std::string submit_time(buffer);
+    json QuantumTask_json = {
+        {"task_id", -1},
+        {"n_qbits", 0},
+        {"n_shots", 10000},
+        {"circuit_file", ""},
+        {"circuit_file_type", "QIR"},
+        {"result_destination", ""},
+        {"preferred_qpu", "Q20"},
+        {"scheduled_qpu", ""},
+        {"priority", 0},
+        {"optimisation_level", 0},
+        {"no_modify", false},
+        {"transpiler_flag", true},
+        {"result_type", 0},
+        {"submit_time", submit_time},
+        {"circuit_qiskit", genericQir},
+        {"additional_information", ""},
+        {"change_selector", "libselector_all.so"},
+        {"change_scheduler", "libscheduler_round_robin.so"},
+    };
 
-    // Send the desired scheduler to the dameon
-    const char *schedulerName = "libscheduler_round_robin.so";
-    std::cout << "[Quantum Daemon]......Sending scheduler " << schedulerName
-              << " to the daemon" << std::endl;
-    send_message(&conn, (char *)schedulerName, QRMQueue);
+    std::string QuantumTask_str = QuantumTask_json.dump();
 
-    // Send the desired selector to the dameon
-    const char *selectorName = "libselector_all.so";
-    std::cout << "[Quantum Daemon]......Sending selector " << selectorName
-              << " to the daemon" << std::endl;
-    send_message(&conn, (char *)selectorName, QRMQueue);
+    // Send the QuantumTask to the Quantum Resource Manager
+    std::cout << "[Quantum Daemon]......Sending QuantumTask to the QRM"
+              << std::endl;
+
+    send_message(&conn, QuantumTask_str.c_str(), QRMQueue);
 
     // Receive the response from the daemon
     const char *results = receive_message(&conn, QDQueue);

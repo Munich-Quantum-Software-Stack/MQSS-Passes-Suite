@@ -28,6 +28,6 @@
 #include <unistd.h>
 #include <vector>
 
-int invokeScheduler(const std::string &pathScheduler);
+int invokeScheduler(const std::string &nameScheduler);
 
 #endif // SCHEDULERRUNNER_HPP

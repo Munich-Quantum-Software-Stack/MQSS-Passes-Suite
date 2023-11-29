@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Find PIDs of all daemons running
-pids=$(pgrep -f qresourcemanager_d)
+pids=$(pgrep -f 'qresourcemanager_d' | grep -v "$(pgrep -f 'vim')")
 
 # Check if any matching processes were found
 if [ -n "$pids" ]; then

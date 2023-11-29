@@ -76,6 +76,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
@@ -111,6 +112,11 @@ $(function() {
 <code>#include &quot;<a class="el" href="SchedulerRunner_8hpp_source.html">scheduler_runner/SchedulerRunner.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="SelectorRunner_8hpp_source.html">selector_runner/SelectorRunner.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structQuantumTask.html">QuantumTask</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:ab701e3ac61a85b337ec5c1abaad6742d" id="r_ab701e3ac61a85b337ec5c1abaad6742d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = nlohmann::json</td></tr>
@@ -118,9 +124,11 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a72954c6927ada6e6c0da2820dc7a5810" id="r_a72954c6927ada6e6c0da2820dc7a5810"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72954c6927ada6e6c0da2820dc7a5810">handleQuantumDaemon</a> (amqp_connection_state_t &amp;<a class="el" href="#a3d71ee93207c462b1690738e98283208">conn</a>, char const *QDQueue, std::unique_ptr&lt; char[]&gt; receivedQirModule, std::unique_ptr&lt; char[]&gt; receivedScheduler, std::unique_ptr&lt; char[]&gt; receivedSelector)</td></tr>
-<tr class="memdesc:a72954c6927ada6e6c0da2820dc7a5810"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
-<tr class="separator:a72954c6927ada6e6c0da2820dc7a5810"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afafe6884bd16eae8eb82f82e2f49e262" id="r_afafe6884bd16eae8eb82f82e2f49e262"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structQuantumTask.html">QuantumTask</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afafe6884bd16eae8eb82f82e2f49e262">JSONToQuantumTask</a> (const char *QuantumTask_str)</td></tr>
+<tr class="separator:afafe6884bd16eae8eb82f82e2f49e262"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a327fdd1cf20e0470efe4b25c171fc9aa" id="r_a327fdd1cf20e0470efe4b25c171fc9aa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a327fdd1cf20e0470efe4b25c171fc9aa">handleQuantumDaemon</a> (amqp_connection_state_t &amp;<a class="el" href="#a3d71ee93207c462b1690738e98283208">conn</a>, char const *QDQueue, const <a class="el" href="structQuantumTask.html">QuantumTask</a> &amp;quantumTask)</td></tr>
+<tr class="memdesc:a327fdd1cf20e0470efe4b25c171fc9aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
+<tr class="separator:a327fdd1cf20e0470efe4b25c171fc9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ee3282bc313e547dbbb8d4f4010db61" id="r_a8ee3282bc313e547dbbb8d4f4010db61"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ee3282bc313e547dbbb8d4f4010db61">signalHandler</a> (int signum)</td></tr>
 <tr class="memdesc:a8ee3282bc313e547dbbb8d4f4010db61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function for the graceful termination of this daemon closing its own socket before exiting.  <br /></td></tr>
 <tr class="separator:a8ee3282bc313e547dbbb8d4f4010db61"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,8 +160,8 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a72954c6927ada6e6c0da2820dc7a5810" name="a72954c6927ada6e6c0da2820dc7a5810"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a72954c6927ada6e6c0da2820dc7a5810">&#9670;&#160;</a></span>handleQuantumDaemon()</h2>
+<a id="a327fdd1cf20e0470efe4b25c171fc9aa" name="a327fdd1cf20e0470efe4b25c171fc9aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a327fdd1cf20e0470efe4b25c171fc9aa">&#9670;&#160;</a></span>handleQuantumDaemon()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -173,20 +181,8 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::unique_ptr&lt; char[]&gt;&#160;</td>
-          <td class="paramname"><em>receivedQirModule</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::unique_ptr&lt; char[]&gt;&#160;</td>
-          <td class="paramname"><em>receivedScheduler</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::unique_ptr&lt; char[]&gt;&#160;</td>
-          <td class="paramname"><em>receivedSelector</em>&#160;</td>
+          <td class="paramtype">const <a class="el" href="structQuantumTask.html">QuantumTask</a> &amp;&#160;</td>
+          <td class="paramname"><em>quantumTask</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -207,6 +203,25 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="afafe6884bd16eae8eb82f82e2f49e262" name="afafe6884bd16eae8eb82f82e2f49e262"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afafe6884bd16eae8eb82f82e2f49e262">&#9670;&#160;</a></span>JSONToQuantumTask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structQuantumTask.html">QuantumTask</a> JSONToQuantumTask </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>QuantumTask_str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000015">Todo:</a></b></dt><dd>Comment this function </dd></dl>
 
 </div>
 </div>

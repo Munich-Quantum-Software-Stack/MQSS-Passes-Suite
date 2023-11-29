@@ -54,5 +54,6 @@ var searchData=
   ['qirygateandhadamardswitch_51',['QirYGateAndHadamardSwitch',['../classQirYGateAndHadamardSwitch.html',1,'']]],
   ['qirygateandhadamardswitchpass_52',['QirYGateAndHadamardSwitchPass',['../classllvm_1_1QirYGateAndHadamardSwitchPass.html',1,'llvm']]],
   ['qirzgateandhadamardswitch_53',['QirZGateAndHadamardSwitch',['../classQirZGateAndHadamardSwitch.html',1,'']]],
-  ['qirzgateandhadamardswitchpass_54',['QirZGateAndHadamardSwitchPass',['../classllvm_1_1QirZGateAndHadamardSwitchPass.html',1,'llvm']]]
+  ['qirzgateandhadamardswitchpass_54',['QirZGateAndHadamardSwitchPass',['../classllvm_1_1QirZGateAndHadamardSwitchPass.html',1,'llvm']]],
+  ['quantumtask_55',['QuantumTask',['../structQuantumTask.html',1,'']]]
 ];

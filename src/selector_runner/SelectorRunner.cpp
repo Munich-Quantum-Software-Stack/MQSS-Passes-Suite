@@ -5,19 +5,38 @@
 
 #include "SelectorRunner.hpp"
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 /**
  * @brief TODO
  * @param pathSelector Path to the selector to be invoked
  * @return std::vector<std::string>
  */
-std::vector<std::string> invokeSelector(const char *pathSelector)
+std::vector<std::string> invokeSelector(const std::string &nameSelector)
 {
-    const char *fileName = basename(const_cast<char *>(pathSelector));
-    std::cout << "   [Selector Runner].....Invoking selector: " << fileName
+    // const char *fileName = basename(const_cast<char *>(pathSelector));
+
+    std::string pathSelector;
+    char buffer[PATH_MAX];
+
+    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+    if (len != -1)
+    {
+        buffer[len] = '\0';
+        pathSelector = std::string(buffer);
+        size_t lastSlash = pathSelector.find_last_of("/\\");
+        pathSelector = pathSelector.substr(0, lastSlash) +
+                       "/lib/selector_runner/selectors/";
+    }
+    pathSelector.append(nameSelector);
+
+    std::cout << "   [Selector Runner].....Invoking selector: " << nameSelector
               << std::endl;
 
     // Load the selector as a shared library
-    void *lib_handle = dlopen(pathSelector, RTLD_LAZY);
+    void *lib_handle = dlopen(pathSelector.c_str(), RTLD_LAZY);
 
     if (!lib_handle)
     {

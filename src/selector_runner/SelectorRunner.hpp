@@ -20,6 +20,6 @@
 #include <unistd.h>
 #include <vector>
 
-std::vector<std::string> invokeSelector(const char *pathSelector);
+std::vector<std::string> invokeSelector(const std::string &nameSelector);
 
 #endif // SELECTORRUNNER_HPP

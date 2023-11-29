@@ -5,31 +5,36 @@
 
 #include "SchedulerRunner.hpp"
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 /**
  * @brief TODO
  * @param pathScheduler TODO
  * @return std::string
  */
-int invokeScheduler(const std::string &pathScheduler)
+int invokeScheduler(const std::string &nameScheduler)
 {
-    size_t lastSlashPos = pathScheduler.find_last_of('/');
-    if (lastSlashPos != std::string::npos)
+    std::string pathScheduler;
+    char buffer[PATH_MAX];
+
+    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+    if (len != -1)
     {
-        std::string fileName = pathScheduler.substr(lastSlashPos + 1);
-        std::cout << "   [Scheduler Runner]....Invoking scheduler: " << fileName
-                  << std::endl;
+        buffer[len] = '\0';
+        pathScheduler = std::string(buffer);
+        size_t lastSlash = pathScheduler.find_last_of("/\\");
+        pathScheduler = pathScheduler.substr(0, lastSlash) +
+                        "/lib/scheduler_runner/schedulers/";
     }
-    else
-    {
-        std::cerr << "   [Scheduler Runner]..Invalid path to scheduler"
-                  << std::endl;
-        return 1;
-    }
+    pathScheduler.append(nameScheduler);
+
+    std::cout << "   [Scheduler Runner]....Invoking scheduler: "
+              << nameScheduler << std::endl;
 
     // Load the scheduler as a shared library
-    std::string path = pathScheduler;
-
-    void *lib_handle = dlopen(path.c_str(), RTLD_LAZY);
+    void *lib_handle = dlopen(pathScheduler.c_str(), RTLD_LAZY);
 
     if (!lib_handle)
     {

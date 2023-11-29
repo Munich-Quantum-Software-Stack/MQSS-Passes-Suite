@@ -22,9 +22,10 @@ using Complex = std::complex<TYPE>;
 using ComplexMatrix = std::array<std::array<std::complex<TYPE>, 2>, 2>;
 double getTheAngle(Complex theNumber);
 
-// ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate);
+ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate);
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
                                                     double angle);
+
 // using Complexdouble = std::complex<double>;
 
 // template<typename T>
@@ -37,4 +38,4 @@ ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
 // Complex<T> det(ComplexMatrix2x2<T> mat[2][2]);
 
 Complex det(ComplexMatrix mat);
-ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate);
+//ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate);

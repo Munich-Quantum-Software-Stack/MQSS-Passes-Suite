@@ -58,7 +58,7 @@ set(PASSES_SOURCE_FILES
     #
     QirZYZTransform.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR}/../headers)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../headers)
 
 # Include all analysis passes here
 #[[
@@ -70,23 +70,15 @@ set(ANALYSIS_PASSES_SOURCE_FILES
 ]]
 #
 
-set(ADDITIONAL_CODE utilities.cpp)
-
 # Set RPATH for the shared libraries in this directory
 set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/bin/lib/pass_runner/passes")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-foreach(src_file ${ADDITIONAL_CODE})
-  get_filename_component(src_name ${src_file} NAME_WE)
-  set(target_name "${src_name}")
+add_library(utilities SHARED utilities.cpp)
 
-  add_library(${target_name} SHARED ${src_file})
-
-  # Install the shared library
-  install(TARGETS ${target_name}
-          DESTINATION "${INSTALL_PATH}/bin/lib/pass_runner/passes")
-
-endforeach()
+# Install the shared library
+install(TARGETS utilities
+      DESTINATION "${INSTALL_PATH}/bin/lib/pass_runner/passes")
 
 # Compile each pass as a shared object and link it to qdmi
 foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
@@ -96,7 +88,7 @@ foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
   add_library(${target_name} SHARED ${src_file})
 
   # Link the library with qdmi
-  target_link_libraries(${target_name} PRIVATE qdmi)
+  target_link_libraries(${target_name} PRIVATE qdmi utilities)
 
   # Set RPATH for this scheduler
   set_target_properties(
@@ -105,7 +97,7 @@ foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
                INSTALL_RPATH_USE_LINK_PATH TRUE)
 
   # Set include directories for the library
-  target_include_directories(${target_name} PRIVATE ${CUSTOM_QDMI_PATH}/qdmi)
+  target_include_directories(${target_name} PRIVATE ${CMAKE_SOURCE_DIR}/qdmi)
 
   # Install the shared library
   install(TARGETS ${target_name}
@@ -124,7 +116,7 @@ foreach(src_file ${PASSES_SOURCE_FILES})
   add_library(${target_name} MODULE ${src_file})
 
   # Link the library with qdmi
-  target_link_libraries(${target_name} PRIVATE qdmi)
+  target_link_libraries(${target_name} PRIVATE qdmi utilities)
 
   # Set RPATH for this scheduler
   set_target_properties(
@@ -132,7 +124,8 @@ foreach(src_file ${PASSES_SOURCE_FILES})
                               INSTALL_RPATH_USE_LINK_PATH TRUE)
 
   # Set include directories for the library
-  target_include_directories(${target_name} PRIVATE ${CUSTOM_QDMI_PATH}/qdmi)
+  target_include_directories(${target_name} PRIVATE ${CMAKE_SOURCE_DIR}/qdmi
+                                                    ${CMAKE_SOURCE_DIR}/src/pass_runner/passes)
 
   # Install the shared library
   install(TARGETS ${target_name}

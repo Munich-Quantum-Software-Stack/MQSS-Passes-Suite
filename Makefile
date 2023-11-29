@@ -64,7 +64,7 @@ endif
 dependencies_qrm: build_qdmi build_rabbitmq configure_rabbitmq
 
 qrm: dependencies_qrm
-	export LD_LIBRARY_PATH="$(QDMI_PATH)/build:\
+	export LD_LIBRARY_PATH="$(EXEC_PATH)/qdmi:\
 		$(EXEC_PATH)/pass_runner:\
 		$(EXEC_PATH)/pass_runner/passes:\
 		$(EXEC_PATH)/selector_runner:\
@@ -111,7 +111,7 @@ build_docs:
 endif
 
 docs: dependencies_qrm build_docs
-	export LD_LIBRARY_PATH="$(QDMI_PATH)/build:\
+	export LD_LIBRARY_PATH="$(EXEC_PATH)/qdmi:\
 		$(EXEC_PATH)/pass_runner:\
 		$(EXEC_PATH)/pass_runner/passes:\
 		$(EXEC_PATH)/selector_runner:\

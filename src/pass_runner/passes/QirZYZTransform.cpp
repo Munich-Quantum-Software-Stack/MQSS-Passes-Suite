@@ -10,7 +10,7 @@
  */
 
 #include "../headers/QirZYZTransform.hpp"
-#include "../headers/utilities.hpp"
+//#include "../headers/utilities.hpp"
 #include <cmath>
 #include <complex>
 #include <functional>
@@ -28,7 +28,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 
-std::vector<Value *> getDecompositionAngles(LLVMContext &context,
+std::vector<Value *> QirZYZTransformPass::getDecompositionAngles(LLVMContext &context,
                                             ComplexMatrix theGate) {
 
   double detArg = getTheAngle(det(theGate));

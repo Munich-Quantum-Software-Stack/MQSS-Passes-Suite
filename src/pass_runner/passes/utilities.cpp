@@ -61,11 +61,14 @@ ComplexMatrix getRZGate(double angle) {
   RZate[1][1] = std::exp(-I * (angle / 2));
   return RZate;
 }
-/*
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate) {
   if (theGate == HGate)
     return getHGate();
+  
+  ComplexMatrix identityGate = {{{1.0, 0.0}, {0.0, 1.0}}};
+  return identityGate;
 }
+/*
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
                                                     double angle) {
   if (theGate == RXGate)
@@ -77,4 +80,7 @@ ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
                                                     double angle = 0) {
   if (theGate == RXGate)
     return getRXGate(angle);
+  
+  ComplexMatrix identityGate = {{{1.0, 0.0}, {0.0, 1.0}}};
+  return identityGate;
 }

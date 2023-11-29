@@ -74,6 +74,17 @@ entry:
   call void @__quantum__qis__y__body(%Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__s__adj(%Qubit* inttoptr (i64 1 to %Qubit*))
   call void @__quantum__qis__z__body(%Qubit* inttoptr (i64 1 to %Qubit*))
+  ; call to check decomposing Swap into three Cnots
+  call void @__quantum__qis__swap__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  ; call to check decomposing CZ into H, Cnot, H
+  call void @__quantum__qis__cz__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  ; call to check Cnot to reversed Cnot decomposition
+  call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  ; call to check Swap and Cnot replacement
+  call void @__quantum__qis__swap__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
+  call void @__quantum__qis__swap__body(%Qubit* inttoptr (i64 1 to %Qubit*), %Qubit* null)
+  call void @__quantum__qis__cnot__body(%Qubit* null, %Qubit* inttoptr (i64 1 to %Qubit*))
   ; calls to record the program output
   call void @__quantum__rt__tuple_record_output(i64 2, i8* null)
   call void @__quantum__rt__result_record_output(%Result* null, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @0, i32 0, i32 0))
@@ -120,6 +131,8 @@ declare void @__quantum__qis__s__adj(%Qubit*)
 declare void @__quantum__qis__cnot__body(%Qubit*, %Qubit*)
 
 declare void @__quantum__qis__cz__body(%Qubit*, %Qubit*)
+
+declare void @__quantum__qis__swap__body(%Qubit*, %Qubit*)
 
 declare void @__quantum__qis__id__body(%Qubit*)
 

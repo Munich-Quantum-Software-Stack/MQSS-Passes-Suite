@@ -65,8 +65,7 @@ link_directories(${CMAKE_INSTALL_PREFIX}/bin/lib/fomac)
 link_directories(${CMAKE_INSTALL_PREFIX}/bin/lib/backends)
 
 # Build shared libraries
-add_library(QirPassRunner SHARED src/pass_runner/QirPassRunner.cpp
-                                 src/pass_runner/PassRunner.cpp)
+add_library(QirPassRunner SHARED src/pass_runner/QirPassRunner.cpp)
 add_library(PassRunner SHARED src/pass_runner/PassRunner.cpp)
 add_library(SelectorRunner SHARED src/selector_runner/SelectorRunner.cpp)
 add_library(SchedulerRunner SHARED src/scheduler_runner/SchedulerRunner.cpp)

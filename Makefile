@@ -76,7 +76,8 @@ endif
 dependencies_qrm: build_fomac build_backends build_rabbitmq configure_rabbitmq
 
 qrm: dependencies_qrm
-	export LD_LIBRARY_PATH="$(FOMAC_PATH)/build:\
+	export LD_LIBRARY_PATH="$(EXEC_PATH)/fomac:\
+        $(EXEC_PATH)/backends:\
 		$(EXEC_PATH)/pass_runner:\
 		$(EXEC_PATH)/pass_runner/passes:\
 		$(EXEC_PATH)/selector_runner:\
@@ -124,8 +125,8 @@ build_docs:
 endif
 
 docs: dependencies_qrm build_docs
-	export LD_LIBRARY_PATH="$(FOMAC_PATH)/build:\
-        $(BACKENDS_PATH)/build:\
+	export LD_LIBRARY_PATH="$(EXEC_PATH)/fomac:\
+        $(EXEC_PATH)/backends:\
 		$(EXEC_PATH)/pass_runner:\
 		$(EXEC_PATH)/pass_runner/passes:\
 		$(EXEC_PATH)/selector_runner:\

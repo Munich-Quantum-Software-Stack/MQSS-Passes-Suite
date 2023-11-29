@@ -18,66 +18,70 @@ using namespace llvm;
  */
 PreservedAnalyses
 QirSwapToCnotsDecompositionPass::run(Module &module,
-                                     ModuleAnalysisManager & /*MAM*/) {
-  auto &Context = module.getContext();
+                                     ModuleAnalysisManager & /*MAM*/)
+{
+    auto &Context = module.getContext();
 
-  Function *functionKey = module.getFunction("__quantum__qis__swap__body");
+    Function *functionKey = module.getFunction("__quantum__qis__swap__body");
 
-  if (!functionKey)
-    return PreservedAnalyses::all();
+    if (!functionKey)
+        return PreservedAnalyses::all();
 
-  Function *function =
-      module.getFunction("__quantum__qis__swap_to_cnots__body");
+    Function *function =
+        module.getFunction("__quantum__qis__swap_to_cnots__body");
 
-  if (function)
-    return PreservedAnalyses::all();
+    if (function)
+        return PreservedAnalyses::all();
 
-  StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
-  PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+    StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
+    PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
 
-  FunctionType *funcType = FunctionType::get(
-      Type::getVoidTy(Context), {qubitPtrType, qubitPtrType}, false);
-
-  function = Function::Create(funcType, Function::ExternalLinkage,
-                              "__quantum__qis__swap_to_cnots__body", module);
-
-  BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
-  IRBuilder<> builder(entryBlock);
-
-  Function *qis_cnot_body = module.getFunction("__quantum__qis__cnot__body");
-
-  if (!qis_cnot_body) {
-    FunctionType *funcTypeCnot = FunctionType::get(
+    FunctionType *funcType = FunctionType::get(
         Type::getVoidTy(Context), {qubitPtrType, qubitPtrType}, false);
 
-    qis_cnot_body = Function::Create(funcTypeCnot, Function::ExternalLinkage,
-                                     "__quantum__qis__cnot__body", module);
-  }
+    function = Function::Create(funcType, Function::ExternalLinkage,
+                                "__quantum__qis__swap_to_cnots__body", module);
 
-  Value *p = function->getArg(0);
-  Value *q = function->getArg(1);
+    BasicBlock *entryBlock = BasicBlock::Create(Context, "entry", function);
+    IRBuilder<> builder(entryBlock);
 
-  builder.CreateCall(qis_cnot_body, {p, q});
-  builder.CreateCall(qis_cnot_body, {q, p});
-  builder.CreateCall(qis_cnot_body, {p, q});
+    Function *qis_cnot_body = module.getFunction("__quantum__qis__cnot__body");
 
-  builder.CreateRetVoid();
+    if (!qis_cnot_body)
+    {
+        FunctionType *funcTypeCnot = FunctionType::get(
+            Type::getVoidTy(Context), {qubitPtrType, qubitPtrType}, false);
 
-  QirPassRunner &QPR = QirPassRunner::getInstance();
-  QirMetadata &qirMetadata = QPR.getMetadata();
+        qis_cnot_body =
+            Function::Create(funcTypeCnot, Function::ExternalLinkage,
+                             "__quantum__qis__cnot__body", module);
+    }
 
-  Function *functionValue =
-      module.getFunction("__quantum__qis__swap_to_cnots__body");
-  if (functionValue) {
-    auto key = static_cast<std::string>(functionKey->getName());
-    auto value = static_cast<std::string>(functionValue->getName());
-    qirMetadata.injectAnnotation(key, value);
-    qirMetadata.setRemoveCallAttributes(false);
-  }
+    Value *p = function->getArg(0);
+    Value *q = function->getArg(1);
 
-  QPR.setMetadata(qirMetadata);
+    builder.CreateCall(qis_cnot_body, {p, q});
+    builder.CreateCall(qis_cnot_body, {q, p});
+    builder.CreateCall(qis_cnot_body, {p, q});
 
-  return PreservedAnalyses::none();
+    builder.CreateRetVoid();
+
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
+
+    Function *functionValue =
+        module.getFunction("__quantum__qis__swap_to_cnots__body");
+    if (functionValue)
+    {
+        auto key = static_cast<std::string>(functionKey->getName());
+        auto value = static_cast<std::string>(functionValue->getName());
+        qirMetadata.injectAnnotation(key, value);
+        qirMetadata.setRemoveCallAttributes(false);
+    }
+
+    QPR.setMetadata(qirMetadata);
+
+    return PreservedAnalyses::none();
 }
 
 /**
@@ -85,6 +89,7 @@ QirSwapToCnotsDecompositionPass::run(Module &module,
  * a 'PassModule'.
  * @return QirSwapToCnotsDecompositionPass
  */
-extern "C" PassModule *loadQirPass() {
-  return new QirSwapToCnotsDecompositionPass();
+extern "C" PassModule *loadQirPass()
+{
+    return new QirSwapToCnotsDecompositionPass();
 }

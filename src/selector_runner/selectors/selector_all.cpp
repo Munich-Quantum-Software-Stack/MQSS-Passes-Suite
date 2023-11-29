@@ -15,7 +15,8 @@
  *
  * @return std::vector<std::string>
  */
-extern "C" std::vector<std::string> selector(void) {
+extern "C" std::vector<std::string> selector(void)
+{
     // Append the desired passes
     std::vector<std::string> passes{
         "libQirDivisionByZeroPass.so",
@@ -56,6 +57,8 @@ extern "C" std::vector<std::string> selector(void) {
         "libQirZGateAndHadamardSwitchPass.so",
         "libQirSToSDaggerPass.so",
         "libQirSDaggerToSPass.so",
+        "libQirReverseCnotPass.so",
+        "libQirSwapAndCnotReplacementPass.so",
     };
 
     std::cout << "   [Selector]..........Returning list of passes to the "

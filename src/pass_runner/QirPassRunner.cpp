@@ -82,7 +82,7 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module,
 
         if (!lib_handle)
         {
-            std::cout << "   [Pass Runner].......Warning: Could not load "
+            std::cout << "   [Pass Runner].........Warning: Could not load "
                          "shared library: "
                       << pass << dlerror() << std::endl;
 
@@ -96,7 +96,7 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module,
         size_t lastDot = passName.find_last_of('.');
         std::string passNameWithoutExt = passName.substr(0, lastDot);
 
-        std::cout << "   [Pass Runner].......Applying pass: "
+        std::cout << "   [Pass Runner].........Applying pass: "
                   << passNameWithoutExt << std::endl;
 
         // Pointer to 'loadQirPass' function returning a pointer to the
@@ -109,7 +109,7 @@ void /*PreservedAnalyses*/ QirPassRunner::run(Module &module,
 
         if (!loadQirPass)
         {
-            std::cout << "   [Pass Runner].......Warning: Could not get "
+            std::cout << "   [Pass Runner].........Warning: Could not get "
                          "factory function "
                          "of pass: "
                       << pass << std::endl;

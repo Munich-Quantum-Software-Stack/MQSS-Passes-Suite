@@ -41,8 +41,6 @@ find_package(LLVM REQUIRED CONFIG)
 # Set up LLVM-specific flags
 add_definitions(${LLVM_DEFINITIONS})
 
-message(STATUS "LLVM include directories: ${LLVM_INCLUDE_DIRS}")
-
 # Set include directories
 target_include_directories(
   FoMaC PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}

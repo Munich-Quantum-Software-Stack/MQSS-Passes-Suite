@@ -16,7 +16,7 @@ int invokeScheduler(const std::string &pathScheduler)
     if (lastSlashPos != std::string::npos)
     {
         std::string fileName = pathScheduler.substr(lastSlashPos + 1);
-        std::cout << "   [Scheduler Runner]..Invoking scheduler: " << fileName
+        std::cout << "   [Scheduler Runner]....Invoking scheduler: " << fileName
                   << std::endl;
     }
     else

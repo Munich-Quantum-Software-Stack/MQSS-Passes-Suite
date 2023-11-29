@@ -1,5 +1,5 @@
 /**
- * @file daemon_d.cpp
+ * @file qresourcemanager_d.cpp
  * @brief TODO
  */
 
@@ -41,15 +41,15 @@ amqp_connection_state_t conn;
 /**
  * @brief TODO
  * @param conn TODO
- * @param ClientQueue TODO
+ * @param QDQueue TODO
  * @param receivedQirModule TODO
  * @param receivedScheduler TODO
  * @param receivedSelector TODO
  */
-void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
-                   std::unique_ptr<char[]> receivedQirModule,
-                   std::unique_ptr<char[]> receivedScheduler,
-                   std::unique_ptr<char[]> receivedSelector)
+void handleQuantumDaemon(amqp_connection_state_t &conn, char const *QDQueue,
+                         std::unique_ptr<char[]> receivedQirModule,
+                         std::unique_ptr<char[]> receivedScheduler,
+                         std::unique_ptr<char[]> receivedSelector)
 {
     // Invoke the scheduler
     std::string scheduler;
@@ -69,7 +69,7 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
     if (invokeScheduler(scheduler) > 0)
     {
         std::cout
-            << "   [daemon_d]..........Warning: There was an error obtaining "
+            << "   [qresourcemanager_d]..Warning: There was an error obtaining "
                "the target architecture"
             << std::endl;
         return;
@@ -81,12 +81,11 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
     auto targetArchitecture = qirMetadata.targetPlatform;
 
     // Obtain handle of the target architecture
-    std::shared_ptr<JobRunner> backend_handle =
-        qdmi_backend_open(targetArchitecture);
+    std::shared_ptr<JobRunner> backend = qdmi_get_backend(targetArchitecture);
 
-    if (!backend_handle)
+    if (!backend)
     {
-        std::cout << "   [daemon_d]..........Warning: Unavailable target "
+        std::cout << "   [qresourcemanager_d]..Warning: Unavailable target "
                      "architecture: "
                   << targetArchitecture << std::endl;
         return;
@@ -120,10 +119,10 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
     std::unique_ptr<Module> module = parseIR(QIRRef, error, Context);
     if (!module)
     {
-        std::cout
-            << "   [daemon_d]..........Warning: There was an error parsing the "
-               "generic QIR"
-            << std::endl;
+        std::cout << "   [qresourcemanager_d]..Warning: There was an error "
+                     "parsing the "
+                     "generic QIR"
+                  << std::endl;
         return;
     }
 
@@ -132,29 +131,45 @@ void handleCircuit(amqp_connection_state_t &conn, char const *ClientQueue,
 
     // Submit the adapted QIR to the target platform
     int n_shots = 10000;
+    auto start = std::chrono::steady_clock::now();
     std::unordered_map<std::string, int> results =
-        qdmi_launch_qir(backend_handle, module, n_shots);
+        qdmi_launch_qir(backend, module, n_shots);
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
 
-    // std::string str;
-    // raw_string_ostream OS(str);
-    // OS << *module;
-    // OS.flush();
-    // const char *qir = str.data();
+    // Get human-readable QIR from the adapted LLVM module
+    std::string str;
+    raw_string_ostream OS(str);
+    OS << *module;
+    OS.flush();
+    const char *qir = str.data();
 
-    // Send the results back to the client
-    json resultsJsonObject(results);
-    std::string resultsJsonString = resultsJsonObject.dump();
+    // Create JSON string to send back to the Quantum Daemon
+    json QuantumResult_json = {
+        {"task_id", -1},
+        {"results", results},
+        {"destination", ""},
+        {"execution_status", true},
+        {"executed_qpu", targetArchitecture},
+        {"executed_circuit", (char *)qir},
+        {"additional_information", ""},
+        {"execution_time", elapsed_seconds.count()},
+    };
 
+    std::string QuantumResult_str = QuantumResult_json.dump();
+
+    // Send the results back to the Quantum Daemon
     send_message(&conn,                     // conn
-                 resultsJsonString.c_str(), // message
-                 ClientQueue);              // queue
+                 QuantumResult_str.c_str(), // message
+                 QDQueue);                  // queue
 
-    std::cout << "   [daemon_d]..........Adapted QIR sent to the client"
-              << std::endl;
+    std::cout
+        << "   [qresourcemanager_d]..Adapted QIR sent to the Quantum Daemon"
+        << std::endl;
 }
 
 /**
- * @brief Function for the graceful termination of the daemon closing
+ * @brief Function for the graceful termination of this daemon closing
  * its own socket before exiting
  * @param signum Number of the interrupt signal
  */
@@ -162,7 +177,7 @@ void signalHandler(int signum)
 {
     if (signum == SIGTERM)
     {
-        std::cerr << "   [daemon_d]..........Stoping" << std::endl;
+        std::cerr << "   [qresourcemanager_d]..Stoping" << std::endl;
 
         // Close the connections
         close_connections(&conn);
@@ -174,7 +189,7 @@ void signalHandler(int signum)
 /**
  * @brief The main entry point of the program.
  *
- * The QIR Pass Runner daemon.
+ * The Quantum Resource Manager daemon.
  *
  * @return int
  */
@@ -184,7 +199,7 @@ int main(int argc, char *argv[])
 
     if (argc != 2 && argc != 3)
     {
-        std::cerr << "   [daemon_d]. Usage: daemon_d [screen|log PATH]"
+        std::cerr << "   [qresourcemanager_d]..aemon_d [screen|log PATH]"
                   << std::endl;
         return 1;
     }
@@ -196,7 +211,7 @@ int main(int argc, char *argv[])
         stream = argv[1];
         if (stream != "screen")
         {
-            std::cerr << "   [daemon_d]. Usage: daemon_d [screen|log PATH]"
+            std::cerr << "   [qresourcemanager_d]..aemon_d [screen|log PATH]"
                       << std::endl;
             return 1;
         }
@@ -207,7 +222,7 @@ int main(int argc, char *argv[])
         stream = argv[1];
         if (stream != "log")
         {
-            std::cerr << "   [daemon_d]. Usage: daemon_d [screen|log PATH]"
+            std::cerr << "   [qresourcemanager_d]..aemon_d [screen|log PATH]"
                       << std::endl;
             return 1;
         }
@@ -218,22 +233,22 @@ int main(int argc, char *argv[])
 
     if (pid < 0)
     {
-        std::cerr << "   [daemon_d]..........Failed to fork" << std::endl;
+        std::cerr << "   [qresourcemanager_d]..Failed to fork" << std::endl;
         return 1;
     }
 
     std::string filePath;
 
     if (stream == "log")
-        filePath = std::string(argv[2]) + "/logs/daemon_d.log";
+        filePath = std::string(argv[2]) + "/logs/qresourcemanager_d.log";
 
     if (pid > 0)
     {
         std::cout
-            << "   [daemon_d]..........To stop this daemon type: kill -15 "
+            << "   [qresourcemanager_d]..To stop this daemon type: kill -15 "
             << pid << std::endl;
         if (stream == "log")
-            std::cout << "   [daemon_d]..........The log can be found in "
+            std::cout << "   [qresourcemanager_d]..The log can be found in "
                       << filePath << std::endl;
 
         return 0;
@@ -259,9 +274,9 @@ int main(int argc, char *argv[])
 
         if (logFileDescriptor == -1)
         {
-            std::cerr
-                << "   [daemon_d]..........Warning: Could not open the log file"
-                << std::endl;
+            std::cerr << "   [qresourcemanager_d]..Warning: Could not open the "
+                         "log file"
+                      << std::endl;
         }
         else
         {
@@ -271,77 +286,78 @@ int main(int argc, char *argv[])
     }
 
     // Establish a connection to the RabbitMQ server
-    const char *ClientQueue = "client_queue";
-    const char *DaemonQueue = "daemon_queue";
+    const char *QDQueue = "qd_queue";
+    const char *QRMQueue = "qrm_queue";
     amqp_socket_t *socket = NULL;
 
     rabbitmq_new_connection(&conn, &socket);
 
-    // Declare the client queue
-    amqp_queue_declare(conn, 1, amqp_cstring_bytes(ClientQueue), 0, 1, 0, 0,
+    // Declare the Quantum Daemon queue
+    amqp_queue_declare(conn, 1, amqp_cstring_bytes(QDQueue), 0, 1, 0, 0,
                        amqp_empty_table);
 
-    // Declare the daemon queue
-    amqp_queue_declare(conn, 1, amqp_cstring_bytes(DaemonQueue), 0, 1, 0, 0,
+    // Declare the Quantum Resource Manager queue
+    amqp_queue_declare(conn, 1, amqp_cstring_bytes(QRMQueue), 0, 1, 0, 0,
                        amqp_empty_table);
 
     amqp_rpc_reply_t consume_reply = amqp_get_rpc_reply(conn);
 
     if (consume_reply.reply_type != AMQP_RESPONSE_NORMAL)
     {
-        std::cout << "   [daemon_d]..........Error starting to consume messages"
-                  << std::endl;
+        std::cout
+            << "   [qresourcemanager_d]..Error starting to consume messages"
+            << std::endl;
         return 1;
     }
 
-    std::cout << "   [daemon_d]..........Listening on queue " << DaemonQueue
+    std::cout << "   [qresourcemanager_d]..Listening on queue " << QRMQueue
               << std::endl;
 
     while (true)
     {
         // Receive a QIR module as a binary blob
-        auto *qirmodule = receive_message(&conn,        // conn
-                                          DaemonQueue); // queue
+        auto *qirmodule = receive_message(&conn,     // conn
+                                          QRMQueue); // queue
 
         auto receivedQirModule =
             std::make_unique<char[]>(strlen(qirmodule) + 1);
         strcpy(receivedQirModule.get(), qirmodule);
 
         // Receive name of the desired scheduler
-        auto *scheduler = receive_message(&conn,        // conn
-                                          DaemonQueue); // queue
+        auto *scheduler = receive_message(&conn,     // conn
+                                          QRMQueue); // queue
 
         auto receivedScheduler =
             std::make_unique<char[]>(strlen(scheduler) + 1);
         strcpy(receivedScheduler.get(), scheduler);
 
         // Receive name of the desired selector
-        auto *selector = receive_message(&conn,        // conn
-                                         DaemonQueue); // queue
+        auto *selector = receive_message(&conn,     // conn
+                                         QRMQueue); // queue
 
         auto receivedSelector = std::make_unique<char[]>(strlen(selector) + 1);
         strcpy(receivedSelector.get(), selector);
 
-        std::cout << "   [daemon_d]..........Received a QIR module"
+        std::cout << "   [qresourcemanager_d]..Received a QIR module"
                   //<< nameOfQir
                   << std::endl;
 
-        std::cout << "   [daemon_d]..........Received a scheduler: "
+        std::cout << "   [qresourcemanager_d]..Received a scheduler: "
                   << receivedScheduler.get() << std::endl;
 
-        std::cout << "   [daemon_d]..........Received a selector: "
+        std::cout << "   [qresourcemanager_d]..Received a selector: "
                   << receivedSelector.get() << std::endl;
 
-        // Create a new thread that executes 'handleCircuit' to run
+        // Create a new thread that executes 'handleQuantumDaemon' to run
         // the received scheduler, and the received selector targeting
         // the received QIR
-        std::thread clientThread(handleCircuit, std::ref(conn), ClientQueue,
-                                 std::move(receivedQirModule),
-                                 std::move(receivedScheduler),
-                                 std::move(receivedSelector));
+        std::thread QuantumDaemonThread(handleQuantumDaemon, std::ref(conn),
+                                        QDQueue, std::move(receivedQirModule),
+                                        std::move(receivedScheduler),
+                                        std::move(receivedSelector));
 
         // Detach from this thread once done
-        clientThread.detach();
+        QuantumDaemonThread.detach();
     }
 
     return 1;

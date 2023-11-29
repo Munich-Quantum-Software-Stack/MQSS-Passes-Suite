@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_di35low.git/src/daemon_d.cpp File Reference</title>
+<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_nosockets.git/src/qresourcemanager_d.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -79,7 +79,7 @@ $(function() {
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">daemon_d.cpp File Reference</div></div>
+  <div class="headertitle"><div class="title">qresourcemanager_d.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -118,11 +118,11 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adfec16770c30ee60ec84d36667dac102" id="r_adfec16770c30ee60ec84d36667dac102"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfec16770c30ee60ec84d36667dac102">handleCircuit</a> (amqp_connection_state_t &amp;<a class="el" href="#a3d71ee93207c462b1690738e98283208">conn</a>, char const *ClientQueue, std::unique_ptr&lt; char[]&gt; receivedQirModule, std::unique_ptr&lt; char[]&gt; receivedScheduler, std::unique_ptr&lt; char[]&gt; receivedSelector)</td></tr>
-<tr class="memdesc:adfec16770c30ee60ec84d36667dac102"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
-<tr class="separator:adfec16770c30ee60ec84d36667dac102"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72954c6927ada6e6c0da2820dc7a5810" id="r_a72954c6927ada6e6c0da2820dc7a5810"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72954c6927ada6e6c0da2820dc7a5810">handleQuantumDaemon</a> (amqp_connection_state_t &amp;<a class="el" href="#a3d71ee93207c462b1690738e98283208">conn</a>, char const *QDQueue, std::unique_ptr&lt; char[]&gt; receivedQirModule, std::unique_ptr&lt; char[]&gt; receivedScheduler, std::unique_ptr&lt; char[]&gt; receivedSelector)</td></tr>
+<tr class="memdesc:a72954c6927ada6e6c0da2820dc7a5810"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
+<tr class="separator:a72954c6927ada6e6c0da2820dc7a5810"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ee3282bc313e547dbbb8d4f4010db61" id="r_a8ee3282bc313e547dbbb8d4f4010db61"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ee3282bc313e547dbbb8d4f4010db61">signalHandler</a> (int signum)</td></tr>
-<tr class="memdesc:a8ee3282bc313e547dbbb8d4f4010db61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function for the graceful termination of the daemon closing its own socket before exiting.  <br /></td></tr>
+<tr class="memdesc:a8ee3282bc313e547dbbb8d4f4010db61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function for the graceful termination of this daemon closing its own socket before exiting.  <br /></td></tr>
 <tr class="separator:a8ee3282bc313e547dbbb8d4f4010db61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97" id="r_a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="memdesc:a0ddf1224851353fc92bfbff6f499fa97"><td class="mdescLeft">&#160;</td><td class="mdescRight">The main entry point of the program.  <br /></td></tr>
@@ -152,14 +152,14 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="adfec16770c30ee60ec84d36667dac102" name="adfec16770c30ee60ec84d36667dac102"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adfec16770c30ee60ec84d36667dac102">&#9670;&#160;</a></span>handleCircuit()</h2>
+<a id="a72954c6927ada6e6c0da2820dc7a5810" name="a72954c6927ada6e6c0da2820dc7a5810"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72954c6927ada6e6c0da2820dc7a5810">&#9670;&#160;</a></span>handleQuantumDaemon()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void handleCircuit </td>
+          <td class="memname">void handleQuantumDaemon </td>
           <td>(</td>
           <td class="paramtype">amqp_connection_state_t &amp;&#160;</td>
           <td class="paramname"><em>conn</em>, </td>
@@ -168,7 +168,7 @@ Variables</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">char const *&#160;</td>
-          <td class="paramname"><em>ClientQueue</em>, </td>
+          <td class="paramname"><em>QDQueue</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -200,7 +200,7 @@ Variables</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">conn</td><td>TODO </td></tr>
-    <tr><td class="paramname">ClientQueue</td><td>TODO </td></tr>
+    <tr><td class="paramname">QDQueue</td><td>TODO </td></tr>
     <tr><td class="paramname">receivedQirModule</td><td>TODO </td></tr>
     <tr><td class="paramname">receivedScheduler</td><td>TODO </td></tr>
     <tr><td class="paramname">receivedSelector</td><td>TODO </td></tr>
@@ -237,7 +237,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The main entry point of the program. </p>
-<p>The QIR Pass Runner daemon.</p>
+<p>The Quantum Resource Manager daemon.</p>
 <dl class="section return"><dt>Returns</dt><dd>int </dd></dl>
 
 </div>
@@ -258,7 +258,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Function for the graceful termination of the daemon closing its own socket before exiting. </p>
+<p>Function for the graceful termination of this daemon closing its own socket before exiting. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">signum</td><td>Number of the interrupt signal </td></tr>

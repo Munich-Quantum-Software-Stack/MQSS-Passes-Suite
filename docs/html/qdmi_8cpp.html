@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_di35low.git/src/qdmi/qdmi.cpp File Reference</title>
+<title>Quantum Resource Manager (QRM) daemon: /home/ubuntu/qir_passes_nosockets.git/src/qdmi/qdmi.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -93,15 +93,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a0ee1bccc01276d9dcc27d303767c5dad" id="r_a0ee1bccc01276d9dcc27d303767c5dad"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ee1bccc01276d9dcc27d303767c5dad">qdmi_supported_gate_set</a> (std::string target_platform)</td></tr>
 <tr class="memdesc:a0ee1bccc01276d9dcc27d303767c5dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function that returns a vector with the supported gate set of a given target platform.  <br /></td></tr>
 <tr class="separator:a0ee1bccc01276d9dcc27d303767c5dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4edc8fe4f978619417433be16b2b1311" id="r_a4edc8fe4f978619417433be16b2b1311"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; JobRunner &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4edc8fe4f978619417433be16b2b1311">qdmi_backend_open</a> (const std::string &amp;target_platform)</td></tr>
-<tr class="memdesc:a4edc8fe4f978619417433be16b2b1311"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
-<tr class="separator:a4edc8fe4f978619417433be16b2b1311"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb9d57d6584d4169348d0718ac1c1e3b" id="r_afb9d57d6584d4169348d0718ac1c1e3b"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb9d57d6584d4169348d0718ac1c1e3b">qdmi_launch_qir</a> (std::shared_ptr&lt; JobRunner &gt; handle, std::unique_ptr&lt; Module &gt; &amp;module, int n_shots)</td></tr>
-<tr class="memdesc:afb9d57d6584d4169348d0718ac1c1e3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
-<tr class="separator:afb9d57d6584d4169348d0718ac1c1e3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2bd2c990616a3c0e6cc8964df6ce53f" id="r_ad2bd2c990616a3c0e6cc8964df6ce53f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2bd2c990616a3c0e6cc8964df6ce53f">qdmi_backend_close</a> (std::shared_ptr&lt; JobRunner &gt; handle)</td></tr>
-<tr class="memdesc:ad2bd2c990616a3c0e6cc8964df6ce53f"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
-<tr class="separator:ad2bd2c990616a3c0e6cc8964df6ce53f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ade1f91175b910f0d292f3065b220b4" id="r_a5ade1f91175b910f0d292f3065b220b4"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; JobRunner &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ade1f91175b910f0d292f3065b220b4">qdmi_get_backend</a> (const std::string &amp;target_platform)</td></tr>
+<tr class="memdesc:a5ade1f91175b910f0d292f3065b220b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
+<tr class="separator:a5ade1f91175b910f0d292f3065b220b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ca0b099019d3b2f23d0f8aae32ad413" id="r_a7ca0b099019d3b2f23d0f8aae32ad413"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ca0b099019d3b2f23d0f8aae32ad413">qdmi_launch_qir</a> (std::shared_ptr&lt; JobRunner &gt; backend, std::unique_ptr&lt; Module &gt; &amp;module, int n_shots)</td></tr>
+<tr class="memdesc:a7ca0b099019d3b2f23d0f8aae32ad413"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
+<tr class="separator:a7ca0b099019d3b2f23d0f8aae32ad413"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ff7db24c9bc549c3e662362e16a9894" id="r_a5ff7db24c9bc549c3e662362e16a9894"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ff7db24c9bc549c3e662362e16a9894">qdmi_backend_close</a> (std::shared_ptr&lt; JobRunner &gt; backend)</td></tr>
+<tr class="memdesc:a5ff7db24c9bc549c3e662362e16a9894"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <br /></td></tr>
+<tr class="separator:a5ff7db24c9bc549c3e662362e16a9894"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implementation of a dummy QDMI. </p>
@@ -127,8 +127,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad2bd2c990616a3c0e6cc8964df6ce53f" name="ad2bd2c990616a3c0e6cc8964df6ce53f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2bd2c990616a3c0e6cc8964df6ce53f">&#9670;&#160;</a></span>qdmi_backend_close()</h2>
+<a id="a5ff7db24c9bc549c3e662362e16a9894" name="a5ff7db24c9bc549c3e662362e16a9894"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ff7db24c9bc549c3e662362e16a9894">&#9670;&#160;</a></span>qdmi_backend_close()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -137,7 +137,7 @@ Functions</h2></td></tr>
           <td class="memname">int qdmi_backend_close </td>
           <td>(</td>
           <td class="paramtype">std::shared_ptr&lt; JobRunner &gt;&#160;</td>
-          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td class="paramname"><em>backend</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -154,14 +154,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a4edc8fe4f978619417433be16b2b1311" name="a4edc8fe4f978619417433be16b2b1311"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4edc8fe4f978619417433be16b2b1311">&#9670;&#160;</a></span>qdmi_backend_open()</h2>
+<a id="a5ade1f91175b910f0d292f3065b220b4" name="a5ade1f91175b910f0d292f3065b220b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ade1f91175b910f0d292f3065b220b4">&#9670;&#160;</a></span>qdmi_get_backend()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; JobRunner &gt; qdmi_backend_open </td>
+          <td class="memname">std::shared_ptr&lt; JobRunner &gt; qdmi_get_backend </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>target_platform</em></td><td>)</td>
@@ -181,8 +181,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="afb9d57d6584d4169348d0718ac1c1e3b" name="afb9d57d6584d4169348d0718ac1c1e3b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afb9d57d6584d4169348d0718ac1c1e3b">&#9670;&#160;</a></span>qdmi_launch_qir()</h2>
+<a id="a7ca0b099019d3b2f23d0f8aae32ad413" name="a7ca0b099019d3b2f23d0f8aae32ad413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ca0b099019d3b2f23d0f8aae32ad413">&#9670;&#160;</a></span>qdmi_launch_qir()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -191,7 +191,7 @@ Functions</h2></td></tr>
           <td class="memname">std::unordered_map&lt; std::string, int &gt; qdmi_launch_qir </td>
           <td>(</td>
           <td class="paramtype">std::shared_ptr&lt; JobRunner &gt;&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
+          <td class="paramname"><em>backend</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

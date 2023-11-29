@@ -4,8 +4,7 @@ std::unordered_map<std::string, int>
 Q20Backend::run_job(std::unique_ptr<Module> &module, int n_shots)
 {
     std::unordered_map<std::string, int> measurements;
-
-    std::cout << "   [Backend]...........Running job in Q20Backend for "
+    std::cout << "   [Backend].............Running job in Q20Backend for "
               << n_shots << " shots." << std::endl;
 
     std::chrono::seconds duration(3);
@@ -21,7 +20,7 @@ Q20Backend::run_job(std::unique_ptr<Module> &module, int n_shots)
 
 int Q20Backend::close_backend()
 {
-    std::cout << "   [Backend]...........Closing Q20Backend: " << std::endl;
+    std::cout << "   [Backend].............Closing Q20Backend: " << std::endl;
 
     return 0;
 }

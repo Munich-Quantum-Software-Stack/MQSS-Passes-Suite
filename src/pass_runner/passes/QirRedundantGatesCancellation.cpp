@@ -64,7 +64,7 @@ QirRedundantGatesCancellationPass::run(Module &module,
                             gatesToRemove.push_back(last_instruction);
                             gatesToRemove.push_back(current_instruction);
 
-                            errs() << "   [Pass]..............Redundant gate "
+                            errs() << "   [Pass]................Redundant gate "
                                       "pair found: "
                                    << reversibleGate << '\n';
                         }

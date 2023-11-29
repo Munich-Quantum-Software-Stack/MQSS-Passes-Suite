@@ -156,7 +156,7 @@ run: build_qrm
 	@if [ "$$(echo $$PATH | tr ':' '\n' | grep -c "$(INSTALL_PATH)/bin")" -eq 0 ]; then \
     	export PATH=$$PATH:$(INSTALL_PATH)/bin; \
 	fi; \
-	daemon_d screen
+	qresourcemanager_d screen
 
 kill_daemons:
 	if [ ! -n "$$CI" ]; then \
@@ -165,7 +165,7 @@ kill_daemons:
 
 test: kill_daemons run
 	cd build/ && \
-	ctest -C Release -VV run_tests
+    ctest -C Release -VV run_tests
 
 pre-commit:
 	pre-commit run --all-files

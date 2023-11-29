@@ -72,7 +72,7 @@ PreservedAnalyses QirCommuteRxCnotPass::run(Module &module,
                                                     prev_instruction);
                                                 errs()
                                                     << "   "
-                                                       "[Pass].............."
+                                                       "[Pass]................"
                                                        "Commuting: "
                                                     << previous_name << " and "
                                                     << current_name << '\n';

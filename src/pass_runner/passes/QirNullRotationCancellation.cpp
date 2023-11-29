@@ -88,7 +88,7 @@ QirNullRotationCancellationPass::run(Module &module,
                         {
                             rotationGatesToRemove.push_back(
                                 current_instruction);
-                            errs() << "   [Pass]..............Redundant "
+                            errs() << "   [Pass]................Redundant "
                                       "rotation found: "
                                    << current_name << '\n';
                         }

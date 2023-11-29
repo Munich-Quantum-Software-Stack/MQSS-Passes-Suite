@@ -68,7 +68,7 @@ PreservedAnalyses QirSDaggerToSPass::run(Module &module,
                                         "__quantum__qis__z__body")
                                         gatesToRemove.push_back(
                                             current_instruction);
-                                    errs() << "              Replacing S "
+                                    errs() << "                Replacing S "
                                               "dagger with S.\n";
                                 }
                             }

@@ -13,7 +13,7 @@
 std::vector<std::string> invokeSelector(const char *pathSelector)
 {
     const char *fileName = basename(const_cast<char *>(pathSelector));
-    std::cout << "   [Selector Runner]...Invoking selector: " << fileName
+    std::cout << "   [Selector Runner].....Invoking selector: " << fileName
               << std::endl;
 
     // Load the selector as a shared library

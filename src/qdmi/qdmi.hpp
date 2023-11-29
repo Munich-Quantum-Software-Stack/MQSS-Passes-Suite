@@ -48,7 +48,7 @@ extern "C"
 extern "C"
 {
     std::shared_ptr</*void*/ JobRunner>
-    qdmi_backend_open(const std::string &target_platform);
+    qdmi_get_backend(const std::string &target_platform);
 }
 
 /**

@@ -41,8 +41,6 @@ find_package(LLVM REQUIRED CONFIG)
 # Set up LLVM-specific flags
 add_definitions(${LLVM_DEFINITIONS})
 
-message(STATUS "LLVM include directories: ${LLVM_INCLUDE_DIRS}")
-
 # Define the source files for all backends
 target_sources(Backends PRIVATE IQMBackend.cpp Q5Backend.cpp Q20Backend.cpp)
 

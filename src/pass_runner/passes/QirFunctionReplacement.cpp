@@ -33,13 +33,13 @@ QirFunctionReplacementPass::runFunctionReplacementAnalysis(Module &module)
         if (function.hasFnAttribute("replaceWith"))
         {
             auto attr = function.getFnAttribute("replaceWith");
-            errs() << "   [Pass]..............Function has 'replaceWith' "
+            errs() << "   [Pass]................Function has 'replaceWith' "
                       "attribute: "
                    << static_cast<std::string>(function.getName()) << '\n';
 
             if (!attr.isStringAttribute())
             {
-                errs() << "   [Pass]..............Warning: Expected string "
+                errs() << "   [Pass]................Warning: Expected string "
                           "attribute for "
                           "attribute 'replaceWith'\n";
                 continue;
@@ -48,14 +48,15 @@ QirFunctionReplacementPass::runFunctionReplacementAnalysis(Module &module)
             auto name = static_cast<std::string>(attr.getValueAsString());
             auto it = ret.name_to_function_pointer.find(name);
 
-            errs() << "   [Pass]..............Function is a replacement        "
-                      "   : "
-                   << name << '\n';
+            errs()
+                << "   [Pass]................Function is a replacement        "
+                   "   : "
+                << name << '\n';
 
             // Ignoring replacements that were not found
             if (it == ret.name_to_function_pointer.end())
             {
-                errs() << "   [Pass]..............Warning: replacement not "
+                errs() << "   [Pass]................Warning: replacement not "
                           "found\n";
                 continue;
             }
@@ -71,7 +72,7 @@ QirFunctionReplacementPass::runFunctionReplacementAnalysis(Module &module)
 
             if (signature1 != signature2)
             {
-                errs() << "   [Pass]..............Warning: Expected string "
+                errs() << "   [Pass]................Warning: Expected string "
                           "attribute for "
                           "attribute 'replaceWith'\n";
                 continue;

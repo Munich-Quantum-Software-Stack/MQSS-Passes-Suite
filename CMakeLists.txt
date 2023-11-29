@@ -15,8 +15,8 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
 
-# Create the daemon_d.log file
-file(WRITE ${CMAKE_INSTALL_PREFIX}/logs/daemon_d.log "")
+# Create the qresourcemanager_d.log file
+file(WRITE ${CMAKE_INSTALL_PREFIX}/logs/qresourcemanager_d.log "")
 
 # Find nlohmann_json package
 find_package(nlohmann_json 3.2.0 REQUIRED)
@@ -36,8 +36,6 @@ if(NOT LLVM_CONFIG_DIR)
     FATAL_ERROR "LLVMConfig.cmake not found. Set CMAKE_PREFIX_PATH or LLVM_DIR."
   )
 endif()
-
-message(STATUS "LLVM include directories: ${LLVM_INCLUDE_DIRS}")
 
 # Include LLVMConfig.cmake
 list(APPEND CMAKE_PREFIX_PATH "${LLVM_CONFIG_DIR}")
@@ -75,11 +73,11 @@ target_include_directories(qdmi PRIVATE ${LLVM_INCLUDE_DIRS})
 # target_include_directories(FoMaC PRIVATE ${LLVM_INCLUDE_DIRS})
 
 set(EXECUTABLE_NAME
-    "daemon_d"
+    "qresourcemanager_d"
     CACHE STRING "" FORCE)
 
 # Build the executable
-set(SOURCES src/daemon_d.cpp src/connection_handling.cpp src/qdmi/qdmi.cpp)
+set(SOURCES src/qresourcemanager_d.cpp src/connection_handling.cpp src/qdmi/qdmi.cpp)
 
 # Build the executable
 add_executable(${EXECUTABLE_NAME} ${SOURCES})

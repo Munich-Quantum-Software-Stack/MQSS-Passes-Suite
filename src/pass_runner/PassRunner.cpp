@@ -14,14 +14,14 @@ void invokePasses(std::unique_ptr<Module> &module,
 {
     if (!module)
     {
-        std::cout << "   [Pass Runner].......Warning: Corrupt QIR module "
+        std::cout << "   [Pass Runner].........Warning: Corrupt QIR module "
                   << std::endl;
         return;
     }
 
     if (passes.empty())
     {
-        std::cout << "   [Pass Runner].......Warning: Not passes found"
+        std::cout << "   [Pass Runner].........Warning: Not passes found"
                   << std::endl;
         return;
     }
@@ -39,7 +39,7 @@ void invokePasses(std::unique_ptr<Module> &module,
                 dyn_cast<ConstantAsMetadata>(metadataSupport))
             if (ConstantInt *boolConstant =
                     dyn_cast<ConstantInt>(boolMetadata->getValue()))
-                errs() << "   [Pass Runner].......Flag inserted: "
+                errs() << "   [Pass Runner].........Flag inserted: "
                           "\"lrz_supports_qir\" = "
                        << (boolConstant->isOne() ? "true" : "false") << '\n';
 
@@ -52,7 +52,7 @@ void invokePasses(std::unique_ptr<Module> &module,
     ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
     if (len == -1)
     {
-        errs() << "   [Pass Runner].......Error: Erroneous path to pass\n";
+        errs() << "   [Pass Runner].........Error: Erroneous path to pass\n";
         QPR.clearMetadata();
         return;
     }

@@ -61,7 +61,7 @@ extern "C" std::vector<std::string> selector(void)
         "libQirSwapAndCnotReplacementPass.so",
     };
 
-    std::cout << "   [Selector]..........Returning list of passes to the "
+    std::cout << "   [Selector]............Returning list of passes to the "
                  "Selector Runner"
               << std::endl;
 

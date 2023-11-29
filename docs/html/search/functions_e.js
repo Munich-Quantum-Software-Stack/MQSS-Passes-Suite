@@ -6,5 +6,5 @@ var searchData=
   ['setmetadata_3',['setMetadata',['../classQirPassRunner.html#a10eb3758e82c831cb088a3fbfaf0ed79',1,'QirPassRunner']]],
   ['setremovecallattributes_4',['setRemoveCallAttributes',['../structQirMetadata.html#a69115d6e8cb5ef63c09d22e7a01ac4db',1,'QirMetadata']]],
   ['settargetplatform_5',['setTargetPlatform',['../structQirMetadata.html#a35a82ac468ca65803c9b232cf4732799',1,'QirMetadata']]],
-  ['signalhandler_6',['signalHandler',['../daemon__d_8cpp.html#a8ee3282bc313e547dbbb8d4f4010db61',1,'daemon_d.cpp']]]
+  ['signalhandler_6',['signalHandler',['../qresourcemanager__d_8cpp.html#a8ee3282bc313e547dbbb8d4f4010db61',1,'qresourcemanager_d.cpp']]]
 ];

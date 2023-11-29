@@ -3,7 +3,7 @@
 
 int IQMBackend::close_backend()
 {
-    std::cerr << "   [Backend]...........IQMBackend close_backend()"
+    std::cerr << "   [Backend].............IQMBackend close_backend()"
               << " - should not be called directly!" << std::endl;
 
     return -1;
@@ -12,7 +12,7 @@ int IQMBackend::close_backend()
 std::unordered_map<std::string, int>
 IQMBackend::run_job(std::unique_ptr<Module> &module, int n_shots)
 {
-    std::cerr << "   [Backend]...........IQMBackend run_job()"
+    std::cerr << "   [Backend].............IQMBackend run_job()"
               << " - should not be called directly!" << std::endl;
 
     return std::unordered_map<std::string, int>{};

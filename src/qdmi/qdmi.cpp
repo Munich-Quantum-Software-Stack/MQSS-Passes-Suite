@@ -51,7 +51,7 @@ std::vector<std::string> qdmi_supported_gate_set(std::string target_platform)
  * @param TODO
  * @todo To be implemented
  */
-std::shared_ptr<JobRunner> qdmi_backend_open(const std::string &target_platform)
+std::shared_ptr<JobRunner> qdmi_get_backend(const std::string &target_platform)
 {
     std::string url;
 
@@ -94,7 +94,7 @@ std::shared_ptr<JobRunner> qdmi_backend_open(const std::string &target_platform)
  * @todo To be implemented
  */
 std::unordered_map<std::string, int>
-qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
+qdmi_launch_qir(std::shared_ptr<JobRunner> backend,
                 std::unique_ptr<Module> &module, int n_shots)
 {
     if (!module)
@@ -103,13 +103,13 @@ qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
                   << std::endl;
     }
 
-    if (!handle)
+    if (!backend)
     {
-        std::cerr << "   [QDMI].............Invalid backend handle."
+        std::cerr << "   [QDMI].............Invalid backend backend."
                   << std::endl;
     }
 
-    return handle->run_job(module, n_shots);
+    return backend->run_job(module, n_shots);
 }
 
 /**
@@ -117,18 +117,17 @@ qdmi_launch_qir(std::shared_ptr<JobRunner> handle,
  * @param TODO
  * @todo To be implemented
  */
-int qdmi_backend_close(std::shared_ptr<JobRunner> handle)
+int qdmi_backend_close(std::shared_ptr<JobRunner> backend)
 {
     // Attempt to close the backend using the provided interface
-    if (handle)
+    if (backend)
     {
-        handle->close_backend();
+        backend->close_backend();
         return 0;
     }
     else
     {
-        std::cerr << "   [QDMI].............Invalid backend handle."
-                  << std::endl;
+        std::cerr << "   [QDMI].............Invalid backend." << std::endl;
         return 1;
     }
 }

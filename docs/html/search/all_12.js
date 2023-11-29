@@ -13,7 +13,7 @@ var searchData=
   ['setremovecallattributes_10',['setRemoveCallAttributes',['../structQirMetadata.html#a69115d6e8cb5ef63c09d22e7a01ac4db',1,'QirMetadata']]],
   ['settargetplatform_11',['setTargetPlatform',['../structQirMetadata.html#a35a82ac468ca65803c9b232cf4732799',1,'QirMetadata']]],
   ['shouldremovecallattributes_12',['shouldRemoveCallAttributes',['../structQirMetadata.html#a5869b0d717d1531fd228ed961625cd46',1,'QirMetadata']]],
-  ['signalhandler_13',['signalHandler',['../daemon__d_8cpp.html#a8ee3282bc313e547dbbb8d4f4010db61',1,'daemon_d.cpp']]],
+  ['signalhandler_13',['signalHandler',['../qresourcemanager__d_8cpp.html#a8ee3282bc313e547dbbb8d4f4010db61',1,'qresourcemanager_d.cpp']]],
   ['sourcequantum_14',['SourceQuantum',['../classllvm_1_1QirGroupingPass.html#a8bb19c75ee621ae2ae9e6c56f1d0aa07af2bfc82c85c585a2790a39ff6c0c6296',1,'llvm::QirGroupingPass']]],
   ['supported_5fgate_15',['SUPPORTED_GATE',['../QirPassRunner_8hpp.html#a71d637ccd19904287584a26511b15876a6b15a255c75ebcea40a21c8485dc8df1',1,'QirPassRunner.hpp']]],
   ['supportedgates_16',['supportedGates',['../structQirMetadata.html#a9d35a917515aae007b3212bb871acf80',1,'QirMetadata']]]

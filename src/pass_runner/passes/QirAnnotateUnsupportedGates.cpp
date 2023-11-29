@@ -41,7 +41,7 @@ QirAnnotateUnsupportedGatesPass::run(Module &module,
     auto supported_gate_set = qdmi_supported_gate_set(targetArchitecture);
     int gate_set_size = fomac_gate_set_size(targetArchitecture);
 
-    errs() << "   [Pass]..............Size of supported gate set: "
+    errs() << "   [Pass]................Size of supported gate set: "
            << gate_set_size << '\n';
 
     // Adding  as requested
@@ -62,7 +62,7 @@ QirAnnotateUnsupportedGatesPass::run(Module &module,
                             supported_gate_set.end(), original_gate);
         if (it == supported_gate_set.end())
         {
-            errs() << "   [Pass]..............Unsupported gate found: "
+            errs() << "   [Pass]................Unsupported gate found: "
                    << original_gate << '\n';
             function.addFnAttr("unsupported");
             changed = true;

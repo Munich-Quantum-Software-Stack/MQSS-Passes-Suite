@@ -1,6 +1,6 @@
 # Quantum Resource Manager (QRM)
 
-The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is `daemon_d`. This README provides instructions for installing and uninstalling `daemon_d`, as well as for running an example submitting a quantum task<!--Not to be confused with a qcommon QuantumTask-->.
+The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is `qresourcemanager_d`. This README provides instructions for installing and uninstalling `qresourcemanager_d`, as well as for running an example submitting a quantum task<!--Not to be confused with a qcommon QuantumTask-->.
 
 ## Downloading
 
@@ -45,7 +45,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
    cd qir_passes/
    ```
 
-3. Run `make` to install `daemon_d`:
+3. Run `make` to install `qresourcemanager_d`:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, with the following command:
       ```bash
       make FOMAC_PATH=fomac BACKENDS_PATH=backends install
@@ -58,7 +58,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 
 ## Uninstallation
 
-If you ever need to uninstall `daemon_d`, follow these steps:
+If you ever need to uninstall `qresourcemanager_d`, follow these steps:
 
 1. Navigate to the `qir_passes` directory (if you are not already there):
    ```bash
@@ -70,7 +70,7 @@ If you ever need to uninstall `daemon_d`, follow these steps:
    sudo make uninstall
    ```
 
-This will remove `daemon_d` from your system.
+This will remove `qresourcemanager_d` from your system.
 
 ## Project Structure
 
@@ -122,7 +122,7 @@ The project structure is the following:
 ├─ src
 │  ├─ connection_handling.cpp
 │  ├─ connection_handling.hpp
-│  ├─ daemon_d.cpp
+│  ├─ qresourcemanager_d.cpp
 │  ├─ pass_runner
 │  │  ├─ headers
 │  │  │  ├─ llvm.hpp

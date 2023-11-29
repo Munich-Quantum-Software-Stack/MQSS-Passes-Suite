@@ -28,7 +28,8 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 
-std::vector<Value *> QirZYZTransformPass::getDecompositionAngles(LLVMContext &context,
+std::vector<Value *>
+QirZYZTransformPass::getDecompositionAngles(LLVMContext &context,
                                             ComplexMatrix theGate) {
 
   double detArg = getTheAngle(det(theGate));

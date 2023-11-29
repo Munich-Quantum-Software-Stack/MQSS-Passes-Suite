@@ -78,7 +78,7 @@ add_library(utilities SHARED utilities.cpp)
 
 # Install the shared library
 install(TARGETS utilities
-      DESTINATION "${INSTALL_PATH}/bin/lib/pass_runner/passes")
+        DESTINATION "${INSTALL_PATH}/bin/lib/pass_runner/passes")
 
 # Compile each pass as a shared object and link it to qdmi
 foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
@@ -124,8 +124,9 @@ foreach(src_file ${PASSES_SOURCE_FILES})
                               INSTALL_RPATH_USE_LINK_PATH TRUE)
 
   # Set include directories for the library
-  target_include_directories(${target_name} PRIVATE ${CMAKE_SOURCE_DIR}/qdmi
-                                                    ${CMAKE_SOURCE_DIR}/src/pass_runner/passes)
+  target_include_directories(
+    ${target_name} PRIVATE ${CMAKE_SOURCE_DIR}/qdmi
+                           ${CMAKE_SOURCE_DIR}/src/pass_runner/passes)
 
   # Install the shared library
   install(TARGETS ${target_name}

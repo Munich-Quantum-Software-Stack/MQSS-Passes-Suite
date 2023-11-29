@@ -38,4 +38,4 @@ ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
 // Complex<T> det(ComplexMatrix2x2<T> mat[2][2]);
 
 Complex det(ComplexMatrix mat);
-//ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate);
+// ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate);

@@ -4,6 +4,9 @@
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirReverseCnot.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
+ * Adapted from:
+ * https://agra.informatik.uni-bremen.de/doc/konf/2021_DSD_CNOTs_remote_gates.pdf
+ * Fig.1
  */
 
 #include "../headers/QirReverseCnot.hpp"

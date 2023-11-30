@@ -4,6 +4,7 @@
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirSwapToCnotsDecomposition.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
+ * Adapted from: https://threeplusone.com/pubs/on_gates.pdf -- 6.4 Swap gate
  */
 
 #include "../headers/QirSwapToCnotsDecomposition.hpp"

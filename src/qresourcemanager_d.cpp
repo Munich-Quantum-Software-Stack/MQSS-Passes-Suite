@@ -106,31 +106,9 @@ void handleQuantumDaemon(amqp_connection_state_t &conn, char const *QDQueue,
                          const QuantumTask &quantumTask)
 {
     // Invoke the scheduler
-    std::string scheduler;
-    if (quantumTask.change_scheduler != "")
-    {
-        scheduler = quantumTask.change_scheduler;
-        /*std::string scheduler;
-        char buffer[PATH_MAX];
-
-        ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
-        if (len != -1)
-        {
-            buffer[len] = '\0';
-            scheduler = std::string(buffer);
-            size_t lastSlash = scheduler.find_last_of("/\\");
-            scheduler = scheduler.substr(0, lastSlash) +
-                        "/lib/scheduler_runner/schedulers/";
-        }
-        //scheduler.append(receivedScheduler.get());
-        scheduler.append(quantumTask.change_scheduler);
-
-        if (invokeScheduler(scheduler) > 0)*/
-    }
-    else
-    {
-        scheduler = "libscheduler_round_robin.so";
-    }
+    std::string scheduler = quantumTask.change_scheduler == ""
+                                ? "libscheduler_round_robin.so"
+                                : quantumTask.change_scheduler;
 
     if (invokeScheduler(scheduler) > 0)
     {
@@ -142,34 +120,19 @@ void handleQuantumDaemon(amqp_connection_state_t &conn, char const *QDQueue,
     }
 
     // Invoke the selector
-    std::string selector;
-    if (quantumTask.change_selector != "")
-    {
-        selector = quantumTask.change_selector;
-        /*std::string selector;
-        char selector_buffer[PATH_MAX];
-
-        len = readlink("/proc/self/exe", selector_buffer,
-                       sizeof(selector_buffer) - 1);
-        if (len != -1)
-        {
-            selector_buffer[len] = '\0';
-            selector = std::string(selector_buffer);
-            size_t lastSlash = selector.find_last_of("/\\");
-            selector =
-                selector.substr(0, lastSlash) +
-        "/lib/selector_runner/selectors/";
-        }
-        selector.append(receivedSelector.get());
-
-        std::vector<std::string> passes = invokeSelector(selector.c_str());*/
-    }
-    else
-    {
-        selector = "libselector_all.so";
-    }
-
+    std::string selector = quantumTask.change_selector == ""
+                               ? "libselector_all.so"
+                               : quantumTask.change_selector;
     std::vector<std::string> passes = invokeSelector(selector);
+
+    if (passes.empty())
+    {
+        std::cout
+            << "   [qresourcemanager_d]..Warning: There was an error obtaining "
+               "the passes"
+            << std::endl;
+        return;
+    }
 
     // Parse generic QIR into an LLVM module
     LLVMContext Context;

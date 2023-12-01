@@ -16,8 +16,6 @@
  */
 std::vector<std::string> invokeSelector(const std::string &nameSelector)
 {
-    // const char *fileName = basename(const_cast<char *>(pathSelector));
-
     std::string pathSelector;
     char buffer[PATH_MAX];
 

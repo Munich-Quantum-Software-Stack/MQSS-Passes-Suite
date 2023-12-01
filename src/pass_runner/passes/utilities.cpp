@@ -11,6 +11,7 @@
 #include "../headers/utilities.hpp"
 #include <array>
 #include <cmath>
+#include <complex>
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
@@ -68,14 +69,6 @@ ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate) {
   ComplexMatrix identityGate = {{{1.0, 0.0}, {0.0, 1.0}}};
   return identityGate;
 }
-/*
-ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
-                                                    double angle) {
-  if (theGate == RXGate)
-    return getRXGate(angle);
-}
-
-*/
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
                                                     double angle = 0) {
   if (theGate == RXGate)
@@ -83,4 +76,12 @@ ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
 
   ComplexMatrix identityGate = {{{1.0, 0.0}, {0.0, 1.0}}};
   return identityGate;
+}
+
+double mod_2pi(double angle, double atol) {
+  double wrapped = std::fmod(angle + M_PI, 2 * M_PI) - M_PI;
+  if (std::abs(wrapped - M_PI) < atol)
+    return -M_PI;
+  else
+    return wrapped;
 }

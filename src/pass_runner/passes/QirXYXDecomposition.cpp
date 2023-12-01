@@ -9,8 +9,8 @@
  * use the value as a condition to decide between 32-bit 1 or 0
  */
 
-#include "../headers/QirZYZTransform.hpp"
-//#include "../headers/utilities.hpp"
+#include "../headers/QirXYXDecomposition.hpp"
+#include "../headers/QirZYZDecomposition.hpp"
 #include <cmath>
 #include <complex>
 #include <functional>
@@ -28,38 +28,19 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 
-std::vector<Value *>
-QirZYZTransformPass::getDecompositionAngles(LLVMContext &context,
-                                            ComplexMatrix theGate) {
-
-  double detArg = getTheAngle(det(theGate));
-  double phase = 0.5 * detArg;
-  double theta =
-      2.0 * std::atan2(std::abs(theGate[0][1]), std::abs(theGate[0][0]));
-  double ang1 = std::arg(theGate[1][1]);
-  double ang2 = std::arg(theGate[1][0]);
-  double phi = ang1 + ang2 - detArg;
-  double lam = ang1 - ang2;
-
-  Value *phiValue = ConstantFP::get(context, APFloat(static_cast<float>(phi)));
-  Value *lamValue = ConstantFP::get(context, APFloat(static_cast<float>(lam)));
-  Value *thetaValue =
-      ConstantFP::get(context, APFloat(static_cast<float>(theta)));
-
-  return {phiValue, lamValue, thetaValue};
-}
-
-PreservedAnalyses QirZYZTransformPass::run(Module &module,
-                                           ModuleAnalysisManager & /*MAM*/) {
+PreservedAnalyses
+QirXYXDecompositionPass::run(Module &module, ModuleAnalysisManager & /*MAM*/) {
   std::string gatesToDecompose[4] = {
-      "__quantum__qis__rx__body", "__quantum__qis__ry__body",
-      "__quantum__qis__rz__body", "__quantum__qis__h__body"};
+      //"__quantum__qis__rx__body", "__quantum__qis__ry__body",
+      //"__quantum__qis__rz__body",
+      "__quantum__qis__h__body"};
 
   std::vector<Instruction *> gatesToErase;
-  FunctionCallee RZ = nullptr;
+  FunctionCallee RX = nullptr;
   FunctionCallee RY = nullptr;
   LLVMContext &rContext = module.getContext();
   IRBuilder<> builder(rContext);
+  QirZYZDecompositionPass ZYZPass;
   for (auto &function : module) {
     for (auto &block : function) {
       for (auto &instruction : block) {
@@ -86,21 +67,32 @@ PreservedAnalyses QirZYZTransformPass::run(Module &module,
               theGate =
                   getTheMatrixOfGateFromInstructionName(gateToDecompose, angle);
             }
-            if (!RZ) {
+            if (!RX) {
               Type *qubitType = theLastOperand->getType();
               FunctionType *rotationGateType = FunctionType::get(
                   Type::getVoidTy(rContext),
                   {Type::getDoubleTy(rContext), qubitType}, false);
-              RZ = module.getOrInsertFunction(RZGate, rotationGateType);
+              RX = module.getOrInsertFunction(RXGate, rotationGateType);
               RY = module.getOrInsertFunction(RYGate, rotationGateType);
             }
 
             builder.SetInsertPoint((&instruction));
-            std::vector<Value *> theAngles =
-                getDecompositionAngles(rContext, theGate);
-            builder.CreateCall(RZ, {theAngles[0], theLastOperand});
-            builder.CreateCall(RY, {theAngles[1], theLastOperand});
-            builder.CreateCall(RZ, {theAngles[2], theLastOperand});
+            std::vector<double> theAngles =
+                ZYZPass.getDecompositionAnglesAsNumber(rContext, theGate);
+            double phi = theAngles[0];
+            double theta = theAngles[1];
+            double lam = theAngles[2];
+            double new_phi = mod_2pi(phi + M_PI, 0.);
+            double new_lam = mod_2pi(lam + M_PI, 0.);
+            Value *phiValue =
+                ConstantFP::get(rContext, APFloat(static_cast<float>(new_phi)));
+            Value *lamValue =
+                ConstantFP::get(rContext, APFloat(static_cast<float>(new_lam)));
+            Value *thetaValue =
+                ConstantFP::get(rContext, APFloat(static_cast<float>(theta)));
+            builder.CreateCall(RX, {phiValue, theLastOperand});
+            builder.CreateCall(RY, {thetaValue, theLastOperand});
+            builder.CreateCall(RX, {lamValue, theLastOperand});
             gatesToErase.push_back(&instruction);
           }
         }
@@ -119,4 +111,4 @@ PreservedAnalyses QirZYZTransformPass::run(Module &module,
  * 'PassModule'.
  * @return QirZExtTransformPass
  */
-extern "C" PassModule *loadQirPass() { return new QirZYZTransformPass(); }
+extern "C" PassModule *loadQirPass() { return new QirXYXDecompositionPass(); }

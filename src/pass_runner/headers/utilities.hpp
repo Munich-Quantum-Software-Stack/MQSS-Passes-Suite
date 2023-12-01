@@ -15,6 +15,7 @@
 #define RXGate "__quantum__qis__rx__body"
 #define RYGate "__quantum__qis__ry__body"
 #define RZGate "__quantum__qis__rz__body"
+#define U3Gate "__quantum__qis__U3__body"
 
 using Complex = std::complex<TYPE>;
 
@@ -25,6 +26,8 @@ double getTheAngle(Complex theNumber);
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate);
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
                                                     double angle);
+
+double mod_2pi(double angle, double atol);
 
 // using Complexdouble = std::complex<double>;
 

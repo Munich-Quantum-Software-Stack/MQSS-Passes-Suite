@@ -13,7 +13,7 @@ namespace llvm {
  * @class QirXCnotXReductionPass
  * @brief This pass removes X gates surrounding a CNOT gate.
  */
-class QirZYZTransformPass : public PassModule {
+class QirXYXDecompositionPass : public PassModule {
 public:
   /**
    * @brief Applies this pass to the QIR's LLVM module.

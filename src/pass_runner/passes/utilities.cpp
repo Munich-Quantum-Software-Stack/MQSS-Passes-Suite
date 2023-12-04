@@ -1,11 +1,7 @@
 /**
- * @file QirAllocationAnalysis.cpp
- * @brief Implementation of the 'QirAllocationAnalysisPass' analysis pass. <a
- * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirAllocationAnalysis.cpp?ref_type=heads">Go
- * to the source code of this file.</a>
+ * @file utilities.cpp
+ * @brief Implementation of common functions.
  *
- * Adapted from:
- * https://github.com/qir-alliance/qat/blob/main/qir/qat/Passes/StaticResourceComponent/AllocationAnalysisPass.cpp
  */
 
 #include "../headers/utilities.hpp"
@@ -63,19 +59,24 @@ ComplexMatrix getRZGate(double angle) {
   return RZate;
 }
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate) {
-  if (theGate == HGate)
-    return getHGate();
 
-  ComplexMatrix identityGate = {{{1.0, 0.0}, {0.0, 1.0}}};
-  return identityGate;
+  ComplexMatrix matrixToReturn = {
+      {{1.0, 0.0}, {0.0, 1.0}}}; // Identity Gate for default
+  if (theGate == H_Gate)
+    matrixToReturn = getHGate();
+  return matrixToReturn;
 }
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
                                                     double angle = 0) {
-  if (theGate == RXGate)
-    return getRXGate(angle);
-
-  ComplexMatrix identityGate = {{{1.0, 0.0}, {0.0, 1.0}}};
-  return identityGate;
+  ComplexMatrix matrixToReturn = {
+      {{1.0, 0.0}, {0.0, 1.0}}}; // Identity Gate for default
+  if (theGate == RX_Gate)
+    matrixToReturn = getRXGate(angle);
+  if (theGate == RY_Gate)
+    matrixToReturn = getRYGate(angle);
+  if (theGate == RZ_Gate)
+    matrixToReturn = getRZGate(angle);
+  return matrixToReturn;
 }
 
 double mod_2pi(double angle, double atol) {

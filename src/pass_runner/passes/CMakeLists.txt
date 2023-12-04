@@ -1,6 +1,5 @@
 # Include all transformation passes here
 set(PASSES_SOURCE_FILES
-    #[[
     # A
     QirAnnotateUnsupportedGates.cpp
     # B
@@ -46,17 +45,18 @@ set(PASSES_SOURCE_FILES
     QirSDaggerToS.cpp
     QirSToSDagger.cpp
     # U
+    QirU3Decomposition.cpp
     QirU3ToRzRyRzDecomposition.cpp
     # X
     QirXCnotXReduction.cpp
     QirXGateAndHadamardSwitch.cpp
+    QirXYXDecomposition.cpp
     # Y
     QirYGateAndHadamardSwitch.cpp
     # Z
     QirZGateAndHadamardSwitch.cpp
-]]
-    #
-    QirU3Decomposition.cpp QirXYXDecomposition.cpp QirZXZDecomposition.cpp)
+    QirZXZDecomposition.cpp
+    QirZYZDecomposition.cpp)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../headers)
 
@@ -66,7 +66,7 @@ set(ANALYSIS_PASSES_SOURCE_FILES
     # A
     QirAllocationAnalysis.cpp
     # F
-    QirFunctionValidation.cpp QirZYZDecomposition.cpp)
+    QirFunctionValidation.cpp)
 
 # Set RPATH for the shared libraries in this directory
 set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/bin/lib/pass_runner/passes")

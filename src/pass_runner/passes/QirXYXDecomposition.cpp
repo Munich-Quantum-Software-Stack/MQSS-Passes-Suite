@@ -31,9 +31,8 @@ using namespace llvm;
 PreservedAnalyses
 QirXYXDecompositionPass::run(Module &module, ModuleAnalysisManager & /*MAM*/) {
   std::string gatesToDecompose[4] = {
-      //"__quantum__qis__rx__body", "__quantum__qis__ry__body",
-      //"__quantum__qis__rz__body",
-      "__quantum__qis__h__body"};
+      "__quantum__qis__rx__body", "__quantum__qis__ry__body",
+      "__quantum__qis__rz__body", "__quantum__qis__h__body"};
 
   std::vector<Instruction *> gatesToErase;
   FunctionCallee RX = nullptr;
@@ -72,8 +71,8 @@ QirXYXDecompositionPass::run(Module &module, ModuleAnalysisManager & /*MAM*/) {
               FunctionType *rotationGateType = FunctionType::get(
                   Type::getVoidTy(rContext),
                   {Type::getDoubleTy(rContext), qubitType}, false);
-              RX = module.getOrInsertFunction(RXGate, rotationGateType);
-              RY = module.getOrInsertFunction(RYGate, rotationGateType);
+              RX = module.getOrInsertFunction(RX_Gate, rotationGateType);
+              RY = module.getOrInsertFunction(RY_Gate, rotationGateType);
             }
 
             builder.SetInsertPoint((&instruction));

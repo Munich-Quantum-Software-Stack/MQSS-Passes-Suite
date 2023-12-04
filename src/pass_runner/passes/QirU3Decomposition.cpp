@@ -31,9 +31,8 @@ using namespace llvm;
 PreservedAnalyses QirU3DecompositionPass::run(Module &module,
                                               ModuleAnalysisManager & /*MAM*/) {
   std::string gatesToDecompose[4] = {
-      //"__quantum__qis__rx__body", "__quantum__qis__ry__body",
-      //"__quantum__qis__rz__body",
-      "__quantum__qis__h__body"};
+      "__quantum__qis__rx__body", "__quantum__qis__ry__body",
+      "__quantum__qis__rz__body", "__quantum__qis__h__body"};
 
   std::vector<Instruction *> gatesToErase;
   FunctionCallee U3 = nullptr;
@@ -75,7 +74,7 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module,
                   false);
 
               errs() << *rotationGateType << "\n";
-              U3 = module.getOrInsertFunction(U3Gate, rotationGateType);
+              U3 = module.getOrInsertFunction(U3_Gate, rotationGateType);
             }
 
             builder.SetInsertPoint((&instruction));

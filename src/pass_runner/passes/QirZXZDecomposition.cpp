@@ -71,8 +71,8 @@ QirZXZDecompositionPass::run(Module &module, ModuleAnalysisManager & /*MAM*/) {
               FunctionType *rotationGateType = FunctionType::get(
                   Type::getVoidTy(rContext),
                   {Type::getDoubleTy(rContext), qubitType}, false);
-              RZ = module.getOrInsertFunction(RZGate, rotationGateType);
-              RX = module.getOrInsertFunction(RXGate, rotationGateType);
+              RZ = module.getOrInsertFunction(RZ_Gate, rotationGateType);
+              RX = module.getOrInsertFunction(RX_Gate, rotationGateType);
             }
 
             builder.SetInsertPoint((&instruction));

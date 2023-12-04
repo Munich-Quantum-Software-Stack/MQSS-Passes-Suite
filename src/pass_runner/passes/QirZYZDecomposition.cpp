@@ -10,7 +10,6 @@
  */
 
 #include "../headers/QirZYZDecomposition.hpp"
-//#include "../headers/utilities.hpp"
 #include <cmath>
 #include <complex>
 #include <functional>
@@ -107,8 +106,8 @@ QirZYZDecompositionPass::run(Module &module, ModuleAnalysisManager & /*MAM*/) {
               FunctionType *rotationGateType = FunctionType::get(
                   Type::getVoidTy(rContext),
                   {Type::getDoubleTy(rContext), qubitType}, false);
-              RZ = module.getOrInsertFunction(RZGate, rotationGateType);
-              RY = module.getOrInsertFunction(RYGate, rotationGateType);
+              RZ = module.getOrInsertFunction(RZ_Gate, rotationGateType);
+              RY = module.getOrInsertFunction(RY_Gate, rotationGateType);
             }
 
             builder.SetInsertPoint((&instruction));

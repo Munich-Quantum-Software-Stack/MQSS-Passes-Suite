@@ -6,11 +6,14 @@ build/
 docs/build/
 docs/latex/
 tests/test
+.cache/*
+.vscode/*
 
 *~
 *.o
 *.so
 *.swp
 *.bkp
+
 *.plist
 *.metadata

@@ -11,11 +11,11 @@
 
 #define TYPE double
 
-#define HGate "__quantum__qis__h__body"
-#define RXGate "__quantum__qis__rx__body"
-#define RYGate "__quantum__qis__ry__body"
-#define RZGate "__quantum__qis__rz__body"
-#define U3Gate "__quantum__qis__U3__body"
+#define H_Gate "__quantum__qis__h__body"
+#define RX_Gate "__quantum__qis__rx__body"
+#define RY_Gate "__quantum__qis__ry__body"
+#define RZ_Gate "__quantum__qis__rz__body"
+#define U3_Gate "__quantum__qis__U3__body"
 
 using Complex = std::complex<TYPE>;
 
@@ -29,16 +29,4 @@ ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
 
 double mod_2pi(double angle, double atol);
 
-// using Complexdouble = std::complex<double>;
-
-// template<typename T>
-// using ComplexMatrix2x2 = std::array<std::array<std::complex<T>, 2>, 2>;
-
-// template<typename Type> ComplexMatrix2x2<Type>
-// getTheMatrixOfGateFromInstructionName(std::string& theGate);
-
-// template <typename T>
-// Complex<T> det(ComplexMatrix2x2<T> mat[2][2]);
-
 Complex det(ComplexMatrix mat);
-// ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate);

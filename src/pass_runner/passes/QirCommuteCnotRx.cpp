@@ -18,52 +18,77 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirCommuteCnotRxPass::run(Module &module,
-                                            ModuleAnalysisManager & /*MAM*/) {
-  for (auto &function : module) {
-    for (auto &block : function) {
-      CallInst *prev_instruction = nullptr;
+                                            ModuleAnalysisManager & /*MAM*/)
+{
+    for (auto &function : module)
+    {
+        for (auto &block : function)
+        {
+            CallInst *prev_instruction = nullptr;
 
-      for (auto &instruction : block) {
-        auto *current_instruction = dyn_cast<CallInst>(&instruction);
+            for (auto &instruction : block)
+            {
+                auto *current_instruction = dyn_cast<CallInst>(&instruction);
 
-        if (current_instruction) {
-          auto *current_function = current_instruction->getCalledFunction();
+                if (current_instruction)
+                {
+                    auto *current_function =
+                        current_instruction->getCalledFunction();
 
-          if (current_function == nullptr)
-            continue;
+                    if (current_function == nullptr)
+                        continue;
 
-          std::string current_name = current_function->getName().str();
+                    std::string current_name =
+                        current_function->getName().str();
 
-          if (current_name == "__quantum__qis__rx__body") {
-            if (prev_instruction) {
-              if (auto *callInst = dyn_cast<CallInst>(prev_instruction)) {
-                if (auto *prev_function = callInst->getCalledFunction()) {
-                  if (prev_function) {
-                    std::string previous_name = prev_function->getName().str();
+                    if (current_name == "__quantum__qis__rx__body")
+                    {
+                        if (prev_instruction)
+                        {
+                            if (auto *callInst =
+                                    dyn_cast<CallInst>(prev_instruction))
+                            {
+                                if (auto *prev_function =
+                                        callInst->getCalledFunction())
+                                {
+                                    if (prev_function)
+                                    {
+                                        std::string previous_name =
+                                            prev_function->getName().str();
 
-                    if (previous_name == "__quantum__qis__cnot__body") {
-                      Value *previous_arg = prev_instruction->getArgOperand(1);
-                      Value *current_arg =
-                          current_instruction->getArgOperand(1);
+                                        if (previous_name ==
+                                            "__quantum__qis__cnot__body")
+                                        {
+                                            Value *previous_arg =
+                                                prev_instruction->getArgOperand(
+                                                    1);
+                                            Value *current_arg =
+                                                current_instruction
+                                                    ->getArgOperand(1);
 
-                      if (previous_arg == current_arg) {
-                        current_instruction->moveBefore(prev_instruction);
-                        errs()
-                            << "[Pass].............Commuting: " << previous_name
-                            << " and " << current_name << '\n';
-                      }
+                                            if (previous_arg == current_arg)
+                                            {
+                                                current_instruction->moveBefore(
+                                                    prev_instruction);
+                                                errs()
+                                                    << "   "
+                                                       "[Pass]................"
+                                                       "Commuting: "
+                                                    << previous_name << " and "
+                                                    << current_name << '\n';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                  }
                 }
-              }
+                prev_instruction = current_instruction;
             }
-          }
         }
-        prev_instruction = current_instruction;
-      }
     }
-  }
-  return PreservedAnalyses::none();
+    return PreservedAnalyses::none();
 }
 
 /**

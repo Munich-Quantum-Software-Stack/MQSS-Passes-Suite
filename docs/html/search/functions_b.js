@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['preparesourceseparation_0',['prepareSourceSeparation',['../classllvm_1_1QirGroupingPass.html#aede72af4713470eabbeb7a1543273e36',1,'llvm::QirGroupingPass']]]
+  ['operandanalysis_0',['operandAnalysis',['../classllvm_1_1QirGroupingPass.html#abd4371a3cc0571498232c82d27be6a5a',1,'llvm::QirGroupingPass']]]
 ];

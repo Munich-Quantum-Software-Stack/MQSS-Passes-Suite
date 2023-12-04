@@ -5,48 +5,63 @@
 
 #include "SchedulerRunner.hpp"
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 /**
  * @brief TODO
  * @param pathScheduler TODO
  * @return std::string
  */
-std::string invokeScheduler(const std::string &pathScheduler) {
-  size_t lastSlashPos = pathScheduler.find_last_of('/');
-  if (lastSlashPos != std::string::npos) {
-    std::string fileName = pathScheduler.substr(lastSlashPos + 1);
-    std::cout << "[Scheduler Runner].Invoking scheduler: " << fileName
-              << std::endl;
-  } else {
-    std::cerr << "[Scheduler Runner].Invalid path to scheduler" << std::endl;
-    return "";
-  }
+int invokeScheduler(const std::string &nameScheduler)
+{
+    std::string pathScheduler;
+    char buffer[PATH_MAX];
 
-  // Load the scheduler as a shared library
-  std::string path = pathScheduler;
+    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+    if (len != -1)
+    {
+        buffer[len] = '\0';
+        pathScheduler = std::string(buffer);
+        size_t lastSlash = pathScheduler.find_last_of("/\\");
+        pathScheduler = pathScheduler.substr(0, lastSlash) +
+                        "/lib/scheduler_runner/schedulers/";
+    }
+    pathScheduler.append(nameScheduler);
 
-  void *lib_handle = dlopen(path.c_str(), RTLD_LAZY);
+    std::cout << "   [Scheduler Runner]....Invoking scheduler: "
+              << nameScheduler << std::endl;
 
-  if (!lib_handle) {
-    std::cerr
-        << "[Scheduler Runner].Error loading scheduler as a shared library: "
-        << dlerror() << std::endl;
+    // Load the scheduler as a shared library
+    void *lib_handle = dlopen(pathScheduler.c_str(), RTLD_LAZY);
 
-    return "";
-  }
+    if (!lib_handle)
+    {
+        std::cerr
+            << "   [Scheduler Runner]..Error loading scheduler as a shared "
+               "library: "
+            << dlerror() << std::endl;
 
-  // Dynamic loading and linking of the shared library
-  typedef std::string (*SchedulerFunction)();
-  SchedulerFunction scheduler =
-      reinterpret_cast<SchedulerFunction>(dlsym(lib_handle, "scheduler"));
+        return 1;
+    }
 
-  if (!scheduler) {
-    std::cerr << "[Scheduler Runner].Error finding function in shared library: "
-              << dlerror() << std::endl;
+    // Dynamic loading and linking of the shared library
+    typedef void (*SchedulerFunction)();
+    SchedulerFunction scheduler =
+        reinterpret_cast<SchedulerFunction>(dlsym(lib_handle, "scheduler"));
 
-    dlclose(lib_handle);
-    return "";
-  }
+    if (!scheduler)
+    {
+        std::cerr << "   [Scheduler Runner]..Error finding function in shared "
+                     "library: "
+                  << dlerror() << std::endl;
 
-  // Call the scheduler function
-  return scheduler();
+        dlclose(lib_handle);
+    }
+
+    // Call the scheduler function
+    scheduler();
+
+    return 0;
 }

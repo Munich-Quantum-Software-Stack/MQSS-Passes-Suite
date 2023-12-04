@@ -29,38 +29,50 @@ std::string const QirAnnotateUnsupportedGatesPass::QIS_START = "__quantum"
  */
 PreservedAnalyses
 QirAnnotateUnsupportedGatesPass::run(Module &module,
-                                     ModuleAnalysisManager & /*MAM*/) {
-  bool changed = false;
+                                     ModuleAnalysisManager & /*MAM*/)
+{
+    bool changed = false;
 
-  // Fetch the supported gate set using qdmi
-  auto supported_gate_set = qdmi_supported_gate_set("Q5");
+    // Fetch the supported gate set using qdmi
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
+    auto targetArchitecture = qirMetadata.targetPlatform;
 
-  // Adding  as requested
-  for (auto &function : module) {
-    auto original_gate = static_cast<std::string>(function.getName());
+    auto supported_gate_set = qdmi_supported_gate_set(targetArchitecture);
+    int gate_set_size = fomac_gate_set_size(targetArchitecture);
 
-    bool is_quantum = (original_gate.size() >= QIS_START.size() &&
-                       original_gate.substr(0, QIS_START.size()) == QIS_START);
+    errs() << "   [Pass]................Size of supported gate set: "
+           << gate_set_size << '\n';
 
-    // We only want to annotate quantum gates
-    if (!is_quantum)
-      continue;
+    // Adding  as requested
+    for (auto &function : module)
+    {
+        auto original_gate = static_cast<std::string>(function.getName());
 
-    // Insert attribute to each unsupported gate
-    auto it = std::find(supported_gate_set.begin(), supported_gate_set.end(),
-                        original_gate);
-    if (it == supported_gate_set.end()) {
-      errs() << "[Pass].............Unsupported gate found: " << original_gate
-             << '\n';
-      function.addFnAttr("unsupported");
-      changed = true;
+        bool is_quantum =
+            (original_gate.size() >= QIS_START.size() &&
+             original_gate.substr(0, QIS_START.size()) == QIS_START);
+
+        // We only want to annotate quantum gates
+        if (!is_quantum)
+            continue;
+
+        // Insert attribute to each unsupported gate
+        auto it = std::find(supported_gate_set.begin(),
+                            supported_gate_set.end(), original_gate);
+        if (it == supported_gate_set.end())
+        {
+            errs() << "   [Pass]................Unsupported gate found: "
+                   << original_gate << '\n';
+            function.addFnAttr("unsupported");
+            changed = true;
+        }
     }
-  }
 
-  if (changed)
-    return PreservedAnalyses::none();
+    if (changed)
+        return PreservedAnalyses::none();
 
-  return PreservedAnalyses::all();
+    return PreservedAnalyses::all();
 }
 
 /**
@@ -68,6 +80,7 @@ QirAnnotateUnsupportedGatesPass::run(Module &module,
  * a 'PassModule'.
  * @return QirAnnotateUnsupportedGatesPass
  */
-extern "C" PassModule *loadQirPass() {
-  return new QirAnnotateUnsupportedGatesPass();
+extern "C" PassModule *loadQirPass()
+{
+    return new QirAnnotateUnsupportedGatesPass();
 }

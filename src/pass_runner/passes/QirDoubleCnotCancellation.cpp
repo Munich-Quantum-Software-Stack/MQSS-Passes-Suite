@@ -19,61 +19,89 @@ using namespace llvm;
  */
 PreservedAnalyses
 QirDoubleCnotCancellationPass::run(Module &module,
-                                   ModuleAnalysisManager & /*MAM*/) {
-  for (auto &function : module) {
-    std::vector<CallInst *> gatesToRemove;
-    for (auto &block : function) {
-      CallInst *prev_instruction = nullptr;
+                                   ModuleAnalysisManager & /*MAM*/)
+{
+    for (auto &function : module)
+    {
+        std::vector<CallInst *> gatesToRemove;
+        for (auto &block : function)
+        {
+            CallInst *prev_instruction = nullptr;
 
-      for (auto &instruction : block) {
-        auto *current_instruction = dyn_cast<CallInst>(&instruction);
+            for (auto &instruction : block)
+            {
+                auto *current_instruction = dyn_cast<CallInst>(&instruction);
 
-        if (current_instruction) {
-          auto *current_function = current_instruction->getCalledFunction();
+                if (current_instruction)
+                {
+                    auto *current_function =
+                        current_instruction->getCalledFunction();
 
-          if (current_function == nullptr)
-            continue;
+                    if (current_function == nullptr)
+                        continue;
 
-          std::string current_name = current_function->getName().str();
+                    std::string current_name =
+                        current_function->getName().str();
 
-          if (current_name == "__quantum__qis__cnot__body") {
-            if (prev_instruction) {
-              if (auto *callInst = dyn_cast<CallInst>(prev_instruction)) {
-                if (auto *prev_function = callInst->getCalledFunction()) {
-                  if (prev_function) {
-                    std::string previous_name = prev_function->getName().str();
+                    if (current_name == "__quantum__qis__cnot__body")
+                    {
+                        if (prev_instruction)
+                        {
+                            if (auto *callInst =
+                                    dyn_cast<CallInst>(prev_instruction))
+                            {
+                                if (auto *prev_function =
+                                        callInst->getCalledFunction())
+                                {
+                                    if (prev_function)
+                                    {
+                                        std::string previous_name =
+                                            prev_function->getName().str();
 
-                    if (previous_name == "__quantum__qis__cnot__body") {
-                      if (prev_instruction->getArgOperand(0) ==
-                              current_instruction->getArgOperand(0) &&
-                          prev_instruction->getArgOperand(1) ==
-                              current_instruction->getArgOperand(1)) {
-                        gatesToRemove.push_back(prev_instruction);
-                        gatesToRemove.push_back(current_instruction);
+                                        if (previous_name ==
+                                            "__quantum__qis__cnot__body")
+                                        {
+                                            if (prev_instruction->getArgOperand(
+                                                    0) ==
+                                                    current_instruction
+                                                        ->getArgOperand(0) &&
+                                                prev_instruction->getArgOperand(
+                                                    1) ==
+                                                    current_instruction
+                                                        ->getArgOperand(1))
+                                            {
+                                                gatesToRemove.push_back(
+                                                    prev_instruction);
+                                                gatesToRemove.push_back(
+                                                    current_instruction);
 
-                        errs() << "[Pass].............A pair of Cnot gates "
-                                  "found\n";
-                      }
+                                                errs()
+                                                    << "   "
+                                                       "[Pass]..............A "
+                                                       "pair of Cnot gates "
+                                                       "found\n";
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                  }
                 }
-              }
+                prev_instruction = current_instruction;
             }
-          }
         }
-        prev_instruction = current_instruction;
-      }
-    }
-    assert(((void)"Number of gates to be removed is not even",
-            gatesToRemove.size() % 2 == 0));
+        assert(((void)"Number of gates to be removed is not even",
+                gatesToRemove.size() % 2 == 0));
 
-    while (!gatesToRemove.empty()) {
-      auto *gateToRemove = gatesToRemove.back();
-      gateToRemove->eraseFromParent();
-      gatesToRemove.pop_back();
+        while (!gatesToRemove.empty())
+        {
+            auto *gateToRemove = gatesToRemove.back();
+            gateToRemove->eraseFromParent();
+            gatesToRemove.pop_back();
+        }
     }
-  }
-  return PreservedAnalyses::none();
+    return PreservedAnalyses::none();
 }
 
 /**
@@ -81,6 +109,7 @@ QirDoubleCnotCancellationPass::run(Module &module,
  * 'PassModule'.
  * @return QirDoubleCnotCancellationPass
  */
-extern "C" PassModule *loadQirPass() {
-  return new QirDoubleCnotCancellationPass();
+extern "C" PassModule *loadQirPass()
+{
+    return new QirDoubleCnotCancellationPass();
 }

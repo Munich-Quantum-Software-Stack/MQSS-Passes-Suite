@@ -18,57 +18,72 @@ using namespace llvm;
  */
 PreservedAnalyses
 QirHadamardAndYGateSwitchPass::run(Module &module,
-                                   ModuleAnalysisManager & /*MAM*/) {
-  auto &Context = module.getContext();
+                                   ModuleAnalysisManager & /*MAM*/)
+{
+    auto &Context = module.getContext();
 
-  for (auto &function : module) {
-    std::vector<CallInst *> currentGates;
-    std::vector<CallInst *> previousGates;
+    for (auto &function : module)
+    {
+        std::vector<CallInst *> currentGates;
+        std::vector<CallInst *> previousGates;
 
-    for (auto &block : function) {
-      CallInst *prev_instruction = nullptr;
+        for (auto &block : function)
+        {
+            CallInst *prev_instruction = nullptr;
 
-      for (auto &instruction : block) {
-        auto *current_instruction = dyn_cast<CallInst>(&instruction);
+            for (auto &instruction : block)
+            {
+                auto *current_instruction = dyn_cast<CallInst>(&instruction);
 
-        if (current_instruction) {
-          auto *current_function = current_instruction->getCalledFunction();
+                if (current_instruction)
+                {
+                    auto *current_function =
+                        current_instruction->getCalledFunction();
 
-          if (current_function == nullptr)
-            continue;
+                    if (current_function == nullptr)
+                        continue;
 
-          std::string current_name = current_function->getName().str();
+                    std::string current_name =
+                        current_function->getName().str();
 
-          if (current_name == "__quantum__qis__y__body") {
-            if (prev_instruction) {
-              auto *prev_function =
-                  dyn_cast<CallInst>(prev_instruction)->getCalledFunction();
+                    if (current_name == "__quantum__qis__y__body")
+                    {
+                        if (prev_instruction)
+                        {
+                            auto *prev_function =
+                                dyn_cast<CallInst>(prev_instruction)
+                                    ->getCalledFunction();
 
-              if (prev_function) {
-                std::string previous_name = prev_function->getName().str();
+                            if (prev_function)
+                            {
+                                std::string previous_name =
+                                    prev_function->getName().str();
 
-                if (previous_name == "__quantum__qis__h__body") {
-                  previousGates.push_back(prev_instruction);
-                  currentGates.push_back(current_instruction);
-                  errs() << "              Switching: " << previous_name
-                         << " and " << current_name << '\n';
+                                if (previous_name == "__quantum__qis__h__body")
+                                {
+                                    previousGates.push_back(prev_instruction);
+                                    currentGates.push_back(current_instruction);
+                                    errs() << "              Switching: "
+                                           << previous_name << " and "
+                                           << current_name << '\n';
+                                }
+                            }
+                        }
+                    }
                 }
-              }
+                prev_instruction = current_instruction;
             }
-          }
         }
-        prev_instruction = current_instruction;
-      }
+        while (!currentGates.empty())
+        {
+            auto *currentGate = currentGates.back();
+            auto *prevGate = previousGates.back();
+            currentGate->moveBefore(prevGate);
+            currentGates.pop_back();
+            previousGates.pop_back();
+        }
     }
-    while (!currentGates.empty()) {
-      auto *currentGate = currentGates.back();
-      auto *prevGate = previousGates.back();
-      currentGate->moveBefore(prevGate);
-      currentGates.pop_back();
-      previousGates.pop_back();
-    }
-  }
-  return PreservedAnalyses::none();
+    return PreservedAnalyses::none();
 }
 
 /**
@@ -76,6 +91,7 @@ QirHadamardAndYGateSwitchPass::run(Module &module,
  * 'PassModule'.
  * @return QirHadamardAndYGateSwitchPass
  */
-extern "C" PassModule *loadQirPass() {
-  return new QirHadamardAndYGateSwitchPass();
+extern "C" PassModule *loadQirPass()
+{
+    return new QirHadamardAndYGateSwitchPass();
 }

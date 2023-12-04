@@ -1,6 +1,6 @@
 # Quantum Resource Manager (QRM)
 
-The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is `daemon_d`. This README provides instructions for installing and uninstalling `daemon_d`, as well as for running an example submitting a quantum task<!--Not to be confused with a qcommon QuantumTask-->.
+The entry point of the Quantum Resource Manager for selecting and applying LLVM passes to a Quantum Circuit described on a Quantum Intermediate Representation ([QIR](https://www.qir-alliance.org/projects/)) is `qresourcemanager_d`. This README provides instructions for installing and uninstalling `qresourcemanager_d`, as well as for running an example submitting a quantum task<!--Not to be confused with a qcommon QuantumTask-->.
 
 ## Downloading
 
@@ -9,7 +9,7 @@ The entry point of the Quantum Resource Manager for selecting and applying LLVM 
    git clone https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes.git
    ```
 
-2. After cloning, move into the repository directory and checkout the `NoSockets` branch:
+2. After cloning, make sure you are at the right branch:
    ```bash
    cd qir_passes
    git checkout NoSockets
@@ -37,7 +37,7 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
 1. Install the required dependencies:
    ```bash
    sudo apt update
-   sudo apt install -y cmake llvm rabbitmq-server g++ curl
+   sudo apt install -y cmake llvm rabbitmq-server g++ curl libgtest-dev nlohmann-json3-dev
    ```
 
 2. Navigate to the `qir_passes` directory (if you are not already there):
@@ -45,20 +45,20 @@ To install the Quantum Resource Manager daemon system wide, follow these steps:
    cd qir_passes/
    ```
 
-3. Run `make` to install `daemon_d`:
+3. Run `make` to install `qresourcemanager_d`:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, with the following command:
       ```bash
-      make QDMI_PATH=qdmi install
+      make FOMAC_PATH=fomac BACKENDS_PATH=backends install
       ```
 
-   - Besides the directory with the chosen Quantum Device Management Interface (QDMI), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directories with the chosen Figure of Merits and Constraints library (FoMaC) and the available backends, one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build install
+      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BACKENDS_PATH=backends BUILD_DIR=build install
       ```
 
 ## Uninstallation
 
-If you ever need to uninstall `daemon_d`, follow these steps:
+If you ever need to uninstall `qresourcemanager_d`, follow these steps:
 
 1. Navigate to the `qir_passes` directory (if you are not already there):
    ```bash
@@ -70,14 +70,20 @@ If you ever need to uninstall `daemon_d`, follow these steps:
    sudo make uninstall
    ```
 
-This will remove `daemon_d` from your system.
+This will remove `qresourcemanager_d` from your system.
 
 ## Project Structure
 
 The project structure is the following:
 
 ```
+├─ .clang-format
 ├─ .gitignore
+├─ .gitlab
+│  ├─ issue_templates
+│  │  └─ new_issue.md
+│  └─ merge_request_templates
+│     └─ new_merge_request.md
 ├─ .gitlab-ci.yml
 ├─ .pre-commit-config.yaml
 ├─ CMakeLists.txt
@@ -86,6 +92,13 @@ The project structure is the following:
 ├─ LICENSE
 ├─ Makefile
 ├─ README.md
+├─ backends
+│  ├─ CMakeLists.txt
+│  ├─ JobRunner.hpp
+│  ├─ IQMBackend.cpp
+│  ├─ IQMBackend.hpp
+│  ├─ Q5Backend.hpp
+│  └─ Q20Backend.hpp
 ├─ benchmarks
 │  └─ test.ll
 ├─ cmake
@@ -99,12 +112,17 @@ The project structure is the following:
 ├─ flowcharts
 │  ├─ flow.drawio
 │  └─ flow.png
+├─ fomac
+│  ├─ CMakeLists.txt
+│  ├─ fomac.cpp
+│  └─ fomac.hpp
 ├─ scripts
+│  ├─ kill_daemons.sh
 │  └─ generate_docs.sh
 ├─ src
 │  ├─ connection_handling.cpp
 │  ├─ connection_handling.hpp
-│  ├─ daemon_d.cpp
+│  ├─ qresourcemanager_d.cpp
 │  ├─ pass_runner
 │  │  ├─ headers
 │  │  │  ├─ llvm.hpp
@@ -113,6 +131,9 @@ The project structure is the following:
 │  │  └─ passes
 │  │     ├─ CMakeLists.txt
 │  │     └─ ...
+│  ├─ qdmi
+│  │  ├─ qdmi.cpp
+│  │  └─ qdmi.hpp
 │  ├─ scheduler_runner
 │  │  ├─ schedulers
 │  │  │  ├─ CMakeLists.txt
@@ -150,18 +171,18 @@ You can build the Quantum Resource Manager and generate its documentation locall
 1. Install the required dependencies for Doxygen:
    ```bash
    sudo apt update
-   sudo apt install -y cmake llvm rabbitmq-server g++ flex bison
+   sudo apt install -y cmake llvm rabbitmq-server g++ curl flex bison libgtest-dev nlohmann-json3-dev
    ```
 
 2. Run make:
    - One can install the daemon in the default directory, i.e., `$HOME/bin`, and generate its documentation with the following command:
       ```bash
-      make QDMI_PATH=qdmi docs
+      make FOMAC_PATH=fomac BACKENDS_PATH=backends docs
       ```
 
-   - Besides the directory with the chosen Quantum Device Management Interface (QDMI), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
+   - Besides the directory with the chosen Figures of Merit and Constraints library (FOMAC), one may also specify the installation path, and a directory where the build files can be written to. Note that the equivalent command to the one above is:
       ```bash
-      make INSTALL_PATH=$HOME QDMI_PATH=qdmi BUILD_DIR=build docs
+      make INSTALL_PATH=$HOME FOMAC_PATH=fomac BACKENDS_PATH=backends BUILD_DIR=build docs
       ```
 
 3. Open the generated documentation in a web browser:

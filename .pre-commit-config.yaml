@@ -7,21 +7,10 @@ repos:
     - id: trailing-whitespace
   - repo: local
     hooks:
-    - id: generate-docs
-      name: Generate Documentation
-      entry: scripts/generate_docs.sh
-      language: script
     - id: clang-format
       name: clang-format
       description: Format C code using clang-format.
       language: system
       files: \.(c|cc|cxx|cpp|h|hpp|hxx)$
       entry: clang-format -i
-      args: ["-style=LLVM"]
-    - id: cmake-format
-      name: cmake-format
-      description: cmake-format applies the right formatting to the source code
-      entry: cmake-format
-      args: [--in-place]
-      language: python
-      types: [cmake]
+      args: ["-assume-filename=.clang-format"]

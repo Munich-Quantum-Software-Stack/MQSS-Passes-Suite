@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nextquantumcycle_0',['nextQuantumCycle',['../classllvm_1_1QirGroupingPass.html#ae493d86dcff5b2307ba46dcdf89fa267',1,'llvm::QirGroupingPass']]]
+  ['main_0',['main',['../qresourcemanager__d_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'qresourcemanager_d.cpp']]]
 ];

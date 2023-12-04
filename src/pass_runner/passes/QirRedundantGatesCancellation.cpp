@@ -20,57 +20,71 @@ using namespace llvm;
  */
 PreservedAnalyses
 QirRedundantGatesCancellationPass::run(Module &module,
-                                       ModuleAnalysisManager & /*MAM*/) {
-  QirPassRunner &QPR = QirPassRunner::getInstance();
-  QirMetadata &qirMetadata = QPR.getMetadata();
+                                       ModuleAnalysisManager & /*MAM*/)
+{
+    QirPassRunner &QPR = QirPassRunner::getInstance();
+    QirMetadata &qirMetadata = QPR.getMetadata();
 
-  for (auto reversibleGate : qirMetadata.reversibleGates) {
-    for (auto &function : module) {
-      std::vector<CallInst *> gatesToRemove;
-      std::vector<CallInst *> singletonContainer;
-      for (auto &block : function) {
-        for (auto &instruction : block) {
-          auto *current_instruction = dyn_cast<CallInst>(&instruction);
+    for (auto reversibleGate : qirMetadata.reversibleGates)
+    {
+        for (auto &function : module)
+        {
+            std::vector<CallInst *> gatesToRemove;
+            std::vector<CallInst *> singletonContainer;
+            for (auto &block : function)
+            {
+                for (auto &instruction : block)
+                {
+                    auto *current_instruction =
+                        dyn_cast<CallInst>(&instruction);
 
-          if (current_instruction) {
-            auto *current_function = current_instruction->getCalledFunction();
+                    if (current_instruction)
+                    {
+                        auto *current_function =
+                            current_instruction->getCalledFunction();
 
-            if (current_function == nullptr)
-              continue;
+                        if (current_function == nullptr)
+                            continue;
 
-            std::string current_name =
-                static_cast<std::string>(current_function->getName());
+                        std::string current_name = static_cast<std::string>(
+                            current_function->getName());
 
-            if (current_name == reversibleGate) {
-              if (singletonContainer.size() == 0) {
-                singletonContainer.push_back(current_instruction);
-                continue;
-              }
+                        if (current_name == reversibleGate)
+                        {
+                            if (singletonContainer.size() == 0)
+                            {
+                                singletonContainer.push_back(
+                                    current_instruction);
+                                continue;
+                            }
 
-              CallInst *last_instruction = singletonContainer.back();
+                            CallInst *last_instruction =
+                                singletonContainer.back();
 
-              gatesToRemove.push_back(last_instruction);
-              gatesToRemove.push_back(current_instruction);
+                            gatesToRemove.push_back(last_instruction);
+                            gatesToRemove.push_back(current_instruction);
 
-              errs() << "[Pass].............Redundant gate pair found: "
-                     << reversibleGate << '\n';
+                            errs() << "   [Pass]................Redundant gate "
+                                      "pair found: "
+                                   << reversibleGate << '\n';
+                        }
+                        singletonContainer.clear();
+                    }
+                }
             }
-            singletonContainer.clear();
-          }
+
+            assert(((void)"Number of gates to be removed is not even",
+                    gatesToRemove.size() % 2 == 0));
+
+            while (!gatesToRemove.empty())
+            {
+                auto *gateToRemove = gatesToRemove.back();
+                gateToRemove->eraseFromParent();
+                gatesToRemove.pop_back();
+            }
         }
-      }
-
-      assert(((void)"Number of gates to be removed is not even",
-              gatesToRemove.size() % 2 == 0));
-
-      while (!gatesToRemove.empty()) {
-        auto *gateToRemove = gatesToRemove.back();
-        gateToRemove->eraseFromParent();
-        gatesToRemove.pop_back();
-      }
     }
-  }
-  return PreservedAnalyses::none();
+    return PreservedAnalyses::none();
 }
 
 /**
@@ -78,6 +92,7 @@ QirRedundantGatesCancellationPass::run(Module &module,
  * as a 'PassModule'.
  * @return QirRedundantGatesCancellationPass
  */
-extern "C" PassModule *loadQirPass() {
-  return new QirRedundantGatesCancellationPass();
+extern "C" PassModule *loadQirPass()
+{
+    return new QirRedundantGatesCancellationPass();
 }

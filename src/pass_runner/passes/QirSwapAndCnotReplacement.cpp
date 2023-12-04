@@ -104,26 +104,24 @@ QirSwapAndCnotReplacementPass::run(Module &module,
                 prev_instruction = current_instruction;
             }
         }
+
+        Function *newCnot = module.getFunction("__quantum__qis__cnot__body");
+        if (!newCnot)
+        {
+            StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
+            PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+            FunctionType *funcType = FunctionType::get(
+                Type::getVoidTy(Context), {qubitPtrType, qubitPtrType}, false);
+            newCnot = Function::Create(funcType, Function::ExternalLinkage,
+                                       "__quantum__qis__cnot__body", module);
+        }
+
         while (!gatesToRemove.empty())
         {
             auto *gateToRemove = gatesToRemove.back();
             gateToRemove->eraseFromParent();
             gatesToRemove.pop_back();
             auto *originalCnot = gatesToLeave.back();
-            Function *newCnot =
-                module.getFunction("__quantum__qis__cnot__body");
-            if (!newCnot)
-            {
-                StructType *qubitType =
-                    StructType::getTypeByName(Context, "Qubit");
-                PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
-                FunctionType *funcType =
-                    FunctionType::get(Type::getVoidTy(Context),
-                                      {qubitPtrType, qubitPtrType}, false);
-                newCnot =
-                    Function::Create(funcType, Function::ExternalLinkage,
-                                     "__quantum__qis__cnot__body", module);
-            }
             CallInst *newCnotInst =
                 CallInst::Create(newCnot, {originalCnot->getOperand(1),
                                            originalCnot->getOperand(0)});

@@ -50,23 +50,22 @@ PreservedAnalyses QirReverseCnotPass::run(Module &module,
                 }
             }
         }
+
+        Function *newCnot = module.getFunction("__quantum__qis__cnot__body");
+        Function *newH = module.getFunction("__quantum__qis__h__body");
+        if (!newH)
+        {
+            StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
+            PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+            FunctionType *funcType = FunctionType::get(Type::getVoidTy(Context),
+                                                       {qubitPtrType}, false);
+            newH = Function::Create(funcType, Function::ExternalLinkage,
+                                    "__quantum__qis__h__body", module);
+        }
+
         while (!cnotsToReverse.empty())
         {
             auto *cnotToReverse = cnotsToReverse.back();
-            Function *newCnot =
-                module.getFunction("__quantum__qis__cnot__body");
-            Function *newH = module.getFunction("__quantum__qis__h__body");
-            if (!newH)
-            {
-                StructType *qubitType =
-                    StructType::getTypeByName(Context, "Qubit");
-                PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
-                FunctionType *funcType =
-                    FunctionType::get(Type::getVoidTy(Context),
-                                      {qubitPtrType, qubitPtrType}, false);
-                newH = Function::Create(funcType, Function::ExternalLinkage,
-                                        "__quantum__qis__h__body", module);
-            }
             CallInst *newCnotInst =
                 CallInst::Create(newCnot, {cnotToReverse->getOperand(1),
                                            cnotToReverse->getOperand(0)});

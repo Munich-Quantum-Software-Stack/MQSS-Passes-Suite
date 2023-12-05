@@ -61,8 +61,8 @@ extern "C" std::vector<std::string> selector(void)
         "libQirSwapAndCnotReplacementPass.so",
         "libQirU3DecompositionPass.so",
         "libQirXYXDecompositionPass.so",
+        "libQirZXZDecompositionPass.so"
         "libQirZYZDecompositionPass.so",
-        "libQirZXZDecompositionPass.so",
     };
 
     std::cout << "   [Selector]............Returning list of passes to the "

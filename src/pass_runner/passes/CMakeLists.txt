@@ -136,9 +136,9 @@ foreach(src_file ${PASSES_SOURCE_FILES})
 endforeach()
 
 # Analysis passes invoked from custom passes have to be linked to the custom
-# pass target_link_libraries(QirQubitRemapPass PRIVATE
-# QirAllocationAnalysisPass) target_link_libraries(QirResourceAnnotationPass
-# PRIVATE QirAllocationAnalysisPass)
+# pass
+target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
+target_link_libraries(QirResourceAnnotationPass PRIVATE QirAllocationAnalysisPass)
 target_link_libraries(QirZXZDecompositionPass PRIVATE QirZYZDecompositionPass)
 target_link_libraries(QirXYXDecompositionPass PRIVATE QirZYZDecompositionPass)
 target_link_libraries(QirU3DecompositionPass PRIVATE QirZYZDecompositionPass)

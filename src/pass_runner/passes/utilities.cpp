@@ -13,76 +13,85 @@
 #include <iostream>
 #include <ostream>
 
-ComplexMatrix getHGate() {
-  ComplexMatrix Mat;
-  Mat[0][0] = 1 / std::sqrt(2);
-  Mat[0][1] = 1 / std::sqrt(2);
-  Mat[1][0] = 1 / std::sqrt(2);
-  Mat[1][1] = -1 / std::sqrt(2);
-  return Mat;
+ComplexMatrix getHGate()
+{
+    ComplexMatrix Mat;
+    Mat[0][0] = 1 / std::sqrt(2);
+    Mat[0][1] = 1 / std::sqrt(2);
+    Mat[1][0] = 1 / std::sqrt(2);
+    Mat[1][1] = -1 / std::sqrt(2);
+    return Mat;
 }
 
-ComplexMatrix getRXGate(double angle) {
-  ComplexMatrix RXate;
-  Complex expForm = std::exp(-I * (angle / 2));
-  RXate[0][0] = std::cos(angle / 2) * expForm;
-  RXate[0][1] = -I * std::sin(angle / 2) * expForm;
-  RXate[1][0] = -I * std::sin(angle / 2) * expForm;
-  RXate[1][1] = std::cos(angle / 2) * expForm;
-  return RXate;
+ComplexMatrix getRXGate(double angle)
+{
+    ComplexMatrix RXate;
+    Complex expForm = std::exp(-I * (angle / 2));
+    RXate[0][0] = std::cos(angle / 2) * expForm;
+    RXate[0][1] = -I * std::sin(angle / 2) * expForm;
+    RXate[1][0] = -I * std::sin(angle / 2) * expForm;
+    RXate[1][1] = std::cos(angle / 2) * expForm;
+    return RXate;
 }
 
-Complex det(ComplexMatrix mat) {
-  return mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1];
+Complex det(ComplexMatrix mat)
+{
+    return mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1];
 }
 
-double getTheAngle(Complex theNumber) {
-  return std::atan2(std::imag(theNumber), std::real(theNumber));
+double getTheAngle(Complex theNumber)
+{
+    return std::atan2(std::imag(theNumber), std::real(theNumber));
 }
 
-ComplexMatrix getRYGate(double angle) {
-  ComplexMatrix RYate;
-  Complex expForm = std::exp(-I * (angle / 2));
-  RYate[0][0] = std::cos(angle / 2) * expForm;
-  RYate[0][1] = -std::sin(angle / 2) * expForm;
-  RYate[1][0] = std::sin(angle / 2) * expForm;
-  RYate[1][1] = std::cos(angle / 2) * expForm;
-  return RYate;
+ComplexMatrix getRYGate(double angle)
+{
+    ComplexMatrix RYate;
+    Complex expForm = std::exp(-I * (angle / 2));
+    RYate[0][0] = std::cos(angle / 2) * expForm;
+    RYate[0][1] = -std::sin(angle / 2) * expForm;
+    RYate[1][0] = std::sin(angle / 2) * expForm;
+    RYate[1][1] = std::cos(angle / 2) * expForm;
+    return RYate;
 }
-ComplexMatrix getRZGate(double angle) {
-  ComplexMatrix RZate;
-  Complex expForm = std::exp(-I * (angle / 2));
-  RZate[0][0] = std::exp(-I * (angle / 2));
-  RZate[0][1] = 0;
-  RZate[1][0] = 0;
-  RZate[1][1] = std::exp(-I * (angle / 2));
-  return RZate;
+ComplexMatrix getRZGate(double angle)
+{
+    ComplexMatrix RZate;
+    Complex expForm = std::exp(-I * (angle / 2));
+    RZate[0][0] = std::exp(-I * (angle / 2));
+    RZate[0][1] = 0;
+    RZate[1][0] = 0;
+    RZate[1][1] = std::exp(-I * (angle / 2));
+    return RZate;
 }
-ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate) {
+ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate)
+{
 
-  ComplexMatrix matrixToReturn = {
-      {{1.0, 0.0}, {0.0, 1.0}}}; // Identity Gate for default
-  if (theGate == H_Gate)
-    matrixToReturn = getHGate();
-  return matrixToReturn;
+    ComplexMatrix matrixToReturn = {
+        {{1.0, 0.0}, {0.0, 1.0}}}; // Identity Gate for default
+    if (theGate == H_Gate)
+        matrixToReturn = getHGate();
+    return matrixToReturn;
 }
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
-                                                    double angle = 0) {
-  ComplexMatrix matrixToReturn = {
-      {{1.0, 0.0}, {0.0, 1.0}}}; // Identity Gate for default
-  if (theGate == RX_Gate)
-    matrixToReturn = getRXGate(angle);
-  if (theGate == RY_Gate)
-    matrixToReturn = getRYGate(angle);
-  if (theGate == RZ_Gate)
-    matrixToReturn = getRZGate(angle);
-  return matrixToReturn;
+                                                    double angle = 0)
+{
+    ComplexMatrix matrixToReturn = {
+        {{1.0, 0.0}, {0.0, 1.0}}}; // Identity Gate for default
+    if (theGate == RX_Gate)
+        matrixToReturn = getRXGate(angle);
+    if (theGate == RY_Gate)
+        matrixToReturn = getRYGate(angle);
+    if (theGate == RZ_Gate)
+        matrixToReturn = getRZGate(angle);
+    return matrixToReturn;
 }
 
-double mod_2pi(double angle, double atol) {
-  double wrapped = std::fmod(angle + M_PI, 2 * M_PI) - M_PI;
-  if (std::abs(wrapped - M_PI) < atol)
-    return -M_PI;
-  else
-    return wrapped;
+double mod_2pi(double angle, double atol)
+{
+    double wrapped = std::fmod(angle + M_PI, 2 * M_PI) - M_PI;
+    if (std::abs(wrapped - M_PI) < atol)
+        return -M_PI;
+    else
+        return wrapped;
 }

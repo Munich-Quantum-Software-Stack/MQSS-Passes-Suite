@@ -86,6 +86,8 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     QirHadamardAndXGateSwitch.cpp
     QirHadamardAndYGateSwitch.cpp
     QirHadamardAndZGateSwitch.cpp
+    QirHXHToZ.cpp
+    QirHZHToX.cpp
     # M
     QirMergeRotations.cpp
     # N

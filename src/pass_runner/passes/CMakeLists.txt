@@ -139,6 +139,7 @@ endforeach()
 # pass
 target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
 target_link_libraries(QirResourceAnnotationPass PRIVATE QirAllocationAnalysisPass)
+
 target_link_libraries(QirZXZDecompositionPass PRIVATE QirZYZDecompositionPass)
 target_link_libraries(QirXYXDecompositionPass PRIVATE QirZYZDecompositionPass)
 target_link_libraries(QirU3DecompositionPass PRIVATE QirZYZDecompositionPass)

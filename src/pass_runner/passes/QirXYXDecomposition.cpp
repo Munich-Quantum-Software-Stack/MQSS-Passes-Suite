@@ -1,6 +1,13 @@
 /**
  * @file QirXYXDecompositionPass.cpp
  * @brief Implementation of the 'QirXYXDecompositionPass' class.
+ * This Pass creates a XYX Decomposition of given gates (gatesToDecompose).
+ * It uses getDecompositionAnglesAsNumber function of QirZYZDecompositionPass to
+ * get angles. We ignore Phase since it is not supported by QIR (As December
+ * 2023) Example, H q[0] -> RX(a) q[0]; RY(b) q[0]; RX(c) q[0]; <a
+ * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirXYXDecomposition.cpp?ref_type=heads">
+ * Go to the source code of this file.</a>
+ *
  */
 
 #include "../headers/QirXYXDecomposition.hpp"

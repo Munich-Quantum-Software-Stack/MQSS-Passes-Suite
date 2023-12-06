@@ -1,6 +1,14 @@
 /**
  * @file QirU3DecompositionPass.cpp
- * @brief Implementation of the 'QirU3DecompositionPass' class. <
+ * @brief Implementation of the 'QirU3DecompositionPass' class.
+ * This Pass creates a U3 Decomposition of given gates (gatesToDecompose).
+ * It uses getDecompositionAngles function of QirZYZDecompositionPass to get
+ * angles. We ignore Phase since it is not supported by QIR (As December 2023)
+ * Example, H q[0] -> U3(a, b, c) q[0]
+ * <a
+ * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirU3Decomposition.cpp?ref_type=heads">
+ * Go to the source code of this file.</a>
+ *
  */
 
 #include "../headers/QirU3Decomposition.hpp"

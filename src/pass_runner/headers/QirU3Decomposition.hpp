@@ -11,8 +11,9 @@ namespace llvm
 {
 
 /**
- * @class QirXCnotXReductionPass
- * @brief This pass removes X gates surrounding a CNOT gate.
+ * @class QirU3DecompositionPass
+ * @brief This Pass creates a U3 Decomposition of given gates
+ * (gatesToDecompose).
  */
 class QirU3DecompositionPass : public PassModule
 {

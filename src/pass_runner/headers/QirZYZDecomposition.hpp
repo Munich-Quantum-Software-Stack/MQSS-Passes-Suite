@@ -12,7 +12,7 @@ namespace llvm
 
 /**
  * @class QirZYZDecompositionPass
- * @brief ZYZ Decomposotion
+ * @brief This Pass creates a ZYZ Decomposition of given gates.
  */
 class QirZYZDecompositionPass : public PassModule
 {

@@ -1,8 +1,14 @@
 /**
  * @file QirZYZDecompositionPass.cpp
  * @brief Implementation of the 'QirZYZDecompositionPass' class.
+ * This Pass creates a ZYZ Decomposition of given gates (gatesToDecompose).
+ * The function getDecompositionAngles is used in other Decompositions (XYX, U3,
+ * ZXZ). We ignore Phase since it is not supported by QIR (As December 2023)
+ * Example, H q[0] -> RZ(a) q[0]; RY(b) q[0]; RZ(c) q[0];
+ * <a
+ * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirZYZDecomposition.cpp?ref_type=heads">
+ * Go to the source code of this file.</a>
  */
-
 #include "../headers/QirZYZDecomposition.hpp"
 #include <cmath>
 #include <complex>
@@ -25,7 +31,7 @@ std::vector<Value *>
 QirZYZDecompositionPass::getDecompositionAngles(LLVMContext &context,
                                                 ComplexMatrix theGate)
 {
-
+    /* Calculate the Angles and creates the LLVM values*/
     double detArg = getTheAngle(det(theGate));
     double phase = 0.5 * detArg;
     double theta =
@@ -50,6 +56,7 @@ QirZYZDecompositionPass::getDecompositionAnglesAsNumber(LLVMContext &context,
                                                         ComplexMatrix theGate)
 {
 
+    /* Calculate the Angles */
     double detArg = getTheAngle(det(theGate));
     double phase = 0.5 * detArg;
     double theta =

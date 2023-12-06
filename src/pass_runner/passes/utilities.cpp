@@ -15,6 +15,7 @@
 
 ComplexMatrix getHGate()
 {
+    /*Matrix Definetation of H Gate*/
     ComplexMatrix Mat;
     Mat[0][0] = 1 / std::sqrt(2);
     Mat[0][1] = 1 / std::sqrt(2);
@@ -25,6 +26,7 @@ ComplexMatrix getHGate()
 
 ComplexMatrix getRXGate(double angle)
 {
+    /*Matrix Definetation of RX Gate*/
     ComplexMatrix RXate;
     Complex expForm = std::exp(-I * (angle / 2));
     RXate[0][0] = std::cos(angle / 2) * expForm;
@@ -36,16 +38,19 @@ ComplexMatrix getRXGate(double angle)
 
 Complex det(ComplexMatrix mat)
 {
+    /*MCalculates determinant of a 2X2 matrix*/
     return mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1];
 }
 
 double getTheAngle(Complex theNumber)
 {
+    /* Calculate the angle of a complex number*/
     return std::atan2(std::imag(theNumber), std::real(theNumber));
 }
 
 ComplexMatrix getRYGate(double angle)
 {
+    /*Matrix Definetation of RY Gate*/
     ComplexMatrix RYate;
     Complex expForm = std::exp(-I * (angle / 2));
     RYate[0][0] = std::cos(angle / 2) * expForm;
@@ -56,6 +61,7 @@ ComplexMatrix getRYGate(double angle)
 }
 ComplexMatrix getRZGate(double angle)
 {
+    /*Matrix Definetation of RZ Gate*/
     ComplexMatrix RZate;
     Complex expForm = std::exp(-I * (angle / 2));
     RZate[0][0] = std::exp(-I * (angle / 2));
@@ -66,7 +72,7 @@ ComplexMatrix getRZGate(double angle)
 }
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate)
 {
-
+    /*Returns matrix form a gate*/
     ComplexMatrix matrixToReturn = {
         {{1.0, 0.0}, {0.0, 1.0}}}; // Identity Gate for default
     if (theGate == H_Gate)
@@ -76,6 +82,7 @@ ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate)
 ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
                                                     double angle = 0)
 {
+    /*Returns matrix form a gate*/
     ComplexMatrix matrixToReturn = {
         {{1.0, 0.0}, {0.0, 1.0}}}; // Identity Gate for default
     if (theGate == RX_Gate)
@@ -89,6 +96,7 @@ ComplexMatrix getTheMatrixOfGateFromInstructionName(std::string theGate,
 
 double mod_2pi(double angle, double atol)
 {
+    /*Calculates mod2pi of an angle*/
     double wrapped = std::fmod(angle + M_PI, 2 * M_PI) - M_PI;
     if (std::abs(wrapped - M_PI) < atol)
         return -M_PI;

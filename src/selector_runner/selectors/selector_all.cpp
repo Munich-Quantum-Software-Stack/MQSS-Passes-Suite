@@ -59,7 +59,10 @@ extern "C" std::vector<std::string> selector(void)
         "libQirSDaggerToSPass.so",
         "libQirReverseCnotPass.so",
         "libQirSwapAndCnotReplacementPass.so",
-    };
+        "libQirU3DecompositionPass.so",
+        "libQirXYXDecompositionPass.so",
+        "libQirZXZDecompositionPass.so",
+        "libQirZYZDecompositionPass.so"};
 
     std::cout << "   [Selector]............Returning list of passes to the "
                  "Selector Runner"

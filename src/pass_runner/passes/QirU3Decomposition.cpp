@@ -90,8 +90,6 @@ PreservedAnalyses QirU3DecompositionPass::run(Module &module,
                                  Type::getDoubleTy(rContext),
                                  Type::getDoubleTy(rContext), qubitType},
                                 false);
-
-                            errs() << *rotationGateType << "\n";
                             U3 = module.getOrInsertFunction(U3_Gate,
                                                             rotationGateType);
                         }

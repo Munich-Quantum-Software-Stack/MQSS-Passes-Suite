@@ -21,7 +21,7 @@ extern "C" std::vector<std::string> selector(void)
     std::vector<std::string> passes{
         "libQirDivisionByZeroPass.so",
         "libQirNormalizeArgAnglePass.so",
-        "libQirXCnotXReductionPass.so",
+        // "libQirXCnotXReductionPass.so",
         "libQirCommuteCnotRxPass.so",
         "libQirCommuteRxCnotPass.so",
         "libQirCommuteCnotXPass.so",
@@ -63,6 +63,8 @@ extern "C" std::vector<std::string> selector(void)
         "libQirXYXDecompositionPass.so",
         "libQirZXZDecompositionPass.so",
         "libQirZYZDecompositionPass.so"};
+        "libQirHXHToZPass.so",
+    };
 
     std::cout << "   [Selector]............Returning list of passes to the "
                  "Selector Runner"

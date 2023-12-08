@@ -27,6 +27,7 @@ set(PASSES_SOURCE_FILES
     QirHadamardAndYGateSwitch.cpp
     QirHadamardAndZGateSwitch.cpp
     QirHXHToZ.cpp
+    QirHZHToX.cpp
     # M
     QirMergeRotations.cpp
     # N

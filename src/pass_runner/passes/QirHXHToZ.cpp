@@ -4,6 +4,9 @@
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirHXHToZ.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
+ * Adapted from: https://threeplusone.com/pubs/on_gates.pdf -- 3.5 Hadamard
+ * Gates
+ *
  */
 
 #include "../headers/QirHXHToZ.hpp"
@@ -16,8 +19,6 @@ using namespace llvm;
  * @param MAM The module analysis manager.
  * @return PreservedAnalyses
  *
- * Adapted from: https://threeplusone.com/pubs/on_gates.pdf -- 3.5 Hadamard
- * Gates
  */
 PreservedAnalyses QirHXHToZPass::run(Module &module,
                                      ModuleAnalysisManager & /*MAM*/)
@@ -80,14 +81,23 @@ PreservedAnalyses QirHXHToZPass::run(Module &module,
                 instructions.push_back(instruction);
                 continue;
             }
-            else if (instructions.size() == 1 &&
-                     name == "__quantum__qis__x__body")
+
+            if (instructions.size() == 1)
             {
-                instructions.push_back(instruction);
-                continue;
+                if (name == "__quantum__qis__x__body")
+                {
+                    instructions.push_back(instruction);
+                    continue;
+                }
+                else if (name == "__quantum__qis__h__body")
+                {
+                    instructions.pop_back();
+                    instructions.push_back(instruction);
+                    continue;
+                }
             }
-            else if (instructions.size() == 2 &&
-                     name == "__quantum__qis__h__body")
+
+            if (instructions.size() == 2 && name == "__quantum__qis__h__body")
             {
                 instructionsToReplaceWithZ.push_back(instruction);
                 instructionsToRemove.push_back(instructions[0]);

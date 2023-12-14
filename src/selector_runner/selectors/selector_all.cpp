@@ -62,7 +62,7 @@ extern "C" std::vector<std::string> selector(void)
         "libQirU3DecompositionPass.so",
         "libQirXYXDecompositionPass.so",
         "libQirZXZDecompositionPass.so",
-        "libQirZYZDecompositionPass.so"};
+        "libQirZYZDecompositionPass.so",
         "libQirHXHToZPass.so",
     };
 

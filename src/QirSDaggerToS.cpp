@@ -1,0 +1,121 @@
+/**
+ * @file QirSDaggerToS.cpp
+ * @brief Implementation of the 'QirSDaggerToSPass' class. <a
+ * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirSDaggerToS.cpp?ref_type=heads">Go
+ * to the source code of this file.</a>
+ *
+ */
+
+#include <QirSDaggerToS.hpp>
+
+using namespace llvm;
+
+/**
+ * @brief Applies this pass to the QIR's LLVM module.
+ * @param module The module.
+ * @param MAM The module analysis manager.
+ * @return PreservedAnalyses
+ */
+PreservedAnalyses QirSDaggerToSPass::run(Module &module,
+                                         ModuleAnalysisManager & /*MAM*/,
+                                         QDMI_Device dev)
+{
+    auto &Context = module.getContext();
+    std::unordered_set<std::string> pauliGates = {"__quantum__qis__x__body",
+                                                  "__quantum__qis__y__body",
+                                                  "__quantum__qis__z__body"};
+
+    for (auto &function : module)
+    {
+        std::vector<CallInst *> gatesToReplace;
+        std::vector<CallInst *> gatesToRemove;
+
+        for (auto &block : function)
+        {
+            CallInst *prev_instruction = nullptr;
+
+            for (auto &instruction : block)
+            {
+                auto *current_instruction = dyn_cast<CallInst>(&instruction);
+
+                if (current_instruction)
+                {
+                    auto *current_function =
+                        current_instruction->getCalledFunction();
+
+                    if (current_function == nullptr)
+                        continue;
+
+                    std::string current_name =
+                        current_function->getName().str();
+
+                    if (pauliGates.find(current_name) != pauliGates.end())
+                    {
+                        if (prev_instruction)
+                        {
+                            auto *prev_function =
+                                dyn_cast<CallInst>(prev_instruction)
+                                    ->getCalledFunction();
+
+                            if (prev_function)
+                            {
+                                std::string previous_name =
+                                    prev_function->getName().str();
+
+                                if (previous_name == "__quantum__qis__s__adj")
+                                {
+                                    gatesToReplace.push_back(prev_instruction);
+                                    if (current_name ==
+                                        "__quantum__qis__z__body")
+                                        gatesToRemove.push_back(
+                                            current_instruction);
+                                    errs() << "                Replacing S "
+                                              "dagger with S.\n";
+                                }
+                            }
+                        }
+                    }
+                }
+                prev_instruction = current_instruction;
+            }
+        }
+        while (!gatesToReplace.empty())
+        {
+            auto *gateToReplace = gatesToReplace.back();
+            std::string gateName =
+                gateToReplace->getCalledFunction()->getName().str();
+            Function *newFunction =
+                module.getFunction("__quantum__qis__s__body");
+            if (!newFunction)
+            {
+                StructType *qubitType =
+                    StructType::getTypeByName(Context, "Qubit");
+                PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+                FunctionType *funcType = FunctionType::get(
+                    Type::getVoidTy(Context), {qubitPtrType}, false);
+                newFunction =
+                    Function::Create(funcType, Function::ExternalLinkage,
+                                     "__quantum__qis__s__body", module);
+            }
+            CallInst *newInst =
+                CallInst::Create(newFunction, {gateToReplace->getOperand(0)});
+            ReplaceInstWithInst(gateToReplace, newInst);
+            gatesToReplace.pop_back();
+        }
+
+        while (!gatesToRemove.empty())
+        {
+            auto *gateToRemove = gatesToRemove.back();
+            gateToRemove->eraseFromParent();
+            gatesToRemove.pop_back();
+        }
+    }
+    return PreservedAnalyses::none();
+}
+
+/**
+ * @brief External function for loading the 'QirSDaggerToSPass' as a
+ * 'PassModule'.
+ * @return QirSDaggerToSPass
+ */
+extern "C" PassModule *loadQirPass() { return new QirSDaggerToSPass(); }

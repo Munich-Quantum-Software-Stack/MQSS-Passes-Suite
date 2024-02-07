@@ -1,0 +1,16 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+  - repo: local
+    hooks:
+    - id: clang-format
+      name: clang-format
+      description: Format C code using clang-format.
+      language: system
+      files: \.(c|cc|cxx|cpp|h|hpp|hxx)$
+      entry: clang-format -i
+      args: ["-assume-filename=.clang-format"]

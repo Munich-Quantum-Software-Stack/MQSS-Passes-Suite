@@ -1,0 +1,17 @@
+.DS_Store
+uninstall.cmake
+
+build/
+cmake/
+docs/build/
+.cache/*
+.vscode/*
+
+*~
+*.o
+*.so
+*.swp
+*.bkp
+
+*.plist
+*.metadata

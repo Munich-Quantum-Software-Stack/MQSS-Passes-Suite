@@ -2,7 +2,6 @@
 uninstall.cmake
 
 build/
-cmake/
 docs/build/
 .cache/*
 .vscode/*

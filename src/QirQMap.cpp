@@ -4,6 +4,7 @@
  */
 
 #include <QirQMap.hpp>
+#include <iostream>
 
 using namespace llvm;
 
@@ -18,16 +19,19 @@ using namespace llvm;
 PreservedAnalyses QirQMapPass::run(
     Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
 {
-    auto arch = mqt::createArchitecture(nullptr /*dev*/);
+    //std::cout << "\n\n0\n\n" << std::endl; 
+
+    auto arch = mqt::createArchitecture(dev);
 
     // TODO PARSING FROM QIR TO QuantumComputation 
     //      SHOULD HAPPEN HERE
     auto qc = qc::QuantumComputation(arch.getNqubits());
     qc.h(0);
     for (qc::Qubit i = 0; i < arch.getNqubits() - 1; ++i)
-    {
         qc.cx(i, i + 1);
-    }
+
+    //std::cout << "\n\n3\n\n" << std::endl; 
+
     auto mapper = HeuristicMapper(qc, arch);
     mapper.map({});
     mapper.dumpResult(std::cout, qc::Format::OpenQASM3);

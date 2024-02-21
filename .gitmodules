@@ -1,3 +1,6 @@
 [submodule "extern/mqt-qmap"]
 	path = extern/mqt-qmap
 	url = git@github.com:cda-tum/mqt-qmap.git
+[submodule "extern/QIR2Qiskit"]
+	path = extern/QIR2Qiskit
+	url = git@github.com:Munich-Quantum-Software-Stack/QIR2Qiskit.git

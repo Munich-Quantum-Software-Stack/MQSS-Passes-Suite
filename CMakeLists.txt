@@ -32,6 +32,14 @@ find_package(qinfo REQUIRED)
 # Find the Threads package
 find_package(Threads REQUIRED)
 
+#Find the Python Package
+find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development)
+if(NOT Python_FOUND)
+  message(
+    FATAL_ERROR "Python Package is not found. Please install using "
+  )
+endif()
+
 # Set LLVM_ENABLE_THREADS to ON
 set(LLVM_ENABLE_THREADS ON)
 
@@ -93,7 +101,7 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     ## P
     #QirPlaceIrreversibleGatesInMetadata.cpp
     ## Q
-    QirQMap.cpp
+    QirQmap.cpp
     #QirQubitRemap.cpp
     ## R
     #QirRedundantGatesCancellation.cpp
@@ -137,7 +145,9 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   "${CMAKE_INSTALL_PREFIX}/include"
-  ${LLVM_INCLUDE_DIRS})
+  ${LLVM_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
+  )
 
 #add_library(utilities SHARED src/utilities.cpp)
 #
@@ -186,6 +196,7 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
     qinfo
     #fomac
     #utilities
+    ${Python_LIBRARIES})
   )
 
   #target_compile_features(${target_name} PUBLIC c_std_99)
@@ -195,7 +206,7 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
     PRIVATE ${CMAKE_INSTALL_PREFIX}/include
             ${CMAKE_BINARY_DIR}/_deps/qdmi-src/src #TODO
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-           $<INSTALL_INTERFACE:include>)
+           $<INSTALL_INTERFACE:include> ${Python_INCLUDE_DIRS})
 
   # Install the shared library
   install(TARGETS ${target_name}

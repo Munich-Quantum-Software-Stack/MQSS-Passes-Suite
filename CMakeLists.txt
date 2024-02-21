@@ -30,6 +30,15 @@ find_package(qinfo REQUIRED)
 # Find the Threads package
 find_package(Threads REQUIRED)
 
+#Find the Python Package
+find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development)
+if(NOT Python_FOUND)
+  message(
+    FATAL_ERROR "Python Package is not found. Please install using "
+  )
+endif()
+
+
 # Set LLVM_ENABLE_THREADS to ON
 set(LLVM_ENABLE_THREADS ON)
 
@@ -53,6 +62,8 @@ add_definitions(${LLVM_DEFINITIONS})
 
 # Include all transformation passes here
 set(TRANSFORMATION_PASSES_SOURCE_FILES
+    # WILL BE REMOVED
+    QirPythonAPITest.cpp
     # A
     QirAnnotateUnsupportedGates.cpp
     # B
@@ -130,7 +141,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   "${CMAKE_INSTALL_PREFIX}/include"
-  ${LLVM_INCLUDE_DIRS})
+  ${LLVM_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 
 add_library(utilities SHARED src/utilities.cpp)
 
@@ -150,13 +161,15 @@ foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
     qdmi
     qinfo
     fomac
-    utilities)
+    utilities
+    ${Python_LIBRARIES}
+    )
 
   target_include_directories(${target_name}
     PRIVATE ${CMAKE_INSTALL_PREFIX}/include
             ${CMAKE_BINARY_DIR}/_deps/qdmi-src/src #TODO
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-           $<INSTALL_INTERFACE:include>)
+           $<INSTALL_INTERFACE:include> ${Python_INCLUDE_DIRS})
 
   # Install the shared library
   install(TARGETS ${target_name}
@@ -175,14 +188,15 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
     qdmi
     qinfo
     fomac
-    utilities)
+    utilities
+    ${Python_LIBRARIES})
 
   # Set include directories for the library
   target_include_directories(${target_name}
     PRIVATE ${CMAKE_INSTALL_PREFIX}/include
             ${CMAKE_BINARY_DIR}/_deps/qdmi-src/src #TODO
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-           $<INSTALL_INTERFACE:include>)
+           $<INSTALL_INTERFACE:include> ${Python_INCLUDE_DIRS})
 
   # Install the shared library
   install(TARGETS ${target_name}

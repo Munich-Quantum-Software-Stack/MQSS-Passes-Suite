@@ -8,14 +8,14 @@ namespace mqt {
 
 Architecture createArchitecture(QDMI_Device dev) {
   int num_qubits = 0;
-  //auto err = QDMI_query_device_property_exists(dev, QDMI_QUBIT_COUNT, nullptr);
+
   int err = QDMI_query_qubits_num(dev, &num_qubits);
   if (err != QDMI_SUCCESS || num_qubits == 0) 
     throw std::runtime_error("Could not get number of qubits via QDMI");
 
   QDMI_Qubit qubits;
 
-  // create a dummy coupling map 
+  // create a coupling map 
   err = QDMI_query_all_qubits(dev, &qubits);
 
   if (err != QDMI_SUCCESS || qubits == NULL)

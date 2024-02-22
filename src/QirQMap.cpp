@@ -4,7 +4,9 @@
  */
 
 #include <QirQMap.hpp>
+
 #include <iostream>
+#include <string>
 
 using namespace llvm;
 
@@ -188,9 +190,58 @@ PreservedAnalyses QirQMapPass::run(
     auto mapper = HeuristicMapper(qc, arch);
     mapper.map({});
 
-    // TODO PARSE FROM QuantumComputation TO LLVM::Module
+    //for (auto& it : qc.ops)
+    //{
+    //    if (it->getType() != qc::X)
+    //        errs() << "\n\tFound an X\n";
+    //}
 
-    mapper.dumpResult(std::cout, qc::Format::OpenQASM3);
+    // Empty LLVM::Module
+    std::string const QIS_START = "__quantum__qis_";
+    std::vector<Instruction *> instructionsToDelete;
+
+    for (auto &function : module)
+        for (auto &block : function)
+            for (auto &instruction : block)
+                if (auto *call_instr = dyn_cast<CallBase>(&instruction))
+                    if (auto *f = call_instr->getCalledFunction())
+                    {
+                        auto name = static_cast<std::string>(f->getName().str());
+                        bool is_quantum = (name.size() >= QIS_START.size() 
+                                        && name.substr(0, QIS_START.size()) 
+                                        == QIS_START);
+
+                        if (is_quantum)
+                            instructionsToDelete.push_back(&instruction);
+                    }
+    
+    for (Instruction *instr : instructionsToDelete)
+        instr->eraseFromParent();
+
+    std::stringstream buffer;
+    mapper.dumpResult(buffer, qc::Format::OpenQASM3);
+    std::istringstream iss(buffer.str());
+    std::string line;
+    errs() << "\nCircuit:\n" << buffer.str() << "\n";
+    while (std::getline(iss, line))
+    {
+        if (line.find("//")       == std::string::npos
+         && line.find("OPENQASM") == std::string::npos
+         && line.find("include")  == std::string::npos
+         && line.find("bit")      == std::string::npos)
+        {
+            std::istringstream lineStream(line);
+            std::string item;
+            std::vector<std::string> items;
+
+            while (std::getline(lineStream, item, ' '))
+                if (!item.empty())
+                    items.push_back(item);
+            
+            //if (items[0] == "cx")
+            //    errs() << "\n\tFound cx\n";
+        }
+    }
 
     return PreservedAnalyses::none();
 }

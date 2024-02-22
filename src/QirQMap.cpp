@@ -21,6 +21,12 @@ using namespace llvm;
 PreservedAnalyses QirQMapPass::run(
     Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
 {
+    LLVMContext &Context = module.getContext();
+    IRBuilder<> builder(Context);
+    std::vector<Function *> functionsToDelete;
+    std::string entryFunctionName;
+
+    // Parse LLVM::Module to QC::QuantumComputation
     auto arch = mqt::createArchitecture(dev);
     auto qc   = qc::QuantumComputation(arch.getNqubits(), arch.getNqubits());
 
@@ -61,7 +67,8 @@ PreservedAnalyses QirQMapPass::run(
                                 {
                                     IntToPtrInst* castInstruction = dyn_cast<IntToPtrInst>(constExpr->getAsInstruction());
                                     ConstantInt *qubitInt = dyn_cast<ConstantInt>(
-                                    castInstruction->getOperand(0));
+                                        castInstruction->getOperand(0)
+                                    );
                                     qubit = qubitInt->getSExtValue();
                                 }
                             }
@@ -185,63 +192,134 @@ PreservedAnalyses QirQMapPass::run(
                 }
             }
         }
+
+        functionsToDelete.push_back(&function);
     }
 
+    // Map the circuit
+    
     auto mapper = HeuristicMapper(qc, arch);
     mapper.map({});
 
-    //for (auto& it : qc.ops)
-    //{
-    //    if (it->getType() != qc::X)
-    //        errs() << "\n\tFound an X\n";
-    //}
-
     // Empty LLVM::Module
-    std::string const QIS_START = "__quantum__qis_";
-    std::vector<Instruction *> instructionsToDelete;
-
-    for (auto &function : module)
-        for (auto &block : function)
-            for (auto &instruction : block)
-                if (auto *call_instr = dyn_cast<CallBase>(&instruction))
-                    if (auto *f = call_instr->getCalledFunction())
-                    {
-                        auto name = static_cast<std::string>(f->getName().str());
-                        bool is_quantum = (name.size() >= QIS_START.size() 
-                                        && name.substr(0, QIS_START.size()) 
-                                        == QIS_START);
-
-                        if (is_quantum)
-                            instructionsToDelete.push_back(&instruction);
-                    }
-    
-    for (Instruction *instr : instructionsToDelete)
-        instr->eraseFromParent();
-
-    std::stringstream buffer;
-    mapper.dumpResult(buffer, qc::Format::OpenQASM3);
-    std::istringstream iss(buffer.str());
-    std::string line;
-    errs() << "\nCircuit:\n" << buffer.str() << "\n";
-    while (std::getline(iss, line))
+    for (auto &function : functionsToDelete)
     {
-        if (line.find("//")       == std::string::npos
-         && line.find("OPENQASM") == std::string::npos
-         && line.find("include")  == std::string::npos
-         && line.find("bit")      == std::string::npos)
-        {
-            std::istringstream lineStream(line);
-            std::string item;
-            std::vector<std::string> items;
+        function->deleteBody();
 
-            while (std::getline(lineStream, item, ' '))
-                if (!item.empty())
-                    items.push_back(item);
-            
-            //if (items[0] == "cx")
-            //    errs() << "\n\tFound cx\n";
+        if (!function->hasFnAttribute("entry_point"))
+        {
+            entryFunctionName = function->getName().str();
+            function->eraseFromParent();
         }
     }
+
+    // Create the entry point function
+    Function *entryFunction = module.getFunction(entryFunctionName);
+    BasicBlock *entryBlock  = BasicBlock::Create(
+        Context, 
+        "entry", 
+        entryFunction
+    );
+
+    //std::string const QIS_START = "__quantum__qis_";
+    //std::vector<Instruction *> instructionsToDelete;
+    //std::vector<BasicBlock *> blocksToDelete;
+
+    //for (auto &function : module)
+    //{
+    //    for (auto &block : function)
+    //    {
+    //        for (auto &instruction : block)
+    //        {
+    //            if (auto *call_instr = dyn_cast<CallBase>(&instruction))
+    //            {
+    //                if (auto *f = call_instr->getCalledFunction())
+    //                {
+    //                    auto name = static_cast<std::string>(f->getName().str());
+    //                    bool is_quantum = (name.size() >= QIS_START.size() 
+    //                                    && name.substr(0, QIS_START.size()) 
+    //                                    == QIS_START);
+
+    //                    if (is_quantum)
+    //                        instructionsToDelete.push_back(&instruction);
+    //                }
+    //            }
+    //        }
+    //        blocksToDelete.push_back(&block);
+    //    }
+    //}
+
+    //for (Instruction *instr : instructionsToDelete)
+    //    instr->eraseFromParent();
+    //for (BasicBlock *block : blocksToDelete)
+    //    block->eraseFromParent();
+
+    // Parse from QC::QuantumComputation back to LLVM::Module
+    StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
+    PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+    for (const auto& op : qc)
+    {
+        auto &targets  = op->getTargets();
+        auto &controls = op->getControls();
+
+        switch (op->getType())
+        {
+            case qc::X:
+                //errs() << "\n\t" << op->getName() << "\t";
+                //for (const auto &control : controls)
+                //    errs() << control.qubit;
+                //errs() << "\t";
+                //for (const auto &target : targets)
+                //    errs() << target;
+                //errs() << "\n";
+                if (controls.size() == 0) // x
+                {
+                    Function *newFunction = module.getFunction("__quantum__qis__x__body");
+
+                    if (!newFunction)
+                    {
+                        FunctionType *funcType = FunctionType::get(
+                            Type::getVoidTy(Context), 
+                            {qubitPtrType}, 
+                            false
+                        );
+
+                        newFunction = Function::Create(
+                            funcType, 
+                            Function::ExternalLinkage,
+                            "__quantum__qis__x__body", 
+                            module
+                        );
+                    }
+
+                    BasicBlock *entryBlock = &entryFunction->getEntryBlock();
+                    Value *arg = ConstantInt::get(Type::getInt64Ty(Context), 1);
+                    Value *argPtr = builder.CreateIntToPtr(
+                        arg, 
+                        qubitPtrType
+                    );
+                    builder.CreateCall(
+                        newFunction, 
+                        {argPtr}
+                    );
+
+                    builder.CreateRet(ConstantInt::get(Type::getInt64Ty(Context), 0));
+
+                    //CallInst *newInst = CallInst::Create(
+                    //    newFunction, 
+                    //    {gateToReplace->getOperand(0)}
+                    //);
+                }
+                break;
+        }
+    }
+
+    std::string str;
+    raw_string_ostream OS(str);
+    OS << module;
+    OS.flush();
+    const char *qir = str.data();
+    errs() << "\n\tEmpty QIR: \n" << (char *)qir << "\n";
 
     return PreservedAnalyses::none();
 }

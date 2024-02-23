@@ -182,8 +182,6 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
   add_library(${target_name} SHARED "src/${src_file}")
 
   set_target_properties(${target_name} PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  #set_target_properties(QirQMapPass PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  ##set_property(TARGET QirQMapPass PROPERTY POSITION_INDEPENDENT_CODE ON)
 
   # Link this pass with the required libraries
   target_link_libraries(${target_name} PRIVATE

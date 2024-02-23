@@ -136,7 +136,7 @@ PreservedAnalyses QirQMapPass::run(
                                 qc.cz(qubit_control, qubit_target);
                         }
                         else if (name == "__quantum__qis__mz__body")
-                            ; // QMap inserts a measure all instruction
+                            ; // QMap inserts a measure-all instruction
                         else if (name == "__quantum__qis__s__body"
                               || name == "__quantum__qis__t__body"
                               || name == "__quantum__qis__x__body"
@@ -197,129 +197,314 @@ PreservedAnalyses QirQMapPass::run(
     }
 
     // Map the circuit
-    
     auto mapper = HeuristicMapper(qc, arch);
     mapper.map({});
 
-    // Empty LLVM::Module
+    // Delete all the non-entry point functions
+    // and delete the body of the entry point
     for (auto &function : functionsToDelete)
     {
         function->deleteBody();
 
         if (!function->hasFnAttribute("entry_point"))
-        {
-            entryFunctionName = function->getName().str();
             function->eraseFromParent();
-        }
+        else
+            entryFunctionName = function->getName().str();
     }
 
-    // Create the entry point function
+    // Fetch the entry point function
     Function *entryFunction = module.getFunction(entryFunctionName);
+    assert(entryFunction);
+
+    // Create again the entry block
     BasicBlock *entryBlock  = BasicBlock::Create(
         Context, 
         "entry", 
         entryFunction
     );
 
-    //std::string const QIS_START = "__quantum__qis_";
-    //std::vector<Instruction *> instructionsToDelete;
-    //std::vector<BasicBlock *> blocksToDelete;
-
-    //for (auto &function : module)
-    //{
-    //    for (auto &block : function)
-    //    {
-    //        for (auto &instruction : block)
-    //        {
-    //            if (auto *call_instr = dyn_cast<CallBase>(&instruction))
-    //            {
-    //                if (auto *f = call_instr->getCalledFunction())
-    //                {
-    //                    auto name = static_cast<std::string>(f->getName().str());
-    //                    bool is_quantum = (name.size() >= QIS_START.size() 
-    //                                    && name.substr(0, QIS_START.size()) 
-    //                                    == QIS_START);
-
-    //                    if (is_quantum)
-    //                        instructionsToDelete.push_back(&instruction);
-    //                }
-    //            }
-    //        }
-    //        blocksToDelete.push_back(&block);
-    //    }
-    //}
-
-    //for (Instruction *instr : instructionsToDelete)
-    //    instr->eraseFromParent();
-    //for (BasicBlock *block : blocksToDelete)
-    //    block->eraseFromParent();
+    builder.SetInsertPoint(entryBlock);
 
     // Parse from QC::QuantumComputation back to LLVM::Module
-    StructType *qubitType = StructType::getTypeByName(Context, "Qubit");
-    PointerType *qubitPtrType = PointerType::getUnqual(qubitType);
+
+    // Insert initialize instruction
+    FunctionType *initFuncType = FunctionType::get(
+        Type::getVoidTy(Context), 
+        {Type::getInt8PtrTy(Context)}, 
+        false
+    );
+
+    Constant *NullPtr = ConstantPointerNull::get(Type::getInt8PtrTy(Context));
+    Value *PtrArg = builder.CreateIntToPtr(NullPtr, Type::getInt8PtrTy(Context));
+    
+    Function *initFunction = module.getFunction("__quantum__rt__initialize");
+
+    if (!initFunction)
+    {
+        initFunction = Function::Create(
+            initFuncType,
+            Function::ExternalLinkage,
+            "__quantum__rt__initialize", 
+            module
+        );
+    }
+
+    builder.CreateCall(
+        initFunction, 
+        {PtrArg}
+    );
+
+    // Insert quantum gates
+    StructType *qubitType  = StructType::getTypeByName(Context, "Qubit");
+    StructType *resultType = StructType::getTypeByName(Context, "Result");
+
+    PointerType *qubitPtrType  = PointerType::getUnqual(qubitType);
+    PointerType *resultPtrType = PointerType::getUnqual(resultType);
+
+    FunctionType *singleQubitFuncType = FunctionType::get(
+        Type::getVoidTy(Context), 
+        {qubitPtrType}, 
+        false
+    );
+
+    FunctionType *twoQubitFuncType = FunctionType::get(
+        Type::getVoidTy(Context), 
+        {qubitPtrType, qubitPtrType}, 
+        false
+    );
+
+    FunctionType *irreversibleFuncType = FunctionType::get(
+        Type::getVoidTy(Context), 
+        {qubitPtrType, resultPtrType}, 
+        false
+    );
+
     for (const auto& op : qc)
     {
         auto &targets  = op->getTargets();
         auto &controls = op->getControls();
 
-        switch (op->getType())
+        Function *newFunction;
+
+        if (targets.size() == 1 && controls.size() == 1)
         {
-            case qc::X:
-                //errs() << "\n\t" << op->getName() << "\t";
-                //for (const auto &control : controls)
-                //    errs() << control.qubit;
-                //errs() << "\t";
-                //for (const auto &target : targets)
-                //    errs() << target;
-                //errs() << "\n";
-                if (controls.size() == 0) // x
-                {
-                    Function *newFunction = module.getFunction("__quantum__qis__x__body");
+            Value *target = ConstantInt::get(
+                Type::getInt64Ty(Context), 
+                targets[0]
+            );
+
+            Value *targetPtr = builder.CreateIntToPtr(
+                target, 
+                qubitPtrType
+            );
+
+            Value *control = ConstantInt::get(
+                Type::getInt64Ty(Context),
+                controls.begin()->qubit
+            );
+
+            Value *controlPtr = builder.CreateIntToPtr(
+                control,
+                qubitPtrType
+            );
+
+            switch (op->getType())
+            {
+                case qc::X:
+                    newFunction = module.getFunction("__quantum__qis__cx__body");
 
                     if (!newFunction)
                     {
-                        FunctionType *funcType = FunctionType::get(
-                            Type::getVoidTy(Context), 
-                            {qubitPtrType}, 
-                            false
-                        );
-
                         newFunction = Function::Create(
-                            funcType, 
+                            twoQubitFuncType,
+                            Function::ExternalLinkage,
+                            "__quantum__qis__cx__body", 
+                            module
+                        );
+                    }
+                    break;
+                case qc::Y:
+                    newFunction = module.getFunction("__quantum__qis__cy__body");
+
+                    if (!newFunction)
+                    {
+                        newFunction = Function::Create(
+                            twoQubitFuncType,
+                            Function::ExternalLinkage,
+                            "__quantum__qis__cy__body", 
+                            module
+                        );
+                    }
+                    break;
+                case qc::Z:
+                    newFunction = module.getFunction("__quantum__qis__cz__body");
+
+                    if (!newFunction)
+                    {
+                        newFunction = Function::Create(
+                            twoQubitFuncType,
+                            Function::ExternalLinkage,
+                            "__quantum__qis__cz__body",
+                            module
+                        );
+                    }
+                    break;
+            } // switch (op->getType())
+
+            if (newFunction)
+                builder.CreateCall(
+                    newFunction, 
+                    {controlPtr, targetPtr}
+                );
+
+        } // targets.size() == 1 && controls.size() == 1
+        else if (targets.size() == 1 && controls.size() == 0)
+        {
+            Value *target = ConstantInt::get(
+                Type::getInt64Ty(Context), 
+                targets[0]
+            );
+
+            Value *targetPtr = builder.CreateIntToPtr(
+                target, 
+                qubitPtrType
+            );
+
+            switch (op->getType())
+            {
+                case qc::X:
+                    newFunction = module.getFunction("__quantum__qis__x__body");
+
+                    if (!newFunction)
+                    {
+                        newFunction = Function::Create(
+                            singleQubitFuncType,
                             Function::ExternalLinkage,
                             "__quantum__qis__x__body", 
                             module
                         );
                     }
+                    break;
+                case qc::Y:
+                    newFunction = module.getFunction("__quantum__qis__y__body");
 
-                    BasicBlock *entryBlock = &entryFunction->getEntryBlock();
-                    Value *arg = ConstantInt::get(Type::getInt64Ty(Context), 1);
-                    Value *argPtr = builder.CreateIntToPtr(
-                        arg, 
-                        qubitPtrType
-                    );
-                    builder.CreateCall(
-                        newFunction, 
-                        {argPtr}
-                    );
+                    if (!newFunction)
+                    {
+                        newFunction = Function::Create(
+                            singleQubitFuncType,
+                            Function::ExternalLinkage,
+                            "__quantum__qis__y__body", 
+                            module
+                        );
+                    }
+                    break;
+                case qc::Z:
+                    newFunction = module.getFunction("__quantum__qis__z__body");
 
-                    builder.CreateRet(ConstantInt::get(Type::getInt64Ty(Context), 0));
+                    if (!newFunction)
+                    {
+                        newFunction = Function::Create(
+                            singleQubitFuncType,
+                            Function::ExternalLinkage,
+                            "__quantum__qis__z__body", 
+                            module
+                        );
+                    }
+                    break;
+                case qc::H:
+                    newFunction = module.getFunction("__quantum__qis__h__body");
 
-                    //CallInst *newInst = CallInst::Create(
-                    //    newFunction, 
-                    //    {gateToReplace->getOperand(0)}
-                    //);
-                }
-                break;
+                    if (!newFunction)
+                    {
+                        newFunction = Function::Create(
+                            singleQubitFuncType,
+                            Function::ExternalLinkage,
+                            "__quantum__qis__h__body", 
+                            module
+                        );
+                    }
+                    break;
+                case qc::S:
+                    newFunction = module.getFunction("__quantum__qis__s__body");
+
+                    if (!newFunction)
+                    {
+                        newFunction = Function::Create(
+                            singleQubitFuncType,
+                            Function::ExternalLinkage,
+                            "__quantum__qis__s__body", 
+                            module
+                        );
+                    }
+                    break;
+                case qc::T:
+                    newFunction = module.getFunction("__quantum__qis__t__body");
+
+                    if (!newFunction)
+                    {
+                        newFunction = Function::Create(
+                            singleQubitFuncType,
+                            Function::ExternalLinkage,
+                            "__quantum__qis__t__body", 
+                            module
+                        );
+                    }
+                    break;
+            } // switch (op->getType())
+
+            if (newFunction)
+                builder.CreateCall(
+                    newFunction, 
+                    {targetPtr}
+                );
+
+        } // targets.size() == 1 && controls.size() == 0
+    } // for (const auto& op : qc)
+
+    // Insert measurements
+    int i;
+    for (i = 0; i < arch.getNqubits(); i++)
+    {
+        Value *qubitTarget = ConstantInt::get(
+            Type::getInt64Ty(Context), 
+            i
+        );
+
+        Value *qubitTargetPtr = builder.CreateIntToPtr(
+            qubitTarget,
+            qubitPtrType
+        );
+
+        Value *resultTarget = ConstantInt::get(
+            Type::getInt64Ty(Context),
+            i
+        );
+
+        Value *resultTargetPtr = builder.CreateIntToPtr(
+            resultTarget,
+            resultPtrType
+        );
+
+        Function *mzFunction = module.getFunction("__quantum__qis__mz__body");
+
+        if (!mzFunction)
+        {
+            mzFunction = Function::Create(
+                irreversibleFuncType,
+                Function::ExternalLinkage,
+                "__quantum__qis__mz__body",
+                module
+            );
         }
+
+        builder.CreateCall(
+            mzFunction, 
+            {qubitTargetPtr, resultTargetPtr}
+        );
     }
 
-    std::string str;
-    raw_string_ostream OS(str);
-    OS << module;
-    OS.flush();
-    const char *qir = str.data();
-    errs() << "\n\tEmpty QIR: \n" << (char *)qir << "\n";
+    // Insert return
+    builder.CreateRet(ConstantInt::get(Type::getInt64Ty(Context), 0));
 
     return PreservedAnalyses::none();
 }

@@ -49,7 +49,7 @@ PreservedAnalyses QirReverseCnotPass::run(Module &module,
                     if (current_name == "__quantum__qis__cnot__body")
                     {
                         cnotsToReverse.push_back(current_instruction);
-                        errs() << "                Reversing Cnot\n";
+                        errs() << "   [Pass]................Reversing Cnot\n";
                     }
                 }
             }

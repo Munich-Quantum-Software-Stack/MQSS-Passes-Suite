@@ -10,8 +10,10 @@ Architecture createArchitecture(QDMI_Device dev) {
   int num_qubits = 0;
 
   int err = QDMI_query_qubits_num(dev, &num_qubits);
-  if (err != QDMI_SUCCESS || num_qubits == 0) 
+  if (err != QDMI_SUCCESS)
     throw std::runtime_error("Could not get number of qubits via QDMI");
+  if (num_qubits == 0) 
+    throw std::runtime_error("Number of qubits cannot be zero");
 
   QDMI_Qubit qubits;
 

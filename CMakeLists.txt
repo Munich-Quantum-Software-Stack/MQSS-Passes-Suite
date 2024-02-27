@@ -21,9 +21,6 @@ set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(MQT_QMAP_QDMI_INCLUDE_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-# Find QRM package
-find_package(qrm REQUIRED)
-
 # Find FoMaC package
 find_package(fomac REQUIRED)
 
@@ -66,7 +63,7 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     # A
     QirAnnotateUnsupportedGates.cpp
     # B
-    QirBarrierBeforeFinalMeasurements.cpp
+    #QirBarrierBeforeFinalMeasurements.cpp
     # C
     QirCNotToHCZHDecomposition.cpp
     QirCommuteCnotRx.cpp

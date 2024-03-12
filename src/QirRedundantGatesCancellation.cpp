@@ -23,10 +23,19 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(
 {
     QirPassRunner &QPR = QirPassRunner::getInstance();
     QirMetadata &qirMetadata = QPR.getMetadata();
+	std::vector<std::string> measurementGates = {
+    	"__quantum__qis__m__body",
+    	"__quantum__qis__mz__body",
+    	"__quantum__qis__reset__body",
+    	"__quantum__qis__read_result__body",
+	};
 
     for (auto reversibleGate : qirMetadata.reversibleGates)
     {
-        for (auto &function : module)
+        if (std::find(measurementGates.begin(), measurementGates.end(), reversibleGate) != measurementGates.end())
+			continue;
+        
+		for (auto &function : module)
         {
             std::vector<CallInst *> gatesToRemove;
             std::vector<CallInst *> singletonContainer;
@@ -47,6 +56,7 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(
 
                         std::string current_name = static_cast<std::string>(
                             current_function->getName());
+
 
                         if (current_name == reversibleGate)
                         {

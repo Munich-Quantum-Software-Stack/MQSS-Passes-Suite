@@ -33,9 +33,9 @@ QirFunctionReplacementPass::runFunctionReplacementAnalysis(Module &module)
         if (function.hasFnAttribute("replaceWith"))
         {
             auto attr = function.getFnAttribute("replaceWith");
-            errs() << "   [Pass]................Function has 'replaceWith' "
-                      "attribute: "
-                   << static_cast<std::string>(function.getName()) << '\n';
+            //errs() << "   [Pass]................Function has 'replaceWith' "
+            //          "attribute: "
+            //       << static_cast<std::string>(function.getName()) << '\n';
 
             if (!attr.isStringAttribute())
             {
@@ -48,10 +48,10 @@ QirFunctionReplacementPass::runFunctionReplacementAnalysis(Module &module)
             auto name = static_cast<std::string>(attr.getValueAsString());
             auto it = ret.name_to_function_pointer.find(name);
 
-            errs()
-                << "   [Pass]................Function is a replacement        "
-                   "   : "
-                << name << '\n';
+            //errs()
+            //    << "   [Pass]................Function is a replacement        "
+            //       "   : "
+            //    << name << '\n';
 
             // Ignoring replacements that were not found
             if (it == ret.name_to_function_pointer.end())

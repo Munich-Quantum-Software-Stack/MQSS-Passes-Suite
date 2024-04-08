@@ -90,10 +90,10 @@ PreservedAnalyses QirSwapAndCnotReplacementPass::run(
                                                 gatesToLeave.push_back(
                                                     current_instruction);
 
-                                                errs()
-                                                    << "[Pass]..............."
-                                                       "Replacing sequential"
-                                                       "SWAP and CNOT\n";
+                                                //errs()
+                                                //    << "[Pass]..............."
+                                                //       "Replacing sequential"
+                                                //       "SWAP and CNOT\n";
                                             }
                                         }
                                     }

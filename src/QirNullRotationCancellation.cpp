@@ -87,9 +87,9 @@ PreservedAnalyses QirNullRotationCancellationPass::run(
                         {
                             rotationGatesToRemove.push_back(
                                 current_instruction);
-                            errs() << "   [Pass]................Redundant "
-                                      "rotation found: "
-                                   << current_name << '\n';
+                            //errs() << "   [Pass]................Redundant "
+                            //          "rotation found: "
+                            //       << current_name << '\n';
                         }
                     }
                 }

@@ -76,11 +76,11 @@ PreservedAnalyses QirDoubleCnotCancellationPass::run(
                                                 gatesToRemove.push_back(
                                                     current_instruction);
 
-                                                errs()
-                                                    << "   "
-                                                       "[Pass]..............A "
-                                                       "pair of Cnot gates "
-                                                       "found\n";
+                                                //errs()
+                                                //    << "   "
+                                                //       "[Pass]..............A "
+                                                //       "pair of Cnot gates "
+                                                //       "found\n";
                                             }
                                         }
                                     }

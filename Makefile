@@ -2,21 +2,33 @@ INSTALL_PATH ?= $(HOME)
 EXEC_PATH    := $(INSTALL_PATH)/bin/lib
 BUILD_DIR    ?= build
 DOXYGEN      := $(shell command -v doxygen 2> /dev/null)
+OS           := $(shell uname)
 
 .PHONY: install clean uninstall docs
 
 all: install clean docs
 
 install:
-	@echo "Installing the passes."
-	CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) \
-		-DBUILD_WITH_DOCS=OFF \
-        -DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) && \
-	cmake --build $(BUILD_DIR) --target install --config Release && \
-	if [ -n "$$CI" ]; then \
-		ldconfig; \
+	@if [ "$(OS)" = "Darwin" ]; then \
+		echo "-- Building the passes for macOS"; \
+		cmake -B$(BUILD_DIR) \
+			-DBUILD_WITH_DOCS=OFF \
+			--debug-output \
+			-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) && \
+		echo "-- Installing the passes for macOS"; \
+		cmake --build $(BUILD_DIR) --target install --config Release -v; \
 	else \
-		sudo ldconfig; \
+		echo "-- Building the passes for Linux"; \
+		CMAKE_PREFIX_PATH=$$(llvm-config --libdir)/cmake/llvm cmake -B$(BUILD_DIR) \
+			-DBUILD_WITH_DOCS=OFF \
+			-DCMAKE_INSTALL_PREFIX=$(INSTALL_PATH) && \
+		echo "-- Installing the passes for Linux"; \
+		cmake --build $(BUILD_DIR) --target install --config Release; \
+		if [ -n "$$CI" ]; then \
+			ldconfig; \
+		else \
+			sudo ldconfig; \
+		fi; \
 	fi
 
 	@echo ""

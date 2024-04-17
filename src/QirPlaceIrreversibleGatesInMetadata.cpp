@@ -45,14 +45,14 @@ PreservedAnalyses QirPlaceIrreversibleGatesInMetadataPass::run(
             if (!function.hasFnAttribute("irreversible"))
             {
                 qirMetadata.append(REVERSIBLE_GATE, name);
-                errs() << "   [Pass]................Reversible gate found: "
-                       << name << '\n';
+                //errs() << "   [Pass]................Reversible gate found: "
+                //       << name << '\n';
             }
             else
             {
                 qirMetadata.append(IRREVERSIBLE_GATE, name);
-                errs() << "   [Pass]................Irreversible gate found: "
-                       << name << '\n';
+                //errs() << "   [Pass]................Irreversible gate found: "
+                //       << name << '\n';
             }
         }
     }

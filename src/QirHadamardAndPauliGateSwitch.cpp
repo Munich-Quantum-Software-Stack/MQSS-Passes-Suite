@@ -71,9 +71,9 @@ PreservedAnalyses QirHadamardAndPauliGateSwitchPass::run(
                                     previousGates.push_back(prev_instruction);
                                     gatesToReplace.push_back(
                                         current_instruction);
-                                    errs() << "              Switching: "
-                                           << previous_name << " and "
-                                           << current_name << '\n';
+                                    //errs() << "              Switching: "
+                                    //       << previous_name << " and "
+                                    //       << current_name << '\n';
                                 }
                             }
                         }

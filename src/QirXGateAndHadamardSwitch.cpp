@@ -62,9 +62,9 @@ PreservedAnalyses QirXGateAndHadamardSwitchPass::run(
                                 {
                                     currentGates.push_back(current_instruction);
                                     gatesToReplace.push_back(prev_instruction);
-                                    errs() << "              Switching: "
-                                           << previous_name << " and "
-                                           << current_name << '\n';
+                                    //errs() << "              Switching: "
+                                    //       << previous_name << " and "
+                                    //       << current_name << '\n';
                                 }
                             }
                         }

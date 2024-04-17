@@ -1,4 +1,4 @@
-/**
+/*/
  * @file QirHadamardAndZGateSwitch.cpp
  * @brief Implementation of the 'QirHadamardAndZGateSwitchPass' class. <a
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirHadamardAndZGateSwitch.cpp?ref_type=heads">Go
@@ -63,9 +63,9 @@ PreservedAnalyses QirHadamardAndZGateSwitchPass::run(
                                     previousGates.push_back(prev_instruction);
                                     gatesToReplace.push_back(
                                         current_instruction);
-                                    errs() << "              Switching: "
-                                           << previous_name << " and "
-                                           << current_name << '\n';
+                                    //errs() << "              Switching: "
+                                    //       << previous_name << " and "
+                                    //       << current_name << '\n';
                                 }
                             }
                         }

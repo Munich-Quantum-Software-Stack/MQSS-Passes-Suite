@@ -7,6 +7,7 @@
  * Adapted from: This pass removes X gates surrounding a CNOT gate.
  */
 
+#include <iostream>
 #include <QirXCnotXReduction.hpp>
 
 using namespace llvm;
@@ -73,25 +74,22 @@ PreservedAnalyses QirXCnotXReductionPass::run(Module &module,
                 }
                 else if (current_name == "__quantum__qis__x__body")
                 {
+                    if (sought_sequence.size() == 1) {
+                        sought_sequence.clear();
+                    }
                     if (sought_sequence.empty())
                     {
                         sought_sequence.push_back(current_instruction);
                         continue;
                     }
 
-                    assert(
-                        ((void)"An error was encountered during gate removal",
-                         sought_sequence.size() == 2));
-
+                    
                     auto *prev_instruction = sought_sequence.back();
                     sought_sequence.pop_back();
 
+
                     auto *prev_prev_instruction = sought_sequence.back();
                     sought_sequence.pop_back();
-
-                    assert(
-                        ((void)"An error was encountered during gate removal",
-                         prev_instruction && prev_prev_instruction));
 
                     Value *x_1_arg = prev_prev_instruction->getArgOperand(0);
                     Value *cnot_arg = prev_instruction->getArgOperand(1);

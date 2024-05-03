@@ -76,7 +76,7 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     # D
     QirDeferMeasurement.cpp
     QirDivisionByZero.cpp
-   #QirDoubleCnotCancellation.cpp
+    QirDoubleCnotCancellation.cpp
     # F
     QirFunctionAnnotator.cpp
     QirFunctionReplacement.cpp

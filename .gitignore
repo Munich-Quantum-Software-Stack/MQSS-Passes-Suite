@@ -1,5 +1,8 @@
 .DS_Store
+
 uninstall.cmake
+notes.txt
+submodule.sh
 
 build/
 docs/build/

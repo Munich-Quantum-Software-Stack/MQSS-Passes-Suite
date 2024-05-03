@@ -15,7 +15,7 @@ namespace llvm
  * @brief This pass changes adjacent H, Z and H gates into X whenever found in
  * this order.
  */
-class QirHZHToXPass : public PassModule
+class QirHZHToXPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,7 +25,7 @@ class QirHZHToXPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM, QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

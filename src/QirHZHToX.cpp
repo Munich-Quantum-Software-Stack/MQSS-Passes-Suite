@@ -21,7 +21,7 @@ using namespace llvm;
  *
  */
 PreservedAnalyses QirHZHToXPass::run(Module &module,
-    ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    ModuleAnalysisManager & /*MAM*/)
 {
     auto &Context = module.getContext();
 
@@ -141,4 +141,7 @@ PreservedAnalyses QirHZHToXPass::run(Module &module,
  * 'PassModule'.
  * @return QirHZHToXPass
  */
-extern "C" PassModule *loadQirPass() { return new QirHZHToXPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirHZHToXPass();
+}

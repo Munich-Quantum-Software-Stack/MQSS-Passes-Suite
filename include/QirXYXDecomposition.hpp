@@ -15,7 +15,7 @@ namespace llvm
  * @brief Xhis Pass creates a XYX Decomposition of given gates
  * (gatesToDecompose).
  */
-class QirXYXDecompositionPass : public PassModule
+class QirXYXDecompositionPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirXYXDecompositionPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 
     std::vector<Value *> getDecompositionAngles(LLVMContext &context,
                                                 ComplexMatrix theGate);

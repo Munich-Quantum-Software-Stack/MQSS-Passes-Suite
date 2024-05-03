@@ -65,7 +65,7 @@ PreservedAnalyses QirAnnotateUnsupportedGatesPass::run(
                             supported_gate_set.end(), original_gate);
         if (it == supported_gate_set.end())
         {
-            errs() << "   [Pass]................Unsupported gate found: "
+            errs() << "   [Pass]................Transpiling: "
                    << original_gate << '\n';
             function.addFnAttr("unsupported");
             changed = true;
@@ -82,10 +82,10 @@ PreservedAnalyses QirAnnotateUnsupportedGatesPass::run(
 
 /**
  * @brief External function for loading the 'QirAnnotateUnsupportedGatesPass' as
- * a 'PassModule'.
+ * a 'SpecificPassModule'.
  * @return QirAnnotateUnsupportedGatesPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" SpecificPassModule *loadQirPass()
 {
     return new QirAnnotateUnsupportedGatesPass();
 }

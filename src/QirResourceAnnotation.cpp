@@ -20,14 +20,13 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirResourceAnnotationPass::run(Module &module,
-                                                 ModuleAnalysisManager &MAM,
-                                                 QDMI_Device dev)
+                                                 ModuleAnalysisManager &MAM)
 {
     for (auto &function : module)
     {
         QirAllocationAnalysisPass QAAP;
         FunctionAnalysisManager FAM;
-        QAAP.run(function, FAM, dev);
+        QAAP.run(function, FAM);
         auto stats = QAAP.AnalysisResult;
 
         if (stats.usage_qubit_counts > 0)
@@ -53,4 +52,7 @@ PreservedAnalyses QirResourceAnnotationPass::run(Module &module,
  * 'PassModule'.
  * @return QirResourceAnnotationPass
  */
-extern "C" PassModule *loadQirPass() { return new QirResourceAnnotationPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{ 
+    return new QirResourceAnnotationPass();
+}

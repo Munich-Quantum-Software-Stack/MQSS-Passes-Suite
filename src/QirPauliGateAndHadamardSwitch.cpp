@@ -17,7 +17,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirPauliGateAndHadamardSwitchPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     auto &Context = module.getContext();
     std::unordered_set<std::string> pauliGates = {"__quantum__qis__x__body",
@@ -117,7 +117,7 @@ PreservedAnalyses QirPauliGateAndHadamardSwitchPass::run(
  * as a 'PassModule'.
  * @return QirPauliGateAndHadamardSwitchPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirPauliGateAndHadamardSwitchPass();
 }

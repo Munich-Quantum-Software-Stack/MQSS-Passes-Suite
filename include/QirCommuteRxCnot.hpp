@@ -15,7 +15,7 @@ namespace llvm
  * @brief This pass swaps adjacent Rx and CNOT gates whenever found in this
  * specific order.
  */
-class QirCommuteRxCnotPass : public PassModule
+class QirCommuteRxCnotPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirCommuteRxCnotPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

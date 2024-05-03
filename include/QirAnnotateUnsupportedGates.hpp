@@ -24,7 +24,7 @@ namespace llvm
  * @brief This pass inserts an "unsupported" attribute to the
  * appropriate gates after querying the target platform using QDMI.
  */
-class QirAnnotateUnsupportedGatesPass : public PassModule
+class QirAnnotateUnsupportedGatesPass : public SpecificPassModule
 {
   public:
     static std::string const QIS_START;

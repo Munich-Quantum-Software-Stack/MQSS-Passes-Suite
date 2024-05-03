@@ -63,7 +63,7 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     # A
     QirAnnotateUnsupportedGates.cpp
     # B
-    #QirBarrierBeforeFinalMeasurements.cpp
+    QirBarrierBeforeFinalMeasurements.cpp
     # C
     QirCNotToHCZHDecomposition.cpp
     QirCommuteCnotRx.cpp
@@ -75,7 +75,7 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     QirCZToHCnotHDecomposition.cpp
     # D
     QirDeferMeasurement.cpp
-    QirDivisionByZero.cpp
+   #QirDivisionByZero.cpp
    #QirDoubleCnotCancellation.cpp
     # F
     QirFunctionAnnotator.cpp
@@ -95,13 +95,14 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     QirNullRotationCancellation.cpp
     # P
     QirPlaceIrreversibleGatesInMetadata.cpp
-    # Q
+    QirPauliGateAndHadamardSwitch.cpp
+    ## Q
     QirQMap.cpp
     QirQubitRemap.cpp
     # R
     QirRedundantGatesCancellation.cpp
     QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
-    QirRemoveNonEntrypointFunctions.cpp
+    #QirRemoveNonEntrypointFunctions.cpp
     QirReplaceConstantBranches.cpp
     QirResourceAnnotation.cpp
     QirReverseCnot.cpp
@@ -129,9 +130,9 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
 # Include all analysis passes here
 set(ANALYSIS_PASSES_SOURCE_FILES
     # A
-    QirAllocationAnalysis.cpp
+    QirAllocationAnalysis.cpp)
     # F
-    QirFunctionValidationAnalysis.cpp)
+#    QirFunctionValidationAnalysis.cpp)
 
 # Set RPATH for the shared libraries in this directory
 set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/lib/passes")

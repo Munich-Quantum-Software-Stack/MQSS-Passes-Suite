@@ -19,7 +19,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirCZToHCnotHDecompositionPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     auto &Context = module.getContext();
 
@@ -99,7 +99,7 @@ PreservedAnalyses QirCZToHCnotHDecompositionPass::run(
  * a 'PassModule'.
  * @return QirCZToHCnotHDecompositionPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirCZToHCnotHDecompositionPass();
 }

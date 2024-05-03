@@ -14,7 +14,7 @@ namespace llvm
  * @class QirPlaceIrreversibleGatesInMetadataPass
  * @brief This pass inserts gate reversibility information into metadata.
  */
-class QirPlaceIrreversibleGatesInMetadataPass : public PassModule
+class QirPlaceIrreversibleGatesInMetadataPass : public AgnosticPassModule
 {
   public:
     static std::string const QIS_START;
@@ -26,8 +26,7 @@ class QirPlaceIrreversibleGatesInMetadataPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

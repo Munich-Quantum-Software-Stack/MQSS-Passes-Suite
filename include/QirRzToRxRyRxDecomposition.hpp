@@ -14,7 +14,7 @@ namespace llvm
  * @class QirRzToRxRyRxDecompositionPass
  * @brief This pass decomposes an Rz gate into Rx and Ry gates.
  */
-class QirRzToRxRyRxDecompositionPass : public PassModule
+class QirRzToRxRyRxDecompositionPass : public AgnosticPassModule
 {
   public:
     /**
@@ -24,8 +24,7 @@ class QirRzToRxRyRxDecompositionPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

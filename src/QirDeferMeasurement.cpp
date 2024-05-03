@@ -38,8 +38,7 @@ QirDeferMeasurementPass::QirDeferMeasurementPass()
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirDeferMeasurementPass::run(Module &module,
-                                               ModuleAnalysisManager &MAM,
-                                               QDMI_Device dev)
+                                               ModuleAnalysisManager &MAM)
 {
     for (auto &function : module)
     {
@@ -108,4 +107,7 @@ PreservedAnalyses QirDeferMeasurementPass::run(Module &module,
  * 'PassModule'.
  * @return QirDeferMeasurementPass
  */
-extern "C" PassModule *loadQirPass() { return new QirDeferMeasurementPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirDeferMeasurementPass();
+}

@@ -32,7 +32,7 @@ bool checkDoublePiMultiplies(double angle)
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirNullRotationCancellationPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     std::unordered_set<std::string> rotationGates = {
         "__quantum__qis__rx__body", "__quantum__qis__ry__body",
@@ -112,7 +112,7 @@ PreservedAnalyses QirNullRotationCancellationPass::run(
  * a 'PassModule'.
  * @return QirNullRotationCancellationPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirNullRotationCancellationPass();
 }

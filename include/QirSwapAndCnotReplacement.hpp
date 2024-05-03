@@ -15,7 +15,7 @@ namespace llvm
  * @brief This pass replaces sequential Swap gate and Cnot gate acting on the
  * same qubits with the exact same Cnot followed by reversed Cnot.
  */
-class QirSwapAndCnotReplacementPass : public PassModule
+class QirSwapAndCnotReplacementPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirSwapAndCnotReplacementPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

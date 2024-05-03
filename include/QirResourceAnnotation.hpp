@@ -16,7 +16,7 @@ namespace llvm
  * with the appropriate number of qubits and classical bits after
  * invoking the QirAllocationAnalysis pass.
  */
-class QirResourceAnnotationPass : public PassModule
+class QirResourceAnnotationPass : public AgnosticPassModule
 {
   public:
     /**
@@ -37,8 +37,7 @@ class QirResourceAnnotationPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

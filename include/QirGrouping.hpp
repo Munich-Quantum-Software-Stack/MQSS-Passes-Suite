@@ -32,7 +32,7 @@ struct GroupAnalysis
  * @brief This pass groups the instructions into purely-quantum and
  * purely-classical blocks.
  */
-class QirGroupingPass : public PassModule
+class QirGroupingPass : public AgnosticPassModule
 {
   public:
     using Result = GroupAnalysis;
@@ -134,8 +134,7 @@ class QirGroupingPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 
     /**
      * @brief TODO

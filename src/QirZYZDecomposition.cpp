@@ -70,8 +70,7 @@ QirZYZDecompositionPass::getDecompositionAnglesAsNumber(LLVMContext &context,
 }
 
 PreservedAnalyses QirZYZDecompositionPass::run(Module &module,
-                                               ModuleAnalysisManager & /*MAM*/,
-                                               QDMI_Device dev)
+                                               ModuleAnalysisManager & /*MAM*/)
 {
     std::string gatesToDecompose[4] = {
         "__quantum__qis__rx__body", "__quantum__qis__ry__body",
@@ -159,4 +158,7 @@ PreservedAnalyses QirZYZDecompositionPass::run(Module &module,
  * 'PassModule'.
  * @return QirZYZDecompositionPass
  */
-extern "C" PassModule *loadQirPass() { return new QirZYZDecompositionPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirZYZDecompositionPass();
+}

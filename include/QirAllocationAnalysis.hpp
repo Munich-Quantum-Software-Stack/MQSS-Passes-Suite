@@ -81,8 +81,7 @@ class QirAllocationAnalysisPass
      * @param FAM The function analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Function &function, FunctionAnalysisManager &FAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Function &function, FunctionAnalysisManager &FAM);
 
   private:
     bool extractResourceId(Value *value, uint64_t &return_value,

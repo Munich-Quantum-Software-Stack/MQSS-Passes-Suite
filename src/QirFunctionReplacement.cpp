@@ -111,8 +111,7 @@ QirFunctionReplacementPass::runFunctionReplacementAnalysis(Module &module)
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirFunctionReplacementPass::run(Module &module,
-                                                  ModuleAnalysisManager &MAM,
-                                                  QDMI_Device dev)
+                                                  ModuleAnalysisManager &MAM)
 {
     IRBuilder<> builder(module.getContext());
     auto result = runFunctionReplacementAnalysis(module);
@@ -144,7 +143,7 @@ PreservedAnalyses QirFunctionReplacementPass::run(Module &module,
  * 'PassModule'.
  * @return QirFunctionReplacementPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirFunctionReplacementPass();
 }

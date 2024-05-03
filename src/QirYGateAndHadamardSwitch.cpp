@@ -17,7 +17,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirYGateAndHadamardSwitchPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     auto &Context = module.getContext();
 
@@ -90,7 +90,7 @@ PreservedAnalyses QirYGateAndHadamardSwitchPass::run(
  * 'PassModule'.
  * @return QirYGateAndHadamardSwitchPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirYGateAndHadamardSwitchPass();
 }

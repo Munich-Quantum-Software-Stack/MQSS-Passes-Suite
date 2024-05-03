@@ -6,7 +6,6 @@
  *
  * This pass removes two sequential Cnots acting on the same qubit.
  *
- * @todo THIS PASS HAS A BUG THAT STOPS THE PASS RUNNER FROM CONTINUING
  */
 
 #include <QirDoubleCnotCancellation.hpp>
@@ -75,12 +74,14 @@ PreservedAnalyses QirDoubleCnotCancellationPass::run(
                                                     prev_instruction);
                                                 gatesToRemove.push_back(
                                                     current_instruction);
-
+                                                
+                                                prev_instruction = nullptr;
                                                 //errs()
                                                 //    << "   "
                                                 //       "[Pass]..............A "
                                                 //       "pair of Cnot gates "
                                                 //       "found\n";
+                                                continue;
                                             }
                                         }
                                     }

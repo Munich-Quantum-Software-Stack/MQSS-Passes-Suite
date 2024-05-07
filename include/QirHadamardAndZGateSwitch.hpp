@@ -15,7 +15,7 @@ namespace llvm
  * @brief This pass swaps adjacent H and Z gates whenever found in this order.
  * As a result, Z gate is changed into X gate.
  */
-class QirHadamardAndZGateSwitchPass : public PassModule
+class QirHadamardAndZGateSwitchPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirHadamardAndZGateSwitchPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

@@ -19,14 +19,13 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirQubitRemapPass::run(Module &module,
-                                         ModuleAnalysisManager & /*MAM*/,
-                                         QDMI_Device dev)
+                                         ModuleAnalysisManager & /*MAM*/)
 {
     for (auto &function : module)
     {
         QirAllocationAnalysisPass QAAP;
         FunctionAnalysisManager FAM;
-        QAAP.run(function, FAM, dev);
+        QAAP.run(function, FAM);
         AllocationAnalysis function_details = QAAP.AnalysisResult;
 
         IRBuilder<> builder{function.getContext()};
@@ -118,4 +117,7 @@ PreservedAnalyses QirQubitRemapPass::run(Module &module,
  * 'PassModule'.
  * @return QirQubitRemapPass
  */
-extern "C" PassModule *loadQirPass() { return new QirQubitRemapPass(); }
+extern "C" AgnosticPassModule *loadQirPass() 
+{ 
+    return new QirQubitRemapPass(); 
+}

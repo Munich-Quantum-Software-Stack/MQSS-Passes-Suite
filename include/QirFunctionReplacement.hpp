@@ -35,7 +35,7 @@ struct FunctionRegister
  * @brief This pass replaces gates with functions describing their
  * decompositions.
  */
-class QirFunctionReplacementPass : public PassModule
+class QirFunctionReplacementPass : public AgnosticPassModule
 {
   public:
     using Result = FunctionRegister;
@@ -47,8 +47,7 @@ class QirFunctionReplacementPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 
     /**
      * @brief Applies a function replacement analysis pass to the

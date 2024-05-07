@@ -15,7 +15,7 @@ namespace llvm
  * @brief This Pass creates a ZXZ Decomposition of given gates
  * (gatesToDecompose).
  */
-class QirZXZDecompositionPass : public PassModule
+class QirZXZDecompositionPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirZXZDecompositionPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

@@ -14,7 +14,7 @@ namespace llvm
  * @class QirZYZDecompositionPass
  * @brief This Pass creates a ZYZ Decomposition of given gates.
  */
-class QirZYZDecompositionPass : public PassModule
+class QirZYZDecompositionPass : public AgnosticPassModule
 {
   public:
     /**
@@ -24,8 +24,7 @@ class QirZYZDecompositionPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 
     std::vector<Value *> getDecompositionAngles(LLVMContext &context,
                                                 ComplexMatrix theGate);

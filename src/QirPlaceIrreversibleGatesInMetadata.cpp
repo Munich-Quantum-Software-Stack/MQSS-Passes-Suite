@@ -28,7 +28,7 @@ std::string const QirPlaceIrreversibleGatesInMetadataPass::QIS_START =
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirPlaceIrreversibleGatesInMetadataPass::run(
-    Module &module, ModuleAnalysisManager &MAM, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager &MAM)
 {
     QirPassRunner &QPR = QirPassRunner::getInstance();
     QirMetadata &qirMetadata = QPR.getMetadata();
@@ -67,7 +67,7 @@ PreservedAnalyses QirPlaceIrreversibleGatesInMetadataPass::run(
  * 'QirPlaceIrreversibleGatesInMetadataPass' as a 'PassModule'.
  * @return QirPlaceIrreversibleGatesInMetadataPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirPlaceIrreversibleGatesInMetadataPass();
 }

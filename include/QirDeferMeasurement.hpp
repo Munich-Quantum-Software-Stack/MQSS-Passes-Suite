@@ -13,7 +13,7 @@ namespace llvm
  * @class QirDeferMeasurementPass
  * @brief This pass moves all measurements to the end of the circuit.
  */
-class QirDeferMeasurementPass : public PassModule
+class QirDeferMeasurementPass : public AgnosticPassModule
 {
   public:
     static std::string const RECORD_INSTR_END;
@@ -32,8 +32,7 @@ class QirDeferMeasurementPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 
   private:
     std::unordered_set<std::string> readout_names_{};

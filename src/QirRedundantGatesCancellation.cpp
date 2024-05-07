@@ -19,7 +19,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirRedundantGatesCancellationPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     QirPassRunner &QPR = QirPassRunner::getInstance();
     QirMetadata &qirMetadata = QPR.getMetadata();
@@ -101,7 +101,7 @@ PreservedAnalyses QirRedundantGatesCancellationPass::run(
  * as a 'PassModule'.
  * @return QirRedundantGatesCancellationPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirRedundantGatesCancellationPass();
 }

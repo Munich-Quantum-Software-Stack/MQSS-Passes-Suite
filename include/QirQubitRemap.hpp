@@ -18,7 +18,7 @@ namespace llvm
  * @class QirQubitRemapPass
  * @brief This pass remaps qubits to independent values.
  */
-class QirQubitRemapPass : public PassModule
+class QirQubitRemapPass : public AgnosticPassModule
 {
   public:
     /**
@@ -39,8 +39,7 @@ class QirQubitRemapPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

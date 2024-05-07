@@ -17,7 +17,7 @@ namespace llvm
  * @brief This pass merges equivalent rotation gates into single
  * rotation.
  */
-class QirMergeRotationsPass : public PassModule
+class QirMergeRotationsPass : public AgnosticPassModule
 {
   public:
     /**
@@ -27,8 +27,7 @@ class QirMergeRotationsPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

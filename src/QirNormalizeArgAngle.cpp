@@ -17,8 +17,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirNormalizeArgAnglePass::run(Module &module,
-                                                ModuleAnalysisManager & /*MAM*/,
-                                                QDMI_Device dev)
+                                                ModuleAnalysisManager & /*MAM*/)
 {
     auto &Context = module.getContext();
 
@@ -95,4 +94,7 @@ PreservedAnalyses QirNormalizeArgAnglePass::run(Module &module,
  * 'PassModule'.
  * @return QirNormalizeArgAnglePass
  */
-extern "C" PassModule *loadQirPass() { return new QirNormalizeArgAnglePass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirNormalizeArgAnglePass();
+}

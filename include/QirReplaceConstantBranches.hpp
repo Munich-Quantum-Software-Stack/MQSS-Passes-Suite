@@ -15,7 +15,7 @@ namespace llvm
  * @brief This pass removes those blocks with conditional branching
  * terminators with hard-coded conditions.
  */
-class QirReplaceConstantBranchesPass : public PassModule
+class QirReplaceConstantBranchesPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirReplaceConstantBranchesPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

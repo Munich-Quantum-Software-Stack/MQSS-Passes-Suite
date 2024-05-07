@@ -18,8 +18,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses
-QirRzToRxRyRxDecompositionPass::run(Module &module, ModuleAnalysisManager &MAM,
-                                    QDMI_Device dev)
+QirRzToRxRyRxDecompositionPass::run(Module &module, ModuleAnalysisManager &MAM)
 {
     auto &Context = module.getContext();
 
@@ -106,7 +105,7 @@ QirRzToRxRyRxDecompositionPass::run(Module &module, ModuleAnalysisManager &MAM,
  * a 'PassModule'.
  * @return QirRzToRxRyRxDecompositionPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirRzToRxRyRxDecompositionPass();
 }

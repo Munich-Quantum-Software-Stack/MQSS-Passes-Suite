@@ -18,7 +18,7 @@ namespace llvm
  * @brief This pass removes rotation gates with null
  * rotation, that is rotation by 0 or by 2pi multiplies.
  */
-class QirNullRotationCancellationPass : public PassModule
+class QirNullRotationCancellationPass : public AgnosticPassModule
 {
   public:
     /**
@@ -28,8 +28,7 @@ class QirNullRotationCancellationPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

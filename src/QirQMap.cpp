@@ -26,9 +26,25 @@ PreservedAnalyses QirQMapPass::run(
     std::vector<Function *> functionsToDelete;
     std::string entryFunctionName;
 
+    // Get number of qubits in the circuit
+    int numQubits = 0;
+    int numBits   = 0;
+
+    for (auto &function : module)
+    {
+        if (function.hasFnAttribute("entry_point"))
+        {
+            assert(function.hasFnAttribute("num_required_qubits"));
+            assert(function.hasFnAttribute("num_required_results"));
+
+            function.getFnAttribute("num_required_qubits").getValueAsString().getAsInteger(0, numQubits);
+            function.getFnAttribute("num_required_results").getValueAsString().getAsInteger(0, numBits);
+        }
+    }
+
     // Parse LLVM::Module to QC::QuantumComputation
     auto arch = mqt::createArchitecture(dev);
-    auto qc   = qc::QuantumComputation(arch.getNqubits(), arch.getNqubits());
+    auto qc   = qc::QuantumComputation(numQubits, numBits);
 
     for (auto &function : module)
     {
@@ -288,6 +304,18 @@ PreservedAnalyses QirQMapPass::run(
 
         if (targets.size() == 1 && controls.size() == 1)
         {
+            // Control qubit
+            Value *control = ConstantInt::get(
+                Type::getInt64Ty(Context),
+                controls.begin()->qubit
+            );
+
+            Value *controlPtr = builder.CreateIntToPtr(
+                control,
+                qubitPtrType
+            );
+
+            // Target qubit
             Value *target = ConstantInt::get(
                 Type::getInt64Ty(Context), 
                 targets[0]
@@ -298,14 +326,15 @@ PreservedAnalyses QirQMapPass::run(
                 qubitPtrType
             );
 
-            Value *control = ConstantInt::get(
+            // Result
+            Value *result = ConstantInt::get(
                 Type::getInt64Ty(Context),
-                controls.begin()->qubit
+                targets[0]
             );
 
-            Value *controlPtr = builder.CreateIntToPtr(
-                control,
-                qubitPtrType
+            Value *resultPtr = builder.CreateIntToPtr(
+                result,
+                resultPtrType
             );
 
             switch (op->getType())
@@ -349,14 +378,40 @@ PreservedAnalyses QirQMapPass::run(
                         );
                     }
                     break;
+                // TODO: Check how measurement is defined so
+                //       we don't have to insert a measure all
+                //case qc::Measure:
+                //    newFunction = module.getFunction("__quantum__qis__mz__body");
+
+                //    if (!newFunction)
+                //    {
+                //        newFunction = Function::Create(
+                //            irreversibleFuncType,
+                //            Function::ExternalLinkage,
+                //            "__quantum__qis__mz__body",
+                //            module
+                //        );
+                //    }
+                //    break;
             } // switch (op->getType())
 
             if (newFunction)
-                builder.CreateCall(
-                    newFunction, 
-                    {controlPtr, targetPtr}
-                );
-
+            {
+                //if (op->getType() == qc::Measure)
+                //{
+                //    builder.CreateCall(
+                //        newFunction,
+                //        {controlPtr, resultPtr}
+                //    );
+                //}
+                //else
+                //{
+                    builder.CreateCall(
+                        newFunction, 
+                        {controlPtr, targetPtr}
+                    );
+                //}
+            }
         } // targets.size() == 1 && controls.size() == 1
         else if (targets.size() == 1 && controls.size() == 0)
         {
@@ -463,7 +518,7 @@ PreservedAnalyses QirQMapPass::run(
 
     // Insert measurements
     int i;
-    for (i = 0; i < arch.getNqubits(); i++)
+    for (i = 0; i < /*numQubits*/arch.getNqubits(); i++)
     {
         Value *qubitTarget = ConstantInt::get(
             Type::getInt64Ty(Context), 
@@ -517,7 +572,7 @@ PreservedAnalyses QirQMapPass::run(
 extern "C" 
 {
 #endif
-PassModule *loadQirPass()
+SpecificPassModule *loadQirPass()
 {
     return new QirQMapPass();
 }

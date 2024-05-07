@@ -14,7 +14,7 @@ namespace llvm
  * @class QirCZToHCnotHDecompositionPass
  * @brief This pass decomposes a CZ gate into H, Cnot, H gates.
  */
-class QirCZToHCnotHDecompositionPass : public PassModule
+class QirCZToHCnotHDecompositionPass : public AgnosticPassModule
 {
   public:
     /**
@@ -24,8 +24,7 @@ class QirCZToHCnotHDecompositionPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

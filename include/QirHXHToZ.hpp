@@ -1,20 +1,21 @@
 /**
- * @file QirRzToRxRyRxDecomposition.hpp
- * @brief Declaration of the 'QirRzToRxRyRxDecompositionPass' class.
+ * @file QirHXHToZ.hpp
+ * @brief Declaration of the 'QirHXHToZ' class.
  */
 
 #pragma once
 
-#include <PassModule.hpp>
+#include "PassModule.hpp"
 
 namespace llvm
 {
 
 /**
- * @class QirRzToRxRyRxDecompositionPass
- * @brief This pass decomposes an Rz gate into Rx and Ry gates.
+ * @class QirHXHToZ
+ * @brief This pass changes adjacent H, X and H gates into Z whenever found in
+ * this order.
  */
-class QirRzToRxRyRxDecompositionPass : public AgnosticPassModule
+class QirHXHToZPass : public AgnosticPassModule
 {
   public:
     /**

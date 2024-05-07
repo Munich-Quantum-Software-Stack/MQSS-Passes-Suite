@@ -15,7 +15,7 @@ namespace llvm
  * @brief This pass replaces Cnot gate with a reversed Cnot surrounded by
  * Hadamard gates.
  */
-class QirReverseCnotPass : public PassModule
+class QirReverseCnotPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirReverseCnotPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

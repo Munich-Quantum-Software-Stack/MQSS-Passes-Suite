@@ -41,7 +41,7 @@ PreservedAnalyses QirQMapPass::run(
                     if (auto *f = call_instr->getCalledFunction())
                     {
                         auto name = static_cast<std::string>(f->getName().str());
-                        
+
                         if (name == "__quantum__qis__rx__body"
                          || name == "__quantum__qis__ry__body"
                          || name == "__quantum__qis__rz__body")
@@ -61,7 +61,7 @@ PreservedAnalyses QirQMapPass::run(
                             {
                                 Value *qarg = call_instru->getArgOperand(1);
 
-                                if (isa<ConstantPointerNull>(qarg)) 
+                                if (isa<ConstantPointerNull>(qarg))
                                     qubit = 0;
                                 else if(ConstantExpr *constExpr = dyn_cast<ConstantExpr>(qarg))
                                 {
@@ -87,7 +87,7 @@ PreservedAnalyses QirQMapPass::run(
                             else if (name == "__quantum__qis__rz__body")
                                 qc.rz(angle, qubit);
                         }
-                        else if (name == "__quantum__qis__cx__body" 
+                        else if (name == "__quantum__qis__cx__body"
                               || name == "__quantum__qis__cnot__body"
                               || name == "__quantum__qis__cy__body"
                               || name == "__quantum__qis__cz__body")
@@ -218,8 +218,8 @@ PreservedAnalyses QirQMapPass::run(
 
     // Create again the entry block
     BasicBlock *entryBlock  = BasicBlock::Create(
-        Context, 
-        "entry", 
+        Context,
+        "entry",
         entryFunction
     );
 
@@ -229,14 +229,14 @@ PreservedAnalyses QirQMapPass::run(
 
     // Insert initialize instruction
     FunctionType *initFuncType = FunctionType::get(
-        Type::getVoidTy(Context), 
-        {Type::getInt8PtrTy(Context)}, 
+        Type::getVoidTy(Context),
+        {PointerType::get(IntegerType::getInt8Ty(Context), 0)},
         false
     );
 
-    Constant *NullPtr = ConstantPointerNull::get(Type::getInt8PtrTy(Context));
-    Value *PtrArg = builder.CreateIntToPtr(NullPtr, Type::getInt8PtrTy(Context));
-    
+    Constant *NullPtr = ConstantPointerNull::get(PointerType::get(IntegerType::getInt8Ty(Context), 0));
+    Value *PtrArg = builder.CreateIntToPtr(NullPtr, PointerType::get(IntegerType::getInt8Ty(Context), 0));
+
     Function *initFunction = module.getFunction("__quantum__rt__initialize");
 
     if (!initFunction)
@@ -244,13 +244,13 @@ PreservedAnalyses QirQMapPass::run(
         initFunction = Function::Create(
             initFuncType,
             Function::ExternalLinkage,
-            "__quantum__rt__initialize", 
+            "__quantum__rt__initialize",
             module
         );
     }
 
     builder.CreateCall(
-        initFunction, 
+        initFunction,
         {PtrArg}
     );
 
@@ -262,20 +262,20 @@ PreservedAnalyses QirQMapPass::run(
     PointerType *resultPtrType = PointerType::getUnqual(resultType);
 
     FunctionType *singleQubitFuncType = FunctionType::get(
-        Type::getVoidTy(Context), 
-        {qubitPtrType}, 
+        Type::getVoidTy(Context),
+        {qubitPtrType},
         false
     );
 
     FunctionType *twoQubitFuncType = FunctionType::get(
-        Type::getVoidTy(Context), 
-        {qubitPtrType, qubitPtrType}, 
+        Type::getVoidTy(Context),
+        {qubitPtrType, qubitPtrType},
         false
     );
 
     FunctionType *irreversibleFuncType = FunctionType::get(
-        Type::getVoidTy(Context), 
-        {qubitPtrType, resultPtrType}, 
+        Type::getVoidTy(Context),
+        {qubitPtrType, resultPtrType},
         false
     );
 
@@ -289,12 +289,12 @@ PreservedAnalyses QirQMapPass::run(
         if (targets.size() == 1 && controls.size() == 1)
         {
             Value *target = ConstantInt::get(
-                Type::getInt64Ty(Context), 
+                Type::getInt64Ty(Context),
                 targets[0]
             );
 
             Value *targetPtr = builder.CreateIntToPtr(
-                target, 
+                target,
                 qubitPtrType
             );
 
@@ -318,7 +318,7 @@ PreservedAnalyses QirQMapPass::run(
                         newFunction = Function::Create(
                             twoQubitFuncType,
                             Function::ExternalLinkage,
-                            "__quantum__qis__cx__body", 
+                            "__quantum__qis__cx__body",
                             module
                         );
                     }
@@ -331,7 +331,7 @@ PreservedAnalyses QirQMapPass::run(
                         newFunction = Function::Create(
                             twoQubitFuncType,
                             Function::ExternalLinkage,
-                            "__quantum__qis__cy__body", 
+                            "__quantum__qis__cy__body",
                             module
                         );
                     }
@@ -353,7 +353,7 @@ PreservedAnalyses QirQMapPass::run(
 
             if (newFunction)
                 builder.CreateCall(
-                    newFunction, 
+                    newFunction,
                     {controlPtr, targetPtr}
                 );
 
@@ -361,12 +361,12 @@ PreservedAnalyses QirQMapPass::run(
         else if (targets.size() == 1 && controls.size() == 0)
         {
             Value *target = ConstantInt::get(
-                Type::getInt64Ty(Context), 
+                Type::getInt64Ty(Context),
                 targets[0]
             );
 
             Value *targetPtr = builder.CreateIntToPtr(
-                target, 
+                target,
                 qubitPtrType
             );
 
@@ -380,7 +380,7 @@ PreservedAnalyses QirQMapPass::run(
                         newFunction = Function::Create(
                             singleQubitFuncType,
                             Function::ExternalLinkage,
-                            "__quantum__qis__x__body", 
+                            "__quantum__qis__x__body",
                             module
                         );
                     }
@@ -393,7 +393,7 @@ PreservedAnalyses QirQMapPass::run(
                         newFunction = Function::Create(
                             singleQubitFuncType,
                             Function::ExternalLinkage,
-                            "__quantum__qis__y__body", 
+                            "__quantum__qis__y__body",
                             module
                         );
                     }
@@ -406,7 +406,7 @@ PreservedAnalyses QirQMapPass::run(
                         newFunction = Function::Create(
                             singleQubitFuncType,
                             Function::ExternalLinkage,
-                            "__quantum__qis__z__body", 
+                            "__quantum__qis__z__body",
                             module
                         );
                     }
@@ -419,7 +419,7 @@ PreservedAnalyses QirQMapPass::run(
                         newFunction = Function::Create(
                             singleQubitFuncType,
                             Function::ExternalLinkage,
-                            "__quantum__qis__h__body", 
+                            "__quantum__qis__h__body",
                             module
                         );
                     }
@@ -432,7 +432,7 @@ PreservedAnalyses QirQMapPass::run(
                         newFunction = Function::Create(
                             singleQubitFuncType,
                             Function::ExternalLinkage,
-                            "__quantum__qis__s__body", 
+                            "__quantum__qis__s__body",
                             module
                         );
                     }
@@ -445,7 +445,7 @@ PreservedAnalyses QirQMapPass::run(
                         newFunction = Function::Create(
                             singleQubitFuncType,
                             Function::ExternalLinkage,
-                            "__quantum__qis__t__body", 
+                            "__quantum__qis__t__body",
                             module
                         );
                     }
@@ -454,7 +454,7 @@ PreservedAnalyses QirQMapPass::run(
 
             if (newFunction)
                 builder.CreateCall(
-                    newFunction, 
+                    newFunction,
                     {targetPtr}
                 );
 
@@ -466,7 +466,7 @@ PreservedAnalyses QirQMapPass::run(
     for (i = 0; i < arch.getNqubits(); i++)
     {
         Value *qubitTarget = ConstantInt::get(
-            Type::getInt64Ty(Context), 
+            Type::getInt64Ty(Context),
             i
         );
 
@@ -498,7 +498,7 @@ PreservedAnalyses QirQMapPass::run(
         }
 
         builder.CreateCall(
-            mzFunction, 
+            mzFunction,
             {qubitTargetPtr, resultTargetPtr}
         );
     }
@@ -514,7 +514,7 @@ PreservedAnalyses QirQMapPass::run(
  * @return QirQMapPass
  */
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 {
 #endif
 PassModule *loadQirPass()

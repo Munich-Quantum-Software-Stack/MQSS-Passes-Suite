@@ -14,6 +14,10 @@
 namespace llvm
 {
 
+class SDivOperator
+  : public ConcreteOperator<PossiblyExactOperator, Instruction::SDiv> {
+};
+
 /**
  * @class QirDivisionByZeroPass
  * @brief TODO

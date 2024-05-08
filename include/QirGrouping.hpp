@@ -119,7 +119,14 @@ class QirGroupingPass : public PassModule
      * @param type TODO
      * @return bool
      */
-    bool isQuantumRegister(Type const *type);
+    bool returnsQuantumRegister(Instruction const *instr);
+
+    /**
+     * @brief TODO
+     * @param type TODO
+     * @return bool
+     */
+    bool operandIsQuantumRegister(Instruction const *instr, unsigned i);
 
     /**
      * @brief TODO

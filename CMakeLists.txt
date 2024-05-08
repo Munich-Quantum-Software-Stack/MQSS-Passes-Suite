@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.22...3.28)
 project(
   QIRPasses
   VERSION 0.1
@@ -18,23 +18,10 @@ set(CMAKE_INSTALL_PREFIX $ENV{HOME}/bin CACHE PATH "..." FORCE)
 #endif()
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(MQT_QMAP_QDMI_INCLUDE_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-# Find FoMaC package
-find_package(fomac REQUIRED)
-
-# Find QDMI package
-find_package(qdmi REQUIRED)
-
-# Find QInfo package
-find_package(qinfo REQUIRED)
-
-# Find the Threads package
-find_package(Threads REQUIRED)
-
-# Find LLVMConfig.cmake
-find_package(LLVM REQUIRED CONFIG)
+include(cmake/ExternalDependencies.cmake)
 
 # Set LLVM_ENABLE_THREADS to ON
 set(LLVM_ENABLE_THREADS ON)
@@ -57,8 +44,6 @@ set(LLVM_ENABLE_THREADS ON)
 # Set up LLVM-specific flags
 add_definitions(${LLVM_DEFINITIONS})
 
-# Add QMAP
-add_subdirectory(extern/mqt-qmap)
 add_subdirectory(src)
 
 # Include all transformation passes here
@@ -138,12 +123,9 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
 set(CMAKE_INSTALL_RPATH "${INSTALL_PATH}/lib/passes")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-include_directories(
-  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  "${CMAKE_INSTALL_PREFIX}/include"
-  ${LLVM_INCLUDE_DIRS})
-
 add_library(utilities SHARED src/utilities.cpp)
+target_include_directories(utilities
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 
 # Install the shared library
 install(TARGETS utilities
@@ -185,22 +167,33 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
 
   set_target_properties(${target_name} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
+  # Find the necessary LLVM components
+  llvm_map_components_to_libnames(LLVM_LIBS support
+    core
+    mcjit
+    analysis
+    scalaropts
+    codegen
+    transformutils
+    ipo
+    objcarcopts
+    vectorize
+    instcombine
+    passes)
+
   # Link this pass with the required libraries
   target_link_libraries(${target_name} PRIVATE
-    $ENV{HOME}/bin/lib/libQirPassRunner.dylib
-    qdmi
-    qinfo
-    fomac
+    QirPassRunner PassRunner qdmi qinfo fomac
     utilities
-    LLVM
+    ${LLVM_LIBS}
   )
 
   #target_compile_features(${target_name} PUBLIC c_std_99)
 
   # Set include directories for the library
   target_include_directories(${target_name}
-    PRIVATE ${CMAKE_INSTALL_PREFIX}/include
-            ${CMAKE_BINARY_DIR}/_deps/qdmi-src/src #TODO
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/
+            ${LLVM_INCLUDE_DIRS}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
            $<INSTALL_INTERFACE:include>)
 

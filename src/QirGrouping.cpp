@@ -31,20 +31,36 @@ std::string const QirGroupingPass::READ_INSTR_START = "__quantum"
  * @param type TODO
  * @return bool
  */
-bool QirGroupingPass::isQuantumRegister(Type const *type)
+bool QirGroupingPass::returnsQuantumRegister(Instruction const *instr)
 {
-    if (type->isPointerTy())
+    instr->dump();
+    if (instr->getType()->isStructTy())
     {
-        auto element_type =
-            type->getPointerElementType(); // TODO: getPointerElementType IS
-                                           // DEPRECATED
-        if (element_type->isStructTy())
-        {
-            auto type_name =
-                static_cast<std::string const>(element_type->getStructName());
-            return quantum_register_types.find(type_name) !=
-                   quantum_register_types.end();
-        }
+        auto* struct_type = dyn_cast<StructType>(instr->getType());
+        auto type_name =
+            static_cast<std::string const>(struct_type->getStructName());
+        return quantum_register_types.find(type_name) !=
+               quantum_register_types.end();
+    }
+
+    return false;
+}
+
+/**
+ * @brief TODO
+ * @param type TODO
+ * @return bool
+ */
+bool QirGroupingPass::operandIsQuantumRegister(Instruction const *instr, unsigned i)
+{
+    instr->dump();
+    if (instr->getOperand(i)->getType()->isStructTy())
+    {
+        auto* struct_type = dyn_cast<StructType>(instr->getType());
+        auto type_name =
+            static_cast<std::string const>(struct_type->getStructName());
+        return quantum_register_types.find(type_name) !=
+               quantum_register_types.end();
     }
 
     return false;
@@ -68,7 +84,7 @@ int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction)
     bool any_quantum = false;
     bool any_classical = false;
     bool is_void = instruction->getType()->isVoidTy();
-    bool returns_quantum = isQuantumRegister(instruction->getType());
+    bool returns_quantum = returnsQuantumRegister(instruction);
     bool destructive_quantum = false;
 
     auto call_instruction = dyn_cast<CallBase>(instruction);
@@ -85,9 +101,9 @@ int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction)
                       name) != irreversible_operations.end())
             destructive_quantum = true;
 
-        for (auto &arg : call_instruction->args())
+        for (unsigned i = 0; i < call_instruction->getNumOperands(); ++i)
         {
-            auto q = isQuantumRegister(arg->getType());
+            auto q = operandIsQuantumRegister(call_instruction, i);
             any_quantum |= q;
             any_classical |= !q;
         }
@@ -97,9 +113,9 @@ int64_t QirGroupingPass::classifyInstruction(Instruction const *instruction)
     }
     else
     {
-        for (auto &operand : instruction->operands())
+        for (unsigned i = 0; i < instruction->getNumOperands(); ++i)
         {
-            auto q = isQuantumRegister(operand->getType());
+            auto q = operandIsQuantumRegister(instruction, i);
             any_quantum |= q;
             any_classical |= !q;
         }
@@ -237,7 +253,7 @@ QirGroupingPass::operandAnalysis(Value *val) const
     if (!val->getType()->isPointerTy())
         return ret;
 
-    Type *element_type = val->getType()->getPointerElementType();
+    Type *element_type = val->getType();
 
     if (!element_type->isStructTy())
         return ret;

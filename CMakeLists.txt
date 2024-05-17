@@ -75,8 +75,8 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     QirCZToHCnotHDecomposition.cpp
     # D
     QirDeferMeasurement.cpp
-   #QirDivisionByZero.cpp
-   #QirDoubleCnotCancellation.cpp
+    QirDivisionByZero.cpp
+    QirDoubleCnotCancellation.cpp
     # F
     QirFunctionAnnotator.cpp
     QirFunctionReplacement.cpp

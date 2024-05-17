@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 
 using namespace llvm;
 
@@ -24,6 +25,7 @@ PreservedAnalyses QirQMapPass::run(
     LLVMContext &Context = module.getContext();
     IRBuilder<> builder(Context);
     std::vector<Function *> functionsToDelete;
+    std::map<int, int> measurements;
     std::string entryFunctionName;
 
     // Get number of qubits in the circuit
@@ -152,7 +154,38 @@ PreservedAnalyses QirQMapPass::run(
                                 qc.cz(qubit_control, qubit_target);
                         }
                         else if (name == "__quantum__qis__mz__body")
-                            ; // QMap inserts a measure-all instruction
+                        {
+                            int qubit  = -1;
+                            int result = -1;
+
+                            if (auto *call_instru = dyn_cast<CallInst>(&instruction))
+                            {
+                                Value *qarg_qubit  = call_instru->getArgOperand(0);
+                                Value *qarg_result = call_instru->getArgOperand(1);
+
+                                if (isa<ConstantPointerNull>(qarg_qubit))
+                                    qubit = 0;
+                                else if(ConstantExpr *constExpr = dyn_cast<ConstantExpr>(qarg_qubit))
+                                {
+                                    IntToPtrInst* castInstruction = dyn_cast<IntToPtrInst>(constExpr->getAsInstruction());
+                                    ConstantInt *qubitInt = dyn_cast<ConstantInt>(
+                                    castInstruction->getOperand(0));
+                                    qubit = qubitInt->getSExtValue();
+                                }
+
+                                if (isa<ConstantPointerNull>(qarg_result))
+                                    result = 0;
+                                else if(ConstantExpr *constExpr = dyn_cast<ConstantExpr>(qarg_result))
+                                {
+                                    IntToPtrInst* castInstruction = dyn_cast<IntToPtrInst>(constExpr->getAsInstruction());
+                                    ConstantInt *resultInt = dyn_cast<ConstantInt>(
+                                    castInstruction->getOperand(0));
+                                    result = resultInt->getSExtValue();
+                                }
+
+                                measurements[qubit] = result;
+                            }
+                        }
                         else if (name == "__quantum__qis__s__body"
                               || name == "__quantum__qis__t__body"
                               || name == "__quantum__qis__x__body"
@@ -518,11 +551,13 @@ PreservedAnalyses QirQMapPass::run(
 
     // Insert measurements
     int i;
-    for (i = 0; i < /*numQubits*/arch.getNqubits(); i++)
+    //for (i = 0; i < /*numQubits*/arch.getNqubits(); i++)
+    //for (std::map<int, int>::iterator it = measurements.begin(); it != measurements.end(); ++it) {
+    for (const auto& measurement : measurements)
     {
         Value *qubitTarget = ConstantInt::get(
             Type::getInt64Ty(Context), 
-            i
+            measurement.first //i
         );
 
         Value *qubitTargetPtr = builder.CreateIntToPtr(
@@ -532,7 +567,7 @@ PreservedAnalyses QirQMapPass::run(
 
         Value *resultTarget = ConstantInt::get(
             Type::getInt64Ty(Context),
-            i
+            measurement.second //i
         );
 
         Value *resultTargetPtr = builder.CreateIntToPtr(

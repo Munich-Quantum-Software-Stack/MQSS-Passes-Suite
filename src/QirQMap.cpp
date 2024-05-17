@@ -559,7 +559,8 @@ PreservedAnalyses QirQMapPass::run(
     }
 
     // Insert return
-    builder.CreateRet(ConstantInt::get(Type::getInt64Ty(Context), 0));
+    //builder.CreateRet(ConstantInt::get(Type::getInt64Ty(Context), 0));
+    builder.CreateRetVoid();
 
     return PreservedAnalyses::none();
 }

@@ -19,7 +19,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirDoubleCnotCancellationPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     for (auto &function : module)
     {
@@ -111,7 +111,7 @@ PreservedAnalyses QirDoubleCnotCancellationPass::run(
  * 'PassModule'.
  * @return QirDoubleCnotCancellationPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirDoubleCnotCancellationPass();
 }

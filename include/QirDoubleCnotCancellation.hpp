@@ -14,7 +14,7 @@ namespace llvm
  * @class QirDoubleCnotCancellationPass
  * @brief This pass removes two sequential Cnots acting on the same qubit.
  */
-class QirDoubleCnotCancellationPass : public PassModule
+class QirDoubleCnotCancellationPass : public AgnosticPassModule
 {
   public:
     /**
@@ -24,8 +24,7 @@ class QirDoubleCnotCancellationPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

@@ -33,8 +33,7 @@ int64_t const QirDivisionByZeroPass::EC_QIR_DIVISION_BY_ZERO = 1100;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirDivisionByZeroPass::run(Module &module,
-                                             ModuleAnalysisManager &MAM,
-                                             QDMI_Device dev)
+                                             ModuleAnalysisManager &MAM)
 {
     IRBuilder<> builder(module.getContext());
 
@@ -182,4 +181,4 @@ void QirDivisionByZeroPass::raiseError(int64_t error_code, Module &module,
  * 'PassModule'.
  * @return QirDivisionByZeroPass
  */
-extern "C" PassModule *loadQirPass() { return new QirDivisionByZeroPass(); }
+extern "C" AgnosticPassModule *loadQirPass() { return new QirDivisionByZeroPass(); }

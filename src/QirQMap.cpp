@@ -261,9 +261,28 @@ PreservedAnalyses QirQMapPass::run(
             entryFunctionName = function->getName().str();
     }
 
+    if (entryFunctionName.size() < 1)
+    {
+        errs() << "   [Pass]................Error: "
+               << "The entry-point function is missing\n";
+
+        return PreservedAnalyses::none();
+    }
+
     // Fetch the entry point function
     Function *entryFunction = module.getFunction(entryFunctionName);
-    assert(entryFunction);
+
+    if (!entryFunction)
+    {
+        errs() << "   [Pass]................Error: "
+               << "Could not load the entry-point "
+               << "function from this QIR module\n";
+
+        return PreservedAnalyses::none();
+    }
+
+    // Save the return type of the entry point for later
+    Type *returnType = entryFunction->getReturnType();
 
     // Create again the entry block
     BasicBlock *entryBlock  = BasicBlock::Create(
@@ -594,8 +613,10 @@ PreservedAnalyses QirQMapPass::run(
     }
 
     // Insert return
-    //builder.CreateRet(ConstantInt::get(Type::getInt64Ty(Context), 0));
-    builder.CreateRetVoid();
+    if (returnType->isVoidTy())
+        builder.CreateRetVoid();
+    else if (returnType->isIntegerTy(64))
+        builder.CreateRet(ConstantInt::get(Type::getInt64Ty(Context), 0));
 
     return PreservedAnalyses::none();
 }

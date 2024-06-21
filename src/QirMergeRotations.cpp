@@ -5,6 +5,10 @@
  * to the source code of this file.</a>
  *
  * This pass merges equivalent rotation gates into single rotation.
+ *
+ * Adapted from: 
+ * https://dl.acm.org/doi/10.5555/1972505
+ * https://arxiv.org/abs/quant-ph/9503016
  */
 
 #include <QirMergeRotations.hpp>

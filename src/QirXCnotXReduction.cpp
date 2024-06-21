@@ -4,7 +4,9 @@
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirXCnotXReduction.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
- * Adapted from: This pass removes X gates surrounding a CNOT gate.
+ * This pass removes X gates surrounding a CNOT gate.
+ *
+ * Adapted from: https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
  */
 
 #include <QirXCnotXReduction.hpp>

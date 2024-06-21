@@ -4,7 +4,7 @@
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirNormalizeArgAngle.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
- * Adapted from:
+ * Adapted from: https://dl.acm.org/doi/10.5555/1972505
  */
 #include <QirNormalizeArgAngle.hpp>
 

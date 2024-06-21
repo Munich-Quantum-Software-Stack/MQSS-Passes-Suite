@@ -4,7 +4,9 @@
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirU3Decomposition.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
- * Adapted from: This pass decomposes a U3 gate into Rx and Ry gates.
+ * This pass decomposes a U3 gate into Rx and Ry gates.
+ *
+ * Adapted from: https://dl.acm.org/doi/10.5555/1972505
  *
  * @todo THERE SEEMS TO BE A POTENTIAL BUG WITHIN THIS PASS: ALL GATES ARE
  * REPLACED BY A U3 GATE

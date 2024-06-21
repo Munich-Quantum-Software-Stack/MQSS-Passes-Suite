@@ -4,6 +4,7 @@
  * href="https://gitlab-int.srv.lrz.de/lrz-qct-qis/quantum_intermediate_representation/qir_passes/-/blob/Plugins/src/passes/QirHadamardAndXGateSwitch.cpp?ref_type=heads">Go
  * to the source code of this file.</a>
  *
+ * Adapted from: https://dl-acm-org.translate.goog/doi/10.5555/1972505
  */
 
 #include <QirHadamardAndXGateSwitch.hpp>

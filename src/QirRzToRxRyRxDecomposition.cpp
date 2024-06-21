@@ -5,6 +5,7 @@
  * to the source code of this file.</a>
  *
  * This pass decomposes an Rz gate into Rx and Ry gates.
+ * Adapted from: https://dl.acm.org/doi/10.5555/1972505
  */
 
 #include <QirRzToRxRyRxDecomposition.hpp>

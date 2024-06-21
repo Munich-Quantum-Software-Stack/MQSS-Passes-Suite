@@ -1,6 +1,7 @@
 /**
  * @file QirDivisionByZero.cpp
  * @brief TODO
+ * Adapted from: QAT
  */
 
 #include <QirDivisionByZero.hpp>

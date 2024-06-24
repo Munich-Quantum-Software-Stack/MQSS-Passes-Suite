@@ -16,7 +16,7 @@ namespace llvm
  * @brief This pass removes redundant one-qubit gates, that is,
  * equivalent gates acting back to back on the same qubit.
  */
-class QirRedundantGatesCancellationPass : public PassModule
+class QirRedundantGatesCancellationPass : public AgnosticPassModule
 {
   public:
     /**
@@ -26,8 +26,7 @@ class QirRedundantGatesCancellationPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

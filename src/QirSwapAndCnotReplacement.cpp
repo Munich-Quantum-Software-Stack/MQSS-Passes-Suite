@@ -20,7 +20,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirSwapAndCnotReplacementPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     auto &Context = module.getContext();
 
@@ -138,7 +138,7 @@ PreservedAnalyses QirSwapAndCnotReplacementPass::run(
  * 'PassModule'.
  * @return QirSwapAndCnotReplacementPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirSwapAndCnotReplacementPass();
 }

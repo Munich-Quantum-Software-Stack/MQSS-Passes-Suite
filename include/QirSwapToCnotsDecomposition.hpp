@@ -14,7 +14,7 @@ namespace llvm
  * @class QirSwapToCnotsDecompositionPass
  * @brief This pass decomposes a Swap gate into three Cnot gates.
  */
-class QirSwapToCnotsDecompositionPass : public PassModule
+class QirSwapToCnotsDecompositionPass : public AgnosticPassModule
 {
   public:
     /**
@@ -24,8 +24,7 @@ class QirSwapToCnotsDecompositionPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

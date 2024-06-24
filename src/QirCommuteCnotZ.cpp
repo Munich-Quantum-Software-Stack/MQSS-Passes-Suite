@@ -18,8 +18,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirCommuteCnotZPass::run(Module &module,
-                                           ModuleAnalysisManager & /*MAM*/,
-                                           QDMI_Device dev)
+                                           ModuleAnalysisManager & /*MAM*/)
 {
     for (auto &function : module)
     {
@@ -97,4 +96,7 @@ PreservedAnalyses QirCommuteCnotZPass::run(Module &module,
  * 'PassModule'.
  * @return QirCommuteCnotZPass
  */
-extern "C" PassModule *loadQirPass() { return new QirCommuteCnotZPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirCommuteCnotZPass();
+}

@@ -19,7 +19,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(
-    Module &module, ModuleAnalysisManager &MAM, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager &MAM)
 {
     std::vector<Function *> functions_to_delete;
 
@@ -40,7 +40,7 @@ PreservedAnalyses QirRemoveNonEntrypointFunctionsPass::run(
  * 'QirRemoveNonEntrypointFunctionsPass' as a 'PassModule'.
  * @return QirRemoveNonEntrypointFunctionsPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirRemoveNonEntrypointFunctionsPass();
 }

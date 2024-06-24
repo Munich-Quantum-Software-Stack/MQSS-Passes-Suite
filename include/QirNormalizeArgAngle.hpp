@@ -14,7 +14,7 @@ namespace llvm
  * @class QirNormalizeArgAnglePass
  * @brief This pass normalizes the angle of rotation gates within [0, 2*Pi).
  */
-class QirNormalizeArgAnglePass : public PassModule
+class QirNormalizeArgAnglePass : public AgnosticPassModule
 {
   public:
     /**
@@ -24,8 +24,7 @@ class QirNormalizeArgAnglePass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

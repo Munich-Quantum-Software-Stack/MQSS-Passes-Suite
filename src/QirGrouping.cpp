@@ -666,8 +666,7 @@ QirGroupingPass::Result QirGroupingPass::runGroupingAnalysis(Module &module)
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirGroupingPass::run(Module &module,
-                                       ModuleAnalysisManager &MAM,
-                                       QDMI_Device dev)
+                                       ModuleAnalysisManager &MAM)
 {
 
     auto result = runGroupingAnalysis(module);
@@ -720,4 +719,7 @@ PreservedAnalyses QirGroupingPass::run(Module &module,
  * @brief External function for loading the 'QirGroupingPass' as a 'PassModule'.
  * @return QirGroupingPass
  */
-extern "C" PassModule *loadQirPass() { return new QirGroupingPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirGroupingPass();
+}

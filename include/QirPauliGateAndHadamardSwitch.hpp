@@ -15,7 +15,7 @@ namespace llvm
  * @brief This pass swaps adjacent Pauli gates and H whenever found in this
  * order. As a result, Pauli gate is changed accordingly.
  */
-class QirPauliGateAndHadamardSwitchPass : public PassModule
+class QirPauliGateAndHadamardSwitchPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirPauliGateAndHadamardSwitchPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

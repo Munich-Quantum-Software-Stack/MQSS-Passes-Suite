@@ -9,6 +9,7 @@
  * Adapted from: https://dl.acm.org/doi/10.5555/1972505
  *
  * @todo THIS PASS HAS A BUG THAT STOPS THE PASS RUNNER FROM CONTINUING
+
  */
 
 #include <QirDoubleCnotCancellation.hpp>
@@ -22,7 +23,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirDoubleCnotCancellationPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     for (auto &function : module)
     {
@@ -78,11 +79,13 @@ PreservedAnalyses QirDoubleCnotCancellationPass::run(
                                                 gatesToRemove.push_back(
                                                     current_instruction);
 
+                                                prev_instruction = nullptr;
                                                 errs()
                                                     << "   "
                                                        "[Pass]..............A "
                                                        "pair of Cnot gates "
                                                        "found\n";
+                                                continue;
                                             }
                                         }
                                     }
@@ -112,7 +115,7 @@ PreservedAnalyses QirDoubleCnotCancellationPass::run(
  * 'PassModule'.
  * @return QirDoubleCnotCancellationPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirDoubleCnotCancellationPass();
 }

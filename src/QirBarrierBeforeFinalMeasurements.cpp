@@ -21,7 +21,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     std::vector<Instruction *> mz_instructions;
     bool barrier_found = false;
@@ -99,7 +99,7 @@ PreservedAnalyses QirBarrierBeforeFinalMeasurementsPass::run(
  * 'QirBarrierBeforeFinalMeasurementsPass' as a 'PassModule'.
  * @return QirBarrierBeforeFinalMeasurementsPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirBarrierBeforeFinalMeasurementsPass();
 }

@@ -19,8 +19,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirFunctionAnnotatorPass::run(Module &module,
-                                                ModuleAnalysisManager & /*MAM*/,
-                                                QDMI_Device dev)
+                                                ModuleAnalysisManager & /*MAM*/)
 {
     QirPassRunner &QPR = QirPassRunner::getInstance();
     QirMetadata &qirMetadata = QPR.getMetadata();
@@ -76,4 +75,7 @@ PreservedAnalyses QirFunctionAnnotatorPass::run(Module &module,
  * 'PassModule'.
  * @return QirFunctionAnnotatorPass
  */
-extern "C" PassModule *loadQirPass() { return new QirFunctionAnnotatorPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirFunctionAnnotatorPass();
+}

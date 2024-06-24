@@ -30,8 +30,7 @@ using namespace llvm;
  */
 
 PreservedAnalyses QirXYXDecompositionPass::run(Module &module,
-                                               ModuleAnalysisManager & /*MAM*/,
-                                               QDMI_Device dev)
+                                               ModuleAnalysisManager & /*MAM*/)
 {
     std::string gatesToDecompose[4] = {
         "__quantum__qis__rx__body", "__quantum__qis__ry__body",
@@ -132,4 +131,7 @@ PreservedAnalyses QirXYXDecompositionPass::run(Module &module,
  * 'PassModule'.
  * @return QirXYXDecompositionPass
  */
-extern "C" PassModule *loadQirPass() { return new QirXYXDecompositionPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirXYXDecompositionPass();
+}

@@ -13,7 +13,7 @@ namespace llvm
  * @class QirXCnotXReductionPass
  * @brief This pass removes X gates surrounding a CNOT gate.
  */
-class QirXCnotXReductionPass : public PassModule
+class QirXCnotXReductionPass : public AgnosticPassModule
 {
   public:
     /**
@@ -23,8 +23,7 @@ class QirXCnotXReductionPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

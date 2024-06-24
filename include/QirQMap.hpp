@@ -27,7 +27,7 @@ namespace llvm
  * @class QirQMapPass
  * @brief TODO
  */
-class QirQMapPass : public PassModule
+class QirQMapPass : public SpecificPassModule
 {
   public:
 

@@ -18,7 +18,7 @@ namespace llvm
  * @class QirDivisionByZeroPass
  * @brief TODO
  */
-class QirDivisionByZeroPass : public PassModule
+class QirDivisionByZeroPass : public AgnosticPassModule
 {
   public:
     static const char *const EC_VARIABLE_NAME;    /**< TODO */
@@ -52,8 +52,7 @@ class QirDivisionByZeroPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 
     /**
      * @brief TODO

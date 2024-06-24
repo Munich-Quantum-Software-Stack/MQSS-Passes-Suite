@@ -20,7 +20,7 @@ namespace llvm
  * @brief This pass edits the attributes of those gates to
  * be replaced according to information taken from the metadata.
  */
-class QirFunctionAnnotatorPass : public PassModule
+class QirFunctionAnnotatorPass : public AgnosticPassModule
 {
   public:
     /**
@@ -30,8 +30,7 @@ class QirFunctionAnnotatorPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

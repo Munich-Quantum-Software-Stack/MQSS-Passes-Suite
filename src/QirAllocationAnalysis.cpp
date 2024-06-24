@@ -80,7 +80,7 @@ bool QirAllocationAnalysisPass::extractResourceId(Value *value,
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirAllocationAnalysisPass::run(
-    Function &function, FunctionAnalysisManager & /*FAM*/, QDMI_Device dev)
+    Function &function, FunctionAnalysisManager & /*FAM*/)
 {
     AllocationAnalysis result;
 

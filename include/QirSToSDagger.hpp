@@ -15,7 +15,7 @@ namespace llvm
  * @brief This pass replaces S found adjecent with Pauli gate with S dagger
  * gate. If S is adjecent with Z gate, Z is reduced.
  */
-class QirSToSDaggerPass : public PassModule
+class QirSToSDaggerPass : public AgnosticPassModule
 {
   public:
     /**
@@ -25,8 +25,7 @@ class QirSToSDaggerPass : public PassModule
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

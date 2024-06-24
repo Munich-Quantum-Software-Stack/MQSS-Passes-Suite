@@ -20,7 +20,7 @@ using namespace llvm;
  */
 PreservedAnalyses
 QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::run(
-    Module &module, ModuleAnalysisManager &MAM, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager &MAM)
 {
     for (auto &function : module)
     {
@@ -65,7 +65,7 @@ QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass::run(
  * 'PassModule'.
  * @return QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass();
 }

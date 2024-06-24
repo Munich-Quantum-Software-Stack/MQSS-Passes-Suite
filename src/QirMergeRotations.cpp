@@ -22,8 +22,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirMergeRotationsPass::run(Module &module,
-                                             ModuleAnalysisManager & /*MAM*/,
-                                             QDMI_Device dev)
+                                             ModuleAnalysisManager & /*MAM*/)
 {
     auto &Context = module.getContext();
 
@@ -131,4 +130,7 @@ PreservedAnalyses QirMergeRotationsPass::run(Module &module,
  * 'PassModule'.
  * @return QirMergeRotationsPass
  */
-extern "C" PassModule *loadQirPass() { return new QirMergeRotationsPass(); }
+extern "C" AgnosticPassModule *loadQirPass()
+{
+    return new QirMergeRotationsPass();
+}

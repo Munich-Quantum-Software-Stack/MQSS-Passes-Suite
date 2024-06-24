@@ -19,7 +19,7 @@ using namespace llvm;
  * @return PreservedAnalyses
  */
 PreservedAnalyses QirReplaceConstantBranchesPass::run(
-    Module &module, ModuleAnalysisManager & /*MAM*/, QDMI_Device dev)
+    Module &module, ModuleAnalysisManager & /*MAM*/)
 {
     // XXX THIS IS OUR CUSTOM PASS:
 
@@ -97,7 +97,7 @@ PreservedAnalyses QirReplaceConstantBranchesPass::run(
  * a 'PassModule'.
  * @return QirReplaceConstantBranchesPass
  */
-extern "C" PassModule *loadQirPass()
+extern "C" AgnosticPassModule *loadQirPass()
 {
     return new QirReplaceConstantBranchesPass();
 }

@@ -18,7 +18,7 @@ namespace llvm
  * @brief This pass removes all blocks with a single (terminator) instruction.
  */
 class QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass
-    : public PassModule
+    : public AgnosticPassModule
 {
   public:
     /**
@@ -28,8 +28,7 @@ class QirRemoveBasicBlocksWithSingleNonConditionalBranchInstsPass
      * @param MAM The module analysis manager.
      * @return PreservedAnalyses
      */
-    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM,
-                          QDMI_Device dev);
+    PreservedAnalyses run(Module &module, ModuleAnalysisManager &MAM);
 };
 
 } // namespace llvm

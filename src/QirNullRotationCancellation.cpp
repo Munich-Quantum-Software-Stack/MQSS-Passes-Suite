@@ -6,6 +6,8 @@
  *
  * This pass removes rotation gates with null rotation, that is rotation by 0 or
  * by 2pi multiplies.
+ *
+ * Adapted from: https://arxiv.org/abs/quant-ph/9503016
  */
 
 #include <QirNullRotationCancellation.hpp>

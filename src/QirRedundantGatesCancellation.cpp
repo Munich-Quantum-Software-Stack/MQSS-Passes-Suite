@@ -6,6 +6,9 @@
  *
  * This pass removes redundant one-qubit gates, that is, equivalent gates
  * acting back to back on the same qubit.
+ *
+ * Adapted from: https://dl.acm.org/doi/10.5555/1972505
+ *
  */
 
 #include <QirRedundantGatesCancellation.hpp>

@@ -9,7 +9,6 @@
  * Adapted from: https://dl.acm.org/doi/10.5555/1972505
  *
  * @todo THIS PASS HAS A BUG THAT STOPS THE PASS RUNNER FROM CONTINUING
-
  */
 
 #include <QirDoubleCnotCancellation.hpp>

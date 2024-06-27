@@ -4,25 +4,15 @@ project(
   VERSION 0.1
   DESCRIPTION "QIR Passes")
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-endif()
-
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "-w -fPIC")
 
 # Set the installation directory for the daemon
-#if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 set(CMAKE_INSTALL_PREFIX $ENV{HOME}/bin CACHE PATH "..." FORCE)
-#endif()
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-set(MQT_QMAP_QDMI_INCLUDE_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-# Find FoMaC package
-find_package(fomac REQUIRED)
 
 # Find QDMI package
 find_package(qdmi REQUIRED)
@@ -33,55 +23,41 @@ find_package(qinfo REQUIRED)
 # Find the Threads package
 find_package(Threads REQUIRED)
 
-# Set LLVM_ENABLE_THREADS to ON
-set(LLVM_ENABLE_THREADS ON)
+# Find the QMAP package
+find_package(mqt-qmap REQUIRED)
 
-# Find LLVMConfig.cmake
-find_path(LLVM_CONFIG_DIR LLVMConfig.cmake HINTS "${CMAKE_PREFIX_PATH}" ENV
-                                                 LLVM_DIR)
-
-if(NOT LLVM_CONFIG_DIR)
-  message(
-    FATAL_ERROR "LLVMConfig.cmake not found. Set CMAKE_PREFIX_PATH or LLVM_DIR."
-  )
-endif()
-
-# Include LLVMConfig.cmake
-list(APPEND CMAKE_PREFIX_PATH "${LLVM_CONFIG_DIR}")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${LLVM_CONFIG_DIR}")
+# Find the LLVM package
 find_package(LLVM REQUIRED CONFIG)
 
-# Set up LLVM-specific flags
+# Set LLVM_ENABLE_THREADS to ON
+set(LLVM_ENABLE_THREADS ON)
 add_definitions(${LLVM_DEFINITIONS})
 
-# Add QMAP
-add_subdirectory(extern/mqt-qmap)
-add_subdirectory(src)
 
 # Include all transformation passes here
 set(TRANSFORMATION_PASSES_SOURCE_FILES
     # A
-    QirAnnotateUnsupportedGates.cpp
+    #QirAnnotateUnsupportedGates.cpp
     # B
     QirBarrierBeforeFinalMeasurements.cpp
     # C
-    QirCNotToHCZHDecomposition.cpp
+    #QirCNotToHCZHDecomposition.cpp
     QirCommuteCnotRx.cpp
     QirCommuteRxCnot.cpp
     QirCommuteCnotX.cpp
     QirCommuteXCnot.cpp
     QirCommuteCnotZ.cpp
     QirCommuteZCnot.cpp
-    QirCZToHCnotHDecomposition.cpp
+    #QirCZToHCnotHDecomposition.cpp
     # D
     QirDeferMeasurement.cpp
     QirDivisionByZero.cpp
     QirDoubleCnotCancellation.cpp
     # F
-    QirFunctionAnnotator.cpp
+    #QirFunctionAnnotator.cpp
     QirFunctionReplacement.cpp
     # G
-    QirGrouping.cpp
+    #QirGrouping.cpp
     # H
     QirHadamardAndXGateSwitch.cpp
     QirHadamardAndYGateSwitch.cpp
@@ -94,24 +70,24 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     QirNormalizeArgAngle.cpp
     QirNullRotationCancellation.cpp
     # P
-    QirPlaceIrreversibleGatesInMetadata.cpp
+    #QirPlaceIrreversibleGatesInMetadata.cpp
     QirPauliGateAndHadamardSwitch.cpp
     ## Q
     QirQMap.cpp
     QirQubitRemap.cpp
     # R
-    QirRedundantGatesCancellation.cpp
+    #QirRedundantGatesCancellation.cpp
     QirRemoveBasicBlocksWithSingleNonConditionalBranchInsts.cpp
     #QirRemoveNonEntrypointFunctions.cpp
     QirReplaceConstantBranches.cpp
     QirResourceAnnotation.cpp
     QirReverseCnot.cpp
-    QirRzToRxRyRxDecomposition.cpp
+    #QirRzToRxRyRxDecomposition.cpp
     # S
     QirSDaggerToS.cpp
     QirSToSDagger.cpp
     QirSwapAndCnotReplacement.cpp
-    QirSwapToCnotsDecomposition.cpp
+    #QirSwapToCnotsDecomposition.cpp
     # U
    #QirU3Decomposition.cpp
    #QirU3ToRzRyRzDecomposition.cpp
@@ -141,13 +117,17 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   "${CMAKE_INSTALL_PREFIX}/include"
+  ${MQT_QMAP_INCLUDE_DIR}
   ${LLVM_INCLUDE_DIRS})
 
 add_library(utilities SHARED src/utilities.cpp)
 
 # Install the shared library
 install(TARGETS utilities
-        DESTINATION "${INSTALL_PATH}/lib/passes")
+        DESTINATION "${INSTALL_PATH}/lib/passes"
+        )
+
+ install(FILES include/PassModule.hpp DESTINATION include)
 
 # Compile each pass as a shared object and link it
 # to the required libraries
@@ -160,12 +140,13 @@ foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
   target_link_libraries(${target_name} PRIVATE
     qdmi
     qinfo
-    fomac
+    #fomac
     utilities)
 
   target_include_directories(${target_name}
     PRIVATE ${CMAKE_INSTALL_PREFIX}/include
-            ${CMAKE_BINARY_DIR}/_deps/qdmi-src/src #TODO
+            ${QDMI_INCLUDE_DIRS}
+            ${QMAP_INCLUDE_DIRS}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
            $<INSTALL_INTERFACE:include>)
 
@@ -187,7 +168,7 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
   target_link_libraries(${target_name} PRIVATE
     qdmi
     qinfo
-    fomac
+    #fomac
     utilities
   )
 
@@ -196,7 +177,9 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
   # Set include directories for the library
   target_include_directories(${target_name}
     PRIVATE ${CMAKE_INSTALL_PREFIX}/include
-            ${CMAKE_BINARY_DIR}/_deps/qdmi-src/src #TODO
+            ${QDMI_INCLUDE_DIRS}
+            ${MQT_QMAP_INCLUDE_BUILD_DIR}
+            ${QMAP_INCLUDE_DIRS}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
            $<INSTALL_INTERFACE:include>)
 
@@ -215,7 +198,8 @@ target_link_libraries(QirResourceAnnotationPass PRIVATE QirAllocationAnalysisPas
 target_link_libraries(QirZXZDecompositionPass PRIVATE QirZYZDecompositionPass)
 target_link_libraries(QirXYXDecompositionPass PRIVATE QirZYZDecompositionPass)
 #target_link_libraries(QirU3DecompositionPass PRIVATE QirZYZDecompositionPass)
-target_link_libraries(QirQMapPass PRIVATE mqt-qmap-qdmi MQT::ProjectOptions MQT::ProjectWarnings)
+target_link_libraries(QirQMapPass PRIVATE MQT::Core) 
+#mqt-qmap-qdmi MQT::ProjectOptions MQT::ProjectWarnings)
 
 #add_custom_target(
 #  uninstall

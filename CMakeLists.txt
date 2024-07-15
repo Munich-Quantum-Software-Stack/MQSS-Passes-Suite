@@ -20,6 +20,9 @@ find_package(qdmi REQUIRED)
 # Find QInfo package
 find_package(qinfo REQUIRED)
 
+# Find sys-sage package
+find_package(sys-sage REQUIRED)
+
 # Find the Threads package
 find_package(Threads REQUIRED)
 
@@ -141,12 +144,14 @@ foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
     qdmi
     qinfo
     #fomac
+    sys-sage
     utilities)
 
   target_include_directories(${target_name}
     PRIVATE ${CMAKE_INSTALL_PREFIX}/include
             ${QDMI_INCLUDE_DIRS}
             ${QMAP_INCLUDE_DIRS}
+            ${SYS_SAGE_INCLUDE_DIRS}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
            $<INSTALL_INTERFACE:include>)
 
@@ -169,6 +174,7 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
     qdmi
     qinfo
     #fomac
+    sys-sage
     utilities
   )
 
@@ -180,6 +186,7 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
             ${QDMI_INCLUDE_DIRS}
             ${MQT_QMAP_INCLUDE_BUILD_DIR}
             ${QMAP_INCLUDE_DIRS}
+            ${SYS_SAGE_INCLUDE_DIRS}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
            $<INSTALL_INTERFACE:include>)
 

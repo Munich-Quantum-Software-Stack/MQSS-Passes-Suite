@@ -1,5 +1,5 @@
 #include "ArchitectureFactory.hpp"
-#include "sys-sage.hpp"
+#include <sys-sage.hpp>
 #include <cstdint>
 #include <set>
 #include <utility>
@@ -11,7 +11,7 @@ Architecture createArchitecture(QDMI_Device dev) {
   // QDMI_Parser: sys-sage's interface to qdmi (for retrieving the static topology)
   QDMI_Parser qdmi;
 
-  // An instance to QunatumBackend for storing the topology
+  // An instance to QuantumBackend for storing the topology
   QuantumBackend* qc = new QuantumBackend(0, "IBM_Backend");
 
   // Create the topology

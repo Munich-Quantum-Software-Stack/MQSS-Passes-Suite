@@ -7,7 +7,3 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(sys-sage)
-
-FetchContent_GetProperties(sys-sage)
-
-set(SYS_SAGE_INCLUDE_DIRS "${sys-sage_SOURCE_DIR}/include")

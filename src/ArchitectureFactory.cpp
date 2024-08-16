@@ -8,20 +8,16 @@ namespace mqt {
 
 Architecture createArchitecture(QDMI_Device dev) {
   
-  // QDMI_Parser: sys-sage's interface to qdmi (for retrieving the static topology)
-  QDMI_Parser qdmi;
+  // QdmiParser: sys-sage's interface to qdmi (for retrieving the static topology)
+  QdmiParser qdmi;
 
   // An instance to QuantumBackend for storing the topology
-  QuantumBackend* qc = new QuantumBackend(0, "IBM_Backend");
+  QuantumBackend qc = createQcTopo(dev);
 
-  // Create the topology
-  qdmi.createQcTopo(qc, dev);
+  std::uint16_t num_qubits = qc.GetNumberofQubits();
 
-  std::uint16_t num_qubits = qc->GetNumberofQubits();
+  CouplingMap cm = qc.GetAllCouplingMaps();
 
-  CouplingMap cm = qc->GetAllCouplingMaps();
-
-  delete qc;
   return {num_qubits, cm};  
 }
 } // namespace mqt

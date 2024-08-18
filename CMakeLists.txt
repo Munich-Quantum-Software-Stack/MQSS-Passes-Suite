@@ -20,6 +20,9 @@ find_package(qdmi REQUIRED)
 # Find QInfo package
 find_package(qinfo REQUIRED)
 
+# Find sys-sage package
+find_package(sys-sage REQUIRED)
+
 # Find the Threads package
 find_package(Threads REQUIRED)
 
@@ -141,6 +144,7 @@ foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
     qdmi
     qinfo
     #fomac
+    sys-sage
     utilities)
 
   target_include_directories(${target_name}
@@ -169,6 +173,7 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
     qdmi
     qinfo
     #fomac
+    sys-sage
     utilities
   )
 

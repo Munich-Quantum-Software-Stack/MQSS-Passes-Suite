@@ -1,0 +1,2 @@
+add_llvm_pass_plugin(CustomExamplePass CustomExamplePass.cpp)
+

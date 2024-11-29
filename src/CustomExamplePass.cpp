@@ -49,7 +49,7 @@ public:
 };
 } // namespace
 
-std::unique_ptr<Pass> createCustomExamplePass(){
+std::unique_ptr<Pass> mqss::opt::createCustomExamplePass(){
   return std::make_unique<CustomExamplePassPlugin>();
 }
 //CUDAQ_REGISTER_MLIR_PASS(CustomExamplePassPlugin)

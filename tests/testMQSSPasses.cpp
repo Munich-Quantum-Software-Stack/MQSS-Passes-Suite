@@ -35,6 +35,7 @@
 // test includes
 #include "Passes.hpp"
 #include <gtest/gtest.h>
+#include <fstream>
 
 #define CUDAQ_GEN_PREFIX_NAME "__nvqpp__mlirgen__"
 
@@ -52,8 +53,22 @@ std::tuple<mlir::ModuleOp, mlir::MLIRContext *>
   return std::make_tuple(m_module.release(), contextPtr.release());
 }
 
+std::string readFileToString(const std::string &filename) {
+    std::ifstream file(filename);  // Open the file
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return "";
+    }
+
+    std::ostringstream fileContents;
+    fileContents << file.rdbuf();  // Read the whole file into the string stream
+    return fileContents.str();  // Convert the string stream to a string
+}
+
+
 TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
-  std::string quakeModule;
+  std::string quakeModule = readFileToString("./golden-cases/test_PrintQuakeGatesPass.qke");
+  std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager

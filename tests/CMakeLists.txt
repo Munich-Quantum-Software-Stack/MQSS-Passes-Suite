@@ -37,3 +37,7 @@ target_link_libraries(testMQSSPasses
 target_include_directories(testMQSSPasses PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
+set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:testMQSSPasses>/golden-cases)
+add_custom_target(copy-golden-cases ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/tests/golden-cases ${TEST_OUTPUT_DIR})

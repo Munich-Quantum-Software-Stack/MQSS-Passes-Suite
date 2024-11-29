@@ -68,6 +68,7 @@ std::string readFileToString(const std::string &filename) {
 
 TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
   std::string quakeModule = readFileToString("./golden-cases/test_PrintQuakeGatesPass.qke");
+  std::string goldenOutput = readFileToString("./golden-cases/test_PrintQuakeGatesPass-golden.txt");
   std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
@@ -76,13 +77,14 @@ TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
   // Adding custom pass
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
-  pm.addPass(createPrintQuakeGatesPass(stringStream));
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createPrintQuakeGatesPass(stringStream));
   
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
 
   std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
 TEST(TestSuiteName, TestName) {

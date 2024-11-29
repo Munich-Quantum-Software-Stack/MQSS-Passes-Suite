@@ -87,16 +87,6 @@ TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
-TEST(TestSuiteName, TestName) {
-  // Arrange
-  int x = 2, y = 2;
-  
-  // Act & Assert
-  EXPECT_EQ(x, y);  // Check if x equals y
-  //EXPECT_EQ(2 + 2, 4);
-  //ASSERT_TRUE(5 > 3);
-}
-
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

@@ -7,7 +7,7 @@
 #include <iostream>
 #include <cudaq.h>
 #include <fstream>
-#include <cudaq/mqss-mqp.h>
+
 // Define a CUDA-Q kernel that is fully specified
 // at compile time via templates.
 template <std::size_t N>

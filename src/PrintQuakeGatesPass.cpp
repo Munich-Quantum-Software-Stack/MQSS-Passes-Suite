@@ -42,7 +42,6 @@ private:
 
 } // namespace
 
-std::unique_ptr<mlir::Pass> createPrintQuakeGatesPass(llvm::raw_string_ostream &ostream){
+std::unique_ptr<mlir::Pass> mqss::opt::createPrintQuakeGatesPass(llvm::raw_string_ostream &ostream){
   return std::make_unique<PrintQuakeGatesPass>(ostream);
 }
-//CUDAQ_REGISTER_MLIR_PASS(PrintQuakeGatesPass)

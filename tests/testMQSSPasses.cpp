@@ -48,7 +48,7 @@ std::tuple<mlir::ModuleOp, mlir::MLIRContext *>
   auto quakeCode = quakeModule;
   auto m_module = mlir::parseSourceString<mlir::ModuleOp>(quakeCode, &context);
   if (!m_module)
-    throw std::runtime_error("QRM compiler::module cannot be parsed");
+    throw std::runtime_error("Module cannot be parsed");
 
   return std::make_tuple(m_module.release(), contextPtr.release());
 }

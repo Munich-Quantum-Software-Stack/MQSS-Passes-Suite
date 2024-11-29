@@ -65,7 +65,6 @@ std::string readFileToString(const std::string &filename) {
     return fileContents.str();  // Convert the string stream to a string
 }
 
-
 TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
   std::string quakeModule = readFileToString("./golden-cases/test_PrintQuakeGatesPass.qke");
   std::string goldenOutput = readFileToString("./golden-cases/test_PrintQuakeGatesPass-golden.txt");
@@ -85,6 +84,29 @@ TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
 
   std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
+TEST(TestMQSSPasses, TestCustomExamplePass){
+  std::string quakeModule = readFileToString("./golden-cases/test_CustomExamplePass.qke");
+  std::string goldenOutput = readFileToString("./golden-cases/test_CustomExamplePass-golden.txt");
+  std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+  mlir::MLIRContext &context = *contextPtr;
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  // Adding custom pass
+  pm.addNestedPass<mlir::func::FuncOp>(mqss::opt::createCustomExamplePass());
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule)))
+    std::runtime_error("The pass failed...");
+  // Convert the module to a string
+  std::string moduleAsString;
+  llvm::raw_string_ostream stringStream(moduleAsString);
+  mlirModule->print(stringStream);
+
+  std::cout << "Module after Pass\n" << moduleAsString << std::endl;
+
+  EXPECT_EQ(goldenOutput, moduleAsString);
 }
 
 int main(int argc, char **argv) {

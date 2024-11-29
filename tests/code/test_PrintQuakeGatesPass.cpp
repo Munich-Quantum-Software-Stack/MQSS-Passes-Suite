@@ -1,9 +1,9 @@
-
 // Compile and run with:
 // ```
 // cudaq-quake test_PrintQuakeGatesPass.cpp -o o.qke  &&
 // cudaq-opt --canonicalize --unrolling-pipeline o.qke -o test_PrintQuakeGatesPass.qke
 // ```
+
 #include <iostream>
 #include <cudaq.h>
 #include <fstream>

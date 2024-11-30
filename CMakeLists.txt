@@ -121,8 +121,14 @@ if(MSVC_IDE OR XCODE)
 endif()
 
 set(LLVM_LIT_ARGS "${LIT_ARGS_DEFAULT}" CACHE STRING "Default options for lit")
-#################################################################################
-# CUDAQ settings
+################ ADITIONAL PACKAGES #############################################
+# Tell where to search for Find<package>.cmake files
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+# Find the QMAP package
+set(CMAKE_CXX_STANDARD 17)
+find_package(mqt-qmap REQUIRED)
+set(CMAKE_CXX_STANDARD 20)
+####################### CUDAQ settings ############################################
 
 set(CUDAQ_MAIN_INCLUDE_DIR "/workspaces/cuda-quantum/include")
 set(CUDAQ_SOURCE_DIR "/workspaces/cuda-quantum")

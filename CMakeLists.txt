@@ -5,7 +5,8 @@ project(MQSSMLIRCustomPasses LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-
+set(CMAKE_CXX_FLAGS "-w -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch")
 ############################## CONFIGURATION OF LLVM ##########################
 find_package(LLVM 16 CONFIG QUIET)
 
@@ -125,9 +126,16 @@ set(LLVM_LIT_ARGS "${LIT_ARGS_DEFAULT}" CACHE STRING "Default options for lit")
 # Tell where to search for Find<package>.cmake files
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 # Find the QMAP package
+# Store the original CXX flags
+#set(original_cxx_flags "${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions")
+set(MQT_QMAP_TESTS OFF)
 find_package(mqt-qmap REQUIRED)
+# Restore the original CXX flags and compiler
+#set(CMAKE_CXX_FLAGS "${original_cxx_flags}")
 set(CMAKE_CXX_STANDARD 20)
+
 ####################### CUDAQ settings ############################################
 
 set(CUDAQ_MAIN_INCLUDE_DIR "/workspaces/cuda-quantum/include")
@@ -147,8 +155,14 @@ include_directories(BEFORE
 
 #################################################################################
 
+set(MQT_QMAP_INCLUDE_DIR "${mqt-qmap_SOURCE_DIR}/include/")
+set(MQT_CORE_INCLUDE_DIR "${mqt-core_SOURCE_DIR}/include/mqt-core")
+message(STATUS "mqt include dir: ${MQT_QMAP_INCLUDE_DIR}")
+
 include_directories(BEFORE
         ${CMAKE_SOURCE_DIR}/include
+        ${MQT_QMAP_INCLUDE_DIR}
+        ${MQT_CORE_INCLUDE_DIR}
 )
 
 add_mlir_library(MQSSPasses SHARED
@@ -159,7 +173,24 @@ add_mlir_library(MQSSPasses SHARED
     MLIRPass
     MLIRRewrite
     MLIRTransforms
-    MLIRSupport)
+    MLIRSupport) 
+
+add_mlir_library(QuakeQMapPass SHARED
+    src/QuakeQMapPass.cpp
+    LINK_LIBS PUBLIC
+    MLIRIR
+    MLIRPass
+    MLIRRewrite
+    MLIRTransforms
+    MLIRSupport 
+    # MQT
+    MQT::CoreIR
+    MQT::CoreNA
+    MQT::QMapSC
+    MQT::QMapSCHeuristic)
+
+target_compile_options(QuakeQMapPass PUBLIC "-frtti")
+target_compile_options(QuakeQMapPass PUBLIC "-fexceptions")
 
 #add tests
 add_subdirectory(tests)

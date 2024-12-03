@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 project(ProjectTests)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+set(CMAKE_CXX_FLAGS "-w -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions")
 # Add Google Test
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
@@ -11,7 +14,10 @@ include_directories(${MLIR_INCLUDE_DIRS})
 # Test executable
 add_executable(testMQSSPasses testMQSSPasses.cpp)
 
-target_link_libraries(testMQSSPasses 
+target_compile_options(QuakeQMapPass PUBLIC "-frtti")
+target_compile_options(QuakeQMapPass PUBLIC "-fexceptions")
+
+target_link_libraries(testMQSSPasses  PRIVATE
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq.so
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-spin.so
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-common.so
@@ -21,10 +27,14 @@ target_link_libraries(testMQSSPasses
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-ensmallen.so
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-mlir-runtime.so
                       ${GTEST_LIBRARIES}
+                      #${MLIR_LIBRARIES}
+                      
                       MQSSPasses
                       QuakeQMapPass
                       pthread
                       )
+
+target_include_directories(testMQSSPasses PRIVATE "${MLIR_MAIN_INCLUDE_DIR}/mlir/Pass")
 
 target_include_directories(testMQSSPasses PRIVATE
     ${CMAKE_SOURCE_DIR}/include

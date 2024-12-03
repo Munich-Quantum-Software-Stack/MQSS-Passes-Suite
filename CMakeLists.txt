@@ -12,19 +12,16 @@ set(CMAKE_CXX_FLAGS "-w -fPIC")
 set(CMAKE_INSTALL_PREFIX $ENV{HOME}/bin CACHE PATH "..." FORCE)
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Find QDMI package
 find_package(qdmi REQUIRED)
-
-# Find QInfo package
-find_package(qinfo REQUIRED)
 
 # Find the Threads package
 find_package(Threads REQUIRED)
 
 # Find the QMAP package
-find_package(mqt-qmap REQUIRED)
+#find_package(mqt-qmap REQUIRED)
 
 # Find the LLVM package
 find_package(LLVM REQUIRED CONFIG)
@@ -73,7 +70,7 @@ set(TRANSFORMATION_PASSES_SOURCE_FILES
     #QirPlaceIrreversibleGatesInMetadata.cpp
     QirPauliGateAndHadamardSwitch.cpp
     ## Q
-    QirQMap.cpp
+    #QirQMap.cpp
     QirQubitRemap.cpp
     # R
     #QirRedundantGatesCancellation.cpp
@@ -139,12 +136,12 @@ foreach(src_file ${ANALYSIS_PASSES_SOURCE_FILES})
   # Link this pass with the required libraries
   target_link_libraries(${target_name} PRIVATE
     qdmi
-    qinfo
+    #qinfo
     #fomac
     utilities)
 
   target_include_directories(${target_name}
-    PRIVATE ${CMAKE_INSTALL_PREFIX}/include
+  PUBLIC ${CMAKE_INSTALL_PREFIX}/include
             ${QDMI_INCLUDE_DIRS}
             ${QMAP_INCLUDE_DIRS}
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -167,7 +164,7 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
   # Link this pass with the required libraries
   target_link_libraries(${target_name} PRIVATE
     qdmi
-    qinfo
+    #qinfo
     #fomac
     utilities
   )
@@ -176,7 +173,7 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
 
   # Set include directories for the library
   target_include_directories(${target_name}
-    PRIVATE ${CMAKE_INSTALL_PREFIX}/include
+    PUBLIC ${CMAKE_INSTALL_PREFIX}/include
             ${QDMI_INCLUDE_DIRS}
             ${MQT_QMAP_INCLUDE_BUILD_DIR}
             ${QMAP_INCLUDE_DIRS}
@@ -191,6 +188,11 @@ foreach(src_file ${TRANSFORMATION_PASSES_SOURCE_FILES})
 
 endforeach()
 
+#find_library(MQT_LIB
+#    NAMES MQT::Core mqt
+#    HINTS "${CMAKE_PREFIX_PATH}/curl/lib"
+#)
+
 # Analysis passes invoked from custom passes have to be linked to the custom
 # pass
 target_link_libraries(QirQubitRemapPass PRIVATE QirAllocationAnalysisPass)
@@ -198,8 +200,8 @@ target_link_libraries(QirResourceAnnotationPass PRIVATE QirAllocationAnalysisPas
 target_link_libraries(QirZXZDecompositionPass PRIVATE QirZYZDecompositionPass)
 target_link_libraries(QirXYXDecompositionPass PRIVATE QirZYZDecompositionPass)
 #target_link_libraries(QirU3DecompositionPass PRIVATE QirZYZDecompositionPass)
-target_link_libraries(QirQMapPass PRIVATE MQT::Core) 
-#mqt-qmap-qdmi MQT::ProjectOptions MQT::ProjectWarnings)
+#target_link_libraries(QirQMapPass PRIVATE MQT::Core)
+#MQT::ProjectOptions MQT::ProjectWarnings)
 
 #add_custom_target(
 #  uninstall

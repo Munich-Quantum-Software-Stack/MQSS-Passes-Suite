@@ -6,7 +6,7 @@
 #pragma once
 
 #include "llvm.hpp"
-#include "qdmi.h"
+#include <qdmi/client.h>
 
 using namespace llvm;
 

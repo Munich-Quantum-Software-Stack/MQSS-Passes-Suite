@@ -1,3 +1,26 @@
+# The CMakeLists for passes requires to enable RTTI and FEXCEPTIONS
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions")
+# There is an issue if LLVM is not built with RRTI. In case LLVM was not built with RTTI,
+# LLVM has to be rebuilt again with RRTI.
+# For example: For CUDAQ container, add -DLLVM_ENABLE_RTTI=ON and -DLLVM_ENABLE_EH=ON 
+# to the script build_llvm.sh.
+# The build flags should look like:
+# cmake_args=" \
+#  -DLLVM_DEFAULT_TARGET_TRIPLE='"$(bash $LLVM_SOURCE/llvm/cmake/config.guess)"' \
+#  -DCMAKE_BUILD_TYPE=$build_configuration \
+#  -DCMAKE_INSTALL_PREFIX='"$LLVM_INSTALL_PREFIX"' \
+#  -DLLVM_ENABLE_PROJECTS='"${llvm_projects%;}"' \
+#  -DLLVM_ENABLE_RTTI=ON \  -> (INCLUDED)
+#  -DLLVM_ENABLE_EH=ON \    -> (INCLUDED)
+#  -DLLVM_ENABLE_RUNTIMES='"${llvm_runtimes%;}"' \
+#  -DLLVM_DISTRIBUTION_COMPONENTS='"${llvm_components%;}"' \
+#  -DLLVM_ENABLE_ZLIB=${llvm_enable_zlib:-OFF} \
+#  -DZLIB_ROOT='"$ZLIB_INSTALL_PREFIX"' \
+#  -DPython3_EXECUTABLE='"$Python3_EXECUTABLE"' \
+#  -DMLIR_ENABLE_BINDINGS_PYTHON=$mlir_python_bindings \
+#  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+#  -DCMAKE_CXX_FLAGS='-w'"
+
 cmake_minimum_required(VERSION 3.13)
 # Project name and language specification
 project(MQSSMLIRCustomPasses LANGUAGES CXX)
@@ -7,6 +30,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 set(CMAKE_CXX_FLAGS "-w -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions")
 ############################## CONFIGURATION OF LLVM ##########################
 find_package(LLVM 16 CONFIG QUIET)
 
@@ -165,29 +189,52 @@ include_directories(BEFORE
         ${MQT_CORE_INCLUDE_DIR}
 )
 
+set(MLIR_LIBRARY_DIR "${LLVM_BINARY_DIR}/lib")
+message(STATUS "MLIR_LIBRARY_DIR ${MLIR_LIBRARY_DIR}")
+
+# Find all .so or .a files (libraries) in the MLIR library directory
+#file(GLOB MLIR_LIBRARIES "${MLIR_LIBRARY_DIR}/libMLIR*.so")
+# Alternatively, if you're looking for specific libraries (e.g., MLIRIR, MLIRPass)
+file(GLOB MLIR_LIBRARIES "${MLIR_LIBRARY_DIR}/libMLIR*.a")
+# Or if you know a subfolder where the libraries are stored:
+#file(GLOB MLIR_LIBRARIES "${MLIR_LIBRARY_DIR}/lib/*.so")
+#message(STATUS "MLIR_LIBRARIES: ${MLIR_LIBRARIES}")
+
+
 add_mlir_library(MQSSPasses SHARED
     src/CustomExamplePass.cpp
-    src/PrintQuakeGatesPass.cpp
-    LINK_LIBS PUBLIC
-    MLIRIR
-    MLIRPass
-    MLIRRewrite
-    MLIRTransforms
-    MLIRSupport) 
+    src/PrintQuakeGatesPass.cpp)
+#    LINK_LIBS PUBLIC
+#    MLIRIR
+#    MLIRPass
+#    MLIRRewrite
+#    MLIRTransforms
+#    MLIRSupport) 
+set(MLIR_MAIN_INCLUDE_DIR  "${LLVM_BINARY_DIR}/include")
+message(STATUS "MLIR_MAIN_INCLUDE_DIR  ${MLIR_MAIN_INCLUDE_DIR}")
 
 add_mlir_library(QuakeQMapPass SHARED
     src/QuakeQMapPass.cpp
+  ADDITIONAL_HEADER_DIRS
+  ${MLIR_MAIN_INCLUDE_DIR}/mlir/Pass
     LINK_LIBS PUBLIC
-    MLIRIR
-    MLIRPass
-    MLIRRewrite
-    MLIRTransforms
-    MLIRSupport 
-    # MQT
     MQT::CoreIR
     MQT::CoreNA
     MQT::QMapSC
-    MQT::QMapSCHeuristic)
+    MQT::QMapSCHeuristic
+    MLIRIR
+    MLIRPass
+)
+#    ${MLIR_LIBRARIES}
+
+#    MLIRPass
+#    MLIRRewrite
+#    MLIRTransforms
+#    MLIRSupport 
+    # MQT
+#    PRIVATE)
+
+add_dependencies(QuakeQMapPass MQT::CoreIR MQT::CoreNA MQT::QMapSC MQT::QMapSCHeuristic)
 
 target_compile_options(QuakeQMapPass PUBLIC "-frtti")
 target_compile_options(QuakeQMapPass PUBLIC "-fexceptions")

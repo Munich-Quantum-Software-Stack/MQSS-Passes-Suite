@@ -1,5 +1,6 @@
 *.swp
 *.swo
+*.swn
 build
 
 CMakeLists.txt.user

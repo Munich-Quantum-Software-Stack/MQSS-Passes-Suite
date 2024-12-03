@@ -189,34 +189,10 @@ include_directories(BEFORE
         ${MQT_CORE_INCLUDE_DIR}
 )
 
-set(MLIR_LIBRARY_DIR "${LLVM_BINARY_DIR}/lib")
-message(STATUS "MLIR_LIBRARY_DIR ${MLIR_LIBRARY_DIR}")
-
-# Find all .so or .a files (libraries) in the MLIR library directory
-#file(GLOB MLIR_LIBRARIES "${MLIR_LIBRARY_DIR}/libMLIR*.so")
-# Alternatively, if you're looking for specific libraries (e.g., MLIRIR, MLIRPass)
-file(GLOB MLIR_LIBRARIES "${MLIR_LIBRARY_DIR}/libMLIR*.a")
-# Or if you know a subfolder where the libraries are stored:
-#file(GLOB MLIR_LIBRARIES "${MLIR_LIBRARY_DIR}/lib/*.so")
-#message(STATUS "MLIR_LIBRARIES: ${MLIR_LIBRARIES}")
-
-
 add_mlir_library(MQSSPasses SHARED
     src/CustomExamplePass.cpp
-    src/PrintQuakeGatesPass.cpp)
-#    LINK_LIBS PUBLIC
-#    MLIRIR
-#    MLIRPass
-#    MLIRRewrite
-#    MLIRTransforms
-#    MLIRSupport) 
-set(MLIR_MAIN_INCLUDE_DIR  "${LLVM_BINARY_DIR}/include")
-message(STATUS "MLIR_MAIN_INCLUDE_DIR  ${MLIR_MAIN_INCLUDE_DIR}")
-
-add_mlir_library(QuakeQMapPass SHARED
+    src/PrintQuakeGatesPass.cpp
     src/QuakeQMapPass.cpp
-  ADDITIONAL_HEADER_DIRS
-  ${MLIR_MAIN_INCLUDE_DIR}/mlir/Pass
     LINK_LIBS PUBLIC
     MQT::CoreIR
     MQT::CoreNA
@@ -225,19 +201,6 @@ add_mlir_library(QuakeQMapPass SHARED
     MLIRIR
     MLIRPass
 )
-#    ${MLIR_LIBRARIES}
-
-#    MLIRPass
-#    MLIRRewrite
-#    MLIRTransforms
-#    MLIRSupport 
-    # MQT
-#    PRIVATE)
-
-add_dependencies(QuakeQMapPass MQT::CoreIR MQT::CoreNA MQT::QMapSC MQT::QMapSCHeuristic)
-
-target_compile_options(QuakeQMapPass PUBLIC "-frtti")
-target_compile_options(QuakeQMapPass PUBLIC "-fexceptions")
 
 #add tests
 add_subdirectory(tests)

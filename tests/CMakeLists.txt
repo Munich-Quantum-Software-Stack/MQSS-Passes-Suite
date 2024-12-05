@@ -14,9 +14,6 @@ include_directories(${MLIR_INCLUDE_DIRS})
 # Test executable
 add_executable(testMQSSPasses testMQSSPasses.cpp)
 
-target_compile_options(QuakeQMapPass PUBLIC "-frtti")
-target_compile_options(QuakeQMapPass PUBLIC "-fexceptions")
-
 target_link_libraries(testMQSSPasses  PRIVATE
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq.so
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-spin.so
@@ -27,14 +24,8 @@ target_link_libraries(testMQSSPasses  PRIVATE
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-ensmallen.so
                       ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-mlir-runtime.so
                       ${GTEST_LIBRARIES}
-                      #${MLIR_LIBRARIES}
-                      
                       MQSSPasses
-                      QuakeQMapPass
-                      pthread
-                      )
-
-target_include_directories(testMQSSPasses PRIVATE "${MLIR_MAIN_INCLUDE_DIR}/mlir/Pass")
+                      pthread)
 
 target_include_directories(testMQSSPasses PRIVATE
     ${CMAKE_SOURCE_DIR}/include

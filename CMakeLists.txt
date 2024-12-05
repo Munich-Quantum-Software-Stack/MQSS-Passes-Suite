@@ -21,7 +21,11 @@
 #  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
 #  -DCMAKE_CXX_FLAGS='-w'"
 
-cmake_minimum_required(VERSION 3.13)
+# Set CMP0002 policy to handle targets with the same name in different directories
+# needed because mqt and qdmi
+#cmake_policy(SET CMP0002 NEW)
+
+cmake_minimum_required(VERSION 3.19...3.30)
 # Project name and language specification
 project(MQSSMLIRCustomPasses LANGUAGES CXX)
 
@@ -31,6 +35,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 set(CMAKE_CXX_FLAGS "-w -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions")
+
+
+
 ############################## CONFIGURATION OF LLVM ##########################
 find_package(LLVM 16 CONFIG QUIET)
 
@@ -149,16 +156,23 @@ set(LLVM_LIT_ARGS "${LIT_ARGS_DEFAULT}" CACHE STRING "Default options for lit")
 ################ ADITIONAL PACKAGES #############################################
 # Tell where to search for Find<package>.cmake files
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+#set(CMAKE_CXX_STANDARD 11)
+
+# Find QDMI package
+find_package(qdmi REQUIRED)
+
+# Find QInfo package
+find_package(qinfo REQUIRED)
+
 # Find the QMAP package
-# Store the original CXX flags
-#set(original_cxx_flags "${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions")
 set(MQT_QMAP_TESTS OFF)
 find_package(mqt-qmap REQUIRED)
 # Restore the original CXX flags and compiler
-#set(CMAKE_CXX_FLAGS "${original_cxx_flags}")
 set(CMAKE_CXX_STANDARD 20)
+#add_library(mqt_project_warnings ALIAS project_warnings)
+
 
 ####################### CUDAQ settings ############################################
 
@@ -181,12 +195,25 @@ include_directories(BEFORE
 
 set(MQT_QMAP_INCLUDE_DIR "${mqt-qmap_SOURCE_DIR}/include/")
 set(MQT_CORE_INCLUDE_DIR "${mqt-core_SOURCE_DIR}/include/mqt-core")
+set(qdmi_INCLUDE_DIRS "${QDMI_INCLUDE_DIRS}/qdmi")
+set(qinfo_INCLUDE_DIRS "${qinfo_SOURCE_DIR}/include/qinfo")
 message(STATUS "mqt include dir: ${MQT_QMAP_INCLUDE_DIR}")
+message(STATUS "QINFO INCLUDE DIRS ${qinfo_INCLUDE_DIRS}")
+
+## Get all variable names in CMake
+#get_cmake_property(all_vars VARIABLES)
+#
+## Loop through and print each variable and its value
+#foreach(var ${all_vars})
+#    message(STATUS "${var} = ${${var}}")
+#endforeach()
 
 include_directories(BEFORE
         ${CMAKE_SOURCE_DIR}/include
         ${MQT_QMAP_INCLUDE_DIR}
         ${MQT_CORE_INCLUDE_DIR}
+        ${qdmi_INCLUDE_DIRS}
+        ${qinfo_INCLUDE_DIRS}
 )
 
 add_mlir_library(MQSSPasses SHARED
@@ -200,6 +227,8 @@ add_mlir_library(MQSSPasses SHARED
     MQT::QMapSCHeuristic
     MLIRIR
     MLIRPass
+    #qdmi
+    #qinfo
 )
 
 #add tests

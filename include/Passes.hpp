@@ -7,6 +7,7 @@
 #include "mlir/Pass/PassManager.h"
 #include "mlir/Pass/PassRegistry.h"
 #include "llvm/Support/raw_ostream.h"
+#include "qdmi.h"
 
 namespace mqss::opt{
 

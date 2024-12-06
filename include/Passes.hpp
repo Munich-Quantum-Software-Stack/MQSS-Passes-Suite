@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <stdexcept>
 #include "mlir/Pass/Pass.h"
 #include "mlir/Pass/PassManager.h"
 #include "mlir/Pass/PassRegistry.h"

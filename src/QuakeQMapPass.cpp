@@ -354,21 +354,6 @@ public:
     //std::ostream ros(llvm::errs());
     qcMapped.print(std::cout);
   }
-  // Function to populate the new module with operations
-  void dumpReMappedModule(mlir::ModuleOp &newModule, mlir::OpBuilder &builder) {
-    // Example: Create a function inside the new module
-    auto funcType = builder.getFunctionType({}, {}); // Function with no inputs/outputs
-    auto funcOp = builder.create<mlir::func::FuncOp>(
-        builder.getUnknownLoc(), "new_function", funcType);
-
-    // Populate the function with a return operation
-    auto *block = funcOp.addEntryBlock();
-    builder.setInsertionPointToEnd(block);
-    builder.create<mlir::func::ReturnOp>(builder.getUnknownLoc());
-
-    // Add the function to the module
-    newModule.push_back(funcOp);
-  }
 };
 
 } // namespace

@@ -10,6 +10,8 @@
 #include "llvm/Support/raw_ostream.h"
 #include "qdmi.h"
 
+#define CUDAQ_PREFIX_FUNCTION "__nvqpp__mlirgen__"
+
 namespace mqss::opt{
 
 std::unique_ptr<mlir::Pass> createCustomExamplePass();

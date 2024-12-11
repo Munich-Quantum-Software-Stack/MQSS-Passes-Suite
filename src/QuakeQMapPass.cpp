@@ -4,7 +4,7 @@
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "llvm/Support/raw_ostream.h"
-
+#include "mlir/Dialect/SCF/IR/SCF.h"
 #include "Passes.hpp"
 #include "qdmi.h"
 #include "sc/heuristic/HeuristicMapper.hpp"
@@ -14,7 +14,7 @@ using namespace mlir;
 namespace {
 
 class QuakeQMapPass
-    : public PassWrapper<QuakeQMapPass, OperationPass<ModuleOp>> {
+    : public PassWrapper<QuakeQMapPass, OperationPass<func::FuncOp>> {
 private:
   llvm::raw_string_ostream &outputStream; // Store the output stream
   //Architecture architecture;
@@ -166,7 +166,7 @@ private:
       }
     }
   }
-  int getNumberOfQubits(ModuleOp circuit){
+  int getNumberOfQubits(func::FuncOp circuit){
     int numQubits = 0;
     circuit.walk([&](quake::AllocaOp allocOp) {
       if (auto qrefType = allocOp.getType().dyn_cast<quake::RefType>()) {
@@ -177,7 +177,7 @@ private:
     });
     return numQubits;
   }
-  int getNumberOfClassicalBits(ModuleOp circuit, std::map<int, int> &measurements){
+  int getNumberOfClassicalBits(func::FuncOp circuit, std::map<int, int> &measurements){
     int numBits=0;
     circuit.walk([&](mlir::Operation *op) {
       if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op)){
@@ -225,8 +225,13 @@ public:
     arch.loadCouplingMap(5, cm);
     std::cout << "Dumping the architecture " << std::endl;
     Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);
-
     auto circuit = getOperation();
+    // Get the function name
+    StringRef funcName = circuit.getName();
+    if (!(funcName.find(std::string(CUDAQ_PREFIX_FUNCTION)) != std::string::npos))
+      return; // do nothing if the funcion is not cudaq kernel
+    llvm::outs() << "Kernel name: " << funcName << "\n";
+
     std::map<int, int> measurements; // key: qubit, value register index
     int numQubits = getNumberOfQubits(circuit);
     int numBits = getNumberOfClassicalBits(circuit,measurements);
@@ -246,24 +251,6 @@ public:
     llvm::errs() << "Dumping QC:\n";
     //std::ostream ros(llvm::errs());
     qc.print(std::cout);
-    /*for (const auto& op : qc){
-      llvm::errs() << "Gate type "  << op->getName() <<" uses " <<op->getNqubits() << " qubtis \n";
-      if (op->isUnitary())                    llvm::errs() << "\tIt is unitary \n";
-      if (op->isStandardOperation())          llvm::errs() << "\tisStandardOperation()\n";   
-      if (op->isCompoundOperation())          llvm::errs() << "\tisCompoundOperation()\n";   
-      if (op->isClassicControlledOperation()) llvm::errs() << "\tisClassicControlledOperation\n";   
-      if (op->isSymbolicOperation())          llvm::errs() << "\tisSymbolicOperation\n";   
-      if (op->isSingleQubitGate())            llvm::errs() << "\tisSingleQubitGate()\n";   
-      if (op->isControlled())                 llvm::errs() << "\tisControlled()\n";
-      auto targets = op->getTargets();
-      int i=1;
-      for (const auto& control : op->getControls()) {
-        llvm::errs() << "\t\tControl qubit " << control.qubit << "\n";
-      } 
-      for(auto qubit : targets){
-        llvm::errs() << "\t\tTarget qbit "<< qubit << "\n";
-      }  
-    }*/
     // Map the circuit
     const auto mapper = std::make_unique<HeuristicMapper>(qc, arch);
     Configuration settings{};
@@ -273,7 +260,7 @@ public:
     settings.preMappingOptimizations = false;
     settings.postMappingOptimizations = false;
     settings.lookaheadHeuristic = LookaheadHeuristic::None;
-    settings.debug = true;
+//    settings.debug = false;
     settings.addMeasurementsToMappedCircuit = true;
     mapper->map(settings);
     // TODO: There should be other way to get the mapped circuit
@@ -283,16 +270,86 @@ public:
     std::stringstream qasm{};
     mapper->dumpResult(qasm, qc::Format::OpenQASM3);
     qcMapped.import(qasm, qc::Format::OpenQASM3);
-
-    // Create a new module
-    mlir::MLIRContext *context = &getContext();
-    mlir::OpBuilder builder(context);
-    auto reMappedModule = mlir::ModuleOp::create(builder.getUnknownLoc());
-    // Add new contents to the new module
-    dumpReMappedModule(reMappedModule, builder);
-
-    // Replace the original module with the new one
-    circuit.getBodyRegion().takeBody(reMappedModule.getBodyRegion());
+    // cleaning the mlir::funcOp corresponding to the quake circuit
+    for (auto &block : circuit.getBody()) {
+      block.clear();  // Clears all operations in the current block
+    } 
+    OpBuilder builder(&circuit.getBody());
+    Location loc = circuit.getLoc();
+    // allocate the qubits
+    Value qubits =
+      builder.create<quake::AllocaOp>(circuit.getLoc(),quake::VeqType::get(builder.getContext(), numQubits));
+    DenseMap<std::size_t, Value> finalQubitWire;
+    // then traverse the mapped QuantumComputation and annotate it in the
+    // mlir func
+    for (const auto& op : qcMapped){
+      auto &targets  = op->getTargets();
+      auto &controls = op->getControls();
+      if (targets.size()==2 && controls.size()==0){
+        if(op->getType() == qc::SWAP){
+          // extract the reference of the first target qubit
+          auto target1Ref = builder.create<quake::ExtractRefOp>(loc, qubits, targets[0]);
+          auto target2Ref = builder.create<quake::ExtractRefOp>(loc, qubits, targets[1]);
+          SmallVector<Value> ctrls = {};
+          SmallVector<Value> targets = {};
+          targets.push_back(target1Ref);
+          targets.push_back(target2Ref);
+          builder.create<quake::SwapOp>(loc,ctrls,targets);
+        }
+      }
+      if (targets.size() == 1 && controls.size() == 1){
+        // extract the reference of the control qubit
+        auto controlRef = builder.create<quake::ExtractRefOp>(loc, qubits, controls.begin()->qubit);
+        // extract the reference of the target qubit
+        auto targetRef = builder.create<quake::ExtractRefOp>(loc, qubits, targets[0]);
+        //create the XOp operation
+        switch (op->getType()) {
+          case qc::X:
+            builder.create<quake::XOp>(loc, controlRef.getResult(), targetRef.getResult());
+          break;
+          case qc::Y:
+            builder.create<quake::YOp>(loc, controlRef.getResult(), targetRef.getResult());
+          break;
+          case qc::Z:
+            builder.create<quake::ZOp>(loc, controlRef.getResult(), targetRef.getResult());
+          break;
+          case qc::SWAP:
+            llvm::errs() << "SWAP gate from " << targets[0] << " to " << targets[1] << "\n";
+          break; 
+        }
+      }
+      if (targets.size() == 1 && controls.size() == 0){
+        // single qubit functions
+        auto &targets  = op->getTargets();
+        // extract the reference of the target qubit
+        auto targetRef = builder.create<quake::ExtractRefOp>(loc, qubits, targets[0]);
+        switch (op->getType()) {
+          case qc::X:
+            builder.create<quake::XOp>(loc, targetRef.getResult());
+          break;
+          case qc::Y:
+            builder.create<quake::YOp>(loc, targetRef.getResult());
+          break;
+          case qc::Z:
+            builder.create<quake::ZOp>(loc, targetRef.getResult());
+          break;
+          case qc::H:
+            builder.create<quake::HOp>(loc, targetRef.getResult());
+          break;
+          case qc::S:
+            builder.create<quake::SOp>(loc, targetRef.getResult());
+          break;
+          case qc::T:
+            builder.create<quake::TOp>(loc, targetRef.getResult());
+          break;
+          case qc::Measure:
+            Type measTy = quake::MeasureType::get(builder.getContext());
+            builder.create<quake::MzOp>(loc, measTy, targetRef.getResult()).getMeasOut();
+          break;
+        }
+      }
+    }
+    builder.create<func::ReturnOp>(circuit.getLoc());
     std::cout << "Dumping QC after mapping:\n";
     //std::ostream ros(llvm::errs());
     qcMapped.print(std::cout);

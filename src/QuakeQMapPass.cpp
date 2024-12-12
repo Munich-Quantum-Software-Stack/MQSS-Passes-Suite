@@ -279,74 +279,53 @@ public:
     // allocate the qubits
     Value qubits =
       builder.create<quake::AllocaOp>(circuit.getLoc(),quake::VeqType::get(builder.getContext(), numQubits));
-    DenseMap<std::size_t, Value> finalQubitWire;
     // then traverse the mapped QuantumComputation and annotate it in the
     // mlir func
     for (const auto& op : qcMapped){
       auto &targets  = op->getTargets();
       auto &controls = op->getControls();
-      if (targets.size()==2 && controls.size()==0){
-        if(op->getType() == qc::SWAP){
-          // extract the reference of the first target qubit
-          auto target1Ref = builder.create<quake::ExtractRefOp>(loc, qubits, targets[0]);
-          auto target2Ref = builder.create<quake::ExtractRefOp>(loc, qubits, targets[1]);
-          SmallVector<Value> ctrls = {};
-          SmallVector<Value> targets = {};
-          targets.push_back(target1Ref);
-          targets.push_back(target2Ref);
-          builder.create<quake::SwapOp>(loc,ctrls,targets);
-        }
+      auto parameter = op->getParameter();
+      // defining the list of controls, targets and parameters
+      SmallVector<Value> parameterValues  = {};
+      SmallVector<Value> controlValues    = {};
+      SmallVector<Value> targetValues     = {};
+      // get the targets
+      for(int i=0; i<targets.size();i++){
+        auto targetRef = builder.create<quake::ExtractRefOp>(loc, qubits, targets[i]);
+        targetValues.push_back(targetRef);
       }
-      if (targets.size() == 1 && controls.size() == 1){
-        // extract the reference of the control qubit
-        auto controlRef = builder.create<quake::ExtractRefOp>(loc, qubits, controls.begin()->qubit);
-        // extract the reference of the target qubit
-        auto targetRef = builder.create<quake::ExtractRefOp>(loc, qubits, targets[0]);
-        //create the XOp operation
-        switch (op->getType()) {
-          case qc::X:
-            builder.create<quake::XOp>(loc, controlRef.getResult(), targetRef.getResult());
-          break;
-          case qc::Y:
-            builder.create<quake::YOp>(loc, controlRef.getResult(), targetRef.getResult());
-          break;
-          case qc::Z:
-            builder.create<quake::ZOp>(loc, controlRef.getResult(), targetRef.getResult());
-          break;
-          case qc::SWAP:
-            llvm::errs() << "SWAP gate from " << targets[0] << " to " << targets[1] << "\n";
-          break; 
-        }
+      // get the controls
+      for(auto q : controls){
+        auto controlRef = builder.create<quake::ExtractRefOp>(loc, qubits, q.qubit);
+        controlValues.push_back(controlRef);
       }
-      if (targets.size() == 1 && controls.size() == 0){
-        // single qubit functions
-        auto &targets  = op->getTargets();
-        // extract the reference of the target qubit
-        auto targetRef = builder.create<quake::ExtractRefOp>(loc, qubits, targets[0]);
-        switch (op->getType()) {
-          case qc::X:
-            builder.create<quake::XOp>(loc, targetRef.getResult());
-          break;
-          case qc::Y:
-            builder.create<quake::YOp>(loc, targetRef.getResult());
-          break;
-          case qc::Z:
-            builder.create<quake::ZOp>(loc, targetRef.getResult());
-          break;
-          case qc::H:
-            builder.create<quake::HOp>(loc, targetRef.getResult());
-          break;
-          case qc::S:
-            builder.create<quake::SOp>(loc, targetRef.getResult());
-          break;
-          case qc::T:
-            builder.create<quake::TOp>(loc, targetRef.getResult());
-          break;
-          case qc::Measure:
-            Type measTy = quake::MeasureType::get(builder.getContext());
-            builder.create<quake::MzOp>(loc, measTy, targetRef.getResult()).getMeasOut();
-          break;
-        }
+      //create the XOp operation
+      switch (op->getType()) {
+        case qc::X:
+          builder.create<quake::XOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::Y:
+          builder.create<quake::YOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::Z:
+          builder.create<quake::ZOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::SWAP:
+          builder.create<quake::SwapOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::H:
+          builder.create<quake::HOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::S:
+          builder.create<quake::SOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::T:
+          builder.create<quake::TOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::Measure:
+         Type measTy = quake::MeasureType::get(builder.getContext());
+         builder.create<quake::MzOp>(loc, measTy, targetValues).getMeasOut();
+        break;
       }
     }
     builder.create<func::ReturnOp>(circuit.getLoc());

@@ -1,7 +1,7 @@
 // Compile and run with:
 // ```
-// cudaq-quake test_QuakeQMapPass-01.cpp -o o.qke  &&
-// cudaq-opt --canonicalize --unrolling-pipeline o.qke -o test_QuakeQMapPass-01.qke
+// cudaq-quake test_QuakeQMapPass-02.cpp -o o.qke  &&
+// cudaq-opt --canonicalize --unrolling-pipeline o.qke -o test_QuakeQMapPass-02.qke
 // ```
 
 #include <iostream>
@@ -18,12 +18,11 @@ struct ghz {
     x<cudaq::ctrl>(q[4],q[2]);
     x<cudaq::ctrl>(q[3],q[1]);
     x<cudaq::ctrl>(q[4],q[1]);
-    rx(1.5, q[1]);
-    mz(q[0]);
-    mz(q[1]);
-    mz(q[2]);
-    mz(q[3]);
-    mz(q[4]);
+    rx(1.5,   q[1]);
+    ry(3.1416,q[2]);
+    rz(2.25,  q[3]);
+    t(q[4]);
+    mz(q);
   }
 };
 

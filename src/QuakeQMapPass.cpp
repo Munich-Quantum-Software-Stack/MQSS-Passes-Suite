@@ -268,6 +268,8 @@ public:
     // then traverse the mapped QuantumComputation and annotate it in the
     // mlir func
     for (const auto& op : qcMapped){
+      if (op->getType() == qc::Barrier)
+        continue;
       auto &targets  = op->getTargets();
       auto &controls = op->getControls();
       auto parameter = op->getParameter();
@@ -327,8 +329,8 @@ public:
           builder.create<quake::TOp>(loc, parameterValues, controlValues, targetValues);
         break;
         case qc::Measure:
-         Type measTy = quake::MeasureType::get(builder.getContext());
-         builder.create<quake::MzOp>(loc, measTy, targetValues).getMeasOut();
+          Type measTy = quake::MeasureType::get(builder.getContext());
+          builder.create<quake::MzOp>(loc, measTy, targetValues).getMeasOut();
         break;
       }
     }

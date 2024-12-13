@@ -1,3 +1,39 @@
+/* This code and any associated documentation is provided "as is"
+
+ IN NO EVENT SHALL LEIBNIZ-RECHENZENTRUM (LRZ) BE LIABLE TO ANY PARTY FOR
+ DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+ OF THE USE OF THIS CODE AND ITS DOCUMENTATION, EVEN IF LEIBNIZ-RECHENZENTRUM
+ (LRZ) HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ THE AFOREMENTIONED EXCLUSIONS OF LIABILITY DO NOT APPLY IN CASE OF INTENT
+ BY LEIBNIZ-RECHENZENTRUM (LRZ).
+
+ LEIBNIZ-RECHENZENTRUM (LRZ), SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING,
+ BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE.
+
+ THE CODE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, LEIBNIZ-RECHENZENTRUM (LRZ)
+ HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
+ MODIFICATIONS.
+-------------------------------------------------------------------------
+  @author Martin Letras
+  @date   December 2024
+  @version 1.0
+  @ brief
+  This file contains the unitary tests for each MLIR pass in the Munich Quantum
+  Software Stack (MQSS).
+  * Folder code has quantum kernels writen in CudaQ (cpp).
+  * Folder golden contains the expected modified quantum kernel in MLIR for each
+    MLIR pass.
+  1. In each test, the quantum kernel in CudaQ is lowered to QUAKE MLIR.
+  2. Then the pass is applied to the QUAKE MLIR kernel.
+  3. The output of the pass is compared to the expected output.
+  4. Succes if both expected output and the output obtained by the pass matches.
+
+*******************************************************************************
+* This source code and the accompanying materials are made available under    *
+* the terms of the Apache License 2.0 which accompanies this distribution.    *
+******************************************************************************/
+
 #include <string>
 #include <iostream>
 // llvm includes

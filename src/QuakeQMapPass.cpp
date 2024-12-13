@@ -1,3 +1,37 @@
+/* This code and any associated documentation is provided "as is"
+
+ IN NO EVENT SHALL LEIBNIZ-RECHENZENTRUM (LRZ) BE LIABLE TO ANY PARTY FOR
+ DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+ OF THE USE OF THIS CODE AND ITS DOCUMENTATION, EVEN IF LEIBNIZ-RECHENZENTRUM
+ (LRZ) HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ THE AFOREMENTIONED EXCLUSIONS OF LIABILITY DO NOT APPLY IN CASE OF INTENT
+ BY LEIBNIZ-RECHENZENTRUM (LRZ).
+
+ LEIBNIZ-RECHENZENTRUM (LRZ), SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING,
+ BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE.
+
+ THE CODE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, LEIBNIZ-RECHENZENTRUM (LRZ)
+ HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
+ MODIFICATIONS.
+-------------------------------------------------------------------------
+  @author Martin Letras
+  @date   December 2024
+  @version 1.0
+  @ brief
+  QuakeQMapPass(Architecture architecture, Configuration settings)
+  This pass performs the mapping of Quantum kernels defined in QUAKE MLIR.
+  The mapper used is MQT-QMAP. As inputs, it will receive the target architecture
+  where Quantum kernels must execute and the settings to configure que MQT-QMAP
+  mapper.
+  The mapper modifies the input Quantum kernels to be correctly mapped to
+  a given quantum device (Architecture) according to the mapping configurations.
+
+*******************************************************************************
+* This source code and the accompanying materials are made available under    *
+* the terms of the Apache License 2.0 which accompanies this distribution.    *
+******************************************************************************/
+
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"

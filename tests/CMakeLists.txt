@@ -35,3 +35,8 @@ set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:testMQSSPasses>/golden-cases)
 add_custom_target(copy-golden-cases ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/tests/golden-cases ${TEST_OUTPUT_DIR})
+
+set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:testMQSSPasses>/code)
+add_custom_target(copy-code-test ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/tests/code ${TEST_OUTPUT_DIR})

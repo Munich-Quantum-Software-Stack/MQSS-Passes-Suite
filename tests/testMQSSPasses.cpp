@@ -145,14 +145,65 @@ TEST(TestMQSSPasses, TestQuakeQMapPass01){
   mlir::PassManager pm(&context);
   // Defining test architecture
   Architecture arch{};
-  /*  
+  /*
       3
      / \
     4   2
     |   |
     0---1
   */
-  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3}, 
+  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},                        {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
+  arch.loadCouplingMap(5, cm);
+  std::cout << "Dumping the architecture " << std::endl;
+  Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);
+  // Defining the settings of the mqt-mapper
+  Configuration settings{};
+  settings.heuristic = Heuristic::GateCountMaxDistance;
+  settings.layering = Layering::DisjointQubits;
+  settings.initialLayout = InitialLayout::Identity;
+  settings.preMappingOptimizations = false;
+  settings.postMappingOptimizations = false;
+  settings.lookaheadHeuristic = LookaheadHeuristic::None;
+  settings.debug = false;
+  settings.addMeasurementsToMappedCircuit = true;
+  // Adding the QuakeQMap pass to the PassManager
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeQMapPass(arch,settings));
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule)))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Mapped Circuit:\n";
+    mlirModule->dump();
+  #endif
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
+TEST(TestMQSSPasses, TestQuakeQMapPass02){
+  // load mlir module and the golden output
+  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
+          "./code/QuakeQMapPass-02.cpp",
+          "./golden-cases/QuakeQMapPass-02-golden.qke");
+  #ifdef DEBUG
+    std::cout << "Input Quake Module 01 "<<std::endl<< quakeModule << std::endl;
+  #endif
+  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+  mlir::MLIRContext &context = *contextPtr;
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  // Defining test architecture
+  Architecture arch{};
+  /*
+      3
+     / \
+    4   2
+    |   |
+    0---1
+  */
+  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
                         {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
   arch.loadCouplingMap(5, cm);
   std::cout << "Dumping the architecture " << std::endl;

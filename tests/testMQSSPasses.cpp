@@ -65,10 +65,28 @@ std::string readFileToString(const std::string &filename) {
     return fileContents.str();  // Convert the string stream to a string
 }
 
+std::tuple<std::string, std::string> getQuakeAndGolden(std::string cppFile,
+                                                       std::string goldenFile){
+  int retCode = std::system(("cudaq-quake "+cppFile+" -o ./o.qke").c_str());
+  if (retCode) throw std::runtime_error("Quake transformation failed!!!");
+  retCode = std::system("cudaq-opt --canonicalize --unrolling-pipeline o.qke -o ./kernel.qke");
+  if (retCode) throw std::runtime_error("Quake transformation failed!!!");
+  // loading the generated mlir kernel of the given cpp
+  std::string quakeModule  = readFileToString("./kernel.qke");
+  std::string goldenOutput = readFileToString(goldenFile);
+  std::remove("./o.qke");
+  std::remove("./kernel.qke");
+  return std::make_tuple(quakeModule, goldenOutput);
+}
+
 TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
-  std::string quakeModule = readFileToString("./golden-cases/test_PrintQuakeGatesPass.qke");
-  std::string goldenOutput = readFileToString("./golden-cases/test_PrintQuakeGatesPass-golden.txt");
-  std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  // load mlir module and the golden output
+  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
+          "./code/PrintQuakeGatesPass.cpp",
+          "./golden-cases/PrintQuakeGatesPass-golden.qke");
+  #ifdef DEBUG
+    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  #endif
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager
@@ -77,19 +95,23 @@ TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
   pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createPrintQuakeGatesPass(stringStream));
-  
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
-
-  std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
+  #ifdef DEBUG
+    std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
+  #endif
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
 TEST(TestMQSSPasses, TestCustomExamplePass){
-  std::string quakeModule = readFileToString("./golden-cases/test_CustomExamplePass.qke");
-  std::string goldenOutput = readFileToString("./golden-cases/test_CustomExamplePass-golden.txt");
-  std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  // load mlir module and the golden output
+  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
+          "./code/CustomExamplePass.cpp",
+          "./golden-cases/CustomExamplePass-golden.qke");
+  #ifdef DEBUG
+    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  #endif
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager
@@ -109,24 +131,55 @@ TEST(TestMQSSPasses, TestCustomExamplePass){
   EXPECT_EQ(goldenOutput, moduleAsString);
 }
 
-TEST(TestMQSSPasses, TestQuakeQMapPass){
-  std::string quakeModule = readFileToString("./golden-cases/test_QuakeQMapPass.qke");
-  std::string goldenOutput = readFileToString("./golden-cases/test_QuakeQMapPass-golden.txt");
-  std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+TEST(TestMQSSPasses, TestQuakeQMapPass01){
+  // load mlir module and the golden output
+  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
+          "./code/QuakeQMapPass-01.cpp",
+          "./golden-cases/QuakeQMapPass-01-golden.qke");
+  #ifdef DEBUG
+    std::cout << "Input Quake Module 01 "<<std::endl<< quakeModule << std::endl;
+  #endif
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager
   mlir::PassManager pm(&context);
-  // Adding custom pass
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  pm.addPass(mqss::opt::createQuakeQMapPass(stringStream));
-  
+  // Defining test architecture
+  Architecture arch{};
+  /*  
+      3
+     / \
+    4   2
+    |   |
+    0---1
+  */
+  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3}, 
+                        {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
+  arch.loadCouplingMap(5, cm);
+  std::cout << "Dumping the architecture " << std::endl;
+  Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);
+  // Defining the settings of the mqt-mapper
+  Configuration settings{};
+  settings.heuristic = Heuristic::GateCountMaxDistance;
+  settings.layering = Layering::DisjointQubits;
+  settings.initialLayout = InitialLayout::Identity;
+  settings.preMappingOptimizations = false;
+  settings.postMappingOptimizations = false;
+  settings.lookaheadHeuristic = LookaheadHeuristic::None;
+  settings.debug = false;
+  settings.addMeasurementsToMappedCircuit = true;
+  // Adding the QuakeQMap pass to the PassManager
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeQMapPass(arch,settings));
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
-
-  std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
+  #ifdef DEBUG
+    std::cout << "Mapped Circuit:\n";
+    mlirModule->dump();
+  #endif
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 

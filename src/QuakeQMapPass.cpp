@@ -6,265 +6,251 @@
 #include "llvm/Support/raw_ostream.h"
 #include "mlir/Dialect/SCF/IR/SCF.h"
 #include "Passes.hpp"
-#include "qdmi.h"
-#include "sc/heuristic/HeuristicMapper.hpp"
+//#include "qdmi.h"
+//#include "sc/heuristic/HeuristicMapper.hpp"
 
 using namespace mlir;
+
+double extractDoubleArgumentValue(mlir::Operation *op){
+  if (auto constantOp = dyn_cast<mlir::arith::ConstantOp>(op))
+    if (auto floatAttr = constantOp.getValue().dyn_cast<mlir::FloatAttr>())
+      return static_cast<float>(floatAttr.getValueAsDouble());
+  return -1.0;
+}
+
+int64_t extractIndexFromQuakeExtractRefOp(mlir::Operation *op) {
+  if (auto extractRefOp = llvm::dyn_cast<quake::ExtractRefOp>(op)) {
+    auto rawIndexAttr = extractRefOp->getAttrOfType<mlir::IntegerAttr>("rawIndex");
+    return rawIndexAttr.getInt();
+  }
+  return -1;
+}
+
+// loading rotation gates
+void loadRotationGatesToQC(Operation *op, qc::QuantumComputation &qc){
+  if (isa<quake::RxOp>(op) || isa<quake::RyOp>(op) || isa<quake::RzOp>(op)){
+    int qubit = -1;
+    double angle = -1.0;
+    if (op->getOperands().size()!=2)
+      throw std::runtime_error("ill-formed rotation gate!");
+    Value operand1 = op->getOperands()[0];
+    angle = extractDoubleArgumentValue(operand1.getDefiningOp());
+    Value operand2 = op->getOperands()[1];
+    qubit= extractIndexFromQuakeExtractRefOp(operand2.getDefiningOp());
+    #ifdef DEBUG
+      llvm::errs() << "Operation ";
+      op->print(llvm::errs());
+      llvm::errs() <<"\n";
+      llvm::errs() << "\tRotation with angle " << angle << " on qubit "<< qubit<<"\n";
+    #endif
+    if(angle == -1.0 || qubit == -1)
+      throw std::runtime_error("ill-formed rotation gate!");
+    if (isa<quake::RxOp>(op))
+      qc.rx(angle,qubit);
+    if (isa<quake::RyOp>(op))
+      qc.ry(angle,qubit);
+    if (isa<quake::RzOp>(op))
+      qc.rz(angle,qubit);
+  }
+}
+// loading X, Y , Z
+// two bits X,Y and Z refers to controlled Cx, Cy, and Cz
+// single bits are just x,y,and z
+void loadXYZGatesToQC(Operation *op, qc::QuantumComputation &qc){
+  if (isa<quake::XOp>(op) || isa<quake::YOp>(op) || isa<quake::ZOp>(op)){
+    // controlled operations
+    if (op->getOperands().size() ==2){
+      int qubit_ctrl,qubit_target;
+      Value operand1 = op->getOperands()[0];
+      qubit_ctrl = extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
+      Value operand2 = op->getOperands()[1];
+      qubit_target = extractIndexFromQuakeExtractRefOp(operand2.getDefiningOp());
+      #ifdef DEBUG
+        llvm::errs() << "Operation ";
+        op->print(llvm::errs());
+        llvm::errs() <<"\n";
+        llvm::errs() << "\tqubit_ctrl " << qubit_ctrl << " qubit_target "<< qubit_target <<"\n";
+      #endif
+      if(qubit_ctrl == -1 || qubit_target == -1)
+        throw std::runtime_error("ill-formed controlled gate!");
+      if (isa<quake::XOp>(op))
+        qc.cx(qubit_ctrl,qubit_target);
+      if (isa<quake::YOp>(op))
+        qc.cy(qubit_ctrl,qubit_target);
+      if (isa<quake::ZOp>(op))
+        qc.cz(qubit_ctrl,qubit_target);
+    }
+    // single qubit operations
+    if (op->getOperands().size() ==1){
+      Value operand1 = op->getOperands()[0];
+      int qubit=extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
+      #ifdef DEBUG
+        llvm::errs() << "Operation ";
+        op->print(llvm::errs());
+        llvm::errs() <<"\n";
+        llvm::errs() << "\tSingle qubit operation on qubit " << qubit <<"\n";
+      #endif
+      if(qubit == -1)
+        throw std::runtime_error("ill-formed single gate X, Y and Z!");
+      if (isa<quake::XOp>(op))
+        qc.x(qubit);
+      if (isa<quake::YOp>(op))
+        qc.y(qubit);
+      if (isa<quake::ZOp>(op))
+        qc.z(qubit);
+    }
+  }
+}
+// loading S,T,H single qubit gates
+void loadSTHGatesToQC(Operation *op, qc::QuantumComputation &qc){
+  if (isa<quake::SOp>(op) || isa<quake::TOp>(op) || isa<quake::HOp>(op)){
+    int qubit_ctrl,qubit_target;
+    // single qubit operations
+    if (op->getOperands().size() ==1){
+      Value operand1 = op->getOperands()[0];
+      int qubit=extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
+      #ifdef DEBUG
+        llvm::errs() << "Operation ";
+        op->print(llvm::errs());
+        llvm::errs() <<"\n";
+        llvm::errs() << "\tSingle qubit operation on qubit " << qubit <<"\n";
+      #endif
+      if(qubit == -1)
+        throw std::runtime_error("ill-formed single gate, S, T or H !");
+      if (isa<quake::SOp>(op))
+        qc.s(qubit);
+      if (isa<quake::TOp>(op))
+        qc.t(qubit);
+      if (isa<quake::HOp>(op))
+        qc.h(qubit);
+    }
+  }
+}
+// loading measurements
+void loadMeasurementsToQC(Operation *op, qc::QuantumComputation &qc,std::map<int,int> measurements){
+  int qubit=-1, result =-1;
+  if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op)){
+    #ifdef DEBUG
+      llvm::errs()<< "Operation ";
+      op->print(llvm::errs());
+      llvm::errs() <<"\n";
+    #endif
+    if (op->getOperands().size()!=1)
+      throw std::runtime_error("ill-formed measurement gate!");
+    Value operand = op->getOperands()[0];
+    if (operand.getType().isa<quake::RefType>()) {
+      int qubitIndex = extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
+      if (qubitIndex == -1)
+        throw std::runtime_error("Non valid qubit index for measurement!");
+      qc.measure(static_cast<qc::Qubit>(qubitIndex),measurements.at(qubitIndex));
+      #ifdef DEBUG
+        llvm::errs() << "\tMeasurement on qubit index " <<qubitIndex << "\n";
+      #endif
+    }else if (operand.getType().isa<quake::VeqType>()) {
+      auto qvecType = operand.getType().dyn_cast<quake::VeqType>();
+      int nQubits = qvecType.getSize();
+      qc.measureAll();
+      #ifdef DEBUG
+        llvm::errs() << "\tMeasurement on vector of size " << nQubits << "\n";
+      #endif
+      // TODO: Here, I am measuring all the qubits, if slicing is allowed in cudaq, then I has to be implemented
+      //for (std::size_t i = 0; i < nQubits; ++i) {
+      //  qc.measure(static_cast<qc::Qubit>(i), i);
+      //}
+    }
+  }
+}
+// function to get the number of qubits in a given quantum kernel
+int getNumberOfQubits(func::FuncOp circuit){
+  int numQubits = 0;
+  circuit.walk([&](quake::AllocaOp allocOp) {
+    if (auto qrefType = allocOp.getType().dyn_cast<quake::RefType>()) {
+      numQubits += 1;
+    } else if (auto qvecType = allocOp.getType().dyn_cast<quake::VeqType>()) {
+      numQubits += qvecType.getSize();
+    }
+  });
+  return numQubits;
+}
+// Function to get the number of classical bits allocated in a given quantum kernel
+int getNumberOfClassicalBits(func::FuncOp circuit, std::map<int, int> &measurements){
+  int numBits=0;
+  circuit.walk([&](mlir::Operation *op) {
+    if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op)){
+      for (auto operand : op->getOperands()) {
+        if (operand.getType().isa<quake::RefType>()) { // Check if it's a qubit reference
+          int qubitIndex = extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
+          if (qubitIndex == -1)
+            throw std::runtime_error("Non valid qubit index for measurement!");
+          measurements[qubitIndex] = numBits;
+          numBits += 1;
+        }else if (operand.getType().isa<quake::VeqType>()) {
+          auto qvecType = operand.getType().dyn_cast<quake::VeqType>();
+          numBits += qvecType.getSize();
+          for (int i=0; i<numBits; i++){
+            measurements[i]=i;
+          }
+        }
+      }
+    }
+  });
+  return numBits;
+}
 
 namespace {
 
 class QuakeQMapPass
     : public PassWrapper<QuakeQMapPass, OperationPass<func::FuncOp>> {
 private:
-  llvm::raw_string_ostream &outputStream; // Store the output stream
-  //Architecture architecture;
-  double extractDoubleArgumentValue(mlir::Operation *op){
-    if (auto constantOp = dyn_cast<mlir::arith::ConstantOp>(op))
-      if (auto floatAttr = constantOp.getValue().dyn_cast<mlir::FloatAttr>())
-        return static_cast<float>(floatAttr.getValueAsDouble()); 
-    return -1.0;
-  }
-
-  int64_t extractIndexFromQuakeExtractRefOp(mlir::Operation *op) {
-    if (auto extractRefOp = llvm::dyn_cast<quake::ExtractRefOp>(op)) {
-      auto rawIndexAttr = extractRefOp->getAttrOfType<mlir::IntegerAttr>("rawIndex");
-      return rawIndexAttr.getInt();
-    }
-    return -1;
-  }
-  // loading rotation gates
-  void loadRotationGatesToQC(Operation *op, qc::QuantumComputation &qc){
-    if (isa<quake::RxOp>(op) || isa<quake::RyOp>(op) || isa<quake::RzOp>(op)){
-      int qubit = -1;
-      double angle = -1.0;
-      if (op->getOperands().size()!=2)
-        throw std::runtime_error("ill-formed rotation gate!");
-      Value operand1 = op->getOperands()[0];
-      angle = extractDoubleArgumentValue(operand1.getDefiningOp());
-      Value operand2 = op->getOperands()[1];
-      qubit= extractIndexFromQuakeExtractRefOp(operand2.getDefiningOp());
-      #ifdef DEBUG
-      llvm::errs() << "Operation ";
-      op->print(llvm::errs());
-      llvm::errs() <<"\n";
-      llvm::errs() << "\tRotation with angle " << angle << " on qubit "<< qubit<<"\n";
-      #endif
-      if(angle == -1.0 || qubit == -1)
-        throw std::runtime_error("ill-formed rotation gate!");
-      if (isa<quake::RxOp>(op))
-        qc.rx(angle,qubit);
-      if (isa<quake::RyOp>(op))
-        qc.ry(angle,qubit);
-      if (isa<quake::RzOp>(op))
-        qc.rz(angle,qubit);
-    }
-  }
-  // loading X, Y , Z
-  // two bits X,Y and Z refers to controlled Cx, Cy, and Cz
-  // single bits are just x,y,and z
-  void loadXYZGatesToQC(Operation *op, qc::QuantumComputation &qc){
-    if (isa<quake::XOp>(op) || isa<quake::YOp>(op) || isa<quake::ZOp>(op)){
-      // controlled operations
-      if (op->getOperands().size() ==2){
-        int qubit_ctrl,qubit_target;
-        Value operand1 = op->getOperands()[0];
-        qubit_ctrl = extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
-        Value operand2 = op->getOperands()[1];
-        qubit_target = extractIndexFromQuakeExtractRefOp(operand2.getDefiningOp());
-        #ifdef DEBUG
-        llvm::errs() << "Operation ";
-        op->print(llvm::errs());
-        llvm::errs() <<"\n";
-        llvm::errs() << "\tqubit_ctrl " << qubit_ctrl << " qubit_target "<< qubit_target <<"\n";
-        #endif
-        if(qubit_ctrl == -1 || qubit_target == -1)
-          throw std::runtime_error("ill-formed controlled gate!");
-        if (isa<quake::XOp>(op))
-          qc.cx(qubit_ctrl,qubit_target);
-        if (isa<quake::YOp>(op))
-          qc.cy(qubit_ctrl,qubit_target);
-        if (isa<quake::ZOp>(op))
-          qc.cz(qubit_ctrl,qubit_target);
-      }
-      // single qubit operations
-      if (op->getOperands().size() ==1){
-        Value operand1 = op->getOperands()[0];
-        int qubit=extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
-        #ifdef DEBUG
-        llvm::errs() << "Operation ";
-        op->print(llvm::errs());
-        llvm::errs() <<"\n";
-        llvm::errs() << "\tSingle qubit operation on qubit " << qubit <<"\n";
-        #endif
-        if(qubit == -1)
-          throw std::runtime_error("ill-formed single gate X, Y and Z!");
-        if (isa<quake::XOp>(op))
-          qc.x(qubit);
-        if (isa<quake::YOp>(op))
-          qc.y(qubit);
-        if (isa<quake::ZOp>(op))
-          qc.z(qubit);
-      }
-    }
-  }
-  // loading S,T,H single qubit gates
-  void loadSTHGatesToQC(Operation *op, qc::QuantumComputation &qc){
-    if (isa<quake::SOp>(op) || isa<quake::TOp>(op) || isa<quake::HOp>(op)){
-      int qubit_ctrl,qubit_target;
-      // single qubit operations
-      if (op->getOperands().size() ==1){
-        Value operand1 = op->getOperands()[0];
-        int qubit=extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
-        #ifdef DEBUG
-        llvm::errs() << "Operation ";
-        op->print(llvm::errs());
-        llvm::errs() <<"\n";
-        llvm::errs() << "\tSingle qubit operation on qubit " << qubit <<"\n";
-        #endif
-        if(qubit == -1)
-          throw std::runtime_error("ill-formed single gate, S, T or H !");
-        if (isa<quake::SOp>(op))
-          qc.s(qubit);
-        if (isa<quake::TOp>(op))
-          qc.t(qubit);
-        if (isa<quake::HOp>(op))
-          qc.h(qubit);
-      }
-    }
-  }
-  // loading measurements
-  void loadMeasurementsToQC(Operation *op, qc::QuantumComputation &qc,std::map<int,int> measurements){
-    int qubit=-1, result =-1;
-    if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op)){
-      #ifdef DEBUG
-      llvm::errs()<< "Operation ";
-      op->print(llvm::errs());
-      llvm::errs() <<"\n";
-      #endif
-      if (op->getOperands().size()!=1)
-        throw std::runtime_error("ill-formed measurement gate!");
-      Value operand = op->getOperands()[0];
-      if (operand.getType().isa<quake::RefType>()) {
-        int qubitIndex = extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
-        if (qubitIndex == -1)
-          throw std::runtime_error("Non valid qubit index for measurement!");
-        qc.measure(static_cast<qc::Qubit>(qubitIndex),measurements.at(qubitIndex));
-        #ifdef DEBUG
-        llvm::errs() << "\tMeasurement on qubit index " <<qubitIndex << "\n";
-        #endif
-      }else if (operand.getType().isa<quake::VeqType>()) {          
-        auto qvecType = operand.getType().dyn_cast<quake::VeqType>();
-        int nQubits = qvecType.getSize();
-        qc.measureAll();
-        #ifdef DEBUG
-        llvm::errs() << "\tMeasurement on vector of size " << nQubits << "\n";
-        #endif
-        // TODO: Here, I am measuring all the qubits, if slicing is allowed in cudaq, then I has to be implemented
-        //for (std::size_t i = 0; i < nQubits; ++i) {
-        //  qc.measure(static_cast<qc::Qubit>(i), i);
-        //}
-      }
-    }
-  }
-  int getNumberOfQubits(func::FuncOp circuit){
-    int numQubits = 0;
-    circuit.walk([&](quake::AllocaOp allocOp) {
-      if (auto qrefType = allocOp.getType().dyn_cast<quake::RefType>()) {
-        numQubits += 1;
-      } else if (auto qvecType = allocOp.getType().dyn_cast<quake::VeqType>()) {
-        numQubits += qvecType.getSize();
-      }
-    });
-    return numQubits;
-  }
-  int getNumberOfClassicalBits(func::FuncOp circuit, std::map<int, int> &measurements){
-    int numBits=0;
-    circuit.walk([&](mlir::Operation *op) {
-      if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op)){
-        for (auto operand : op->getOperands()) {
-          if (operand.getType().isa<quake::RefType>()) { // Check if it's a qubit reference
-            int qubitIndex = extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
-            if (qubitIndex == -1)
-              throw std::runtime_error("Non valid qubit index for measurement!");
-            measurements[qubitIndex] = numBits;
-            numBits += 1;
-          }else if (operand.getType().isa<quake::VeqType>()) {
-            auto qvecType = operand.getType().dyn_cast<quake::VeqType>();
-            numBits += qvecType.getSize();
-            for (int i=0; i<numBits; i++){
-              measurements[i]=i;
-            }
-          }
-        }
-      }
-    });
-    return numBits;
-  }
-
-
+  Architecture  &architecture;
+  const Configuration &settings;
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(QuakeQMapPass)
 
-  QuakeQMapPass(llvm::raw_string_ostream &ostream) : outputStream(ostream) {
-    //architecture = mqt::createArchitecture(dev);
+  QuakeQMapPass(Architecture &architecture, const Configuration &settings)
+  : architecture(architecture), settings(settings) {
   }
 
   llvm::StringRef getArgument() const override { return "cudaq-custom-pass"; }
 
   void runOnOperation() override {
-    Architecture arch{};
-  /*
-      3
-     / \
-    4   2
-    |   |
-    0---1
-  */
-    const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
-                          {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
-    arch.loadCouplingMap(5, cm);
-    std::cout << "Dumping the architecture " << std::endl;
-    Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);
+    // Getting the function
     auto circuit = getOperation();
     // Get the function name
     StringRef funcName = circuit.getName();
     if (!(funcName.find(std::string(CUDAQ_PREFIX_FUNCTION)) != std::string::npos))
       return; // do nothing if the funcion is not cudaq kernel
-    llvm::outs() << "Kernel name: " << funcName << "\n";
 
     std::map<int, int> measurements; // key: qubit, value register index
     int numQubits = getNumberOfQubits(circuit);
     int numBits = getNumberOfClassicalBits(circuit,measurements);
     #ifdef DEBUG
-    llvm::errs() <<"Number of input qubits " << numQubits << "\n";
-    llvm::errs() <<"Number of output bits " << numBits << "\n";
+      llvm::outs() << "Kernel name: " << funcName << "\n";
+      llvm::errs() <<"Number of input qubits " << numQubits << "\n";
+      llvm::errs() <<"Number of output bits " << numBits << "\n";
     #endif
+    // Defining the mqt-qmap input object
     auto qc = qc::QuantumComputation(numQubits, numBits);
     // loading rotation gates
     circuit.walk([&](mlir::Operation *op) {
+      // TODO: Assumed at the moment to work only on a single qubit
       loadRotationGatesToQC(op,qc);
+      // TODO: Cover only the case of single qubit and 2 qubit controlled operations
       loadXYZGatesToQC(op,qc);
+      // TODO: Assumed at the moment to work only on a single qubit
       loadSTHGatesToQC(op,qc);
       loadMeasurementsToQC(op,qc,measurements);
     });
-
-    llvm::errs() << "Dumping QC:\n";
-    //std::ostream ros(llvm::errs());
-    qc.print(std::cout);
+    #ifdef DEBUG
+      // Printing the parsed mlir quantum kernel
+      llvm::errs() << "Dumping QC:\n";
+      qc.print(std::cout);
+    #endif
     // Map the circuit
-    const auto mapper = std::make_unique<HeuristicMapper>(qc, arch);
-    Configuration settings{};
-    settings.heuristic = Heuristic::GateCountMaxDistance;
-    settings.layering = Layering::DisjointQubits;
-    settings.initialLayout = InitialLayout::Identity;
-    settings.preMappingOptimizations = false;
-    settings.postMappingOptimizations = false;
-    settings.lookaheadHeuristic = LookaheadHeuristic::None;
-//    settings.debug = false;
-    settings.addMeasurementsToMappedCircuit = true;
+    const auto mapper = std::make_unique<HeuristicMapper>(qc, architecture);
     mapper->map(settings);
-    // TODO: There should be other way to get the mapped circuit
-    //        do not like to down the mapped circuit to QASM and
+    // TODO: There should be other way to get the mapped circuit.
+    //       I do not like to down the mapped circuit to QASM and
     //        then back to qc
     auto qcMapped = qc::QuantumComputation();
     std::stringstream qasm{};
@@ -299,6 +285,15 @@ public:
         auto controlRef = builder.create<quake::ExtractRefOp>(loc, qubits, q.qubit);
         controlValues.push_back(controlRef);
       }
+      // get the parameters
+      for(auto p : parameter){
+        // apparently all the parameters are floats in QC
+        llvm::APFloat constantValue(p);
+        // Define the type as f64.
+        auto floatType = builder.getF64Type();
+        auto constantOp = builder.create<arith::ConstantFloatOp>(loc, constantValue, floatType);
+        parameterValues.push_back(constantOp);
+      }
       //create the XOp operation
       switch (op->getType()) {
         case qc::X:
@@ -309,6 +304,15 @@ public:
         break;
         case qc::Z:
           builder.create<quake::ZOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::RX:
+          builder.create<quake::RxOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::RY:
+          builder.create<quake::RyOp>(loc, parameterValues, controlValues, targetValues);
+        break;
+        case qc::RZ:
+          builder.create<quake::RzOp>(loc, parameterValues, controlValues, targetValues);
         break;
         case qc::SWAP:
           builder.create<quake::SwapOp>(loc, parameterValues, controlValues, targetValues);
@@ -329,14 +333,14 @@ public:
       }
     }
     builder.create<func::ReturnOp>(circuit.getLoc());
-    std::cout << "Dumping QC after mapping:\n";
-    //std::ostream ros(llvm::errs());
-    qcMapped.print(std::cout);
+    #ifdef DEBUG
+      std::cout << "Dumping QC after mapping:\n";
+      qcMapped.print(std::cout);
+    #endif
   }
 };
-
 } // namespace
 
-std::unique_ptr<mlir::Pass> mqss::opt::createQuakeQMapPass(llvm::raw_string_ostream &ostream){
-  return std::make_unique<QuakeQMapPass>(ostream);
+std::unique_ptr<mlir::Pass> mqss::opt::createQuakeQMapPass(Architecture &architecture, const Configuration &settings){
+  return std::make_unique<QuakeQMapPass>(architecture, settings);
 }

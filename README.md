@@ -113,7 +113,7 @@ However, dataflow dependencies are lost in low-level representations, such as QI
 
 ### Where does MLIR passes fit into the MQSS?
 
-The collection of MLIR passes stored in this repository is part of the Munich Quantum Software Stack (MQSS). The passes are utilized inside the Quantum Resource Manager [QRM](https://github.com/Munich-Quantum-Software-Stack/QRM). 
+The collection of MLIR passes stored in this repository is part of the Munich Quantum Software Stack (MQSS). The passes are utilized inside the Quantum Resource Manager ([QRM](https://github.com/Munich-Quantum-Software-Stack/QRM)). 
 
 <div align="center">
   <picture>

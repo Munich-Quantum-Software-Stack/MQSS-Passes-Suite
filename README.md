@@ -54,7 +54,7 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir.png" width="20%">
+    <img src="./docs/_static/mlir.png" width="50%">
   </picture>
 </div>
 
@@ -62,14 +62,14 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-passes.png" width="20%">
+    <img src="./docs/_static/mlir-passes.png" width="50%">
   </picture>
 </div>
 
 ### Why to include MLIR into the MQSS?
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-why.png" width="20%">
+    <img src="./docs/_static/mlir-why.png" width="50%">
   </picture>
 </div>
 
@@ -77,7 +77,7 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-fit.png" width="20%">
+    <img src="./docs/_static/mlir-fit.png" width="50%">
   </picture>
 </div>
 

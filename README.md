@@ -113,7 +113,7 @@ One fundamental feature of MLIR is its ability to model different levels of abst
 
 However, dataflow dependencies are lost in low-level representations, such as QIR. In contrast, MLIR (QUAKE) holds the dataflow dependencies natively, and no modifications to the compilation infrastructure are required. Thus, transformation passes such as decompositions or replacements can be easily implemented. Moreover, other dialects can be integrated with QUAKE to re-utilize the existing MLIR infrastructure.
 
-### Where does MLIR passes fit into the MQSS?
+### Where do MLIR passes fit into the MQSS?
 
 The collection of MLIR passes stored in this repository is part of the Munich Quantum Software Stack (MQSS). The passes are utilized inside the Quantum Resource Manager ([QRM](https://github.com/Munich-Quantum-Software-Stack/QRM)). 
 

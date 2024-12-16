@@ -121,6 +121,11 @@ The collection of MLIR passes stored in this repository is part of the Munich Qu
   </picture>
 </div>
 
+For example, a hybrid quantum application can be defined in a high-level programming language such as C++ using the CUDAQ library. Those code fragments in a hybrid quantum application defined as quantum kernels will be submitted to the QRM.
+
+By specifying the target as MQSS at compilation time, the generated binary will orchestrate the classical and quantum resources. Every time a quantum kernel has to be executed, the compiled binary submits the MLIR code of the correspondent quantum kernel to the MQSS stack.
+Thus, on the MQSS side, the MLIR module is processed by the QRM, which perform **agnostic passes** (optimization passes) and **target-specific passes** (transpilation passes and lowering passes). The lowered code is sent to the Quantum device, results are collected and sent back to the hybrid application.
+
 ### Where is the code?
 
 The code is publicly available and hosted on GitHub at

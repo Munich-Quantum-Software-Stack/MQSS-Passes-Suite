@@ -58,9 +58,28 @@ integration within HPC infrastructures, such as those found at the LRZ.
   </picture>
 </div>
 
-### Why to include MLIR into the MQSS?
-
 ### What is an MLIR pass?
+
+<div align="center">
+  <picture>
+    <img src="./docs/_static/mlir-passes.png" width="20%">
+  </picture>
+</div>
+
+### Why to include MLIR into the MQSS?
+<div align="center">
+  <picture>
+    <img src="./docs/_static/mlir-why.png" width="20%">
+  </picture>
+</div>
+
+### Where does MLIR passes fit into the MQSS?
+
+<div align="center">
+  <picture>
+    <img src="./docs/_static/mlir-fit.png" width="20%">
+  </picture>
+</div>
 
 ### Where is the code?
 

@@ -187,10 +187,6 @@ void loadMeasurementsToQC(Operation *op, qc::QuantumComputation &qc,std::map<int
       #ifdef DEBUG
         llvm::errs() << "\tMeasurement on vector of size " << nQubits << "\n";
       #endif
-      // TODO: Here, I am measuring all the qubits, if slicing is allowed in cudaq, then I has to be implemented
-      //for (std::size_t i = 0; i < nQubits; ++i) {
-      //  qc.measure(static_cast<qc::Qubit>(i), i);
-      //}
     }
   }
 }
@@ -265,7 +261,7 @@ public:
     #endif
     // Defining the mqt-qmap input object
     auto qc = qc::QuantumComputation(numQubits, numBits);
-    // loading rotation gates
+    // Traversing input QUAKE MLIR
     circuit.walk([&](mlir::Operation *op) {
       // TODO: Assumed at the moment to work only on a single qubit
       loadRotationGatesToQC(op,qc);
@@ -323,14 +319,14 @@ public:
       }
       // get the parameters
       for(auto p : parameter){
-        // apparently all the parameters are floats in QC
+        // TODO: Apparently all the parameters are floats in QC, may be the the case
+        //       this is not always true
         llvm::APFloat constantValue(p);
         // Define the type as f64.
         auto floatType = builder.getF64Type();
         auto constantOp = builder.create<arith::ConstantFloatOp>(loc, constantValue, floatType);
         parameterValues.push_back(constantOp);
       }
-      //create the XOp operation
       switch (op->getType()) {
         case qc::X:
           builder.create<quake::XOp>(loc, parameterValues, controlValues, targetValues);

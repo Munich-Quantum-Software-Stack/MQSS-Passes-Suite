@@ -62,6 +62,13 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 <div align="center">
   <picture>
+    <img src="./docs/_static/mlir-pass.png" width="50%">
+  </picture>
+</div>
+
+
+<div align="center">
+  <picture>
     <img src="./docs/_static/mlir-passes.png" width="50%">
   </picture>
 </div>
@@ -72,6 +79,14 @@ integration within HPC infrastructures, such as those found at the LRZ.
     <img src="./docs/_static/mlir-why.png" width="50%">
   </picture>
 </div>
+
+### What is the QUAKE MLIR Dialect?
+<div align="center">
+  <picture>
+    <img src="./docs/_static/mlir-why.png" width="50%">
+  </picture>
+</div>
+
 
 ### Where does MLIR passes fit into the MQSS?
 
@@ -85,7 +100,7 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 The code is publicly available and hosted on GitHub at
 
-### Under which license is QDMI released?
+### Under which license is this collection of passes released?
 
 This collection of MLIR passes is released under the Apache License v2.0 with LLVM Exceptions. See
 [LICENSE](https://github.com/Munich-Quantum-Software-Stack/QDMI/blob/develop/LICENSE) for more

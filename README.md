@@ -52,7 +52,9 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 ### What is MLIR?
 MLIR (Multi-Level Intermediate Representation) is a versatile compiler framework for developing domain-specific compilers and optimizing transformations. MLIR originated as part of the LLVM ecosystem and is particularly tailored for modern, complex computational workflows, including machine learning, AI, and heterogeneous hardware.
-MLIR Supports multiple levels of abstraction within a single framework, allowing developers to work with high-level domain-specific operations down to hardware-specific operations. Users can define their dialects (custom operations and types) for specific problem domains while leveraging the shared infrastructure for optimization and code generation.
+
+MLIR supports multiple levels of abstraction within a single framework, allowing developers to work with high-level domain-specific operations down to hardware-specific operations. Users can define their dialects (custom operations and types) for specific problem domains while leveraging the shared infrastructure for optimization and code generation.
+
 Additionally, MLIR promotes interoperability among different models of computation and supports optimization passes across various abstraction levels, including high-level and low-level operations.
 
 <div align="center">

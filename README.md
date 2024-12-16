@@ -63,7 +63,7 @@ Additionally, MLIR promotes interoperability among different models of computati
   </picture>
 </div>
 
-For more information on the [MLIR Project](https://github.com/llvm/llvm-project.git).
+For more information on [MLIR](https://github.com/llvm/llvm-project.git).
 
 ### What is an MLIR Dialect?
 <div align="center">

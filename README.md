@@ -89,13 +89,15 @@ An MLIR pass is a transformation or analysis applied to an MLIR intermediate rep
 
 For instance, in the figure above, an MLIR optimization pass is applied to the input circuit, which contains two consecutive Hadamard gates on qubit 0. Accordingly, in the output-optimized circuit shown on the right, those two consecutive Hadamards are removed because they are equivalent to an identity operation.
 
-Two categories of passes exist in MLIR: **transformation** passes and **analysis** passes.
+MLIR has two categories of passes: **transformation** passes, and **analysis** passes. The pass presented above is a transformation pass. Moreover, passes can be applied in sequences defined as **pass pipelines**.
 
 <div align="center">
   <picture>
     <img src="./docs/_static/mlir-passes.png" width="60%">
   </picture>
 </div>
+
+In the figure shown above, three pass pipelines are defined. In purple, a synthesis to QUAKE pipeline synthesizes QUAKE MLIR code from a given input C++ program. In green, an optimization pipeline that applies a series of transformations passes on MLIR modules. Finally, in orange, a pass pipeline that lowers QUAKE MLIR modules to the Quantum Intermediate Representation (QIR).
 
 ### Why to include MLIR into the MQSS?
 <div align="center">

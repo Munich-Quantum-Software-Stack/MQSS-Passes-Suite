@@ -71,7 +71,7 @@ An MLIR dialect is a modular and extensible namespace within the MLIR framework 
 
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-quake.png" width="40%">
+    <img src="./docs/_static/mlir-quake.png" width="60%">
   </picture>
 </div>
 

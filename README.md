@@ -100,19 +100,16 @@ MLIR has two categories of passes: **transformation** passes, and **analysis** p
 In the figure shown above, three pass pipelines are defined. In purple, a synthesis to QUAKE pipeline synthesizes QUAKE MLIR code from a given input C++ program. In green, an optimization pipeline that applies a series of transformations passes on MLIR modules. Finally, in orange, a pass pipeline that lowers QUAKE MLIR modules to the Quantum Intermediate Representation (QIR).
 
 ### Why to include MLIR into the MQSS?
+
+One fundamental feature of MLIR is its ability to model different levels of abstraction related to a domain-specific language. In contrast, Quantum representations such as the QIR or QASM are low-level representations. Performing transformations on a low-level abstraction might not be a good choice. Low-level representations are a list of quantum gates that operate on qubits. In the example below, the QIR program on the right is equivalent to the quantum circuit on the left.
+
 <div align="center">
   <picture>
     <img src="./docs/_static/mlir-why.png" width="65%">
   </picture>
 </div>
 
-
-
-
-
-
-
-
+However, dataflow dependencies are lost in low-level representations, such as QIR. In contrast, MLIR (QUAKE) holds the dataflow dependencies natively, and no modifications to the compilation infrastructure are required. Thus, transformation passes such as decompositions or replacements can be easily implemented. Moreover, other dialects can be integrated with QUAKE to re-utilize the existing MLIR infrastructure.
 
 ### Where does MLIR passes fit into the MQSS?
 

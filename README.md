@@ -77,9 +77,9 @@ For instance, **Quake** is an MLIR dialect designed for quantum computing. It se
   </picture>
 </div>
 
-
-
 ### What is an MLIR pass?
+
+An MLIR pass is a transformation or analysis applied to an MLIR intermediate representation (IR) to **modify**, **optimize**, or **gather information**. Passes are a central concept in compiler frameworks, including MLIR, enabling modular, reusable, and extensible transformations of code at various levels of abstraction.
 
 <div align="center">
   <picture>

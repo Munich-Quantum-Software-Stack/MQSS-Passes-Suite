@@ -69,6 +69,8 @@ For more information on [MLIR](https://github.com/llvm/llvm-project.git).
 
 An MLIR dialect is a modular and extensible namespace within the MLIR framework that defines a set of **operations**, **types** and **attributes** specific to a domain, language, or computation model. Dialects enable MLIR to be a highly flexible intermediate representation (IR).
 
+For instance, **Quake** is an MLIR dialect designed for quantum computing. It serves as part of NVIDIA's CUDAQ framework, which facilitates the development, optimization, and deployment of quantum-classical hybrid programs. Quake represents quantum programs within MLIR, providing a high-level abstraction for quantum operations and allowing developers to leverage the MLIR infrastructure for optimization and compilation.
+
 <div align="center">
   <picture>
     <img src="./docs/_static/mlir-quake.png" width="60%">

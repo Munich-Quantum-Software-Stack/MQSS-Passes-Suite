@@ -66,6 +66,9 @@ Additionally, MLIR promotes interoperability among different models of computati
 For more information on [MLIR](https://github.com/llvm/llvm-project.git).
 
 ### What is an MLIR Dialect?
+
+An MLIR dialect is a modular and extensible namespace within the MLIR framework that defines a set of **operations**, **types** and **attributes** specific to a domain, language, or computation model. Dialects enable MLIR to be a highly flexible intermediate representation (IR).
+
 <div align="center">
   <picture>
     <img src="./docs/_static/mlir-quake.png" width="40%">

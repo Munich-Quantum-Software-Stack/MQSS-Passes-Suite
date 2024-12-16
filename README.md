@@ -77,6 +77,8 @@ For instance, **Quake** is an MLIR dialect designed for quantum computing. It se
   </picture>
 </div>
 
+For more information on [QUAKE MLIR Dialect](https://github.com/NVIDIA/cuda-quantum.git).
+
 ### What is an MLIR pass?
 
 An MLIR pass is a transformation or analysis applied to an MLIR intermediate representation (IR) to **modify**, **optimize**, or **gather information**. Passes are a central concept in compiler frameworks, including MLIR, enabling modular, reusable, and extensible transformations of code at various levels of abstraction.
@@ -128,7 +130,7 @@ Thus, on the MQSS side, the MLIR module is processed by the QRM, which perform *
 
 ### Where is the code?
 
-The code is publicly available and hosted on GitHub at
+The code is publicly available and hosted on GitHub: TODO.
 
 ### Under which license is this collection of passes released?
 

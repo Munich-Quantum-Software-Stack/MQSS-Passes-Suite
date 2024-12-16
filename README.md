@@ -83,7 +83,7 @@ integration within HPC infrastructures, such as those found at the LRZ.
 ### What is the QUAKE MLIR Dialect?
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-why.png" width="50%">
+    <img src="./docs/_static/mlir-quake.png" width="50%">
   </picture>
 </div>
 

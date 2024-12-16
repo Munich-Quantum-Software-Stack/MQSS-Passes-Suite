@@ -16,12 +16,12 @@ the License.
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 ---------------------------------------------------------------------------->
 
-<p align="center">
+<div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./docs/_static/mqss_logo_dark.svg" width="20%">
     <img src="./docs/_static/mqss_logo.svg" width="20%">
   </picture>
-</p>
+</div>
 
 # Collection of MLIR Passes of the MQSS
 

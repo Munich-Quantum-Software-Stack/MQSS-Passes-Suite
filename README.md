@@ -54,7 +54,7 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir.png" width="50%">
+    <img src="./docs/_static/mlir.png" width="60%">
   </picture>
 </div>
 
@@ -62,28 +62,28 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-pass.png" width="50%">
+    <img src="./docs/_static/mlir-pass.png" width="45%">
   </picture>
 </div>
 
 
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-passes.png" width="50%">
+    <img src="./docs/_static/mlir-passes.png" width="60%">
   </picture>
 </div>
 
 ### Why to include MLIR into the MQSS?
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-why.png" width="50%">
+    <img src="./docs/_static/mlir-why.png" width="65%">
   </picture>
 </div>
 
 ### What is the QUAKE MLIR Dialect?
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-quake.png" width="50%">
+    <img src="./docs/_static/mlir-quake.png" width="40%">
   </picture>
 </div>
 
@@ -92,7 +92,7 @@ integration within HPC infrastructures, such as those found at the LRZ.
 
 <div align="center">
   <picture>
-    <img src="./docs/_static/mlir-fit.png" width="50%">
+    <img src="./docs/_static/mlir-fit.png" width="60%">
   </picture>
 </div>
 

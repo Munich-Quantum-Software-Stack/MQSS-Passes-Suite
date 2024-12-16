@@ -89,6 +89,8 @@ An MLIR pass is a transformation or analysis applied to an MLIR intermediate rep
 
 For instance, in the figure above, an MLIR optimization pass is applied to the input circuit, which contains two consecutive Hadamard gates on qubit 0. Accordingly, in the output-optimized circuit shown on the right, those two consecutive Hadamards are removed because they are equivalent to an identity operation.
 
+Two categories of passes exist in MLIR: **transformation** passes and **analysis** passes.
+
 <div align="center">
   <picture>
     <img src="./docs/_static/mlir-passes.png" width="60%">

@@ -63,6 +63,15 @@ Additionally, MLIR promotes interoperability among different models of computati
   </picture>
 </div>
 
+### What is an MLIR Dialect?
+<div align="center">
+  <picture>
+    <img src="./docs/_static/mlir-quake.png" width="40%">
+  </picture>
+</div>
+
+
+
 ### What is an MLIR pass?
 
 <div align="center">
@@ -85,12 +94,12 @@ Additionally, MLIR promotes interoperability among different models of computati
   </picture>
 </div>
 
-### What is the QUAKE MLIR Dialect?
-<div align="center">
-  <picture>
-    <img src="./docs/_static/mlir-quake.png" width="40%">
-  </picture>
-</div>
+
+
+
+
+
+
 
 
 ### Where does MLIR passes fit into the MQSS?

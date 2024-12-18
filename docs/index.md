@@ -37,12 +37,12 @@ This documentation tries to provide helpful information to get you started with 
 #### General Information
 
 The [FAQ](faq.md) page gives an overview over frequently asked questions. More details about the
-design and implementation can be found in the [Rationale](rationale.md) page.
+design and implementation can be found in <!--the [Rationale](rationale.md) page.-->
 
 #### Hands-On
 
-The [Examples](examples.md) page provides a collection of examples to see QDMI in action. When you
-want to start your own implementation of QDMI, the [Templates](templates.md) page is a good starting
+The <!--[Examples](examples.md)--> page provides a collection of examples to see QDMI in action. When you
+want to start your own implementation of QDMI, the <!--[Templates](templates.md)--> page is a good starting
 point.
 
 #### Nitty-Gritty Details

@@ -23,4 +23,4 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 <!-- Include the content of .github/support.md between the pair of markers DOXYGEN. -->
 
-\snippet{doc} .github/support.md DOXYGEN
+<!--\snippet{doc} .github/support.md DOXYGEN-->

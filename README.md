@@ -73,9 +73,7 @@ An MLIR dialect is a modular and extensible namespace within the MLIR framework 
 For instance, **Quake** is an MLIR dialect designed for quantum computing. It serves as part of NVIDIA's CUDAQ framework, which facilitates the development, optimization, and deployment of quantum-classical hybrid programs. Quake represents quantum programs within MLIR, providing a high-level abstraction for quantum operations and allowing developers to leverage the MLIR infrastructure for optimization and compilation.
 
 <div align="center">
-  <picture>
     <img src="./docs/_static/mlir-quake.png" width="60%">
-  </picture>
 </div>
 
 For more information on [QUAKE MLIR Dialect](https://github.com/NVIDIA/cuda-quantum.git).
@@ -85,9 +83,7 @@ For more information on [QUAKE MLIR Dialect](https://github.com/NVIDIA/cuda-quan
 An MLIR pass is a transformation or analysis applied to an MLIR intermediate representation (IR) to **modify**, **optimize**, or **gather information**. Passes are a central concept in compiler frameworks, including MLIR, enabling modular, reusable, and extensible transformations of code at various levels of abstraction.
 
 <div align="center">
-  <picture>
     <img src="./docs/_static/mlir-pass.png" width="45%">
-  </picture>
 </div>
 
 For instance, in the figure above, an MLIR optimization pass is applied to the input circuit, which contains two consecutive Hadamard gates on qubit 0. Accordingly, in the output-optimized circuit shown on the right, those two consecutive Hadamards are removed because they are equivalent to an identity operation.
@@ -95,9 +91,7 @@ For instance, in the figure above, an MLIR optimization pass is applied to the i
 MLIR has two categories of passes: **transformation** passes, and **analysis** passes. The pass presented above is a transformation pass. Moreover, passes can be applied in sequences defined as **pass pipelines**.
 
 <div align="center">
-  <picture>
     <img src="./docs/_static/mlir-passes.png" width="60%">
-  </picture>
 </div>
 
 In the figure shown above, three pass pipelines are defined. In purple, a synthesis to QUAKE pipeline synthesizes QUAKE MLIR code from a given input C++ program. In green, an optimization pipeline that applies a series of transformations passes on MLIR modules. Finally, in orange, a pass pipeline that lowers QUAKE MLIR modules to the Quantum Intermediate Representation (QIR).
@@ -107,9 +101,7 @@ In the figure shown above, three pass pipelines are defined. In purple, a synthe
 One fundamental feature of MLIR is its ability to model different levels of abstraction related to a domain-specific language. In contrast, Quantum representations such as the QIR or QASM are low-level representations. Performing transformations on a low-level abstraction might not be a good choice. Low-level representations are a list of quantum gates that operate on qubits. In the example below, the QIR program on the right is equivalent to the quantum circuit on the left.
 
 <div align="center">
-  <picture>
     <img src="./docs/_static/mlir-why.png" width="65%">
-  </picture>
 </div>
 
 However, dataflow dependencies are lost in low-level representations, such as QIR. In contrast, MLIR (QUAKE) holds the dataflow dependencies natively, and no modifications to the compilation infrastructure are required. Thus, transformation passes such as decompositions or replacements can be easily implemented. Moreover, other dialects can be integrated with QUAKE to re-utilize the existing MLIR infrastructure.
@@ -119,9 +111,7 @@ However, dataflow dependencies are lost in low-level representations, such as QI
 The collection of MLIR passes stored in this repository is part of the Munich Quantum Software Stack (MQSS). The passes are utilized inside the Quantum Resource Manager ([QRM](https://github.com/Munich-Quantum-Software-Stack/QRM)). 
 
 <div align="center">
-  <picture>
     <img src="./docs/_static/mlir-fit.png" width="60%">
-  </picture>
 </div>
 
 For example, a hybrid quantum application can be defined in a high-level programming language such as C++ using the CUDAQ library. Those code fragments in a hybrid quantum application defined as quantum kernels will be submitted to the QRM.

@@ -24,10 +24,10 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 </div>
 
 # Collection of MLIR Passes of the MQSS
-
+<!-- [DOXYGEN MAIN] -->
 This repository holds a collection of MLIR passes that operate on Quantum programs to optimize, transform, and lower to target devices. The presented passes are integrated into the Munich Quantum Software 
 Stack (MQSS) infrastructure. In particular, this collection of passes is used in the Quantum Resource Manager (QRM) for optimizing, transforming, and lowering quantum programs to quantum devices. The passes stored in this collection can be classified as target-agnostic and target-specific. Target agnostic passes can be applied to any quantum circuit and do not require information on the selected quantum target device. In contrast, target-specific passes tightly depend on the selected quantum device. For instance, transpilation passes that convert a quantum circuit defined using arbitrary gates to a quantum circuit compliant with the native gate set of the selected quantum device.
-
+<!-- [DOXYGEN MAIN] -->
 <div align="center">
   <!-- <a href="https://munich-quantum-software-stack.github.io/QDMI/"> -->
   <img style="min-width: 200px !important; width: 30%;" src="https://img.shields.io/badge/documentation-blue?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNi4wIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjQgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTk2IDBDNDMgMCAwIDQzIDAgOTZMMCA0MTZjMCA1MyA0MyA5NiA5NiA5NmwyODggMCAzMiAwYzE3LjcgMCAzMi0xNC4zIDMyLTMycy0xNC4zLTMyLTMyLTMybDAtNjRjMTcuNyAwIDMyLTE0LjMgMzItMzJsMC0zMjBjMC0xNy43LTE0LjMtMzItMzItMzJMMzg0IDAgOTYgMHptMCAzODRsMjU2IDAgMCA2NEw5NiA0NDhjLTE3LjcgMC0zMi0xNC4zLTMyLTMyczE0LjMtMzIgMzItMzJ6bTMyLTI0MGMwLTguOCA3LjItMTYgMTYtMTZsMTkyIDBjOC44IDAgMTYgNy4yIDE2IDE2cy03LjIgMTYtMTYgMTZsLTE5MiAwYy04LjggMC0xNi03LjItMTYtMTZ6bTE2IDQ4bDE5MiAwYzguOCAwIDE2IDcuMiAxNiAxNnMtNy4yIDE2LTE2IDE2bC0xOTIgMGMtOC44IDAtMTYtNy4yLTE2LTE2czcuMi0xNiAxNi0xNnoiLz48L3N2Zz4=" alt="Documentation" />
@@ -35,7 +35,7 @@ Stack (MQSS) infrastructure. In particular, this collection of passes is used in
 </div>
 
 ## FAQ
-
+<!-- [DOXYGEN FAQ] -->
 ### What is MQSS?
 
 **MQSS** stands for _Munich Quantum Software Stack_, which is a project of the _Munich Quantum
@@ -61,9 +61,7 @@ MLIR supports multiple levels of abstraction within a single framework, allowing
 Additionally, MLIR promotes interoperability among different models of computation and supports **optimization passes** across various abstraction levels, including high-level and low-level operations.
 
 <div align="center">
-  <picture>
     <img src="./docs/_static/mlir.png" width="60%">
-  </picture>
 </div>
 
 For more information on [MLIR](https://github.com/llvm/llvm-project.git).
@@ -140,3 +138,5 @@ The code is publicly available and hosted on GitHub: TODO.
 This collection of MLIR passes is released under the Apache License v2.0 with LLVM Exceptions. See
 [LICENSE](https://github.com/Munich-Quantum-Software-Stack/QDMI/blob/develop/LICENSE) for more
 information. Any contribution to the project is assumed to be under the same license.
+
+<!-- [DOXYGEN FAQ] -->

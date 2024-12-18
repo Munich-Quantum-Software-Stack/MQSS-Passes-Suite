@@ -47,6 +47,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG)
 endif()
 
+include(cmake/ExternalDependencies.cmake)
+
 ############################## CONFIGURATION OF LLVM ##########################
 find_package(LLVM 16 CONFIG QUIET)
 
@@ -241,4 +243,11 @@ add_mlir_library(MQSSPasses SHARED
 )
 
 #add tests
-add_subdirectory(tests)
+if(BUILD_MLIR_PASSES_TESTS)
+  add_subdirectory(tests)
+endif()
+
+# add documentation
+if(BUILD_MLIR_PASSES_DOCS)
+  add_subdirectory(docs)
+endif()

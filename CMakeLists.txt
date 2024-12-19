@@ -227,10 +227,11 @@ include_directories(BEFORE
         ${qinfo_INCLUDE_DIRS}
 )
 
+# Collect all .cpp files in the src directory
+file(GLOB SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+
 add_mlir_library(MQSSPasses SHARED
-    src/CustomExamplePass.cpp
-    src/PrintQuakeGatesPass.cpp
-    src/QuakeQMapPass.cpp
+    ${SRC_FILES}
     LINK_LIBS PUBLIC
     MQT::CoreIR
     MQT::CoreNA

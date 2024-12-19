@@ -1,35 +1,25 @@
 /* This code and any associated documentation is provided "as is"
 
- IN NO EVENT SHALL LEIBNIZ-RECHENZENTRUM (LRZ) BE LIABLE TO ANY PARTY FOR
- DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
- OF THE USE OF THIS CODE AND ITS DOCUMENTATION, EVEN IF LEIBNIZ-RECHENZENTRUM
- (LRZ) HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- THE AFOREMENTIONED EXCLUSIONS OF LIABILITY DO NOT APPLY IN CASE OF INTENT
- BY LEIBNIZ-RECHENZENTRUM (LRZ).
+Copyright 2024 Munich Quantum Software Stack Project
 
- LEIBNIZ-RECHENZENTRUM (LRZ), SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING,
- BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE.
+Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
+"License"); you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
- THE CODE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, LEIBNIZ-RECHENZENTRUM (LRZ)
- HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR
- MODIFICATIONS.
--------------------------------------------------------------------------
-  @author Martin Letras
-  @date   December 2024
-  @version 1.0
-  @ brief
-  CustomExamplePassPlugin
-  Example pass to show how to implement a custo QUAKE MLIR pass.
-  This pass performs an OpRewritePattern on Hadamard gates (quake::HOp).
-  It just replaces all the ocurrences of quake::HOp by quake::SOp (S gate)
-  in any given Quantum kernel.
+TODO: URL LICENSE
 
-*******************************************************************************
-* This source code and the accompanying materials are made available under    *
-* the terms of the Apache License 2.0 which accompanies this distribution.    *
-******************************************************************************/
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
 
+SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception 
+*************************************************************************
+  author Martin Letras
+  date   December 2024
+  version 1.0
+*************************************************************************/
 
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"

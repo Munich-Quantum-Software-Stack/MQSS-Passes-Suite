@@ -5,7 +5,7 @@
 # "License"); you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-# TODO: QDMI at the moment https://github.com/Munich-Quantum-Software-Stack/QDMI/blob/develop/LICENSE
+# TODO: LICENSE URL 
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -39,10 +39,8 @@ set(DOXYGEN_INPUT_DIRS
     ${DOXYGEN_INPUT_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/index.md
     ${CMAKE_CURRENT_SOURCE_DIR}/faq.md
-    #${CMAKE_CURRENT_SOURCE_DIR}/support.md
-    #${CMAKE_CURRENT_SOURCE_DIR}/rationale.md
-    #${CMAKE_CURRENT_SOURCE_DIR}/examples.md
-    #${CMAKE_CURRENT_SOURCE_DIR}/templates.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/templates.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests.md
     ${CMAKE_CURRENT_SOURCE_DIR}/guide.md)
 # By default the files are separated by a semicolon. This is not what Doxygen
 # wants, so we replace it with a space.

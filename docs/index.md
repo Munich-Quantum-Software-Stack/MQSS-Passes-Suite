@@ -41,7 +41,7 @@ The [FAQ](faq.md) page gives an overview over frequently asked questions.
 
 #### Hands-On
 
-The [Examples](examples.md) page provides a collection of examples to show you how you can implement custom MLIR passes to be used into the MQSS. When you want to start your own implementation of an MLIR pass, the [Templates](templates.md) page is a good starting point.
+[Declaring Custom Passes](templates.md) page provides an step-by-step guide to show you how you can implement custom MLIR passes to be used into the MQSS. When you want to validate your custom MLIR passes, the [Testing Custom Passes](tests.md) page is a good starting point.
 
 #### Specific Information about the Implementation of this Collection
 

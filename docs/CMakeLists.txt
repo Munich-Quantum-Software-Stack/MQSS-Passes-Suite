@@ -29,7 +29,7 @@ set(DOXYGEN_INPUT_DIRS ${PROJECT_SOURCE_DIR}/include)
 # correctly and is not passed to Doxygen. Whenever such a file is modified,
 # CMake detects that change and will rerun the Doxygen command instead of using
 # the cached result when the target `mlir_passes_docs`is built.
-file(GLOB_RECURSE DOXYGEN_INPUT_FILES ${PROJECT_SOURCE_DIR}/include/*.h
+file(GLOB_RECURSE DOXYGEN_INPUT_FILES ${PROJECT_SOURCE_DIR}/include/*.hpp 
      ${CMAKE_CURRENT_SOURCE_DIR}/*.md)
 # After the variable above is correctly initialized, we can add the additional
 # files that are not source code but still part of the documentation. IMPORTANT:
@@ -71,8 +71,17 @@ set(DOXYGEN_CONFIG_FILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 FetchContent_GetProperties(doxygen-awesome-css SOURCE_DIR AWESOME_CSS_DIR)
 
 # Copy over the dark mode logos as they are not automatically copied by Doxygen.
-file(COPY _static/mqss_logo_dark.svg 
+file(COPY _static/mqss_logo_dark.svg
+          _static/mlir-passes.png 
           DESTINATION ${DOXYGEN_OUTPUT_DIR}/html)
+# Copy images to be shown in the FAQ
+file(GLOB IMG_FILES "_static/*.png")
+
+# Iterate through IMG_FILES to copy each file
+foreach(IMG_FILE IN LISTS IMG_FILES)
+  file(COPY ${IMG_FILE}
+          DESTINATION ${DOXYGEN_OUTPUT_DIR}/html/docs/_static/)
+endforeach()
 # Set the logo for the project.
 set(PROJECT_LOGO "mqss_logo.svg")
 

@@ -48,10 +48,6 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
  */
 #define CUDAQ_PREFIX_FUNCTION "__nvqpp__mlirgen__"
 
-/**
- * @namespace mqss::opt
- * @brief A namespace that stores the collection of MLIR passes that are part of the MQSS.
- */
 namespace mqss::opt{
 
 /**
@@ -78,8 +74,10 @@ std::unique_ptr<mlir::Pass> createPrintQuakeGatesPass(llvm::raw_string_ostream &
 std::unique_ptr<mlir::Pass> createQuakeQMapPass(Architecture &architecture, const Configuration &settings);
 
 /**
- * @brief QUAKE MLIR pass that decomposes two qubits CNot (Cx).
-   @details This method constructs an `mlir::Pass` of the type CxToHCzHDecompositionPass. This decomposition pass operates on any Cx operation in a given QUAKE MLIR module and performs its replacement by a pattern composed of a Hadamard, Cz and Hadamard operations.
+ * @brief QUAKE MLIR pass that decomposes two qubits CNot (XOp).
+   @details This method constructs an `mlir::Pass` of the type CxToHCzHDecompositionPass. This decomposition pass operates on any two qubits XOp operation in a given QUAKE MLIR module and performs its replacement by a pattern composed of a Hadamard, Z and Hadamard operations, as follows.
+
+  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
 
  @return An `mlir::Pass` object containing the definition of the CxToHCzHDecompositionPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */

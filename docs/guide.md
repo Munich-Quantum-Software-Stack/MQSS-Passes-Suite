@@ -8,7 +8,7 @@ Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
 "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-https://github.com/Munich-Quantum-Software-Stack/QDMI/blob/develop/LICENSE
+TODO: LICENSE
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -21,23 +21,22 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 <!-- This file is a static page and included in the CMakeLists.txt file. -->
 
-Ready to contribute to QDMI? This guide will help you get started.
+Ready to contribute to the Collection of MLIR Passes of the MQSS? This guide will help you get started.
 
 ## Initial Setup
 
-1. Fork the [QDMI](https://github.com/Munich-Quantum-Software-Stack/QDMI) repository on GitHub (see
-   <https://docs.github.com/en/get-started/quickstart/fork-a-repo>).
+1. Fork the [QDMI](https://github.com/Munich-Quantum-Software-Stack/QDMI) repository on GitHub (see <https://docs.github.com/en/get-started/quickstart/fork-a-repo>).
 
 2. Clone your fork locally
 
    ```sh
-   git clone git@github.com:your_name_here/QDMI.git
+   git clone TODO
    ```
 
 3. Change into the project directory
 
    ```sh
-   cd QDMI
+   cd mlir-passes TODO
    ```
 
 4. Create a branch for local development
@@ -48,97 +47,41 @@ Ready to contribute to QDMI? This guide will help you get started.
 
    Now you can make your changes locally.
 
-5. (Optional, **highly recommended**) Install [pre-commit](https://pre-commit.com/) to automatically
-   run a set of checks before each commit.
-
-   <div class="tabbed">
-
-   - <b class="tab-title">via `uv`</b> The easiest way to install pre-commit is via
-     [uv](https://docs.astral.sh/uv/).
-
-     \code{.sh} uv tool install pre-commit \endcode
-
-   - <b class="tab-title">via `brew`</b> If you use macOS, then pre-commit is in Homebrew, use
-
-     \code{.shell} brew install pre-commit \endcode
-
-   - <b class="tab-title">via `pipx`</b> If you prefer to use [pipx](https://pypa.github.io/pipx/),
-     you can install pre-commit with
-
-     \code{.shell} pipx install pre-commit \endcode
-
-   - <b class="tab-title">via `pip`</b> If you prefer to use regular `pip` (preferably in a virtual
-     environment), you can install pre-commit with
-
-     \code{.shell} pip install pre-commit \endcode
-
-   </div>
-   Afterwards, you can install the pre-commit hooks with
-
-   \code{.shell} pre-commit install \endcode
-
 ## Working on Source Code
 
 Building the project requires a C compiler supporting _C11_ and a minimum CMake version of _3.19_.
-The example devices and the tests require a C++ compiler supporting _C++17_.
+The example devices and the tests require a C++ compiler supporting _C++17_ and _C++20_.
 
 ### Configure and Build
 
-QDMI uses CMake as its build system. Building a project using CMake is a two-step process:
+This collection of MLIR passes uses CMake as its build system. Building a project using CMake as follows:
 
 First, the project needs to be _configured_ by calling
 
 ```shell
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+mkdir build
+cd buid
+cmake ..
 ```
-
-This tells CMake to generate the build system in the `build` directory for a release build.
 
 After the configuration, the project can be _built_ by calling
 
 ```shell
-cmake --build build --config Release
+make 
 ```
 
 ### Running Tests
 
-We use the [GoogleTest](https://google.github.io/googletest/primer.html) framework for unit testing
-of the QDMI interface. All tests are contained in the `test` directory. After building the project
-(as described above), the C++ unit tests can be conveniently executed by running
+We use the [GoogleTest](https://google.github.io/googletest/primer.html) framework for unit testing each MLIR in this collection. All tests are contained in the `test` directory. You can configure and build the project using CMake as follows:
 
 ```shell
-ctest -C Release --test-dir build
+cd buid
+cmake .. -DBUILD_MLIR_PASSES_TESTS=ON
+make
 ```
 
-from the main project directory.
+The executable used to run the tests can be found at `build/tests/testMQSSPasses`.
 
-### Code Formatting and Linting
-
-This project mostly follows the [LLVM Coding Standard](https://llvm.org/docs/CodingStandards.html),
-which is a set of guidelines for writing C/C++ code. To ensure the quality of the code and that it
-conforms to these guidelines, we use
-
-- [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) -- a static analysis tool that checks for
-  common mistakes in C/C++ code, and
-- [clang-format](https://clang.llvm.org/docs/ClangFormat.html) -- a tool that automatically formats
-  C/C++ code according to a given style guide.
-
-Common IDEs like [Visual Studio Code](https://code.visualstudio.com/) or
-[CLion](https://www.jetbrains.com/clion/) have plugins that can automatically run clang-tidy on the
-code and automatically format it with clang-format.
-
-- If you are using Visual Studio Code, you can install the
-  [clangd extension](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd).
-- If you are using CLion, you can configure the project to use the `.clang-tidy` and `.clang-format`
-  files in the project root directory.
-
-They will automatically execute clang-tidy on your code and highlight any issues. In many cases,
-they also provide quick-fixes for these issues. Furthermore, they provide a command to automatically
-format your code according to the given style.
-
-\note After configuring CMake, you can run clang-tidy on a file by calling
-`clang-tidy <FILE> -- -I <PATH_TO_INCLUDE_DIRECTORY>` where `<FILE>` is the file you want to analyze
-and `<PATH_TO_INCLUDE_DIRECTORY>` is the path to the `include` directory of the project.
 
 ### Format for Comments
 
@@ -161,27 +104,23 @@ seamlessly integrated into the CMake build system.
 
 ### Building the Documentation
 
-The documentation can be built with the CMake target `qdmi_docs` via
+The documentation can be built configuring the CMake as follows:
 
 ```shell
-cmake -S . -B build
-cmake --build build --target qdmi_docs
+cd buid
+cmake .. -DBUILD_MLIR_PASSES_DOCS=ON
+make
 ```
 
-The generated webpage can be inspected by opening the file in `docs/html/index.html` in the CMake
-build directory.
+The generated webpage can be inspected by opening the file in `docs/html/index.html` in the CMake build directory.
 
 ### Static Content
 
-The generated webpage also contains four static sites, namely the main page, the support page, the
-FAQ page, and this development guide. The respective markdown files that serve as the source for
-those sites are contained in `docs/` where `index.md` contains the content of the main page.
+The generated webpage also contains four static sites, namely the main page, the support page, the FAQ page, and this development guide. The respective markdown files that serve as the source for those sites are contained in `docs/` where `index.md` contains the content of the main page.
 
 ### Dynamic Content
 
-In order to include source files to be listed among the menu item `API Reference/Files`, these files
-must be marked as documented. This is accomplished by adding a comment like the following to the top
-of the file. Right now, this is done for all files in the include directory.
+In order to include source files to be listed among the menu item `API Reference/Files`, these files must be marked as documented. This is accomplished by adding a comment like the following to the top of the file. Right now, this is done for all files in the include directory.
 
 <!-- prettier-ignore-start -->
 \verbatim

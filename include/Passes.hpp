@@ -77,5 +77,13 @@ std::unique_ptr<mlir::Pass> createPrintQuakeGatesPass(llvm::raw_string_ostream &
  */
 std::unique_ptr<mlir::Pass> createQuakeQMapPass(Architecture &architecture, const Configuration &settings);
 
+/**
+ * @brief QUAKE MLIR pass that decomposes two qubits CNot (Cx).
+   @details This method constructs an `mlir::Pass` of the type CxToHCzHDecompositionPass. This decomposition pass operates on any Cx operation in a given QUAKE MLIR module and performs its replacement by a pattern composed of a Hadamard, Cz and Hadamard operations.
+
+ @return An `mlir::Pass` object containing the definition of the CxToHCzHDecompositionPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createCxToHCzHDecompositionPass();
+
 } // end namespace
 #endif // PASSES_H

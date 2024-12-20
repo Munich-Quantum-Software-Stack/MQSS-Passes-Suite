@@ -34,7 +34,7 @@ The method to create the pass must be registered as follows:
 std::unique_ptr<mlir::Pass> createCustomExamplePass();
 ```
 
-If the pass require arguments, those have to be also declared into the signature of the method that creates the pass. For instance, we declare a `CustomExampleArgumentPass` that receives the argument `int value`.
+If the pass requires arguments, those have to be also declared into the signature of the method that creates the pass. For instance, we declare a `CustomExampleArgumentPass` that receives the argument `int value`.
 
 ```cpp
 std::unique_ptr<mlir::Pass> createCustomExampleArguementPass(int value);

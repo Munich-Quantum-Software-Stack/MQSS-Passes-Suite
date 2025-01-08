@@ -268,6 +268,31 @@ TEST(TestMQSSPasses, TestQuakeQMapPass02){
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
+TEST(TestMQSSPasses, TestQuakeToTikzPass){
+  // load mlir module and the golden output
+  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
+          "./code/PrintQuakeGatesPass.cpp",
+          "./golden-cases/PrintQuakeGatesPass-golden.qke");
+  #ifdef DEBUG
+    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  #endif
+  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+  mlir::MLIRContext &context = *contextPtr;
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  // Adding custom pass
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeToTikzPass(stringStream));
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule)))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
+  #endif
+  //EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

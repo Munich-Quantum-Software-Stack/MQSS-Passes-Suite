@@ -271,7 +271,7 @@ TEST(TestMQSSPasses, TestQuakeQMapPass02){
 TEST(TestMQSSPasses, TestQuakeToTikzPass){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
-          "./code/PrintQuakeGatesPass.cpp",
+          "./code/QuakeToTikzPass.cpp",
           "./golden-cases/PrintQuakeGatesPass-golden.qke");
   #ifdef DEBUG
     std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;

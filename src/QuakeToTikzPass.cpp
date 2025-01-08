@@ -38,6 +38,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "mlir/Transforms/DialectConversion.h"
 #include "llvm/Support/raw_ostream.h"
 #include "mlir/Dialect/SCF/IR/SCF.h"
+#include <iomanip>
 #include "Passes.hpp"
 #include "Utils.hpp"
 
@@ -48,22 +49,87 @@ void dumpQuakeOperation(mlir::Operation *op, std::vector<std::vector<std::string
     return; // do nothing if it is not a quake operation
   if(isa<quake::AllocaOp>(op) || isa<quake::ExtractRefOp>(op)) 
     return; // do nothing if the next operation is a qubit allocation
-  StringRef gateName          = op->getName().getStringRef();
+  std::string gateName          = std::string(op->getName().getStringRef());
+  size_t pos = gateName.find("quake.");
+  if (pos != std::string::npos) {
+    gateName.erase(pos, 6); // 6 is the length of "quake."
+  }
   llvm::outs() << "Operation: " << gateName << "\n";
+  std::vector<double> parameters;
+  std::vector<int> targets;
+  std::vector<int> controls;
+  std::vector<int> measurements;
+  if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op)){
+    for (auto operand : op->getOperands()) {
+      if (operand.getType().isa<quake::RefType>()) {
+        int qubitIndex = mqss::utils::extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
+        if (qubitIndex == -1)
+          throw std::runtime_error("Non valid qubit index for measurement!");
+        measurements.push_back(qubitIndex);
+        qubitLines[qubitIndex].push_back("\\meter{}");
+      }else if (operand.getType().isa<quake::VeqType>()) {
+        auto qvecType = operand.getType().dyn_cast<quake::VeqType>();
+        for (int i=0; i<qubitLines.size(); i++){
+          measurements.push_back(i);
+          qubitLines[i].push_back("\\meter{}");
+        }
+      }
+    }  
+  }
+  else{ 
+    auto gate   = dyn_cast<quake::OperatorInterface>(op);
+    parameters  = mqss::utils::getParametersValues(gate.getParameters());
+    targets     = mqss::utils::getIndicesOfValueRange(gate.getTargets());
+    controls    = mqss::utils::getIndicesOfValueRange(gate.getControls());
+    llvm::outs() << "\tParameters: "  << parameters.size() << " Targets: " << targets.size() << " Controls :" << controls.size() << "\n";
+  }
+  llvm::outs() << "stil here \n";
+  // empty fill those qubits that are not used by the current targets, controls and measurements
+  for(int i=0; i < qubitLines.size(); i++){
+    if (!(std::find(targets.begin(), targets.end(), i) != targets.end()) &&
+        !(std::find(controls.begin(), controls.end(), i) != controls.end()) &&
+        !(std::find(measurements.begin(), measurements.end(), i) != measurements.end())) {
+      qubitLines[i].push_back("\\qw");
+    }
+  }
+  // exit affter insert measurements
   if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op))
-    return; // 
-  auto gate = dyn_cast<quake::OperatorInterface>(op);
-  mlir::ValueRange parameters = gate.getParameters();
-  mlir::ValueRange targets    = gate.getTargets();
-  mlir::ValueRange controls   = gate.getControls();
-  llvm::outs() << "\tParameters: "  << parameters.size() << " Targets: " << targets.size() << " Controls :" << controls.size() << "\n";
+    return;
   // at the moment just add the gate
-  if(isa<quake::SwapOp>(op))
+  if(isa<quake::SwapOp>(op)){
+    if(targets.size()!=2) 
+      throw std::runtime_error("At the moment the SWAP only works on two targets...");
+    qubitLines[targets[0]].push_back("\\swap{"+std::to_string(targets[1]-targets[0])+"}");
+    qubitLines[targets[1]].push_back("\\swap{}");
     return; // special handle for swap because it has multiple targets
-  if (targets.size() != 1)
-    throw std::runtime_error("At this point only single target gates are expected !!");
-  int target_qubit = mqss::utils::extractIndexFromQuakeExtractRefOp(targets[0].getDefiningOp());
-  qubitLines[target_qubit].push_back("\\gate{"+std::string(gateName)+"}");
+  }
+  // iterate over all the targets and insert it
+  for(int target_qubit : targets){
+    std::string labelGate = gateName;
+    // if the gate has parameters, annotate into the label
+    if(parameters.size() > 0)
+      labelGate += "(";
+    int countParam = 0;
+    for(double parameter : parameters){
+      std::ostringstream tmpOss;
+      tmpOss << std::fixed << std::setprecision(2) << parameter;
+      labelGate += std::string(tmpOss.str());
+      if (countParam != parameters.size()-1)
+        labelGate += " , ";
+      countParam++;
+    }
+    if(parameters.size() > 0)
+      labelGate += ")";
+    // annotating the target qubit
+    qubitLines[target_qubit].push_back("\\gate{"+labelGate+"}");
+  }
+
+  // CHECK: I am assuming at the moment multiple controls and single targets
+  // the oposite case, single control and multiple target should not be a valid gate
+  int targetGate = targets[0];
+  for(int control_qubit : controls)
+    qubitLines[control_qubit].push_back("\\ctrl{"+std::to_string(targetGate-control_qubit)+"}");
+
 } 
   
   namespace {

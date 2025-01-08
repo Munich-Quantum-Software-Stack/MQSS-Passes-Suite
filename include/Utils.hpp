@@ -6,7 +6,7 @@
 using namespace mlir;
 
 namespace mqss::utils{
-
+  
   inline double extractDoubleArgumentValue(mlir::Operation *op){
     if (auto constantOp = dyn_cast<mlir::arith::ConstantOp>(op))
       if (auto floatAttr = constantOp.getValue().dyn_cast<mlir::FloatAttr>())
@@ -77,5 +77,26 @@ namespace mqss::utils{
     });
     return numBits;
   }
+
+  inline std::vector<int> getIndicesOfValueRange(mlir::ValueRange array){
+    std::vector<int> indices;
+    for(auto value : array){
+      int qubit_index = extractIndexFromQuakeExtractRefOp(value.getDefiningOp());
+      indices.push_back(qubit_index);
+    }
+    return indices;
+  }
+
+  // At the moment, it is assumed that the parameters are of type Double
+  inline std::vector<double> getParametersValues(mlir::ValueRange array){
+    std::vector<double> parameters;
+    for(auto value : array){
+      double param = extractDoubleArgumentValue(value.getDefiningOp());
+      parameters.push_back(param);
+    }
+    return parameters;
+  }
+
+
 } // end namespace
 #endif // UTILS_H

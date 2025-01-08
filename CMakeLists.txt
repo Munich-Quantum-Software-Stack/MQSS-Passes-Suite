@@ -239,6 +239,7 @@ add_mlir_library(MQSSPasses SHARED
     MQT::QMapSCHeuristic
     MLIRIR
     MLIRPass
+    MLIRTransforms
     #qdmi
     #qinfo
 )

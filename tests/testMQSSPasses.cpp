@@ -278,11 +278,11 @@ TEST(TestMQSSPasses, TestQuakeQMapPass02){
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
-TEST(TestMQSSPasses, TestQuakeToTikzPass){
+TEST(TestMQSSPasses, TestCxToHCzHDecompositionPass){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
-          "./code/QuakeToTikzPass.cpp",
-          "./golden-cases/QuakeToTikzPass.tikz.tex");
+          "./code/CxToHCzHDecompositionPass.cpp",
+          "./golden-cases/CxToHCzHDecompositionPass.qke");
   #ifdef DEBUG
     std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
   #endif
@@ -290,17 +290,48 @@ TEST(TestMQSSPasses, TestQuakeToTikzPass){
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager
   mlir::PassManager pm(&context);
-  // Adding custom pass
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeToTikzPass(stringStream));
+  // Adding the QuakeQMap pass to the PassManager
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createCxToHCzHDecompositionPass());
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
   #ifdef DEBUG
-    std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
+    std::cout << "Decomposed Circuit:\n";
+    mlirModule->dump();
   #endif
-  EXPECT_EQ(normalize(goldenOutput), normalize(moduleOutput));
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
+TEST(TestMQSSPasses, TestCzToHCxHDecompositionPass){
+  // load mlir module and the golden output
+  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
+          "./code/CzToHCxHDecompositionPass.cpp",
+          "./golden-cases/CzToHCxHDecompositionPass.qke");
+  #ifdef DEBUG
+    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  #endif
+  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+  mlir::MLIRContext &context = *contextPtr;
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  // Adding the QuakeQMap pass to the PassManager
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createCzToHCxHDecompositionPass());
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule)))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Decomposed Circuit:\n";
+    mlirModule->dump();
+  #endif
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
 int main(int argc, char **argv) {

@@ -25,6 +25,11 @@ struct ghz {
     ry(3.5,q[1]);
     rz(5.0,q[2]);
     x<cudaq::ctrl>(q[0], q[1],q[3]);
+    x(q[3]);
+    y(q[4]);
+    z(q[5]);
+    s(q[0]);
+    t(q[1]);
     mz(q);
 
   }

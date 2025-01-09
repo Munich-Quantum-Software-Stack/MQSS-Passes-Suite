@@ -44,7 +44,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 using namespace mlir;
 
-void dumpQuakeOperation(mlir::Operation *op, std::vector<std::vector<std::string>> &qubitLines){
+void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::string>> &qubitLines){
   if (op->getDialect()->getNamespace() != "quake")
     return; // do nothing if it is not a quake operation
   if(isa<quake::AllocaOp>(op) || isa<quake::ExtractRefOp>(op)) 
@@ -54,7 +54,9 @@ void dumpQuakeOperation(mlir::Operation *op, std::vector<std::vector<std::string
   if (pos != std::string::npos) {
     gateName.erase(pos, 6); // 6 is the length of "quake."
   }
-  llvm::outs() << "Operation: " << gateName << "\n";
+  #ifdef DEBUG
+    llvm::outs() << "Operation: " << gateName << "\n";
+  #endif
   std::vector<double> parameters;
   std::vector<int> targets;
   std::vector<int> controls;
@@ -81,9 +83,10 @@ void dumpQuakeOperation(mlir::Operation *op, std::vector<std::vector<std::string
     parameters  = mqss::utils::getParametersValues(gate.getParameters());
     targets     = mqss::utils::getIndicesOfValueRange(gate.getTargets());
     controls    = mqss::utils::getIndicesOfValueRange(gate.getControls());
-    llvm::outs() << "\tParameters: "  << parameters.size() << " Targets: " << targets.size() << " Controls :" << controls.size() << "\n";
+    #ifdef DEBUG
+      llvm::outs() << "\tParameters: "  << parameters.size() << " Targets: " << targets.size() << " Controls :" << controls.size() << "\n";
+    #endif
   }
-  llvm::outs() << "stil here \n";
   // empty fill those qubits that are not used by the current targets, controls and measurements
   for(int i=0; i < qubitLines.size(); i++){
     if (!(std::find(targets.begin(), targets.end(), i) != targets.end()) &&
@@ -92,10 +95,10 @@ void dumpQuakeOperation(mlir::Operation *op, std::vector<std::vector<std::string
       qubitLines[i].push_back("\\qw");
     }
   }
-  // exit affter insert measurements
+  // exit after insert measurements
   if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op))
     return;
-  // at the moment just add the gate
+
   if(isa<quake::SwapOp>(op)){
     if(targets.size()!=2) 
       throw std::runtime_error("At the moment the SWAP only works on two targets...");
@@ -123,7 +126,6 @@ void dumpQuakeOperation(mlir::Operation *op, std::vector<std::vector<std::string
     // annotating the target qubit
     qubitLines[target_qubit].push_back("\\gate{"+labelGate+"}");
   }
-
   // CHECK: I am assuming at the moment multiple controls and single targets
   // the oposite case, single control and multiple target should not be a valid gate
   int targetGate = targets[0];
@@ -131,34 +133,8 @@ void dumpQuakeOperation(mlir::Operation *op, std::vector<std::vector<std::string
     qubitLines[control_qubit].push_back("\\ctrl{"+std::to_string(targetGate-control_qubit)+"}");
 
 } 
-  
+
   namespace {
-  
-  /// Conversion pattern for Quake operations to Quantikz LaTeX.
-  /*class QuakeToTikzPattern : public ConversionPattern {
-  public:
-      explicit QuakeToTikzPattern(MLIRContext *context)
-          : ConversionPattern("quake.op_name", 1, context) {}
-  
-      LogicalResult matchAndRewrite(Operation *op, ArrayRef<Value> operands,
-                                    ConversionPatternRewriter &rewriter) const override {
-          if (auto hOp = dyn_cast<quake::HOp>(op)) {
-              // Handle H gate
-              llvm::outs() << "\\gate{H} & ";
-              return success();
-          } else if (auto xOp = dyn_cast<quake::XOp>(op)) {
-              // Handle CX gate
-              llvm::outs() << "\\ctrl{" << operands[0] << "} & \\targ{" << operands[1] << "} \\\\\n";
-              return success();
-          } else if (auto mzOp = dyn_cast<quake::MzOp>(op)) {
-              // Handle Measurement
-              llvm::outs() << "\\meter & \\qw \\\\\n";
-              return success();
-          }
-  
-          return failure();
-      }
-  };*/
   
   class QuakeToTikzPass
       : public PassWrapper<QuakeToTikzPass, OperationPass<func::FuncOp>> {
@@ -172,60 +148,47 @@ void dumpQuakeOperation(mlir::Operation *op, std::vector<std::vector<std::string
   
     void runOnOperation() override {
       auto circuit = getOperation();
-      
-      /*MLIRContext *context = &getContext();
-  
-      // Conversion target
-      ConversionTarget target(*context);
-      //target.addLegalDialect<StandardOpsDialect>();
-      //target.addIllegalDialect<quake::QuakeDialect>();
-  
-      // Define rewrite patterns
-      RewritePatternSet patterns(context);
-    patterns.add<QuakeToTikzPattern>(context);
+      // Get the function name
+      StringRef funcName = circuit.getName();
+      if (!(funcName.find(std::string(CUDAQ_PREFIX_FUNCTION)) != std::string::npos))
+        return; // do nothing if the funcion is not cudaq kernel
 
-    // Apply conversion
-    if (failed(applyPartialConversion(circuit, target, std::move(patterns)))) {
-        signalPassFailure();
-    }*/
-    // Get the function name
-    StringRef funcName = circuit.getName();
-    if (!(funcName.find(std::string(CUDAQ_PREFIX_FUNCTION)) != std::string::npos))
-      return; // do nothing if the funcion is not cudaq kernel
-
-    std::map<int, int> measurements; // key: qubit, value register index   
-    int numQubits = mqss::utils::getNumberOfQubits(circuit);
-    int numBits   = mqss::utils::getNumberOfClassicalBits(circuit,measurements);
-
-    std::vector<std::vector<std::string>> qubitTikz(numQubits);
-    for(int i=0; i < numQubits; i++)
-      qubitTikz[i].push_back({"\\lstick{\\ket{0}}"});
-    circuit.walk([&](Operation *op){
-      dumpQuakeOperation(op,qubitTikz);
-    });
-    llvm::outs() << "Num qubits " << numQubits << "\n";
-    // dumping the lines into the ostream
-    outputStream << "\\begin{quantikz}\n";
-    int countQubit = 0;
-    for(auto qubit  : qubitTikz){
-      int size = qubit.size();
-      llvm::outs() << "Ops size " << size << "\n";
-      int countOps = 0;
-      outputStream << "\t";
-      for(auto op : qubit){
-        outputStream << op;
-        if (countOps != size - 1)
-          outputStream << "\t&\t";
-        countOps++;
+      std::map<int, int> measurements; // key: qubit, value register index   
+      int numQubits = mqss::utils::getNumberOfQubits(circuit);
+      int numBits   = mqss::utils::getNumberOfClassicalBits(circuit,measurements);
+      std::vector<std::vector<std::string>> qubitTikz(numQubits);
+      for(int i=0; i < numQubits; i++)
+        qubitTikz[i].push_back({"\\lstick{\\ket{0}}"});
+      circuit.walk([&](Operation *op){
+        dumpQuakeOperationToTikz(op,qubitTikz);
+      });
+      #ifdef DEBUG
+        llvm::outs() << "Num qubits " << numQubits << "\n";
+      #endif
+      // dumping the lines into the ostream
+      outputStream << "\\begin{quantikz}\n";
+      int countQubit = 0;
+      for(auto qubit  : qubitTikz){
+        int size = qubit.size();
+        #ifdef DEBUG
+          llvm::outs() << "Ops size " << size << "\n";
+        #endif
+        int countOps = 0;
+        outputStream << "\t";
+        for(auto op : qubit){
+          outputStream << op;
+          if (countOps != size - 1)
+            outputStream << "\t&\t";
+          countOps++;
+        }
+        if (countQubit != numQubits-1)
+          outputStream << "\\\\\n";
+        else
+          outputStream << "\n";
+        countQubit++;
       }
-      if (countQubit != numQubits-1)
-        outputStream << "\\\\\n";
-      else
-        outputStream << "\n";
-      countQubit++;
+      outputStream << "\\end{quantikz}";
     }
-    outputStream << "\\end{quantikz}";
-  }
 private:
   llvm::raw_string_ostream &outputStream; // Store the tikz circuit
 };

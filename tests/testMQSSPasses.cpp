@@ -113,6 +113,16 @@ std::tuple<std::string, std::string> getQuakeAndGolden(std::string cppFile,
   return std::make_tuple(quakeModule, goldenOutput);
 }
 
+std::string normalize(const std::string &str) {
+    std::string result;
+    for (char c : str) {
+        if (c != '\t' && c != '\n' && c != '\\' && c != ' ') {
+            result += c;
+        }
+    }
+    return result;
+}
+
 TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
@@ -272,7 +282,7 @@ TEST(TestMQSSPasses, TestQuakeToTikzPass){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/QuakeToTikzPass.cpp",
-          "./golden-cases/PrintQuakeGatesPass-golden.qke");
+          "./golden-cases/QuakeToTikzPass.tikz.tex");
   #ifdef DEBUG
     std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
   #endif
@@ -290,7 +300,7 @@ TEST(TestMQSSPasses, TestQuakeToTikzPass){
   #ifdef DEBUG
     std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
   #endif
-  //EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+  EXPECT_EQ(normalize(goldenOutput), normalize(moduleOutput));
 }
 
 int main(int argc, char **argv) {

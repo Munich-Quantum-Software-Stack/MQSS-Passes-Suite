@@ -196,7 +196,8 @@ TEST(TestMQSSPasses, TestQuakeQMapPass01){
     |   |
     0---1
   */
-  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},                        {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
+  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
+                          {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
   arch.loadCouplingMap(5, cm);
   std::cout << "Dumping the architecture " << std::endl;
   Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);

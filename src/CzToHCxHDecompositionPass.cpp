@@ -63,7 +63,8 @@ class CzToHCxHDecompositionPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CzToHCxHDecompositionPass)
 
-  llvm::StringRef getArgument() const override { return "cudaq-custom-pass"; }
+  llvm::StringRef getArgument() const override { return "decomposition-cz-to-hcxh"; }
+  llvm::StringRef getDescription() const override { return "Decomposition pass of Cz by H, Cx, and H";}
 
   void runOnOperation() override {
     auto circuit = getOperation();

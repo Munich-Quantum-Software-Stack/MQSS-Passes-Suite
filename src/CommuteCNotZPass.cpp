@@ -37,49 +37,6 @@ using namespace mlir;
 
 namespace {
 
-void CommuteCNotZ(mlir::Operation *currentOp){
-  auto currZOp = dyn_cast_or_null<quake::ZOp>(currentOp);
-  if(!currZOp)
-    return;
-  // check single qubit Z
-  if(currZOp.getTargets().size()!=1 || currZOp.getControls().size()!=0)
-    return;
-  auto prevOp = mqss::utils::getPreviousOperationOnTarget(currZOp, currZOp.getTargets()[0]);
-  auto prevCNot = dyn_cast_or_null<quake::XOp>(prevOp);
-  if (!prevCNot)
-    return;
-  // check that the previous is a two qubits XOp
-  if (prevCNot.getControls().size() != 1 || prevCNot.getTargets().size() !=1)
-    return;
-  // check both targets are the same
-  int targetCNot = mqss::utils::extractIndexFromQuakeExtractRefOp(prevCNot.getTargets()[0].getDefiningOp());
-  int targetCurr = mqss::utils::extractIndexFromQuakeExtractRefOp(currZOp.getTargets()[0].getDefiningOp());
-  if (targetCNot != targetCurr)
-    return;
-  #ifdef DEBUG
-    llvm::outs() << "Current Operation: ";
-    currZOp->print(llvm::outs());
-    llvm::outs() << "\n";
-    llvm::outs() << "Previous Operation: ";
-    prevCNot->print(llvm::outs());
-    llvm::outs() << "\n";
-  #endif
-  // At this point, I shoulb de able to do the commutation
-  // Swap the two operations by cloning them in reverse order.
-  mlir::IRRewriter rewriter(currZOp->getContext());
-  rewriter.setInsertionPointAfter(currZOp);
-  auto newCxOp = rewriter.create<quake::XOp>(prevCNot.getLoc(), prevCNot.isAdj(), 
-                                            prevCNot.getParameters(), prevCNot.getControls(), 
-                                            prevCNot.getTargets());
-  rewriter.setInsertionPoint(newCxOp);
-  rewriter.create<quake::ZOp>(currZOp.getLoc(), currZOp.isAdj(), 
-                              currZOp.getParameters(), currZOp.getControls(), 
-                              currZOp.getTargets());
-  // Erase the original operations
-  rewriter.eraseOp(currZOp);
-  rewriter.eraseOp(prevCNot);
-}
-
 class CommuteCNotZPass
     : public PassWrapper<CommuteCNotZPass , OperationPass<func::FuncOp>> {
 public:
@@ -91,7 +48,8 @@ public:
   void runOnOperation() override {
     auto circuit = getOperation();
     circuit.walk([&](Operation *op){
-      CommuteCNotZ(op);
+      mqss::utils::commuteOperation<quake::XOp, quake::ZOp>(op,1,1,0,1);
+      //CommuteCNotZ(op);
     });
   }
 };

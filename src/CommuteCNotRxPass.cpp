@@ -17,7 +17,7 @@ the License.
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception 
 *************************************************************************
   author Martin Letras
-  date   December 2024
+  date   January 2025
   version 1.0
 
 Adapted from: https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-can-be-implemented-using-a-cnot-gate-and-hadamard-gates

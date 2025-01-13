@@ -37,81 +37,62 @@ using namespace mlir;
 
 namespace {
 
-struct CommuteCNotRx : public OpRewritePattern<quake::XOp> {
-  using OpRewritePattern::OpRewritePattern;
-  LogicalResult matchAndRewrite(quake::XOp cxOp,
-                                PatternRewriter &rewriter) const override {
-    if (cxOp.getControls().size() != 1 && cxOp.getTargets().size() !=1)
-      return success(); // if the cx operation is not two qubit then do nothing 
-    
-    // Check if the next operation is an RxOp. 
-    // But may be the case that the next operation is quake.extract_ref.
-    // I need to jump all the quake.extract_ref until I find a gate
-    Operation *nextOp = cxOp->getNextNode();
-    while(nextOp && isa<quake::ExtractRefOp>(nextOp))
-      nextOp = nextOp->getNextNode();
-
-    auto rxOp = dyn_cast_or_null<quake::RxOp>(nextOp);
-    if(!rxOp)
-      return success(); // if the next operation is not a rotation
-    if(rxOp.getTargets().size() != 1 && rxOp.getControls().size() != 0)
-      return success(); // more paranoia checks
-    
-    #ifdef DEBUG
-      llvm::outs() << "Next Operation (must be rx): ";
-      nextOp->print(llvm::outs());
-      llvm::outs() << "\n";
-      rxOp.getTargets()[0].print(llvm::outs());
-      llvm::outs() << "\n";
-      cxOp.getTargets()[0].print(llvm::outs());
-      llvm::outs() << "\n";
-    #endif
-
-    int targetQubitRx = mqss::utils::extractIndexFromQuakeExtractRefOp(rxOp.getTargets()[0].getDefiningOp());
-    int targetQubitCx = mqss::utils::extractIndexFromQuakeExtractRefOp(cxOp.getTargets()[0].getDefiningOp());
-    // targets should be the same
-    if((targetQubitRx!=targetQubitCx) || (targetQubitRx==-1 || targetQubitCx == -1) )
-      return success(); // return an do nothing
-    // now I can commute the CNot and Rx
-    // Swap the two operations by cloning them in reverse order.
-    rewriter.setInsertionPointAfter(rxOp);
-    auto newXOp = rewriter.create<quake::XOp>(cxOp.getLoc(), cxOp.isAdj(), 
-                                              cxOp.getParameters(), cxOp.getControls(), 
-                                              cxOp.getTargets());
-    rewriter.setInsertionPoint(newXOp);
-    rewriter.create<quake::RxOp>(rxOp.getLoc(), rxOp.isAdj(), 
-                                 rxOp.getParameters(), rxOp.getControls(), 
-                                 rxOp.getTargets());
-
-    // Erase the original operations
-    rewriter.eraseOp(cxOp);
-    rewriter.eraseOp(rxOp);
-    return success();
-  }
-};
+void CommuteCNotRx(mlir::Operation *currentOp){
+  auto currRxOp = dyn_cast_or_null<quake::RxOp>(currentOp);
+  if(!currRxOp)
+    return;
+  // check single qubit Rx
+  if(currRxOp.getTargets().size()!=1 || currRxOp.getControls().size()!=0)
+    return;
+  auto prevOp = mqss::utils::getPreviousOperationOnTarget(currRxOp, currRxOp.getTargets()[0]);
+  auto prevCNot = dyn_cast_or_null<quake::XOp>(prevOp);
+  if (!prevCNot)
+    return;
+  // check that the previous is a two qubits XOp
+  if (prevCNot.getControls().size() != 1 || prevCNot.getTargets().size() !=1)
+    return;
+  // check both targets are the same
+  int targetCNot = mqss::utils::extractIndexFromQuakeExtractRefOp(prevCNot.getTargets()[0].getDefiningOp());
+  int targetCurr = mqss::utils::extractIndexFromQuakeExtractRefOp(currRxOp.getTargets()[0].getDefiningOp());
+  if (targetCNot != targetCurr)
+    return;
+  #ifdef DEBUG
+    llvm::outs() << "Current Operation: ";
+    currRxOp->print(llvm::outs());
+    llvm::outs() << "\n";
+    llvm::outs() << "Previous Operation: ";
+    prevCNot->print(llvm::outs());
+    llvm::outs() << "\n";
+  #endif
+  // At this point, I shoulb de able to do the commutation
+  // Swap the two operations by cloning them in reverse order.
+  mlir::IRRewriter rewriter(currRxOp->getContext());
+  rewriter.setInsertionPointAfter(currRxOp);
+  auto newCxOp = rewriter.create<quake::XOp>(prevCNot.getLoc(), prevCNot.isAdj(),
+                                            prevCNot.getParameters(), prevCNot.getControls(),
+                                            prevCNot.getTargets());
+  rewriter.setInsertionPoint(newCxOp);
+  rewriter.create<quake::RxOp>(currRxOp.getLoc(), currRxOp.isAdj(),
+                              currRxOp.getParameters(), currRxOp.getControls(),
+                              currRxOp.getTargets());
+  // Erase the original operations
+  rewriter.eraseOp(currRxOp);
+  rewriter.eraseOp(prevCNot);
+}
 
 class CommuteCNotRxPass
     : public PassWrapper<CommuteCNotRxPass , OperationPass<func::FuncOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCNotRxPass)
 
-  llvm::StringRef getArgument() const override { return "cudaq-custom-pass"; }
+  llvm::StringRef getArgument() const override { return "commute-cnotrx-pass"; }
+  llvm::StringRef getDescription() const override { return "Apply commutation pass of the pattern CNot-Rx";}
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    auto ctx = circuit.getContext();
-    llvm::outs() << "Starting to operate pass \n";
-    RewritePatternSet patterns(ctx);
-    patterns.insert<CommuteCNotRx>(ctx);
-    ConversionTarget target(*ctx);
-    target.addLegalDialect<quake::QuakeDialect>();
-
-    // the applyPatternsAndFoldGreedily will try to attemp the replacement pattern
-    // a given number of iterations
-    // Configure the GreedyRewriteConfig.
-    mlir::GreedyRewriteConfig config;
-    config.maxIterations = 2; // Set the maximum number of iterations.
-    applyPatternsAndFoldGreedily(circuit,  std::move(patterns), config);
+    circuit.walk([&](Operation *op){
+      CommuteCNotRx(op);
+    });
   }
 };
 } // namespace

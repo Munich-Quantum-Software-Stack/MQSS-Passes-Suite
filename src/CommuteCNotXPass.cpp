@@ -38,7 +38,6 @@ using namespace mlir;
 namespace {
 
 void CommuteCNotX(mlir::Operation *currentOp){
-  //auto prevXOp = dyn_cast_or_null<quake::XOp>(prevOp);
   auto currXOp = dyn_cast_or_null<quake::XOp>(currentOp);
   if(!currXOp)
     return;

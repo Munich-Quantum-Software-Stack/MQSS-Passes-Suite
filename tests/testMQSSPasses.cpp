@@ -392,7 +392,7 @@ TEST(TestMQSSPasses, CommuteCnotXPass){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/CommuteCNotXPass.cpp",
-          "./golden-cases/CommuteCNotRxPass.qke");
+          "./golden-cases/CommuteCNotXPass.qke");
   #ifdef DEBUG
     std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
   #endif
@@ -414,7 +414,36 @@ TEST(TestMQSSPasses, CommuteCnotXPass){
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
   mlirModule->print(stringStream);
-  //EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
+TEST(TestMQSSPasses, CommuteCnotZPass){
+  // load mlir module and the golden output
+  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
+          "./code/CommuteCNotZPass.cpp",
+          "./golden-cases/CommuteCNotZPass.qke");
+  #ifdef DEBUG
+    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  #endif
+  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+  mlir::MLIRContext &context = *contextPtr;
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  // Adding the QuakeQMap pass to the PassManager
+  pm.addPass(mlir::createCanonicalizerPass());
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createCommuteCNotZPass());
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule)))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Decomposed Circuit:\n";
+    mlirModule->dump();
+  #endif
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
 int main(int argc, char **argv) {

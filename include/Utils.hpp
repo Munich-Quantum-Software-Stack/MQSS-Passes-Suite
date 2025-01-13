@@ -97,6 +97,30 @@ namespace mqss::utils{
     return parameters;
   }
 
+  inline mlir::Operation *getPreviousOperationOnTarget(mlir::Operation *currentOp, mlir::Value targetQubit){
+    // Start from the previous operation
+    mlir::Operation *prevOp = currentOp->getPrevNode();
+    // Iterate through the previous operations in the block
+    while (prevOp) {
+      // Check if the operation has a target qubit and matches the given target
+      if (auto quakeOp = dyn_cast<quake::OperatorInterface>(prevOp)) {
+          int targetQCurr = mqss::utils::extractIndexFromQuakeExtractRefOp(targetQubit.getDefiningOp());
+        for (mlir::Value target : quakeOp.getTargets()) {
+          int targetQPrev = mqss::utils::extractIndexFromQuakeExtractRefOp(target.getDefiningOp());
+          if (targetQCurr  == targetQPrev)
+            return prevOp;
+        }
+        for (mlir::Value control : quakeOp.getControls()) {
+          int controlQPrev = mqss::utils::extractIndexFromQuakeExtractRefOp(control.getDefiningOp());
+          if (targetQCurr  == controlQPrev)
+            return prevOp;
+        }
+      }
+      // Move to the previous operation
+      prevOp = prevOp->getPrevNode();
+      }
+      return nullptr; // No matching previous operation found
+  }
 
 } // end namespace
 #endif // UTILS_H

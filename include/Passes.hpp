@@ -124,6 +124,16 @@ std::unique_ptr<mlir::Pass> createCommuteCNotXPass();
 std::unique_ptr<mlir::Pass> createCommuteCNotZPass();
 
 /**
+ * @brief QUAKE MLIR pass that operates on the pattern composed of Rx and a two-qubits CNot.
+   @details This method constructs an `mlir::Pass` of the type CommuteRxCNotPass. This pass operates on all the patterns composed of a Rx and a two-qubits CNot in a given QUAKE MLIR module and performs its replacement by a pattern composed of  CNot and Rx (commuting), as follows.
+
+  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+
+ @return An `mlir::Pass` object containing the definition of the CommuteRxCNotPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createCommuteRxCNotPass();
+
+/**
  * @brief QUAKE MLIR pass that generates a tikz diagram to be built using LaTeX.
    @details This method constructs an `mlir::Pass` of the type QuakeToTikzPass. This pass generates a tizk diagram of a given input QUAKE MLIR module.
    @param[out] ostream A raw stream object that stores the tikz diagram that later can be built using LaTeX.

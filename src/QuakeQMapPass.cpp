@@ -190,7 +190,8 @@ public:
   : architecture(architecture), settings(settings) {
   }
 
-  llvm::StringRef getArgument() const override { return "cudaq-custom-pass"; }
+  llvm::StringRef getArgument() const override { return "quake-to-qmap-pass"; }
+  llvm::StringRef getDescription() const override { return "Pass that maps a given quake module respecting the constraints of a given quantum device, using mqt-qmap tool";}
 
   void runOnOperation() override {
     // Getting the function

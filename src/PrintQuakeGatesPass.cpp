@@ -51,7 +51,8 @@ public:
   PrintQuakeGatesPass(llvm::raw_string_ostream &ostream) : outputStream(ostream) {}
 
 
-  llvm::StringRef getArgument() const override { return "cudaq-custom-pass"; }
+  llvm::StringRef getArgument() const override { return "print-quake-gates-pass"; }
+  llvm::StringRef getDescription() const override { return "Example pass that traverses a given mlir module, print its gates and a description of the operands of each gate";}
 
   void runOnOperation() override {
     auto circuit = getOperation();

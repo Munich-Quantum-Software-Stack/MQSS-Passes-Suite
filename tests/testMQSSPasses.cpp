@@ -305,7 +305,7 @@ TEST(TestMQSSPasses, TestQuakeToTikzPass){
   EXPECT_EQ(normalize(goldenOutput), normalize(moduleOutput));
 }
 
-TEST(TestMQSSPasses, TestCxToHCzHDecompositionPass){
+/*TEST(TestMQSSPasses, TestCxToHCzHDecompositionPass){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/CxToHCzHDecompositionPass.cpp",
@@ -532,7 +532,95 @@ TEST(TestMQSSPasses, CommuteZCnotPass){
   llvm::raw_string_ostream stringStream(moduleOutput);
   mlirModule->print(stringStream);
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}*/
+
+std::tuple<std::string,std::string> behaviouralTest(std::tuple<std::string, 
+                                       std::string, 
+                                       std::string, 
+                                       std::function<std::unique_ptr<mlir::Pass>()>> test){
+  std::string fileInputTest  = std::get<1>(test);
+  std::string fileGoldenCase = std::get<2>(test);
+  auto passMlir = std::get<3>(test);
+  // Invoke the function to create the pass
+  std::unique_ptr<mlir::Pass> pass = passMlir();
+
+  // load mlir module and the golden output
+  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
+          fileInputTest,
+          fileGoldenCase);
+  #ifdef DEBUG
+    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+  #endif
+  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+  mlir::MLIRContext &context = *contextPtr;
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  // Adding the QuakeQMap pass to the PassManager
+  pm.addPass(mlir::createCanonicalizerPass());
+  //auto pass = passMlir();
+  pm.nest<mlir::func::FuncOp>().addPass(std::move(pass));
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule)))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Circuit after pass:\n";
+    mlirModule->dump();
+  #endif
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  return std::make_tuple(goldenOutput, moduleOutput);
 }
+
+class BehaviouralTestPassesMQSS : public ::testing::TestWithParam<std::tuple<std::string, std::string, std::string, std::function<std::unique_ptr<mlir::Pass>()>>> {};
+
+TEST_P(BehaviouralTestPassesMQSS , Run) {
+    std::tuple<std::string, std::string, std::string, std::function<std::unique_ptr<mlir::Pass>()>> p = GetParam();
+    std::string testName = std::get<0>(p);
+    SCOPED_TRACE(testName);
+    auto [goldenOutput, moduleOutput] = behaviouralTest(p);
+    EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    MQSSPassTests,
+    BehaviouralTestPassesMQSS,
+    ::testing::Values(
+      std::make_tuple("TestCxToHCzHDecompositionPass",
+                      "./code/CxToHCzHDecompositionPass.cpp", 
+                      "./golden-cases/CxToHCzHDecompositionPass.qke", 
+                      []() { return mqss::opt::createCxToHCzHDecompositionPass();}),
+      std::make_tuple("TestCzToHCxHDecompositionPass", 
+                      "./code/CzToHCxHDecompositionPass.cpp",
+                      "./golden-cases/CzToHCxHDecompositionPass.qke", 
+                      []() { return mqss::opt::createCzToHCxHDecompositionPass();}), 
+      std::make_tuple("TestCommuteCnotRxPass", 
+                      "./code/CommuteCNotRxPass.cpp",
+                      "./golden-cases/CommuteCNotRxPass.qke", 
+                      []() { return mqss::opt::createCommuteCNotRxPass();}),
+      std::make_tuple("TestCommuteCnotXPass", 
+                      "./code/CommuteCNotXPass.cpp",
+                      "./golden-cases/CommuteCNotXPass.qke", 
+                      []() { return mqss::opt::createCommuteCNotXPass();}),
+      std::make_tuple("TestCommuteCnotZPass", 
+                      "./code/CommuteCNotZPass.cpp",
+                      "./golden-cases/CommuteCNotZPass.qke", 
+                      []() { return mqss::opt::createCommuteCNotZPass();}),
+      std::make_tuple("TestCommuteRxCnotPass", 
+                      "./code/CommuteRxCNotPass.cpp",
+                      "./golden-cases/CommuteRxCNotPass.qke", 
+                      []() { return mqss::opt::createCommuteRxCNotPass();}),
+      std::make_tuple("TestCommuteXCNotPass", 
+                      "./code/CommuteXCNotPass.cpp",
+                      "./golden-cases/CommuteXCNotPass.qke", 
+                      []() { return mqss::opt::createCommuteXCNotPass();}),
+      std::make_tuple("TestCommuteZCnotPass", 
+                      "./code/CommuteZCNotPass.cpp",
+                      "./golden-cases/CommuteZCNotPass.qke", 
+                      []() { return mqss::opt::createCommuteZCNotPass();})
+    )
+);
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

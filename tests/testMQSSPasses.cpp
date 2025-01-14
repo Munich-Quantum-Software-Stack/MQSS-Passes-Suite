@@ -344,7 +344,10 @@ std::tuple<std::string,std::string> behaviouralTest(std::tuple<std::string,
   return std::make_tuple(goldenOutput, moduleOutput);
 }
 
-class BehaviouralTestPassesMQSS : public ::testing::TestWithParam<std::tuple<std::string, std::string, std::string, std::function<std::unique_ptr<mlir::Pass>()>>> {};
+class BehaviouralTestPassesMQSS : 
+        public ::testing::TestWithParam<std::tuple<std::string, 
+                                                   std::string, std::string, 
+                                                   std::function<std::unique_ptr<mlir::Pass>()>>> {};
 
 TEST_P(BehaviouralTestPassesMQSS , Run) {
     std::tuple<std::string, std::string, std::string, std::function<std::unique_ptr<mlir::Pass>()>> p = GetParam();

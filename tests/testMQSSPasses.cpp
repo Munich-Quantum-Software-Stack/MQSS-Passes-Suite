@@ -619,7 +619,11 @@ INSTANTIATE_TEST_SUITE_P(
                       "./code/CommuteZCNotPass.cpp",
                       "./golden-cases/CommuteZCNotPass.qke", 
                       []() { return mqss::opt::createCommuteZCNotPass();})
-    )
+    ),
+  [](const ::testing::TestParamInfo<BehaviouralTestPassesMQSS::ParamType>& info) {
+        // Use the first element of the tuple (testName) as the custom test name
+        return std::get<0>(info.param);
+  }
 );
 
 int main(int argc, char **argv) {

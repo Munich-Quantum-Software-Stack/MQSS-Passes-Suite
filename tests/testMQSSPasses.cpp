@@ -127,7 +127,7 @@ TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/PrintQuakeGatesPass.cpp",
-          "./golden-cases/PrintQuakeGatesPass-golden.qke");
+          "./golden-cases/PrintQuakeGatesPass.qke");
   #ifdef DEBUG
     std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
   #endif
@@ -148,38 +148,11 @@ TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
-TEST(TestMQSSPasses, TestCustomExamplePass){
-  // load mlir module and the golden output
-  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
-          "./code/CustomExamplePass.cpp",
-          "./golden-cases/CustomExamplePass-golden.qke");
-  #ifdef DEBUG
-    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
-  #endif
-  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
-  mlir::MLIRContext &context = *contextPtr;
-  // creating pass manager
-  mlir::PassManager pm(&context);
-  // Adding custom pass
-  pm.addNestedPass<mlir::func::FuncOp>(mqss::opt::createCustomExamplePass());
-  // running the pass
-  if(mlir::failed(pm.run(mlirModule)))
-    std::runtime_error("The pass failed...");
-  // Convert the module to a string
-  std::string moduleAsString;
-  llvm::raw_string_ostream stringStream(moduleAsString);
-  mlirModule->print(stringStream);
-
-  std::cout << "Module after Pass\n" << moduleAsString << std::endl;
-
-  EXPECT_EQ(goldenOutput, moduleAsString);
-}
-
 TEST(TestMQSSPasses, TestQuakeQMapPass01){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/QuakeQMapPass-01.cpp",
-          "./golden-cases/QuakeQMapPass-01-golden.qke");
+          "./golden-cases/QuakeQMapPass-01.qke");
   #ifdef DEBUG
     std::cout << "Input Quake Module 01 "<<std::endl<< quakeModule << std::endl;
   #endif
@@ -231,7 +204,7 @@ TEST(TestMQSSPasses, TestQuakeQMapPass02){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/QuakeQMapPass-02.cpp",
-          "./golden-cases/QuakeQMapPass-02-golden.qke");
+          "./golden-cases/QuakeQMapPass-02.qke");
   #ifdef DEBUG
     std::cout << "Input Quake Module 01 "<<std::endl<< quakeModule << std::endl;
   #endif
@@ -345,12 +318,16 @@ std::tuple<std::string,std::string> behaviouralTest(std::tuple<std::string,
 }
 
 class BehaviouralTestPassesMQSS : 
-        public ::testing::TestWithParam<std::tuple<std::string, 
-                                                   std::string, std::string, 
-                                                   std::function<std::unique_ptr<mlir::Pass>()>>> {};
+  public ::testing::TestWithParam<std::tuple<std::string, 
+                                             std::string, 
+                                             std::string, 
+                                             std::function<std::unique_ptr<mlir::Pass>()>>> {};
 
 TEST_P(BehaviouralTestPassesMQSS , Run) {
-    std::tuple<std::string, std::string, std::string, std::function<std::unique_ptr<mlir::Pass>()>> p = GetParam();
+    std::tuple<std::string, 
+               std::string, 
+               std::string, 
+               std::function<std::unique_ptr<mlir::Pass>()>> p = GetParam();
     std::string testName = std::get<0>(p);
     SCOPED_TRACE(testName);
     auto [goldenOutput, moduleOutput] = behaviouralTest(p);
@@ -361,6 +338,10 @@ INSTANTIATE_TEST_SUITE_P(
     MQSSPassTests,
     BehaviouralTestPassesMQSS,
     ::testing::Values(
+      std::make_tuple("TestCustomExamplePass",
+                      "./code/CustomExamplePass.cpp",
+                      "./golden-cases/CustomExamplePass.qke" ,
+                      []() { return mqss::opt::createCustomExamplePass();}),
       std::make_tuple("TestCxToHCzHDecompositionPass",
                       "./code/CxToHCzHDecompositionPass.cpp", 
                       "./golden-cases/CxToHCzHDecompositionPass.qke", 

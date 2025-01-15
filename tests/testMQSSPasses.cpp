@@ -93,7 +93,6 @@ std::string readFileToString(const std::string &filename) {
         std::cerr << "Error opening file: " << filename << std::endl;
         return "";
     }
-
     std::ostringstream fileContents;
     fileContents << file.rdbuf();  // Read the whole file into the string stream
     return fileContents.str();  // Convert the string stream to a string
@@ -335,46 +334,46 @@ TEST_P(BehaviouralTestPassesMQSS , Run) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    MQSSPassTests,
-    BehaviouralTestPassesMQSS,
-    ::testing::Values(
-      std::make_tuple("TestCustomExamplePass",
-                      "./code/CustomExamplePass.cpp",
-                      "./golden-cases/CustomExamplePass.qke" ,
-                      []() { return mqss::opt::createCustomExamplePass();}),
-      std::make_tuple("TestCxToHCzHDecompositionPass",
-                      "./code/CxToHCzHDecompositionPass.cpp", 
-                      "./golden-cases/CxToHCzHDecompositionPass.qke", 
-                      []() { return mqss::opt::createCxToHCzHDecompositionPass();}),
-      std::make_tuple("TestCzToHCxHDecompositionPass", 
-                      "./code/CzToHCxHDecompositionPass.cpp",
-                      "./golden-cases/CzToHCxHDecompositionPass.qke", 
-                      []() { return mqss::opt::createCzToHCxHDecompositionPass();}), 
-      std::make_tuple("TestCommuteCnotRxPass", 
-                      "./code/CommuteCNotRxPass.cpp",
-                      "./golden-cases/CommuteCNotRxPass.qke", 
-                      []() { return mqss::opt::createCommuteCNotRxPass();}),
-      std::make_tuple("TestCommuteCnotXPass", 
-                      "./code/CommuteCNotXPass.cpp",
-                      "./golden-cases/CommuteCNotXPass.qke", 
-                      []() { return mqss::opt::createCommuteCNotXPass();}),
-      std::make_tuple("TestCommuteCnotZPass", 
-                      "./code/CommuteCNotZPass.cpp",
-                      "./golden-cases/CommuteCNotZPass.qke", 
-                      []() { return mqss::opt::createCommuteCNotZPass();}),
-      std::make_tuple("TestCommuteRxCnotPass", 
-                      "./code/CommuteRxCNotPass.cpp",
-                      "./golden-cases/CommuteRxCNotPass.qke", 
-                      []() { return mqss::opt::createCommuteRxCNotPass();}),
-      std::make_tuple("TestCommuteXCNotPass", 
-                      "./code/CommuteXCNotPass.cpp",
-                      "./golden-cases/CommuteXCNotPass.qke", 
-                      []() { return mqss::opt::createCommuteXCNotPass();}),
-      std::make_tuple("TestCommuteZCnotPass", 
-                      "./code/CommuteZCNotPass.cpp",
-                      "./golden-cases/CommuteZCNotPass.qke", 
-                      []() { return mqss::opt::createCommuteZCNotPass();})
-    ),
+  MQSSPassTests,
+  BehaviouralTestPassesMQSS,
+  ::testing::Values(
+    std::make_tuple("TestCustomExamplePass",
+                    "./code/CustomExamplePass.cpp",
+                    "./golden-cases/CustomExamplePass.qke" ,
+                    []() { return mqss::opt::createCustomExamplePass();}),
+    std::make_tuple("TestCxToHCzHDecompositionPass",
+                    "./code/CxToHCzHDecompositionPass.cpp", 
+                    "./golden-cases/CxToHCzHDecompositionPass.qke", 
+                    []() { return mqss::opt::createCxToHCzHDecompositionPass();}),
+    std::make_tuple("TestCzToHCxHDecompositionPass", 
+                    "./code/CzToHCxHDecompositionPass.cpp",
+                    "./golden-cases/CzToHCxHDecompositionPass.qke", 
+                    []() { return mqss::opt::createCzToHCxHDecompositionPass();}), 
+    std::make_tuple("TestCommuteCnotRxPass", 
+                    "./code/CommuteCNotRxPass.cpp",
+                    "./golden-cases/CommuteCNotRxPass.qke", 
+                    []() { return mqss::opt::createCommuteCNotRxPass();}),
+    std::make_tuple("TestCommuteCnotXPass", 
+                    "./code/CommuteCNotXPass.cpp",
+                    "./golden-cases/CommuteCNotXPass.qke", 
+                    []() { return mqss::opt::createCommuteCNotXPass();}),
+    std::make_tuple("TestCommuteCnotZPass", 
+                    "./code/CommuteCNotZPass.cpp",
+                    "./golden-cases/CommuteCNotZPass.qke", 
+                    []() { return mqss::opt::createCommuteCNotZPass();}),
+    std::make_tuple("TestCommuteRxCnotPass", 
+                    "./code/CommuteRxCNotPass.cpp",
+                    "./golden-cases/CommuteRxCNotPass.qke", 
+                    []() { return mqss::opt::createCommuteRxCNotPass();}),
+    std::make_tuple("TestCommuteXCNotPass", 
+                    "./code/CommuteXCNotPass.cpp",
+                    "./golden-cases/CommuteXCNotPass.qke", 
+                    []() { return mqss::opt::createCommuteXCNotPass();}),
+    std::make_tuple("TestCommuteZCnotPass", 
+                    "./code/CommuteZCNotPass.cpp",
+                    "./golden-cases/CommuteZCNotPass.qke", 
+                    []() { return mqss::opt::createCommuteZCNotPass();})
+  ),
   [](const ::testing::TestParamInfo<BehaviouralTestPassesMQSS::ParamType>& info) {
         // Use the first element of the tuple (testName) as the custom test name
         return std::get<0>(info.param);
@@ -382,6 +381,6 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

@@ -185,6 +185,9 @@ TEST(TestMQSSPasses, TestQuakeQMapPass01){
   settings.addMeasurementsToMappedCircuit = true;
   // Adding the QuakeQMap pass to the PassManager
   pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeQMapPass(arch,settings));
+  // pass to canonical form and remove non-used operations
+  pm.addPass(mlir::createCanonicalizerPass());
+  pm.addPass(mlir::createCSEPass());
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
@@ -237,6 +240,9 @@ TEST(TestMQSSPasses, TestQuakeQMapPass02){
   settings.addMeasurementsToMappedCircuit = true;
   // Adding the QuakeQMap pass to the PassManager
   pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeQMapPass(arch,settings));
+  // pass to canonical form and remove non-used operations
+  pm.addPass(mlir::createCanonicalizerPass());
+  pm.addPass(mlir::createCSEPass());
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
@@ -298,10 +304,11 @@ std::tuple<std::string,std::string> behaviouralTest(std::tuple<std::string,
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager
   mlir::PassManager pm(&context);
-  // Adding the QuakeQMap pass to the PassManager
-  pm.addPass(mlir::createCanonicalizerPass());
-  //auto pass = passMlir();
+  // Adding the pass to the PassManager
   pm.nest<mlir::func::FuncOp>().addPass(std::move(pass));
+  // pass to canonical form and remove non-used operations
+  pm.addPass(mlir::createCanonicalizerPass());
+  pm.addPass(mlir::createCSEPass());
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
@@ -372,7 +379,11 @@ INSTANTIATE_TEST_SUITE_P(
     std::make_tuple("TestCommuteZCnotPass", 
                     "./code/CommuteZCNotPass.cpp",
                     "./golden-cases/CommuteZCNotPass.qke", 
-                    []() { return mqss::opt::createCommuteZCNotPass();})
+                    []() { return mqss::opt::createCommuteZCNotPass();}),
+    std::make_tuple("DoubleCnotCancellationPass",
+                    "./code/DoubleCnotCancellationPass.cpp",
+                    "./golden-cases/DoubleCnotCancellationPass.qke",
+                    []() { return mqss::opt::createDoubleCnotCancellationPass();})
   ),
   [](const ::testing::TestParamInfo<BehaviouralTestPassesMQSS::ParamType>& info) {
         // Use the first element of the tuple (testName) as the custom test name

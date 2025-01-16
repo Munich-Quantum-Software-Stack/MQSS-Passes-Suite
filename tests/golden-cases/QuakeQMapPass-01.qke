@@ -8,21 +8,13 @@ module attributes {llvm.data_layout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i6
     %4 = quake.extract_ref %0[2] : (!quake.veq<5>) -> !quake.ref
     quake.x [%4] %3 : (!quake.ref, !quake.ref) -> ()
     %5 = quake.extract_ref %0[0] : (!quake.veq<5>) -> !quake.ref
-    %6 = quake.extract_ref %0[4] : (!quake.veq<5>) -> !quake.ref
-    quake.swap %5, %6 : (!quake.ref, !quake.ref) -> ()
-    %7 = quake.extract_ref %0[1] : (!quake.veq<5>) -> !quake.ref
-    %8 = quake.extract_ref %0[0] : (!quake.veq<5>) -> !quake.ref
-    quake.x [%8] %7 : (!quake.ref, !quake.ref) -> ()
-    %9 = quake.extract_ref %0[0] : (!quake.veq<5>) -> !quake.ref
-    %measOut = quake.mz %9 : (!quake.ref) -> !quake.measure
-    %10 = quake.extract_ref %0[1] : (!quake.veq<5>) -> !quake.ref
-    %measOut_0 = quake.mz %10 : (!quake.ref) -> !quake.measure
-    %11 = quake.extract_ref %0[2] : (!quake.veq<5>) -> !quake.ref
-    %measOut_1 = quake.mz %11 : (!quake.ref) -> !quake.measure
-    %12 = quake.extract_ref %0[3] : (!quake.veq<5>) -> !quake.ref
-    %measOut_2 = quake.mz %12 : (!quake.ref) -> !quake.measure
-    %13 = quake.extract_ref %0[4] : (!quake.veq<5>) -> !quake.ref
-    %measOut_3 = quake.mz %13 : (!quake.ref) -> !quake.measure
+    quake.swap %5, %2 : (!quake.ref, !quake.ref) -> ()
+    quake.x [%5] %3 : (!quake.ref, !quake.ref) -> ()
+    %measOut = quake.mz %5 : (!quake.ref) -> !quake.measure
+    %measOut_0 = quake.mz %3 : (!quake.ref) -> !quake.measure
+    %measOut_1 = quake.mz %4 : (!quake.ref) -> !quake.measure
+    %measOut_2 = quake.mz %1 : (!quake.ref) -> !quake.measure
+    %measOut_3 = quake.mz %2 : (!quake.ref) -> !quake.measure
     return
   }
   func.func @_ZN3ghzILm5EEclEv(%arg0: !cc.ptr<i8>) {

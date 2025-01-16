@@ -146,9 +146,8 @@ namespace mqss::utils{
       }
       return nullptr; // No matching previous operation found
   }
- 
-  // Finds the pattern composed of T2, T1 and commute them to T1, T2
 
+  // Finds the pattern composed of T2, T1 and commute them to T1, T2
   template <typename T1, typename T2>
   inline void commuteOperation(mlir::Operation *currentOp,
                                int nCtrlsOp1,
@@ -197,6 +196,68 @@ namespace mqss::utils{
                         currentGate.getParameters(), currentGate.getControls(),
                         currentGate.getTargets());
     // Erase the original operations
+    rewriter.eraseOp(currentGate);
+    rewriter.eraseOp(previousGate);
+  }
+
+  // Finds the pattern composed of T2, T1 and remove them
+  // Targets and controls should be the same on boths
+  template <typename T1, typename T2>
+  inline void patternCancellation(mlir::Operation *currentOp,
+                               int nCtrlsOp1,
+                               int nTgtsOp1,
+                               int nCtrlsOp2,
+                               int nTgtsOp2){
+    auto currentGate = dyn_cast_or_null<T2>(*currentOp);
+    if (!currentGate)
+      return;
+    // check that the current gate is compliant with the number of controls and targets
+    if (currentGate.getControls().size() != nCtrlsOp2 ||
+        currentGate.getTargets().size() != nTgtsOp2)
+      return;
+    // get the previous operation to check the swap pattern
+    auto prevOp = getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+    auto previousGate = dyn_cast_or_null<T1>(prevOp);
+    if (!previousGate)
+      return;
+    // check that the previous gate is compliant with the number of controls and targets
+    if (previousGate.getControls().size() != nCtrlsOp1 ||
+        previousGate.getTargets().size() != nTgtsOp1)
+      return;
+    // check that targets and controls are the same!
+    // At the moment I am checking all controls and all targets!
+    if(currentGate.getControls().size() == previousGate.getControls().size()){
+      std::vector<int> controlsCurr = getIndicesOfValueRange(currentGate.getControls());
+      std::vector<int> controlsPrev = getIndicesOfValueRange(previousGate.getControls());
+      // sort both arrays
+      std::sort(controlsCurr.begin(), controlsCurr.end(), std::greater<int>());
+      std::sort(controlsPrev.begin(), controlsPrev.end(), std::greater<int>());
+      // compare both arrays
+      if (!(std::equal(controlsCurr.begin(), controlsCurr.end(), controlsPrev.begin())))
+        return;
+    } else return;
+    // so far, controls are the same, now check the targets
+    if(currentGate.getTargets().size() == previousGate.getTargets().size()){
+      std::vector<int> targetsCurr = getIndicesOfValueRange(currentGate.getTargets());
+      std::vector<int> targetsPrev = getIndicesOfValueRange(previousGate.getTargets());
+      // sort both arrays
+      std::sort(targetsCurr.begin(), targetsCurr.end(), std::greater<int>());
+      std::sort(targetsPrev.begin(), targetsPrev.end(), std::greater<int>());
+      // compare both arrays
+      if (!(std::equal(targetsCurr.begin(), targetsCurr.end(), targetsPrev.begin())))
+        return;
+    } else return;
+    #ifdef DEBUG
+      llvm::outs() << "Current Operation: ";
+      currentGate->print(llvm::outs());
+      llvm::outs() << "\n";
+      llvm::outs() << "Previous Operation: ";
+      previousGate->print(llvm::outs());
+      llvm::outs() << "\n";
+    #endif
+    // At this point, I should de able to remove the pattern
+    mlir::IRRewriter rewriter(currentGate->getContext());
+    // Erase the operations
     rewriter.eraseOp(currentGate);
     rewriter.eraseOp(previousGate);
   }

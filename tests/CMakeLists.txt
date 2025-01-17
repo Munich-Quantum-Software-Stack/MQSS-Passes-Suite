@@ -11,23 +11,29 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${MLIR_INCLUDE_DIRS})
 
+# Define the common libraries to link
+set(COMMON_LIBRARIES
+  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq.so
+  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-spin.so
+  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-common.so
+  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-nlopt.so
+  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-platform-default.so
+  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-em-default.so
+  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-ensmallen.so
+  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-mlir-runtime.so
+  ${GTEST_LIBRARIES}
+  pthread)
+
 # Test executable
 add_executable(testMQSSPasses testMQSSPasses.cpp)
-
-target_link_libraries(testMQSSPasses  PRIVATE
-                      ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq.so
-                      ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-spin.so
-                      ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-common.so
-                      ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-nlopt.so
-                      ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-platform-default.so
-                      ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-em-default.so
-                      ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-ensmallen.so
-                      ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-mlir-runtime.so
-                      ${GTEST_LIBRARIES}
-                      MQSSPasses
-                      pthread)
-
+target_link_libraries(testMQSSPasses PRIVATE ${COMMON_LIBRARIES} MQSSPasses)
 target_include_directories(testMQSSPasses PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${CUDAQ_MLIR_RUNTIME_PATH})
+
+add_executable(testDecompositionPasses testCudaQDecompositionPasses.cpp)
+target_link_libraries(testDecompositionPasses PRIVATE ${COMMON_LIBRARIES} MQSSPasses)
+target_include_directories(testDecompositionPasses PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
 

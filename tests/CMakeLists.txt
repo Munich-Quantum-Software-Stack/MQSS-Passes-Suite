@@ -32,8 +32,14 @@ target_include_directories(testMQSSPasses PRIVATE
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
 add_executable(testDecompositionPasses testCudaQDecompositionPasses.cpp)
-target_link_libraries(testDecompositionPasses PRIVATE ${COMMON_LIBRARIES} MQSSPasses)
+target_link_libraries(testDecompositionPasses PRIVATE ${COMMON_LIBRARIES})
 target_include_directories(testDecompositionPasses PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${CUDAQ_MLIR_RUNTIME_PATH})
+
+add_executable(testTranspiler testCudaQTranspiler.cpp)
+target_link_libraries(testTranspiler PRIVATE ${COMMON_LIBRARIES})
+target_include_directories(testTranspiler PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
 

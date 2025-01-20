@@ -9,7 +9,7 @@
 \end{quantikz}
 {\Huge{\textbf{=}}}
 \begin{quantikz}
-	\lstick{\ket{0}}	&	\ctrl{1}	&	\gate{phased_rx(1.57 , 0.00)}	&	\gate{phased_rx(-1.57 , 1.57)}	&	\gate{phased_rx(-1.57 , 0.00)}	&	\meter{}\\
+	\lstick{\ket{0}}	&	\ctrl{1}	&	\gate{prx(1.57 , 0.00)}	&	\gate{prx(-1.57 , 1.57)}	&	\gate{prx(-1.57 , 0.00)}	&	\meter{}\\
 	\lstick{\ket{0}}	&	\gate{x}	&	\qw	&	\qw	&	\qw	&	\meter{}
 \end{quantikz}
 \end{document}

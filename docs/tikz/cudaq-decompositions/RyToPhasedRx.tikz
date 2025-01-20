@@ -10,6 +10,6 @@
 {\Huge{\textbf{=}}}
 \begin{quantikz}
 	\lstick{\ket{0}}	&	\gate{z}	&	\qw	&	\meter{}\\
-	\lstick{\ket{0}}	&	\qw	&	\gate{phased_rx(0.50 , 1.57)}	&	\meter{}
+	\lstick{\ket{0}}	&	\qw	&	\gate{prx(0.50 , 1.57)}	&	\meter{}
 \end{quantikz}
 \end{document}

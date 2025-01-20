@@ -80,6 +80,15 @@ foreach(IMG_FILE IN LISTS IMG_FILES)
   file(COPY ${IMG_FILE}
           DESTINATION ${DOXYGEN_OUTPUT_DIR}/html/docs/_static/)
 endforeach()
+
+# Copy images to be shown in the mqss-passes
+file(GLOB IMG_FILES "_static/mqss-passes/*.png")
+# Iterate through IMG_FILES to copy each file
+foreach(IMG_FILE IN LISTS IMG_FILES)
+  file(COPY ${IMG_FILE}
+          DESTINATION ${DOXYGEN_OUTPUT_DIR}/html/docs/_static/mqss-passes)
+endforeach()
+
 # Set the logo for the project.
 set(PROJECT_LOGO "mqss_logo.svg")
 

@@ -20,15 +20,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   December 2024
   version 1.0
   brief
-  This file contains the unitary tests for each MLIR pass in the Munich Quantum
-  Software Stack (MQSS).
-  * Folder code has quantum kernels writen in CudaQ (cpp).
-  * Folder golden contains the expected modified quantum kernel in MLIR for each
-    MLIR pass.
-  1. In each test, the quantum kernel in CudaQ is lowered to QUAKE MLIR.
-  2. Then the pass is applied to the QUAKE MLIR kernel.
-  3. The output of the pass is compared to the expected output.
-  4. Succes if both expected output and the output obtained by the pass matches.
+  This file contains the unitary tests for the transpiler mechanism.
+  The shown target backends are: WMI, PlanQ, IQM and AQT
 
 ******************************************************************************/
 

@@ -53,6 +53,9 @@ namespace mqss::opt{
 /**
  * @brief Example custom MLIR pass.
    @details This method constructs an mlir::Pass of the type CustomExamplePass. This pass operates on any given QUAKE MLIR module and replaces all Hadamard gates into a quantum circuit by S gates.
+
+  \image html docs/_static/mqss-passes/CustomExamplePass.png width=60%
+
    @return An `mlir::Pass` object containing the definition of the CustomExamplePass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to transform any given MLIR module.
  */
 std::unique_ptr<mlir::Pass> createCustomExamplePass();
@@ -69,6 +72,10 @@ std::unique_ptr<mlir::Pass> createPrintQuakeGatesPass(llvm::raw_string_ostream &
    @details This method constructs an `mlir::Pass` of the type QuakeQMapPass. This pass operates on any QUAKE MLIR module and performs the mapping of any given quantum circuit to an specific quantum superconducting device.
   @param[out] architecture is the selected superconducting quantum device configuration, including important information for mapping, i.e., connectivity of all the qubits
   @param[out] settings defines the configuration of the mapper, for more details visit MQT-QMAP official documentation.
+
+  \image html docs/_static/mqss-passes/QuakeQMapPass-01.png width=50%
+  \image html docs/_static/mqss-passes/QuakeQMapPass-02.png width=95%
+
  @return An `mlir::Pass` object containing the definition of the QuakeQMapPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module. After applying this pass, any given circuit is transformed to fulfill the physical constraints imposed by the selected quantum device `architecture` and `settings`.
  */
 std::unique_ptr<mlir::Pass> createQuakeQMapPass(Architecture &architecture, const Configuration &settings);
@@ -77,7 +84,7 @@ std::unique_ptr<mlir::Pass> createQuakeQMapPass(Architecture &architecture, cons
  * @brief QUAKE MLIR pass that decomposes two qubits CNot (XOp).
    @details This method constructs an `mlir::Pass` of the type CxToHCzHDecompositionPass. This decomposition pass operates on any two qubits XOp operation in a given QUAKE MLIR module and performs its replacement by a pattern composed of a Hadamard, Z and Hadamard operations, as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/CxToHCzHDecompositionPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the CxToHCzHDecompositionPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -87,7 +94,7 @@ std::unique_ptr<mlir::Pass> createCxToHCzHDecompositionPass();
  * @brief QUAKE MLIR pass that decomposes two qubits ZOp.
    @details This method constructs an `mlir::Pass` of the type CzToHCxHDecompositionPass. This decomposition pass operates on any two qubits ZOp operation in a given QUAKE MLIR module and performs its replacement by a pattern composed of a Hadamard, X and Hadamard operations, as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/CzToHCxHDecompositionPass.png width=60%
 
  @return An `mlir::Pass` object containing the definition of the CzToHCxHDecompositionPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -97,7 +104,7 @@ std::unique_ptr<mlir::Pass> createCzToHCxHDecompositionPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Cx and Rx.
    @details This method constructs an `mlir::Pass` of the type CommuteCNotRxPass. This pass operates on all the patterns composed of a Cx and Rx in a given QUAKE MLIR module and performs its replacement by a pattern composed of  Rx and Cx (commuting), as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/CommuteCNotRxPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the CommuteCNotRxPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -107,7 +114,7 @@ std::unique_ptr<mlir::Pass> createCommuteCNotRxPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of two-qubits Cx and a single-qubit Cx.
    @details This method constructs an `mlir::Pass` of the type CommuteCNotXPass. This pass operates on all the patterns composed of a two-qubits Cx and single-qubit Cx in a given QUAKE MLIR module and performs its replacement by a pattern composed of the single-qubit Cx and the two-qubits Cx (commuting), as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/CommuteCNotXPass.png width=75%
 
  @return An `mlir::Pass` object containing the definition of the CommuteCNotXPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -117,7 +124,7 @@ std::unique_ptr<mlir::Pass> createCommuteCNotXPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of two-qubits Cx and a single-qubit Z.
    @details This method constructs an `mlir::Pass` of the type CommuteCNotZPass. This pass operates on all the patterns composed of a two-qubits Cx and single-qubit Z in a given QUAKE MLIR module and performs its replacement by a pattern composed of the single-qubit Z and the two-qubits Cx (commuting), as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/CommuteCNotZPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the CommuteCNotZPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -127,7 +134,7 @@ std::unique_ptr<mlir::Pass> createCommuteCNotZPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Rx and a two-qubits CNot.
    @details This method constructs an `mlir::Pass` of the type CommuteRxCNotPass. This pass operates on all the patterns composed of a Rx and a two-qubits CNot in a given QUAKE MLIR module and performs its replacement by a pattern composed of  CNot and Rx (commuting), as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/CommuteRxCNotPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the CommuteRxCNotPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -137,7 +144,7 @@ std::unique_ptr<mlir::Pass> createCommuteRxCNotPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of X and a two-qubits CNot.
    @details This method constructs an `mlir::Pass` of the type CommuteXCNotPass. This pass operates on all the patterns composed of a single qubit X and a two-qubits CNot in a given QUAKE MLIR module and performs its replacement by a pattern composed of  CNot and X (commuting), as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/CommuteXCNotPass.png width=75%
 
  @return An `mlir::Pass` object containing the definition of the CommuteXCNotPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -147,7 +154,7 @@ std::unique_ptr<mlir::Pass> createCommuteXCNotPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Z and a two-qubits CNot.
    @details This method constructs an `mlir::Pass` of the type CommuteZCNotPass. This pass operates on all the patterns composed of a Z and a two-qubits CNot in a given QUAKE MLIR module and performs its replacement by a pattern composed of  CNot and Z (commuting), as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/CommuteZCNotPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the CommuteZCNotPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -157,7 +164,7 @@ std::unique_ptr<mlir::Pass> createCommuteZCNotPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of CNot and CNot.
    @details This method constructs an `mlir::Pass` of the type DoubleCnotCancellationPass. This pass operates on all the patterns composed of a CNot and CNot operating on the same control and target, in a given QUAKE MLIR module and removes it from the module, as follows.
 
-  \image html docs/_static/CxToHCzHDecompositionPass.png width=75%
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the DoubleCnotCancellationPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */

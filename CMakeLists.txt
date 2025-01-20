@@ -253,3 +253,5 @@ endif()
 if(BUILD_MLIR_PASSES_DOCS)
   add_subdirectory(docs)
 endif()
+
+add_subdirectory(tools)

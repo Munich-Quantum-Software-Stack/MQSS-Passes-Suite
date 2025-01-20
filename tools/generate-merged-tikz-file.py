@@ -9,7 +9,11 @@ def merge_files(file1_path, file2_path, output_path):
             # Read and write content from both files into the output file
             content1 = file1.read()
             content2 = file2.read()
-            output_file.write(content1 + "\n" + content2)  # Combine content of both files
+            output_file.write("\\documentclass[border=6pt]{standalone}\n\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n")
+            output_file.write("\\usepackage{tikz}\n\\usetikzlibrary{quantikz2}\n")
+            output_file.write("\\begin{document}")
+            output_file.write(content1 + "\n{\\Huge{\\textbf{=}}}\n" + content2+"\n")  # Combine content of both files
+            output_file.write("\\end{document}")
         print(f"Merged {file1_path} and {file2_path} into {output_path}")
     except Exception as e:
         print(f"Error merging files {file1_path} and {file2_path}: {e}")

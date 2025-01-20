@@ -12,10 +12,10 @@
 \end{quantikz}
 {\Huge{\textbf{=}}}
 \begin{quantikz}
-	\lstick{\ket{0}}	&	\qw	&	\qw	&	\swap{4}	&	\ctrl{1}	&	\qw	&	\qw	&	\qw	&	\gate{t}	&	\meter{}	&	\qw	&	\qw	&	\qw	&	\qw\\
-	\lstick{\ket{0}}	&	\qw	&	\gate{x}	&	\qw	&	\gate{x}	&	\qw	&	\qw	&	\gate{rx(1.50)}	&	\qw	&	\qw	&	\meter{}	&	\qw	&	\qw	&	\qw\\
-	\lstick{\ket{0}}	&	\qw	&	\ctrl{-1}	&	\qw	&	\qw	&	\qw	&	\gate{rz(2.25)}	&	\qw	&	\qw	&	\qw	&	\qw	&	\meter{}	&	\qw	&	\qw\\
-	\lstick{\ket{0}}	&	\gate{x}	&	\qw	&	\qw	&	\qw	&	\gate{ry(3.14)}	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\meter{}	&	\qw\\
-	\lstick{\ket{0}}	&	\ctrl{-1}	&	\qw	&	\swap{}	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\meter{}
+	\lstick{\ket{0}}	&	\qw				&	\qw				&	\swap{4}	&	\ctrl{1}	&	\qw							&	\qw							&	\qw							&	\gate{t}	&	\meter{}\\
+	\lstick{\ket{0}}	&	\qw				&	\gate{x}	&	\qw				&	\gate{x}	&	\qw							&	\qw							&	\gate{rx(1.50)}	&	\qw				&	\meter{}\\
+	\lstick{\ket{0}}	&	\qw				&	\ctrl{-1}	&	\qw				&	\qw				&	\qw							&	\gate{rz(2.25)}	&	\qw							&	\qw				&	\meter{}\\
+	\lstick{\ket{0}}	&	\gate{x}	&	\qw				&	\qw				&	\qw				&	\gate{ry(3.14)}	&	\qw							&	\qw							&	\qw				&	\meter{}\\
+	\lstick{\ket{0}}	&	\ctrl{-1}	&	\qw				&	\swap{}		&	\qw				&	\qw							&	\qw							&	\qw							&	\qw				&	\meter{}
 \end{quantikz}
 \end{document}

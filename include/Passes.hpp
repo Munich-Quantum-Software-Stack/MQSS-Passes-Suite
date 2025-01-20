@@ -72,6 +72,12 @@ std::unique_ptr<mlir::Pass> createPrintQuakeGatesPass(llvm::raw_string_ostream &
    @details This method constructs an `mlir::Pass` of the type QuakeQMapPass. This pass operates on any QUAKE MLIR module and performs the mapping of any given quantum circuit to an specific quantum superconducting device.
   @param[out] architecture is the selected superconducting quantum device configuration, including important information for mapping, i.e., connectivity of all the qubits
   @param[out] settings defines the configuration of the mapper, for more details visit MQT-QMAP official documentation.
+  
+  For example, given the following connectivity graph describing the relation of qubits in quantum arquictecture:
+
+  \image html docs/_static/mqss-passes/connectivity_graph.png width=45%
+
+  The MQT-QMAP tool re-maps the following two input circuts as follows:
 
   \image html docs/_static/mqss-passes/QuakeQMapPass-01.png width=50%
   \image html docs/_static/mqss-passes/QuakeQMapPass-02.png width=95%

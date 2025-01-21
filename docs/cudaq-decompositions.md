@@ -64,7 +64,7 @@ In the following, the list of all decomposition patterns offered by __CudaQ__ ar
 The pattern `CCXToCCZ` replaces all the __two-controls X__ gates in a circuit by __two-controls Z__ gates.
 
 <div align="center">
-  <img  alt="Pass CCXToCCZ" src="CCXToCCZ.png" width=75%>
+  <img  alt="Pass CCXToCCZ" src="CCXToCCZ.png" width=60%>
 </div>
 
 ## CCZ to CX
@@ -108,7 +108,7 @@ The pattern `CZToCX` replaces all the __controlled Z__ gates in a circuit by __C
 ## Exp Pauli Decomposition
 The pattern `ExpPauliDecomposition` applies __Pauli Decompositions__.
 <div align="center">
-  <img  alt="Pass ExpPauliDecomposition" src="ExpPauliDecomposition.png" width=75%>
+  <img  alt="Pass ExpPauliDecomposition" src="ExpPauliDecomposition.png" width=65%>
 </div>
 
 ## H to PhasedRx
@@ -130,7 +130,10 @@ The pattern `R1ToRz` replaces all the __R1__ gates in a circuit by __RZ__ gates.
 
 ## Rx to PhasedRx
 The pattern `RxToPhasedRx` replaces all the __RX__ gates in a circuit by __phased RX__ gates.
-![Pass RxToPhasedRx](RxToPhasedRx.png) 
+
+<div align="center">
+  <img  alt="Pass RxToPhasedRx" src="RxToPhasedRx.png" width=90%>
+</div>
 
 ## Ry to PhasedRx
 The pattern `RyToPhasedRx` replaces all the __RY__ gates in a circuit by __phased RX__ gates.

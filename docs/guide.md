@@ -25,7 +25,7 @@ Ready to contribute to the Collection of MLIR Passes of the MQSS? This guide wil
 
 ## Initial Setup
 
-1. Fork the [QDMI](https://github.com/Munich-Quantum-Software-Stack/QDMI) repository on GitHub (see <https://docs.github.com/en/get-started/quickstart/fork-a-repo>).
+1. Fork the [Passes](TODO) repository on GitHub (see <https://TODO>).
 
 2. Clone your fork locally
 
@@ -121,18 +121,6 @@ The generated webpage also contains four static sites, namely the main page, the
 ### Dynamic Content
 
 In order to include source files to be listed among the menu item `API Reference/Files`, these files must be marked as documented. This is accomplished by adding a comment like the following to the top of the file. Right now, this is done for all files in the include directory.
-
-<!-- prettier-ignore-start -->
-\verbatim
-
-/** @file
- * @brief Include all public headers for the QDMI client.
- * @details The detailed description of the interface is provided in
- * @ref client/control.h and @ref client/query.h.
- */
-
-\endverbatim
-<!-- prettier-ignore-end -->
 
 ### Further Links
 

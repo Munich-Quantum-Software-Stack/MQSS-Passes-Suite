@@ -8,7 +8,7 @@ Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
 "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-https://github.com/Munich-Quantum-Software-Stack/QDMI/blob/develop/LICENSE
+TODO: License
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -147,4 +147,4 @@ mlirModule->print(stringStream);
 // Printing the transformed module
 std::cout << "Module after Pass\n" << moduleAsString << std::endl;
 ```
-Finally, more examples of use of custom passes and an step-by-step guide on how to test your passes can be found in [Testing your passes](tests.md).
+Finally, more examples of use of custom passes and an step-by-step guide on how to test your passes can be found in [Testing your passes](guide.md).

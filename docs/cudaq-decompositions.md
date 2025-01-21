@@ -21,152 +21,168 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 <!-- This file is a static page and included in the CMakeLists.txt file. -->
 
-![Pass CCXToCCZ](CCXToCCZ.png)
+__CudaQ__ offers a set of decomposition passes used by the `nvq++` quantum compiler. The passes can be applied to a given quantum `kernel` as follows:
+
+First, extract the MLIR context and define an MLIR `PassManager` as follows:
+
+```cpp
+auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+mlir::MLIRContext &context = *contextPtr;
+// creating pass manager
+mlir::PassManager pm(&context);
+```
+
+Next, define a `DecompositionPassOptions` object and pass to it a list with the decomposition passes that you desire to apply. For instance, in the following example the decomposition pattern `CXToCZ` is specified.
+
+```cpp
+cudaq::opt::DecompositionPassOptions options;
+options.enabledPatterns = {"CXToCZ"};
+```
+\note The `enabledPatterns` in the  `cudaq::opt::DecompositionPassOptions` is a list. Thus, more than one decomposition pattern can be applied using the same pass manager.
+
+Next, add a `cudaq::opt::createDecompositionPass` to the pass manager. Do not forget to pass  `options` as input parameter of `cudaq::opt::createDecompositionPass`, as follows:
+
+```cpp
+pm.addPass(cudaq::opt::createDecompositionPass(options));
+```
+
+Finally, you can dump and visualize the effects of the decomposition pattern on your MLIR module as follows:
+
+```cpp
+// running the pass
+if(mlir::failed(pm.run(mlirModule)))
+  std::runtime_error("The pass failed...");
+// if pass is applied succesfully ...
+std::cout << "Circuit after pass:\n";
+mlirModule->dump();
+```
+
+In the following, the list of all decomposition patterns offered by __CudaQ__ are shown with a respective example.
+
+## CCX to CCZ
+
+The pattern `CCXToCCZ` replaces all the __two-controls X__ gates in a circuit by __two-controls Z__ gates.
+
+<div align="center">
+  <img  alt="Pass CCXToCCZ" src="CCXToCCZ.png" width=75%>
+</div>
+
+## CCZ to CX
+The pattern `CCZToCX` replaces all the __two-controls Z__ gates in a circuit by __two-controls X__ gates.
 ![Pass CCZToCX](CCZToCX.png)  
+
+## CH to CX
+The pattern `CHToCX` replaces all the __controlled Hadamard__ gates in a circuit by __CNot__ gates.
 ![Pass CHToCX](CHToCX.png)
+
+## CR1 to CX
+The pattern `CR1ToCX` replaces all the __controlled R1__ gates in a circuit by __CNot__ gates.
 ![Pass CR1ToCX](CR1ToCX.png)
+
+## CRx to CX
+The pattern `CRxToCX` replaces all the __controlled RX__ gates in a circuit by __CNot__ gates.
 ![Pass CRxToCX](CRxToCX.png)
+
+## CRy to CX
+The pattern `CRyToCX` replaces all the __controlled RY__ gates in a circuit by __CNot__ gates.
 ![Pass CRyToCX](CRyToCX.png)
+
+## CRz to CX
+The pattern `CRzToCX` replaces all the __controlled RZ__ gates in a circuit by __CNot__ gates.
 ![Pass CRzToCX](CRzToCX.png)
-![Pass CXToCZ](CXToCZ.png)
-![Pass CZToCX](CZToCX.png)
-![Pass ExpPauliDecomposition](ExpPauliDecomposition.png)
-![Pass HToPhasedRx](HToPhasedRx.png)
+
+## CX to CZ
+The pattern `CXToCZ` replaces all the __CNot__ gates in a circuit by __controlled Z__ gates.
+
+<div align="center">
+  <img  alt="Pass CXToCZ" src="CXToCZ.png" width=75%>
+</div>
+
+## CZ to CX
+The pattern `CZToCX` replaces all the __controlled Z__ gates in a circuit by __CNot__ gates.
+
+<div align="center">
+  <img  alt="Pass CZToCX" src="CZToCX.png" width=75%>
+</div>
+
+## Exp Pauli Decomposition
+The pattern `ExpPauliDecomposition` applies __Pauli Decompositions__.
+<div align="center">
+  <img  alt="Pass ExpPauliDecomposition" src="ExpPauliDecomposition.png" width=75%>
+</div>
+
+## H to PhasedRx
+The pattern `HToPhasedRx` replaces all the __Hadamard__ gates in a circuit by __phased RX__ gates.
+<div align="center">
+  <img  alt="Pass HToPhasedRx" src="HToPhasedRx.png" width=85%>
+</div>
+
+## R1 to PhasedRx
+The pattern `R1ToPhasedRx` replaces all the __R1__ gates in a circuit by __phased RX__ gates.
 ![Pass R1ToPhasedRx](R1ToPhasedRx.png)
-![Pass R1ToRz](R1ToRz.png)
+
+## R1 to Rz
+The pattern `R1ToRz` replaces all the __R1__ gates in a circuit by __RZ__ gates.
+
+<div align="center">
+  <img  alt="Pass R1ToRz" src="R1ToRz.png" width=75%>
+</div>
+
+## Rx to PhasedRx
+The pattern `RxToPhasedRx` replaces all the __RX__ gates in a circuit by __phased RX__ gates.
 ![Pass RxToPhasedRx](RxToPhasedRx.png) 
+
+## Ry to PhasedRx
+The pattern `RyToPhasedRx` replaces all the __RY__ gates in a circuit by __phased RX__ gates.
 ![Pass RyToPhasedRx](RyToPhasedRx.png)
+
+## Rz to PhasedRx
+The pattern `RzToPhasedRx` replaces all the __RZ__ gates in a circuit by __phased RX__ gates.
 ![Pass RzToPhasedRx](RzToPhasedRx.png)
+
+## S to PhasedRx
+The pattern `SToPhasedRx` replaces all the __S__ gates in a circuit by __phased RX__ gates.
 ![Pass SToPhasedRx](SToPhasedRx.png)
-![Pass SToR1](SToR1.png)
-![Pass SwapToCX](SwapToCX.png)
+
+## S to R1
+The pattern `SToR1` replaces all the __S__ gates in a circuit by __R1__ gates.
+
+<div align="center">
+  <img  alt="Pass SToR1" src="SToR1.png" width=75%>
+</div>
+
+## Swap to CX
+The pattern `SwapToCX` replaces all the __swap__ gates in a circuit by __CNot__ gates.
+<div align="center">
+  <img  alt="Pass SwapToCX" src="SwapToCX.png" width=75%>
+</div>
+
+## T to PhasedRx
+The pattern `TToPhasedRx` replaces all the __T__ gates in a circuit by __phased RX__ gates.
 ![Pass TToPhasedRx](TToPhasedRx.png)
-![Pass TToR1](TToR1.png)
+
+## T to R1
+The pattern `TToR1` replaces all the __T__ gates in a circuit by __R1__ gates.
+<div align="center">
+  <img  alt="Pass TToR1" src="TToR1.png" width=75%>
+</div>
+
+## U3 to Rotations
+The pattern `U3ToRotations` replaces all the __U3__ gates in a circuit by __rotation__ gates.
 ![Pass U3ToRotations](U3ToRotations.png)
-![Pass XToPhasedRx](XToPhasedRx.png)
-![Pass YToPhasedRx](YToPhasedRx.png)
+
+## X to PhasedRx
+The pattern `XToPhasedRx` replaces all the __X__ gates in a circuit by __phased RX__ gates.
+<div align="center">
+  <img  alt="Pass XToPhasedRx" src="XToPhasedRx.png" width=75%>
+</div>
+
+## Y to PhasedRx
+The pattern `YToPhasedRx` replaces all the __Y__ gates in a circuit by __phased RX__ gates.
+<div align="center">
+  <img  alt="Pass YToPhasedRx" src="YToPhasedRx.png" width=75%>
+</div>
+
+## Z to PhasedRx
+The pattern `ZToPhasedRx` replaces all the __Z__ gates in a circuit by __phased RX__ gates.
 ![Pass ZToPhasedRx](ZToPhasedRx.png)
-
-
-
-
-
-Ready to contribute to the Collection of MLIR Passes of the MQSS? This guide will help you get started.
-
-## Initial Setup
-
-1. Fork the [QDMI](https://github.com/Munich-Quantum-Software-Stack/QDMI) repository on GitHub (see <https://docs.github.com/en/get-started/quickstart/fork-a-repo>).
-
-2. Clone your fork locally
-
-   ```sh
-   git clone TODO
-   ```
-
-3. Change into the project directory
-
-   ```sh
-   cd mlir-passes TODO
-   ```
-
-4. Create a branch for local development
-
-   ```sh
-   git checkout -b name-of-your-bugfix-or-feature
-   ```
-
-   Now you can make your changes locally.
-
-## Working on Source Code
-
-Building the project requires a C compiler supporting _C11_ and a minimum CMake version of _3.19_.
-The example devices and the tests require a C++ compiler supporting _C++17_ and _C++20_.
-
-### Configure and Build
-
-This collection of MLIR passes uses CMake as its build system. Building a project using CMake as follows:
-
-First, the project needs to be _configured_ by calling
-
-```shell
-mkdir build
-cd buid
-cmake ..
-```
-
-After the configuration, the project can be _built_ by calling
-
-```shell
-make 
-```
-
-### Running Tests
-
-We use the [GoogleTest](https://google.github.io/googletest/primer.html) framework for unit testing each MLIR in this collection. All tests are contained in the `test` directory. You can configure and build the project using CMake as follows:
-
-```shell
-cd buid
-cmake .. -DBUILD_MLIR_PASSES_TESTS=ON
-make
-```
-
-The executable used to run the tests can be found at `build/tests/testMQSSPasses`.
-
-
-### Format for Comments
-
-For the information to be displayed correctly in the documentation, it is essential that the
-comments follow the format required by Doxygen. Below you find some tags, that are commonly used
-within the documentation of a function:
-
-- `@brief` For a brief, one-line description of the function. Should always be provided.
-- `@details` For a longer, detailed description of the function.
-- `@param` To explain the usage of a parameter. Should be provided for each parameter.
-- `@return` To explain the return value. Should be provided if the function returns a value.
-
-\note In the current setting, the long description is always prepended with the brief description.
-So there is no need to repeat the brief description in the details.
-
-## Working on the Documentation
-
-The documentation is generated using [Doxygen](https://www.doxygen.nl/index.html), which is
-seamlessly integrated into the CMake build system.
-
-### Building the Documentation
-
-The documentation can be built configuring the CMake as follows:
-
-```shell
-cd buid
-cmake .. -DBUILD_MLIR_PASSES_DOCS=ON
-make
-```
-
-The generated webpage can be inspected by opening the file in `docs/html/index.html` in the CMake build directory.
-
-### Static Content
-
-The generated webpage also contains four static sites, namely the main page, the support page, the FAQ page, and this development guide. The respective markdown files that serve as the source for those sites are contained in `docs/` where `index.md` contains the content of the main page.
-
-### Dynamic Content
-
-In order to include source files to be listed among the menu item `API Reference/Files`, these files must be marked as documented. This is accomplished by adding a comment like the following to the top of the file. Right now, this is done for all files in the include directory.
-
-<!-- prettier-ignore-start -->
-\verbatim
-
-/** @file
- * @brief Include all public headers for the QDMI client.
- * @details The detailed description of the interface is provided in
- * @ref client/control.h and @ref client/query.h.
- */
-
-\endverbatim
-<!-- prettier-ignore-end -->
-
-### Further Links
-
-- For more details, see the official documentation of Doxygen that can be found here:
-  [https://www.doxygen.nl/manual/docblocks.html](https://www.doxygen.nl/manual/docblocks.html).
-- More tags and commands can be found in the list provided here:
-  [https://www.doxygen.nl/manual/commands.html#cmd_intro](https://www.doxygen.nl/manual/commands.html#cmd_intro)

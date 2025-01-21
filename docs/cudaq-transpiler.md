@@ -81,4 +81,21 @@ The WMI backend supports the following gates: `"rx", "ry", "rz", "x(1)", "z(1)"`
 TODO
 
 ## IQM
-The IQM backend supports the following gates: `"phased_rx","z(1)"`. 
+The IQM backend supports the following gates: `"phased_rx","z(1)"`. For the sake of clarity, just fragments of the transpiled circuit are shown.
+
+### 1)
+<div align="center">
+  <img  alt="Fragment 1" src="Transpiled-IQM1.png" width=100%> 
+</div>
+
+### 2)
+<div align="center">
+  <img  alt="Fragment 2" src="Transpiled-IQM2.png" width=100%>
+</div>
+
+### ...
+
+### n)
+<div align="center">
+  <img  alt="Fragment 3" src="Transpiled-IQMn.png" width=100%>
+</div>

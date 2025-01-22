@@ -43,6 +43,13 @@ target_include_directories(testTranspiler PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
+add_executable(testCorrectness testMQSS-QCEC.cpp)
+target_link_libraries(testCorrectness PRIVATE ${COMMON_LIBRARIES} MQT::QCEC MQSSPasses)
+target_include_directories(testCorrectness PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${MQT_QCEC_INCLUDE_DIR}
+    ${CUDAQ_MLIR_RUNTIME_PATH})
+
 set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:testMQSSPasses>/golden-cases)
 add_custom_target(copy-golden-cases ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory

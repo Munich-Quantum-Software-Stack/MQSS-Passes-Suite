@@ -176,14 +176,13 @@ find_package(qdmi REQUIRED)
 # Find QInfo package
 find_package(qinfo REQUIRED)
 
+find_package(mqt-qcec REQUIRED)
 # Find the QMAP package
 set(CMAKE_CXX_STANDARD 17)
 set(MQT_QMAP_TESTS OFF)
 find_package(mqt-qmap REQUIRED)
 # Restore the original CXX flags and compiler
 set(CMAKE_CXX_STANDARD 20)
-#add_library(mqt_project_warnings ALIAS project_warnings)
-
 
 ####################### CUDAQ settings ############################################
 
@@ -205,6 +204,7 @@ include_directories(BEFORE
 #################################################################################
 
 set(MQT_QMAP_INCLUDE_DIR "${mqt-qmap_SOURCE_DIR}/include/")
+set(MQT_QCEC_INCLUDE_DIR "${mqt-qcec_SOURCE_DIR}/include/")
 set(MQT_CORE_INCLUDE_DIR "${mqt-core_SOURCE_DIR}/include/mqt-core")
 set(qdmi_INCLUDE_DIRS "${QDMI_INCLUDE_DIRS}/qdmi")
 set(qinfo_INCLUDE_DIRS "${qinfo_SOURCE_DIR}/include/qinfo")

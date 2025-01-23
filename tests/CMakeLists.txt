@@ -43,9 +43,9 @@ target_include_directories(testTranspiler PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
-add_executable(testCorrectness testMQSS-QCEC.cpp)
-target_link_libraries(testCorrectness PRIVATE ${COMMON_LIBRARIES} MQT::QCEC MQSSPasses)
-target_include_directories(testCorrectness PRIVATE
+add_executable(test-verification-QCEC testMQSS-QCEC.cpp)
+target_link_libraries(test-verification-QCEC PRIVATE ${COMMON_LIBRARIES} MQT::QCEC MQSSPasses)
+target_include_directories(test-verification-QCEC PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${MQT_QCEC_INCLUDE_DIR}
     ${CUDAQ_MLIR_RUNTIME_PATH})

@@ -173,27 +173,12 @@ protected:
   qc::QuantumComputation qc1;
   qc::QuantumComputation qc2;
   ec::Configuration config{};
+
+  std::tuple<std::string,std::string, 
+             std::string, std::function<std::unique_ptr<mlir::Pass>()>> passInfo;
 };
 
 TEST_F(EqualityTest, TestQuakeQMapPass01) {
-//  qc1.x(0);
-//  qc2.x(0);
-//
-//  // add a global phase of -1
-//  qc2.z(0);
-//  qc2.x(0);
-//  qc2.z(0);
-//  qc2.x(0);
-//
-//  config.execution.runAlternatingChecker = true;
-//  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
-//  ecm.run();
-//  EXPECT_EQ(ecm.equivalence(),
-//            ec::EquivalenceCriterion::EquivalentUpToGlobalPhase);
-//}
-//
-//TEST(TestMQSSPasses, TestQuakeQMapPass01){
-  // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/QuakeQMapPass-01.cpp",
           "./golden-cases/QuakeQMapPass-01.qke");
@@ -268,16 +253,21 @@ TEST_F(EqualityTest, TestQuakeQMapPass01) {
             ec::EquivalenceCriterion::Equivalent);
 }
 
-/*
-TEST(TestMQSSPasses, TestQuakeQMapPass02){
+
+TEST_F(EqualityTest, TestQuakeQMapPass02){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/QuakeQMapPass-02.cpp",
           "./golden-cases/QuakeQMapPass-02.qke");
+  // get the QASM of the input module
+  std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
   #ifdef DEBUG
     std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
-    std::cout << "Input Quake Module 01 "<<std::endl<< quakeModule << std::endl;
+    std::cout << "QASM input module:"<< std::endl << qasmInput << std::endl;
   #endif
+  // loading qc with QASM
+  std::stringstream qasmStream = std::stringstream(qasmInput);
+  qc1.import(qasmStream, qc::Format::OpenQASM2);
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager
@@ -291,7 +281,7 @@ TEST(TestMQSSPasses, TestQuakeQMapPass02){
     |   |
     0---1
   */
-/*  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
+  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
                         {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
   arch.loadCouplingMap(5, cm);
   std::cout << "Dumping the architecture " << std::endl;
@@ -322,36 +312,26 @@ TEST(TestMQSSPasses, TestQuakeQMapPass02){
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
   mlirModule->print(stringStream);
-  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
-}
-
-TEST(TestMQSSPasses, TestQuakeToTikzPass){
-  // load mlir module and the golden output
-  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
-          "./code/QuakeToTikzPass.cpp",
-          "./golden-cases/QuakeToTikzPass.tikz.tex");
+ // dump output to qasm
+  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
   #ifdef DEBUG
-    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+    std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
   #endif
+  qasmStream = std::stringstream(qasmOutput);
+  qc2.import(qasmStream, qc::Format::OpenQASM2);
 
-  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
-  mlir::MLIRContext &context = *contextPtr;
-  // creating pass manager
-  mlir::PassManager pm(&context);
-  // Adding custom pass
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeToTikzPass(stringStream));
-  // running the pass
-  if(mlir::failed(pm.run(mlirModule)))
-    std::runtime_error("The pass failed...");
-  #ifdef DEBUG
-    std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
-  #endif
-  EXPECT_EQ(normalize(goldenOutput), normalize(moduleOutput));
+  config.functionality.traceThreshold = 1e-2;
+  config.execution.runConstructionChecker = true;
+  config.execution.runAlternatingChecker = true;
+  config.execution.runZXChecker = true;
+  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
+  ecm.run();
+  std::cout << ecm.getResults() << "\n";
+  EXPECT_EQ(ecm.equivalence(),
+            ec::EquivalenceCriterion::Equivalent);
 }
-
-std::tuple<std::string,std::string> behaviouralTest(std::tuple<std::string, 
+// Return QASM strings of the input module and the module after pass
+std::tuple<std::string,std::string> verificationTest(std::tuple<std::string, 
                                        std::string, 
                                        std::string, 
                                        std::function<std::unique_ptr<mlir::Pass>()>> test){
@@ -365,8 +345,12 @@ std::tuple<std::string,std::string> behaviouralTest(std::tuple<std::string,
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           fileInputTest,
           fileGoldenCase);
+  // get the QASM of the input module
+  std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
+
   #ifdef DEBUG
     std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+    std::cout << "QASM input module:"<< std::endl << qasmInput << std::endl;
   #endif
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
@@ -388,34 +372,52 @@ std::tuple<std::string,std::string> behaviouralTest(std::tuple<std::string,
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
   mlirModule->print(stringStream);
-  return std::make_tuple(goldenOutput, moduleOutput);
+  // dump output to qasm
+  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
+  #ifdef DEBUG
+    std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
+  #endif
+  return std::make_tuple(qasmInput, qasmOutput);
 }
 
-class BehaviouralTestPassesMQSS : 
+class VerificationTestPassesMQSS : 
   public ::testing::TestWithParam<std::tuple<std::string, 
                                              std::string, 
                                              std::string, 
                                              std::function<std::unique_ptr<mlir::Pass>()>>> {};
 
-TEST_P(BehaviouralTestPassesMQSS , Run) {
+TEST_P(VerificationTestPassesMQSS, Run) {
     std::tuple<std::string, 
                std::string, 
                std::string, 
                std::function<std::unique_ptr<mlir::Pass>()>> p = GetParam();
     std::string testName = std::get<0>(p);
     SCOPED_TRACE(testName);
-    auto [goldenOutput, moduleOutput] = behaviouralTest(p);
-    EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+    auto [qasmInput, qasmOutput] = verificationTest(p);
+    // qcec objects required for verification
+    qc::QuantumComputation qc1, qc2;
+    ec::Configuration config{};
+    std::stringstream qasmStream = std::stringstream(qasmInput);
+    qc1.import(qasmStream, qc::Format::OpenQASM2);
+    qasmStream = std::stringstream(qasmOutput);
+    qc2.import(qasmStream, qc::Format::OpenQASM2);
+    // set the configuration
+    config.functionality.traceThreshold = 1e-2;
+    config.execution.runConstructionChecker = true;
+    config.execution.runAlternatingChecker = true;
+    config.execution.runZXChecker = true;
+    config.execution.runSimulationChecker = false;
+    ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
+    ecm.run();
+    std::cout << ecm.getResults() << "\n";
+    EXPECT_EQ(ecm.equivalence(),
+              ec::EquivalenceCriterion::Equivalent);
 }
 
 INSTANTIATE_TEST_SUITE_P(
   MQSSPassTests,
-  BehaviouralTestPassesMQSS,
+  VerificationTestPassesMQSS,
   ::testing::Values(
-    std::make_tuple("TestCustomExamplePass",
-                    "./code/CustomExamplePass.cpp",
-                    "./golden-cases/CustomExamplePass.qke" ,
-                    []() { return mqss::opt::createCustomExamplePass();}),
     std::make_tuple("TestCxToHCzHDecompositionPass",
                     "./code/CxToHCzHDecompositionPass.cpp", 
                     "./golden-cases/CxToHCzHDecompositionPass.qke", 
@@ -453,12 +455,12 @@ INSTANTIATE_TEST_SUITE_P(
                     "./golden-cases/DoubleCnotCancellationPass.qke",
                     []() { return mqss::opt::createDoubleCnotCancellationPass();})
   ),
-  [](const ::testing::TestParamInfo<BehaviouralTestPassesMQSS::ParamType>& info) {
+  [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>& info) {
         // Use the first element of the tuple (testName) as the custom test name
         return std::get<0>(info.param);
   }
 );
-*/
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

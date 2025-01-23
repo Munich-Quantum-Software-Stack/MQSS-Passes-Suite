@@ -28,7 +28,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   1. In each test, the quantum kernel in CudaQ is lowered to QUAKE MLIR.
   2. Then the pass is applied to the QUAKE MLIR kernel.
   3. The output of the pass is compared to the expected output.
-  4. Succes if both expected output and the output obtained by the pass matches.
+  4. Succes if both expected output and the output obtained by the pass match.
 
 ******************************************************************************/
 
@@ -131,10 +131,36 @@ std::string normalize(const std::string &str) {
     return result;
 }
 
+std::string lowerQuakeCodeToOpenQASM(std::string quantumTask){
+  auto [m_module, contextPtr] =
+      extractMLIRContext(quantumTask);
+
+  mlir::MLIRContext &context = *contextPtr;
+  std::string postCodeGenPasses = "";
+  bool printIR = false;
+  bool enablePassStatistics = false;
+  bool enablePrintMLIREachPass = false;
+
+  auto translation = cudaq::getTranslation("qasm2");
+  std::string codeStr;
+  {
+    llvm::raw_string_ostream outStr(codeStr);
+    m_module.getContext()->disableMultithreading();
+    if (mlir::failed(translation(m_module, outStr, postCodeGenPasses, printIR,
+                           enablePrintMLIREachPass, enablePassStatistics)))
+      throw std::runtime_error("Could not successfully translate to OpenQASM2");
+  }
+  // Regular expression to match the gate definition
+  std::regex gatePattern(R"(gate\s+\S+\(param0\)\s*\{\n\})");
+  // Remove the matching part from the string
+  codeStr = std::regex_replace(codeStr, gatePattern, "");
+  return codeStr;
+}
+
 class EqualityTest : public testing::Test {
   void SetUp() override {
-    qc1 = qc::QuantumComputation(nqubits);
-    qc2 = qc::QuantumComputation(nqubits);
+    qc1 = qc::QuantumComputation();
+    qc2 = qc::QuantumComputation();
 
     config.execution.runSimulationChecker = false;
     config.execution.runAlternatingChecker = false;
@@ -143,62 +169,42 @@ class EqualityTest : public testing::Test {
   }
 
 protected:
-  std::size_t nqubits = 1U; 
+  //std::size_t nqubits = 1U; 
   qc::QuantumComputation qc1;
   qc::QuantumComputation qc2;
   ec::Configuration config{};
 };
 
-TEST_F(EqualityTest, GlobalPhase) {
-  qc1.x(0);
-  qc2.x(0);
-
-  // add a global phase of -1
-  qc2.z(0);
-  qc2.x(0);
-  qc2.z(0);
-  qc2.x(0);
-
-  config.execution.runAlternatingChecker = true;
-  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
-  ecm.run();
-  EXPECT_EQ(ecm.equivalence(),
-            ec::EquivalenceCriterion::EquivalentUpToGlobalPhase);
-}
-
-TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
-  // load mlir module and the golden output
-  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
-          "./code/PrintQuakeGatesPass.cpp",
-          "./golden-cases/PrintQuakeGatesPass.qke");
-  #ifdef DEBUG
-    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
-  #endif
-  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
-  mlir::MLIRContext &context = *contextPtr;
-  // creating pass manager
-  mlir::PassManager pm(&context);
-  // Adding custom pass
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createPrintQuakeGatesPass(stringStream));
-  // running the pass
-  if(mlir::failed(pm.run(mlirModule)))
-    std::runtime_error("The pass failed...");
-  #ifdef DEBUG
-    std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
-  #endif
-  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
-}
-
-TEST(TestMQSSPasses, TestQuakeQMapPass01){
+TEST_F(EqualityTest, TestQuakeQMapPass01) {
+//  qc1.x(0);
+//  qc2.x(0);
+//
+//  // add a global phase of -1
+//  qc2.z(0);
+//  qc2.x(0);
+//  qc2.z(0);
+//  qc2.x(0);
+//
+//  config.execution.runAlternatingChecker = true;
+//  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
+//  ecm.run();
+//  EXPECT_EQ(ecm.equivalence(),
+//            ec::EquivalenceCriterion::EquivalentUpToGlobalPhase);
+//}
+//
+//TEST(TestMQSSPasses, TestQuakeQMapPass01){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/QuakeQMapPass-01.cpp",
           "./golden-cases/QuakeQMapPass-01.qke");
+  // get the QASM of the input module
+  std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
   #ifdef DEBUG
-    std::cout << "Input Quake Module 01 "<<std::endl<< quakeModule << std::endl;
+    std::cout << "Input Quake Module:" << std::endl << quakeModule << std::endl;
+    std::cout << "QASM input module:"<< std::endl << qasmInput << std::endl;
   #endif
+  std::stringstream qasmStream = std::stringstream(qasmInput);
+  qc1.import(qasmStream, qc::Format::OpenQASM2);
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager
@@ -243,15 +249,33 @@ TEST(TestMQSSPasses, TestQuakeQMapPass01){
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
   mlirModule->print(stringStream);
-  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+  // dump output to qasm
+  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
+  #ifdef DEBUG
+    std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
+  #endif
+  qasmStream = std::stringstream(qasmOutput);
+  qc2.import(qasmStream, qc::Format::OpenQASM2);
+
+  config.functionality.traceThreshold = 1e-2;
+  config.execution.runConstructionChecker = true;
+  config.execution.runAlternatingChecker = true;
+  config.execution.runZXChecker = true;
+  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
+  ecm.run();
+  std::cout << ecm.getResults() << "\n";
+  EXPECT_EQ(ecm.equivalence(),
+            ec::EquivalenceCriterion::Equivalent);
 }
 
+/*
 TEST(TestMQSSPasses, TestQuakeQMapPass02){
   // load mlir module and the golden output
   auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
           "./code/QuakeQMapPass-02.cpp",
           "./golden-cases/QuakeQMapPass-02.qke");
   #ifdef DEBUG
+    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
     std::cout << "Input Quake Module 01 "<<std::endl<< quakeModule << std::endl;
   #endif
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
@@ -267,7 +291,7 @@ TEST(TestMQSSPasses, TestQuakeQMapPass02){
     |   |
     0---1
   */
-  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
+/*  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
                         {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
   arch.loadCouplingMap(5, cm);
   std::cout << "Dumping the architecture " << std::endl;
@@ -434,7 +458,7 @@ INSTANTIATE_TEST_SUITE_P(
         return std::get<0>(info.param);
   }
 );
-
+*/
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

@@ -201,6 +201,7 @@ namespace mqss::utils{
   }
 
   // Finds the pattern composed of T2, T1 and remove them
+  // and T1 and T2 share the same control
   // Targets and controls should be the same on boths
   template <typename T1, typename T2>
   inline void patternCancellation(mlir::Operation *currentOp,

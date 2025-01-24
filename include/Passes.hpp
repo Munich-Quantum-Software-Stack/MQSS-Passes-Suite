@@ -130,6 +130,9 @@ std::unique_ptr<mlir::Pass> createCommuteCNotXPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of two-qubits Cx and a single-qubit Z.
    @details This method constructs an `mlir::Pass` of the type CommuteCNotZPass. This pass operates on all the patterns composed of a two-qubits Cx and single-qubit Z in a given QUAKE MLIR module and performs its replacement by a pattern composed of the single-qubit Z and the two-qubits Cx (commuting), as follows.
 
+  Example 1:
+  \image html docs/_static/mqss-passes/CommuteCNotZPass-01.png width=55%
+  Example 2:
   \image html docs/_static/mqss-passes/CommuteCNotZPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the CommuteCNotZPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
@@ -160,6 +163,9 @@ std::unique_ptr<mlir::Pass> createCommuteXCNotPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Z and a two-qubits CNot.
    @details This method constructs an `mlir::Pass` of the type CommuteZCNotPass. This pass operates on all the patterns composed of a Z and a two-qubits CNot in a given QUAKE MLIR module and performs its replacement by a pattern composed of  CNot and Z (commuting), as follows.
 
+  Example 1:
+  \image html docs/_static/mqss-passes/CommuteZCNotPass-01.png width=55%
+  Example 2:
   \image html docs/_static/mqss-passes/CommuteZCNotPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the CommuteZCNotPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.

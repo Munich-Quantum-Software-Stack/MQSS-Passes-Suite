@@ -49,7 +49,7 @@ struct ReplaceCzToHCxH : public OpRewritePattern<quake::ZOp> {
     // Insert the H gate on the original target qubit
     rewriter.create<quake::HOp>(loc,target);
     // Insert the Z gate swapping the control and target qubits
-    rewriter.create<quake::XOp>(loc, target, control);
+    rewriter.create<quake::XOp>(loc, control, target);
     // Insert the H gate on the original target qubit
     rewriter.create<quake::HOp>(loc,target);
     // Erase the original Cz operation

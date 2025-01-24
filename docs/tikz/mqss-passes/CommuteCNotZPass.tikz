@@ -10,8 +10,8 @@
 \end{quantikz}
 {\Huge{\textbf{=}}}
 \begin{quantikz}
-	\lstick{\ket{0}}	&	\qw	&	\qw	&	\ctrl{1}	&	\gate{x}	&	\qw	&	\ctrl{1}	&	\qw	&	\qw	&	\meter{}\\
-	\lstick{\ket{0}}	&	\qw	&	\gate{z}	&	\gate{x}	&	\ctrl{-1}	&	\gate{z}	&	\gate{x}	&	\gate{rx(5.14)}	&	\gate{z}	&	\meter{}\\
-	\lstick{\ket{0}}	&	\gate{rz(2.40)}	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\meter{}
+	\lstick{\ket{0}}	&	\ctrl{1}	&	\qw	&	\qw	&	\qw	&	\gate{x}	&	\ctrl{1}	&	\qw	&	\qw	&	\meter{}\\
+	\lstick{\ket{0}}	&	\gate{x}	&	\qw	&	\gate{z}	&	\gate{z}	&	\ctrl{-1}	&	\gate{x}	&	\gate{rx(5.14)}	&	\gate{z}	&	\meter{}\\
+	\lstick{\ket{0}}	&	\qw	&	\gate{rz(2.40)}	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\qw	&	\meter{}
 \end{quantikz}
 \end{document}

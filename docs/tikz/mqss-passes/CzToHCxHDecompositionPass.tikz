@@ -9,7 +9,7 @@
 \end{quantikz}
 {\Huge{\textbf{=}}}
 \begin{quantikz}
-	\lstick{\ket{0}}	&	\qw	&	\gate{x}	&	\qw	&	\meter{}\\
-	\lstick{\ket{0}}	&	\gate{h}	&	\ctrl{-1}	&	\gate{h}	&	\meter{}
+	\lstick{\ket{0}}	&	\qw	&	\ctrl{1}	&	\qw	&	\meter{}\\
+	\lstick{\ket{0}}	&	\gate{h}	&	\gate{x}	&	\gate{h}	&	\meter{}
 \end{quantikz}
 \end{document}

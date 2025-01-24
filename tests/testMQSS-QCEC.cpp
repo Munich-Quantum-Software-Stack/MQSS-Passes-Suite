@@ -107,18 +107,16 @@ std::string readFileToString(const std::string &filename) {
     return fileContents.str();  // Convert the string stream to a string
 }
 
-std::tuple<std::string, std::string> getQuakeAndGolden(std::string cppFile,
-                                                       std::string goldenFile){
+std::string getQuake(std::string cppFile){
   int retCode = std::system(("cudaq-quake "+cppFile+" -o ./o.qke").c_str());
   if (retCode) throw std::runtime_error("Quake transformation failed!!!");
   retCode = std::system("cudaq-opt --canonicalize --unrolling-pipeline o.qke -o ./kernel.qke");
   if (retCode) throw std::runtime_error("Quake transformation failed!!!");
   // loading the generated mlir kernel of the given cpp
   std::string quakeModule  = readFileToString("./kernel.qke");
-  std::string goldenOutput = readFileToString(goldenFile);
   std::remove("./o.qke");
   std::remove("./kernel.qke");
-  return std::make_tuple(quakeModule, goldenOutput);
+  return quakeModule;
 }
 
 std::string normalize(const std::string &str) {
@@ -179,9 +177,7 @@ protected:
 };
 
 TEST_F(EqualityTest, TestQuakeQMapPass01) {
-  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
-          "./code/QuakeQMapPass-01.cpp",
-          "./golden-cases/QuakeQMapPass-01.qke");
+  std::string quakeModule =  getQuake("./code/QuakeQMapPass-01.cpp");
   // get the QASM of the input module
   std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
   #ifdef DEBUG
@@ -253,12 +249,9 @@ TEST_F(EqualityTest, TestQuakeQMapPass01) {
             ec::EquivalenceCriterion::Equivalent);
 }
 
-
 TEST_F(EqualityTest, TestQuakeQMapPass02){
   // load mlir module and the golden output
-  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
-          "./code/QuakeQMapPass-02.cpp",
-          "./golden-cases/QuakeQMapPass-02.qke");
+  std::string quakeModule =  getQuake("./code/QuakeQMapPass-02.cpp");
   // get the QASM of the input module
   std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
   #ifdef DEBUG
@@ -333,18 +326,14 @@ TEST_F(EqualityTest, TestQuakeQMapPass02){
 // Return QASM strings of the input module and the module after pass
 std::tuple<std::string,std::string> verificationTest(std::tuple<std::string, 
                                        std::string, 
-                                       std::string, 
                                        std::function<std::unique_ptr<mlir::Pass>()>> test){
   std::string fileInputTest  = std::get<1>(test);
-  std::string fileGoldenCase = std::get<2>(test);
-  auto passMlir = std::get<3>(test);
+  auto passMlir = std::get<2>(test);
   // Invoke the function to create the pass
   std::unique_ptr<mlir::Pass> pass = passMlir();
 
-  // load mlir module and the golden output
-  auto[quakeModule, goldenOutput] =  getQuakeAndGolden(
-          fileInputTest,
-          fileGoldenCase);
+  // load mlir module
+  std::string quakeModule =  getQuake(fileInputTest);
   // get the QASM of the input module
   std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
 
@@ -383,12 +372,10 @@ std::tuple<std::string,std::string> verificationTest(std::tuple<std::string,
 class VerificationTestPassesMQSS : 
   public ::testing::TestWithParam<std::tuple<std::string, 
                                              std::string, 
-                                             std::string, 
                                              std::function<std::unique_ptr<mlir::Pass>()>>> {};
 
 TEST_P(VerificationTestPassesMQSS, Run) {
     std::tuple<std::string, 
-               std::string, 
                std::string, 
                std::function<std::unique_ptr<mlir::Pass>()>> p = GetParam();
     std::string testName = std::get<0>(p);
@@ -420,39 +407,39 @@ INSTANTIATE_TEST_SUITE_P(
   ::testing::Values(
     std::make_tuple("TestCxToHCzHDecompositionPass",
                     "./code/CxToHCzHDecompositionPass.cpp", 
-                    "./golden-cases/CxToHCzHDecompositionPass.qke", 
                     []() { return mqss::opt::createCxToHCzHDecompositionPass();}),
     std::make_tuple("TestCzToHCxHDecompositionPass", 
                     "./code/CzToHCxHDecompositionPass.cpp",
-                    "./golden-cases/CzToHCxHDecompositionPass.qke", 
                     []() { return mqss::opt::createCzToHCxHDecompositionPass();}), 
     std::make_tuple("TestCommuteCnotRxPass", 
                     "./code/CommuteCNotRxPass.cpp",
-                    "./golden-cases/CommuteCNotRxPass.qke", 
                     []() { return mqss::opt::createCommuteCNotRxPass();}),
     std::make_tuple("TestCommuteCnotXPass", 
                     "./code/CommuteCNotXPass.cpp",
-                    "./golden-cases/CommuteCNotXPass.qke", 
                     []() { return mqss::opt::createCommuteCNotXPass();}),
+    std::make_tuple("TestCommuteCnotZPass01",
+                    "./code/CommuteCNotZPass-01.cpp",
+                    []() { return mqss::opt::createCommuteCNotZPass();}),
+    std::make_tuple("TestCommuteCnotZPass02",
+                    "./code/CommuteCNotZPass-02.cpp",
+                    []() { return mqss::opt::createCommuteCNotZPass();}),
     std::make_tuple("TestCommuteCnotZPass", 
                     "./code/CommuteCNotZPass.cpp",
-                    "./golden-cases/CommuteCNotZPass.qke", 
                     []() { return mqss::opt::createCommuteCNotZPass();}),
     std::make_tuple("TestCommuteRxCnotPass", 
                     "./code/CommuteRxCNotPass.cpp",
-                    "./golden-cases/CommuteRxCNotPass.qke", 
                     []() { return mqss::opt::createCommuteRxCNotPass();}),
     std::make_tuple("TestCommuteXCNotPass", 
                     "./code/CommuteXCNotPass.cpp",
-                    "./golden-cases/CommuteXCNotPass.qke", 
                     []() { return mqss::opt::createCommuteXCNotPass();}),
     std::make_tuple("TestCommuteZCnotPass", 
                     "./code/CommuteZCNotPass.cpp",
-                    "./golden-cases/CommuteZCNotPass.qke", 
+                    []() { return mqss::opt::createCommuteZCNotPass();}),
+    std::make_tuple("TestCommuteZCnotPass01",
+                    "./code/CommuteZCNotPass-01.cpp",
                     []() { return mqss::opt::createCommuteZCNotPass();}),
     std::make_tuple("DoubleCnotCancellationPass",
                     "./code/DoubleCnotCancellationPass.cpp",
-                    "./golden-cases/DoubleCnotCancellationPass.qke",
                     []() { return mqss::opt::createDoubleCnotCancellationPass();})
   ),
   [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>& info) {

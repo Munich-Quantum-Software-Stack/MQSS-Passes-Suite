@@ -183,6 +183,37 @@ std::unique_ptr<mlir::Pass> createCommuteZCNotPass();
 std::unique_ptr<mlir::Pass> createDoubleCnotCancellationPass();
 
 /**
+ * @brief QUAKE MLIR pass that operates on each CNot gate in a given quantum circuit.
+   @details This method constructs an `mlir::Pass` of the type ReverseCNotPass. This pass operates on all two-qubit CNot gates and reverses the target and controls by introducing additional Hadamard gates, in a given QUAKE MLIR module, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the ReverseCNotPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createReverseCNotPass();
+
+/**
+ * @brief QUAKE MLIR pass that operates on each rotation Rx, Ry, and Rz gate in a given quantum circuit.
+   @details This method constructs an `mlir::Pass` of the type NormalizeArgAnglePass. This pass operates on rotation Rx, Ry, and Rz gates an normalizes the angle, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the NormalizeArgAnglePass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createNormalizeArgAnglePass();
+
+/**
+ * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard, X and Hadamard a replaces it by a Z gate.
+   @details This method constructs an `mlir::Pass` of the type HXHToZPass. This pass operates on the pattern Hadamard, X and Hadamard, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the HXHToZPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createHXHToZPass();
+
+
+/**
  * @brief QUAKE MLIR pass that generates a tikz diagram to be built using LaTeX.
    @details This method constructs an `mlir::Pass` of the type QuakeToTikzPass. This pass generates a tizk diagram of a given input QUAKE MLIR module.
    @param[out] ostream A raw stream object that stores the tikz diagram that later can be built using LaTeX.

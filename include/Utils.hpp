@@ -6,7 +6,16 @@
 using namespace mlir;
 
 namespace mqss::utils{
-  
+ 
+  inline mlir::Value createFloatValue(mlir::OpBuilder &builder, mlir::Location loc, double value) {
+  // Determine the floating-point type. This example assumes 32-bit float.
+  auto floatType = builder.getF32Type();
+  // Create a FloatAttr to hold the constant value.
+  auto floatAttr = builder.getFloatAttr(floatType, value);
+  // Use the builder to create an arith.constant operation.
+  return builder.create<mlir::arith::ConstantOp>(loc, floatType, floatAttr).getResult();
+  }
+ 
   inline double extractDoubleArgumentValue(mlir::Operation *op){
     if (auto constantOp = dyn_cast<mlir::arith::ConstantOp>(op))
       if (auto floatAttr = constantOp.getValue().dyn_cast<mlir::FloatAttr>())

@@ -203,6 +203,16 @@ std::unique_ptr<mlir::Pass> createReverseCNotPass();
 std::unique_ptr<mlir::Pass> createNormalizeArgAnglePass();
 
 /**
+ * @brief QUAKE MLIR pass that operates on each rotation Rx, Ry, and Rz gate in a given quantum circuit and removes each rotation that results in a null rotation.
+   @details This method constructs an `mlir::Pass` of the type NullRotationCancellationPass. This pass operates on rotation Rx, Ry, and Rz gates an removes the rotation if the angle results in a null rotation, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the NullRotationCancellationPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createNullRotationCancellationPass();
+
+/**
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard, X and Hadamard a replaces it by a Z gate.
    @details This method constructs an `mlir::Pass` of the type HXHToZPass. This pass operates on the pattern Hadamard, X and Hadamard, as follows.
 
@@ -211,6 +221,16 @@ std::unique_ptr<mlir::Pass> createNormalizeArgAnglePass();
  @return An `mlir::Pass` object containing the definition of the HXHToZPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
 std::unique_ptr<mlir::Pass> createHXHToZPass();
+
+/**
+ * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard, Z and Hadamard a replaces it by a X gate.
+   @details This method constructs an `mlir::Pass` of the type HZHToXPass. This pass operates on the pattern Hadamard, Z and Hadamard, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the HZHToXPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createHZHToXPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of Pauli single-qubit gates {X, Y, Z} and Hadamard a switches accordingly.

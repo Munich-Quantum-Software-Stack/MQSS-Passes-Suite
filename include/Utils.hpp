@@ -271,5 +271,45 @@ namespace mqss::utils{
     rewriter.eraseOp(currentGate);
     rewriter.eraseOp(previousGate);
   }
+
+  // Finds the pattern composed of T1, T2 and switches them
+  // The type of T2 might change, that is the reason of T3
+  // Thus the result is T2, T3
+  // Targets and controls should be the same on boths
+  // this only works at the moment for single qubit gates
+  template <typename T1, typename T2, typename T3>
+  inline void patternSwitch(mlir::Operation *currentOp){
+    auto currentGate = dyn_cast_or_null<T2>(*currentOp);
+    if (!currentGate)
+      return;
+    // check single qubit T2 operation
+    if(currentGate.getControls().size()!=0 &&
+       currentGate.getTargets().size()!=1)
+    return;
+    // get previous
+    auto prevOp = getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+    auto prevGate = dyn_cast<T1>(prevOp);
+    // check single qubit operation
+    if(prevGate.getControls().size()!=0 &&
+       prevGate.getTargets().size()!=1)
+      return;
+    // I found the pattern, then I remove it from the circuit
+    #ifdef DEBUG
+      llvm::outs() << "Current Operation: ";
+      currentGate->print(llvm::outs());
+      llvm::outs() << "\n";
+      llvm::outs() << "Previous Operation: ";
+      prevGate->print(llvm::outs());
+      llvm::outs() << "\n";
+    #endif
+    mlir::IRRewriter rewriter(currentGate->getContext());
+    rewriter.setInsertionPointAfter(currentGate);
+    rewriter.create<T3>(prevGate.getLoc(),
+                        prevGate.isAdj(),
+                        prevGate.getParameters(),
+                        prevGate.getControls(),
+                        prevGate.getTargets());
+    rewriter.eraseOp(prevGate);
+  }
 } // end namespace
 #endif // UTILS_H

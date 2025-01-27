@@ -47,7 +47,8 @@ namespace {
     void runOnOperation() override {
       auto circuit = getOperation();
       circuit.walk([&](Operation *op){
-        mqss::utils::patternSwitch<quake::YOp,quake::HOp,quake::YOp>(op);
+        mqss::utils::patternSwitch<quake::YOp,quake::HOp,
+                                   quake::HOp,quake::YOp>(op);
       });
     }
   };

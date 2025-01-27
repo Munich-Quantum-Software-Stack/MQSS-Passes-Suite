@@ -212,6 +212,15 @@ std::unique_ptr<mlir::Pass> createNormalizeArgAnglePass();
  */
 std::unique_ptr<mlir::Pass> createHXHToZPass();
 
+/**
+ * @brief QUAKE MLIR pass that operates on the pattern composed of Pauli single-qubit gates {X, Y, Z} and Hadamard a switches accordingly.
+   @details This method constructs an `mlir::Pass` of the type PauliGateAndHadamardSwitchPass. This pass operates on the pattern {X,Y,Z} and Hadamard, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the PauliGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createPauliGateAndHadamardSwitchPass();
 
 /**
  * @brief QUAKE MLIR pass that generates a tikz diagram to be built using LaTeX.

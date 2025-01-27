@@ -273,11 +273,10 @@ namespace mqss::utils{
   }
 
   // Finds the pattern composed of T1, T2 and switches them
-  // The type of T2 might change, that is the reason of T3
-  // Thus the result is T2, T3
+  // and assigns the types T3, and T4
   // Targets and controls should be the same on boths
   // this only works at the moment for single qubit gates
-  template <typename T1, typename T2, typename T3>
+  template <typename T1, typename T2, typename T3, typename T4>
   inline void patternSwitch(mlir::Operation *currentOp){
     auto currentGate = dyn_cast_or_null<T2>(*currentOp);
     if (!currentGate)
@@ -304,12 +303,19 @@ namespace mqss::utils{
     #endif
     mlir::IRRewriter rewriter(currentGate->getContext());
     rewriter.setInsertionPointAfter(currentGate);
-    rewriter.create<T3>(prevGate.getLoc(),
+    auto newGate = rewriter.create<T3>(currentGate.getLoc(),
+                                       currentGate.isAdj(),
+                                       currentGate.getParameters(),
+                                       currentGate.getControls(),
+                                       currentGate.getTargets());
+    rewriter.setInsertionPointAfter(newGate);
+    rewriter.create<T4>(prevGate.getLoc(),
                         prevGate.isAdj(),
                         prevGate.getParameters(),
                         prevGate.getControls(),
                         prevGate.getTargets());
     rewriter.eraseOp(prevGate);
+    rewriter.eraseOp(currentGate);
   }
 } // end namespace
 #endif // UTILS_H

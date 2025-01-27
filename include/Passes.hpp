@@ -303,6 +303,26 @@ std::unique_ptr<mlir::Pass> createHadamardAndYGateSwitchPass();
 std::unique_ptr<mlir::Pass> createHadamardAndZGateSwitchPass();
 
 /**
+ * @brief QUAKE MLIR pass that operates on the pattern composed of S adjoint and single-qubit gate Z a replaces by a S gate.
+   @details This method constructs an `mlir::Pass` of the type SAdjToSPass. This pass operates on the pattern S adjoint and Z, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the SAdjToSPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createSAdjToSPass();
+
+/**
+ * @brief QUAKE MLIR pass that operates on the pattern composed of S and single-qubit gate Z a replaces by a S adjoint gate.
+   @details This method constructs an `mlir::Pass` of the type SAdjToSPass. This pass operates on the pattern S and Z, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the SToSAdjPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createSToSAdjPass();
+
+/**
  * @brief QUAKE MLIR pass that generates a tikz diagram to be built using LaTeX.
    @details This method constructs an `mlir::Pass` of the type QuakeToTikzPass. This pass generates a tizk diagram of a given input QUAKE MLIR module.
    @param[out] ostream A raw stream object that stores the tikz diagram that later can be built using LaTeX.

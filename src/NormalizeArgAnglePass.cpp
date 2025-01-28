@@ -38,7 +38,8 @@ using namespace mlir;
 
 namespace {
 
-void normalizeAngleOfRotations(mlir::Operation *currentOp){
+void normalizeAngleOfRotations(mlir::Operation *currentOp, 
+                               OpBuilder builder){
   if (!isa<quake::RxOp>(currentOp) && !isa<quake::RyOp>(currentOp)
       && !isa<quake::RzOp>(currentOp))
     return; // do nothing if it is not rotation
@@ -49,7 +50,7 @@ void normalizeAngleOfRotations(mlir::Operation *currentOp){
   for(auto parameter : gate.getParameters()){
     double param = mqss::utils::extractDoubleArgumentValue(parameter.getDefiningOp());
     param = param - (std::floor(param/(2*pi))*2*pi);//normalize the angle 
-    nParameters.push_back(mqss::utils::createFloatValue(rewriter, gate.getLoc(), param));
+    nParameters.push_back(mqss::utils::createFloatValue(builder, gate.getLoc(), param));
   }
   ValueRange normParameters(nParameters);
   rewriter.setInsertionPointAfter(gate);
@@ -84,8 +85,9 @@ public:
 
   void runOnOperation() override {
     auto circuit = getOperation();
+    OpBuilder builder(&circuit.getBody());
     circuit.walk([&](Operation *op){
-      normalizeAngleOfRotations(op);
+      normalizeAngleOfRotations(op,builder);
     });
   }
 };

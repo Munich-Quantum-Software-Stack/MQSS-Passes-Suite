@@ -41,16 +41,17 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
   if (!currentGate)
     return;
   // check single qubit h operation
-  if(currentGate.getControls().size()!=0 && 
+  if(currentGate.getControls().size()!=0 ||
      currentGate.getTargets().size()!=1)
     return;
   // get previous
   auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+  if (!prevOp) return;
   auto prevGate = dyn_cast_or_null<quake::SOp>(*prevOp);
   if (!prevGate)
     return;
   // check single qubit gate
-  if(prevGate.getControls().size()!=0 && 
+  if(prevGate.getControls().size()!=0 ||
      prevGate.getTargets().size()!=1)
     return;
   if(prevGate.isAdj())

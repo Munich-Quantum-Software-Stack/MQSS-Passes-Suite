@@ -25,37 +25,37 @@ set(COMMON_LIBRARIES
   pthread)
 
 # Test executable
-add_executable(testMQSSPasses testMQSSPasses.cpp)
-target_link_libraries(testMQSSPasses PRIVATE ${COMMON_LIBRARIES} MQSSPasses)
-target_include_directories(testMQSSPasses PRIVATE
+add_executable(test-mqss-passes testMQSSPasses.cpp)
+target_link_libraries(test-mqss-passes PRIVATE ${COMMON_LIBRARIES} MQSSPasses)
+target_include_directories(test-mqss-passes PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
-add_executable(testDecompositionPasses testCudaQDecompositionPasses.cpp)
-target_link_libraries(testDecompositionPasses PRIVATE ${COMMON_LIBRARIES})
-target_include_directories(testDecompositionPasses PRIVATE
+add_executable(test-decomposition-passes testCudaQDecompositionPasses.cpp)
+target_link_libraries(test-decomposition-passes PRIVATE ${COMMON_LIBRARIES})
+target_include_directories(test-decomposition-passes PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
-add_executable(testTranspiler testCudaQTranspiler.cpp)
-target_link_libraries(testTranspiler PRIVATE ${COMMON_LIBRARIES})
-target_include_directories(testTranspiler PRIVATE
+add_executable(test-transpiler testCudaQTranspiler.cpp)
+target_link_libraries(test-transpiler PRIVATE ${COMMON_LIBRARIES})
+target_include_directories(test-transpiler PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
-add_executable(test-verification-QCEC testMQSS-QCEC.cpp)
-target_link_libraries(test-verification-QCEC PRIVATE ${COMMON_LIBRARIES} MQT::QCEC MQSSPasses)
-target_include_directories(test-verification-QCEC PRIVATE
+add_executable(test-verification-qcec testMQSS-QCEC.cpp)
+target_link_libraries(test-verification-qcec PRIVATE ${COMMON_LIBRARIES} MQT::QCEC MQSSPasses)
+target_include_directories(test-verification-qcec PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${MQT_QCEC_INCLUDE_DIR}
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
-set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:testMQSSPasses>/golden-cases)
+set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:test-mqss-passes>/golden-cases)
 add_custom_target(copy-golden-cases ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/tests/golden-cases ${TEST_OUTPUT_DIR})
 
-set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:testMQSSPasses>/code)
+set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:test-mqss-passes>/code)
 add_custom_target(copy-code-test ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/tests/code ${TEST_OUTPUT_DIR})

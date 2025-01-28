@@ -45,17 +45,18 @@ void SwitchPauliH(mlir::Operation *currentOp) {
   if (!currentGate)
     return;
   // check single qubit h operation
-  if(currentGate.getControls().size()!=0 && 
+  if(currentGate.getControls().size()!=0 ||
      currentGate.getTargets().size()!=1)
     return;
   // get previous
   auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+  if(!prevOp) return;
   if(!isa<quake::XOp>(prevOp) && !isa<quake::YOp>(prevOp) && 
      !isa<quake::ZOp>(prevOp))
     return; // if no pauli, do nothing
   auto prevGateInt = dyn_cast<quake::OperatorInterface>(prevOp);
   // check single qubit pauli operation
-  if(prevGateInt.getControls().size()!=0 && 
+  if(prevGateInt.getControls().size()!=0 ||
      prevGateInt.getTargets().size()!=1)
     return;
   // I found the pattern, then I remove it from the circuit

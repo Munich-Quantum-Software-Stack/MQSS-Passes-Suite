@@ -489,6 +489,9 @@ INSTANTIATE_TEST_SUITE_P(
     std::make_tuple("SToSAdjPass",
                     "./code/SToSAdjPass.cpp",
                     []() { return mqss::opt::createSToSAdjPass();})
+//    std::make_tuple("NormalizeArgAnglePass",
+//                    "./code/NormalizeArgAnglePass.cpp",
+//                    []() { return mqss::opt::createNormalizeArgAnglePass();})
   ),
   [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>& info) {
         // Use the first element of the tuple (testName) as the custom test name

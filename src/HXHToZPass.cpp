@@ -41,22 +41,24 @@ void ReplaceHXHToZ(mlir::Operation *currentOp) {
   if (!currentGate)
     return;
   // check single qubit h operation
-  if(currentGate.getControls().size()!=0 && 
+  if(currentGate.getControls().size()!=0 ||
      currentGate.getTargets().size()!=1)
     return;
   // get previous
   auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+  if(!prevOp) return;
   auto prevGate = dyn_cast_or_null<quake::XOp>(*prevOp);
   if (!prevGate)
     return;
   // check single qubit gate
-  if(prevGate.getControls().size()!=0 && 
+  if(prevGate.getControls().size()!=0 ||
      prevGate.getTargets().size()!=1)
     return;
   auto prevPrevOp = mqss::utils::getPreviousOperationOnTarget(prevGate,currentGate.getTargets()[0]);
+  if(!prevPrevOp) return;
   auto prevPrevGate = dyn_cast_or_null<quake::HOp>(*prevPrevOp);
   // check single qubit gate
-  if(prevPrevGate.getControls().size()!=0 && 
+  if(prevPrevGate.getControls().size()!=0 ||
      prevPrevGate.getTargets().size()!=1)
     return;
   // I found the pattern, then I remove it from the circuit

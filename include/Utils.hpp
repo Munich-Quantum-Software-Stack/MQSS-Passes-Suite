@@ -172,6 +172,7 @@ namespace mqss::utils{
       return;
     // get the previous operation to check the swap pattern
     auto prevOp = getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+    if (!prevOp) return;
     auto previousGate = dyn_cast_or_null<T1>(prevOp);
     if (!previousGate)
       return;
@@ -227,6 +228,7 @@ namespace mqss::utils{
       return;
     // get the previous operation to check the swap pattern
     auto prevOp = getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+    if(!prevOp) return;
     auto previousGate = dyn_cast_or_null<T1>(prevOp);
     if (!previousGate)
       return;
@@ -282,14 +284,15 @@ namespace mqss::utils{
     if (!currentGate)
       return;
     // check single qubit T2 operation
-    if(currentGate.getControls().size()!=0 &&
+    if(currentGate.getControls().size()!=0 ||
        currentGate.getTargets().size()!=1)
     return;
     // get previous
     auto prevOp = getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+    if(!prevOp) return;
     auto prevGate = dyn_cast<T1>(prevOp);
     // check single qubit operation
-    if(prevGate.getControls().size()!=0 &&
+    if(prevGate.getControls().size()!=0 ||
        prevGate.getTargets().size()!=1)
       return;
     // I found the pattern, then I remove it from the circuit

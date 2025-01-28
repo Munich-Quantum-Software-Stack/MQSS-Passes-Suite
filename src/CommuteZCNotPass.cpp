@@ -47,6 +47,7 @@ void commuteZCNot(mlir::Operation *currentOp){
     return;
   // get the previous operation to check the swap pattern
   auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getControls()[0]);
+  if (!prevOp) return;
   auto previousGate = dyn_cast_or_null<quake::ZOp>(prevOp);
   if (!previousGate)
     return;

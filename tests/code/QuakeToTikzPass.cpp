@@ -30,6 +30,14 @@ struct ghz {
     z(q[5]);
     s(q[0]);
     t(q[1]);
+    x<cudaq::adj>(q[3]); // no adjoint
+    y<cudaq::adj>(q[4]); // no adjoint
+    z<cudaq::adj>(q[5]); // no adjoint
+    s<cudaq::adj>(q[0]);
+    t<cudaq::adj>(q[1]);
+    swap<cudaq::adj>(q[0],q[3]); //check how to support it
+    //pry(3.5,q[1]);
+    //prz(5.0,q[2]);
     mz(q);
 
   }

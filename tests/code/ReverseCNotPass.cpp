@@ -17,7 +17,10 @@ struct test {
     // Compile-time sized array like std::array
     cudaq::qarray<N> q;
     z(q[1]);
+    z(q[0]);
     x<cudaq::ctrl>(q[1], q[0]);
+    y(q[1]);
+    y(q[0]);
     mz(q);
   }
 };

@@ -4,7 +4,14 @@ module attributes {llvm.data_layout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i6
     %1 = quake.extract_ref %0[1] : (!quake.veq<2>) -> !quake.ref
     quake.z %1 : (!quake.ref) -> ()
     %2 = quake.extract_ref %0[0] : (!quake.veq<2>) -> !quake.ref
-    quake.x [%1] %2 : (!quake.ref, !quake.ref) -> ()
+    quake.z %2 : (!quake.ref) -> ()
+    quake.h %2 : (!quake.ref) -> ()
+    quake.h %1 : (!quake.ref) -> ()
+    quake.x [%2] %1 : (!quake.ref, !quake.ref) -> ()
+    quake.h %2 : (!quake.ref) -> ()
+    quake.h %1 : (!quake.ref) -> ()
+    quake.y %1 : (!quake.ref) -> ()
+    quake.y %2 : (!quake.ref) -> ()
     %measOut = quake.mz %0 : (!quake.veq<2>) -> !cc.stdvec<!quake.measure>
     return
   }

@@ -186,7 +186,7 @@ std::unique_ptr<mlir::Pass> createDoubleCnotCancellationPass();
  * @brief QUAKE MLIR pass that operates on each CNot gate in a given quantum circuit.
    @details This method constructs an `mlir::Pass` of the type ReverseCNotPass. This pass operates on all two-qubit CNot gates and reverses the target and controls by introducing additional Hadamard gates, in a given QUAKE MLIR module, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/ReverseCNotPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the ReverseCNotPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -196,7 +196,7 @@ std::unique_ptr<mlir::Pass> createReverseCNotPass();
  * @brief QUAKE MLIR pass that operates on each rotation Rx, Ry, and Rz gate in a given quantum circuit.
    @details This method constructs an `mlir::Pass` of the type NormalizeArgAnglePass. This pass operates on rotation Rx, Ry, and Rz gates an normalizes the angle, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/NormalizeArgAnglePass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the NormalizeArgAnglePass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -206,7 +206,7 @@ std::unique_ptr<mlir::Pass> createNormalizeArgAnglePass();
  * @brief QUAKE MLIR pass that operates on each rotation Rx, Ry, and Rz gate in a given quantum circuit and removes each rotation that results in a null rotation.
    @details This method constructs an `mlir::Pass` of the type NullRotationCancellationPass. This pass operates on rotation Rx, Ry, and Rz gates an removes the rotation if the angle results in a null rotation, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/NullRotationCancellationPass.png width=100%
 
  @return An `mlir::Pass` object containing the definition of the NullRotationCancellationPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -216,7 +216,7 @@ std::unique_ptr<mlir::Pass> createNullRotationCancellationPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard, X and Hadamard a replaces it by a Z gate.
    @details This method constructs an `mlir::Pass` of the type HXHToZPass. This pass operates on the pattern Hadamard, X and Hadamard, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/HXHToZPass.png width=80%
 
  @return An `mlir::Pass` object containing the definition of the HXHToZPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -226,7 +226,7 @@ std::unique_ptr<mlir::Pass> createHXHToZPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard, Z and Hadamard a replaces it by a X gate.
    @details This method constructs an `mlir::Pass` of the type HZHToXPass. This pass operates on the pattern Hadamard, Z and Hadamard, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/HZHToXPass.png width=80%
 
  @return An `mlir::Pass` object containing the definition of the HZHToXPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -236,7 +236,14 @@ std::unique_ptr<mlir::Pass> createHZHToXPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Pauli single-qubit gates {X, Y, Z} and Hadamard a switches accordingly.
    @details This method constructs an `mlir::Pass` of the type PauliGateAndHadamardSwitchPass. This pass operates on the pattern {X,Y,Z} and Hadamard, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  Example 1:
+  \image html docs/_static/mqss-passes/XGateAndHadamardSwitchPass.png width=70%
+
+  Example 2:
+  \image html docs/_static/mqss-passes/XGateAndHadamardSwitchPass.png width=70%
+
+  Example 3:
+  \image html docs/_static/mqss-passes/XGateAndHadamardSwitchPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the PauliGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -246,7 +253,7 @@ std::unique_ptr<mlir::Pass> createPauliGateAndHadamardSwitchPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of single-qubit gate X and Hadamard a switches to Z gate and Hadamard.
    @details This method constructs an `mlir::Pass` of the type XGateAndHadamardSwitchPass. This pass operates on the pattern X and Hadamard, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/XGateAndHadamardSwitchPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the XGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -256,7 +263,7 @@ std::unique_ptr<mlir::Pass> createXGateAndHadamardSwitchPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of single-qubit gate Y and Hadamard a switches to Y and Hadamard.
    @details This method constructs an `mlir::Pass` of the type YGateAndHadamardSwitchPass. This pass operates on the pattern Y and Hadamard, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/YGateAndHadamardSwitchPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the YGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -266,7 +273,7 @@ std::unique_ptr<mlir::Pass> createYGateAndHadamardSwitchPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of single-qubit gate Z and Hadamard to X and Hadamard.
    @details This method constructs an `mlir::Pass` of the type ZGateAndHadamardSwitchPass. This pass operates on the pattern Z and Hadamard, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/ZGateAndHadamardSwitchPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the ZGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -276,7 +283,7 @@ std::unique_ptr<mlir::Pass> createZGateAndHadamardSwitchPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard and single-qubit gate X a switches to Z gate and Hadamard.
    @details This method constructs an `mlir::Pass` of the type HadamardAndXGateSwitchPass. This pass operates on the pattern Hadamard and X, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/HadamardAndXGateSwitchPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the HadamardAndXGateSwitchPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -286,7 +293,7 @@ std::unique_ptr<mlir::Pass> createHadamardAndXGateSwitchPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard and single-qubit gate Y a switches to Y gate and Hadamard.
    @details This method constructs an `mlir::Pass` of the type HadamardAndYGateSwitchPass. This pass operates on the pattern Hadamard and Y, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/HadamardAndYGateSwitchPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the HadamardAndYGateSwitchPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -296,7 +303,7 @@ std::unique_ptr<mlir::Pass> createHadamardAndYGateSwitchPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard and single-qubit gate Z a switches to X gate and Hadamard.
    @details This method constructs an `mlir::Pass` of the type HadamardAndZGateSwitchPass. This pass operates on the pattern Hadamard and Z, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/HadamardAndZGateSwitchPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the HadamardAndZGateSwitchPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -306,7 +313,7 @@ std::unique_ptr<mlir::Pass> createHadamardAndZGateSwitchPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of S adjoint and single-qubit gate Z a replaces by a S gate.
    @details This method constructs an `mlir::Pass` of the type SAdjToSPass. This pass operates on the pattern S adjoint and Z, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/SAdjToSPass.png width=60%
 
  @return An `mlir::Pass` object containing the definition of the SAdjToSPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */
@@ -316,7 +323,7 @@ std::unique_ptr<mlir::Pass> createSAdjToSPass();
  * @brief QUAKE MLIR pass that operates on the pattern composed of S and single-qubit gate Z a replaces by a S adjoint gate.
    @details This method constructs an `mlir::Pass` of the type SAdjToSPass. This pass operates on the pattern S and Z, as follows.
 
-  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+  \image html docs/_static/mqss-passes/SToSAdjPass.png width=60%
 
  @return An `mlir::Pass` object containing the definition of the SToSAdjPass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
  */

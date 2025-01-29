@@ -39,6 +39,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "llvm/Support/raw_ostream.h"
 #include "mlir/Dialect/SCF/IR/SCF.h"
 #include <iomanip>
+#include <regex>
 #include "Passes.hpp"
 #include "Utils.hpp"
 
@@ -61,6 +62,7 @@ void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::
   std::vector<int> targets;
   std::vector<int> controls;
   std::vector<int> measurements;
+  bool isAdj = false;
   if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op)){
     for (auto operand : op->getOperands()) {
       if (operand.getType().isa<quake::RefType>()) {
@@ -83,6 +85,7 @@ void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::
     parameters  = mqss::utils::getParametersValues(gate.getParameters());
     targets     = mqss::utils::getIndicesOfValueRange(gate.getTargets());
     controls    = mqss::utils::getIndicesOfValueRange(gate.getControls());
+    isAdj       = gate.isAdj();
     #ifdef DEBUG
       llvm::outs() << "\tParameters: "  << parameters.size() << " Targets: " << targets.size() << " Controls :" << controls.size() << "\n";
     #endif
@@ -109,6 +112,11 @@ void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::
   // iterate over all the targets and insert it
   for(int target_qubit : targets){
     std::string labelGate = gateName;
+    // rename in case of rotations for sake of better readability
+    // phased_rx -> prx
+    labelGate = std::regex_replace(labelGate, std::regex("phased_"), "p");
+    // append dagger in case of adj
+    if(isAdj) labelGate = labelGate+"\\textsuperscript{\\textdagger}";
     // if the gate has parameters, annotate into the label
     if(parameters.size() > 0)
       labelGate += "(";

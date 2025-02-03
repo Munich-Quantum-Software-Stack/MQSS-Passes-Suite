@@ -330,5 +330,12 @@ std::unique_ptr<mlir::Pass> createSToSAdjPass();
  */
 std::unique_ptr<mlir::Pass> createQuakeToTikzPass(llvm::raw_string_ostream &ostream);
 
+/**
+ * @brief Pass that generates a quake module form a given QASM3 circuit..
+   @details This method constructs an `mlir::Pass` of the type QASM3ToQuakePass. This pass generates a MLIR QUAKE module of a given input QASM3 circuit.
+   @param[out] ostream A raw stream object that stores the Quake MLIR module.
+ @return An `mlir::Pass` object containing the definition of the QASM3ToQuakePass. This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createQASM3ToQuakePass(std::istringstream &qasmStream);
 } // end namespace
 #endif // PASSES_H

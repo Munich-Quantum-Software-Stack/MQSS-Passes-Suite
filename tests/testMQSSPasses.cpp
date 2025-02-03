@@ -74,6 +74,15 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #define CUDAQ_GEN_PREFIX_NAME "__nvqpp__mlirgen__"
 
 std::tuple<mlir::ModuleOp, mlir::MLIRContext *>
+  createEmptyMLIRModule(){
+  auto contextPtr = cudaq::initializeMLIR();
+  mlir::MLIRContext &context = *contextPtr.get();
+  // Create an empty MLIR module
+  mlir::OwningOpRef<mlir::ModuleOp> m_module = mlir::ModuleOp::create(mlir::UnknownLoc::get(&context));
+  return std::make_tuple(m_module.release(), contextPtr.release());
+}
+
+std::tuple<mlir::ModuleOp, mlir::MLIRContext *>
   extractMLIRContext(const std::string& quakeModule){
   auto contextPtr = cudaq::initializeMLIR();
   mlir::MLIRContext &context = *contextPtr.get();
@@ -145,6 +154,30 @@ TEST(TestMQSSPasses, TestPrintQuakeGatesPass){
     std::cout << "Captured output from Pass:\n" << moduleOutput << std::endl;
   #endif
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
+TEST(TestMQSSPasses, TestQASMToQuake){
+  // Open the OpenQASM 3.0 file
+  std::ifstream inputQASMFile("./qasm/Application.qasm");
+  // Read file content into a string
+  std::stringstream buffer;
+  buffer << inputQASMFile.rdbuf();
+  // Convert to istringstream
+  std::istringstream qasmStream(buffer.str());
+  // creating empty mlir module
+  auto [mlirModule, contextPtr] = createEmptyMLIRModule();
+  mlir::MLIRContext &context = *contextPtr;
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream));
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule)))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Parsed Circuit from QASM:\n";
+    mlirModule->dump();
+  #endif
+  //EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
 TEST(TestMQSSPasses, TestQuakeQMapPass01){

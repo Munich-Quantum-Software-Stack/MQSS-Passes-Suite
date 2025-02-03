@@ -35,30 +35,31 @@ using namespace mlir;
 
 namespace {
 
-struct ReverseCNot : public OpRewritePattern<quake::XOp> {
-  using OpRewritePattern::OpRewritePattern;
-  LogicalResult matchAndRewrite(quake::XOp cxOp,
-                                PatternRewriter &rewriter) const override {
-    if (cxOp.getControls().size() != 1 && cxOp.getTargets().size() !=1)
-      return success(); // if the cx operation is not two qubit then do nothing 
-    // Get the operands of the XOp (control and target qubits)
-    Value control = cxOp.getControls()[0];
-    Value target  = cxOp.getTargets()[0];
-    Location loc  = cxOp.getLoc();
-    // TODO: howt to pass hOp.isAdj(), hOp.getParameters()
-    // Insert the H gates on control and target qubits
-    rewriter.create<quake::HOp>(loc,target);
-    rewriter.create<quake::HOp>(loc,control);
-    // Insert the X gate swapping the control and target qubits
-    rewriter.create<quake::XOp>(loc, target, control);
-    // Insert the H gates after CNot
-    rewriter.create<quake::HOp>(loc,target);
-    rewriter.create<quake::HOp>(loc,control);
-    // Erase the original Cx operation
-    rewriter.eraseOp(cxOp);
-    return success();
-  }
-};
+void ReverseCNot(mlir::Operation *currentOp) {
+  auto cxOp = dyn_cast_or_null<quake::XOp>(*currentOp);
+  if (!cxOp) return;
+  if (cxOp.getControls().size() != 1 || cxOp.getTargets().size() !=1)
+    return; // if the cx operation is not two qubit then do nothing
+  // Get the operands of the XOp (control and target qubits)
+  Value control = cxOp.getControls()[0];
+  Value target  = cxOp.getTargets()[0];
+  Location loc  = cxOp.getLoc();
+
+  mlir::IRRewriter rewriter(cxOp->getContext());
+  rewriter.setInsertionPointAfter(cxOp);
+  // TODO: howt to pass hOp.isAdj(), hOp.getParameters()
+  // Insert the H gates on control and target qubits
+  rewriter.create<quake::HOp>(loc,target);
+  rewriter.create<quake::HOp>(loc,control);
+  // Insert the X gate swapping the control and target qubits
+  rewriter.create<quake::XOp>(loc, target, control);
+  // Insert the H gates after CNot
+  rewriter.create<quake::HOp>(loc,target);
+  rewriter.create<quake::HOp>(loc,control);
+  // Erase the original Cx operation
+  rewriter.eraseOp(cxOp);
+}
+
 
 class ReverseCNotPass
     : public PassWrapper<ReverseCNotPass , OperationPass<func::FuncOp>> {
@@ -70,17 +71,9 @@ public:
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    auto ctx = circuit.getContext();
-
-    RewritePatternSet patterns(ctx);
-    patterns.insert<ReverseCNot>(ctx);
-    ConversionTarget target(*ctx);
-    target.addLegalDialect<quake::QuakeDialect>();
-    //target.addIllegalOp<quake::XOp>();
-    if (failed(applyPartialConversion(circuit, target, std::move(patterns)))) {
-      circuit.emitOpError("ReverseCNotPass failed");
-      signalPassFailure();
-    }
+    circuit.walk([&](Operation *op){
+        ReverseCNot(op);
+    });
   }
 };
 } // namespace

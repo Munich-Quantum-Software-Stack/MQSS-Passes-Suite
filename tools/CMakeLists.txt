@@ -41,3 +41,11 @@ target_include_directories(quake-to-tikz PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
+add_executable(qasm-to-quake qasm-to-quake.cpp)
+target_link_libraries(qasm-to-quake PRIVATE
+                        ${COMMON_LIBRARIES}
+                        MQSSPasses
+                        Boost::program_options)
+target_include_directories(qasm-to-quake PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${CUDAQ_MLIR_RUNTIME_PATH})

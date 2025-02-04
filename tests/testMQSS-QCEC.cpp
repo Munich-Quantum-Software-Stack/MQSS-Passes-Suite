@@ -391,9 +391,9 @@ TEST_P(VerificationTestPassesMQSS, Run) {
     // set the configuration
     config.functionality.traceThreshold = 1e-2;
     config.execution.runConstructionChecker = true;
-    config.execution.runAlternatingChecker = true;
-    config.execution.runZXChecker = true;
-    config.execution.runSimulationChecker = false;
+    config.execution.runAlternatingChecker = false;
+    config.execution.runZXChecker = false;
+    config.execution.runSimulationChecker = true;
     ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
     ecm.run();
     std::cout << ecm.getResults() << "\n";

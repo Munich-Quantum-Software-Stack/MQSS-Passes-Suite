@@ -17,7 +17,7 @@ the License.
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception 
 -------------------------------------------------------------------------
   author Martin Letras
-  date   Januray 2025
+  date   February 2025
   version 1.0
   brief
   PrintQuakeGatesPass(llvm::raw_string_ostream ostream)
@@ -72,7 +72,7 @@ using namespace mlir;
     return 0;                             // Single-qubit gates have no controls
   }
 
-  void insertGateIntoQuakeModule(std::string gateId,
+  void insertQASMGateIntoQuakeModule(std::string gateId,
                                  OpBuilder builder,
                                  Location loc,
                                  std::vector<mlir::Value> vecParams,
@@ -83,18 +83,180 @@ using namespace mlir;
     mlir::ValueRange controls(vecControls);
     mlir::ValueRange targets(vecTargets);
     static const std::unordered_map<std::string,std::function<void()>>gateMap = {
+      {"gphase", [&](){ throw std::runtime_error("Global phase operation is not supported!"); }},
+      {"xx_minus_yy", [&](){ throw std::runtime_error("xx_minus_yy phase operation is not supported!"); }},
+      {"xx_plus_yy", [&](){ throw std::runtime_error("xx_plus_yy phase operation is not supported!"); }},
+      {"U", [&](){ throw std::runtime_error("Global phase operation is not supported!"); }},
       {"x", [&](){ builder.create<quake::XOp>(loc, adj, params, controls, targets); }},
       {"y", [&](){ builder.create<quake::YOp>(loc, adj, params, controls, targets); }},
       {"z", [&](){ builder.create<quake::ZOp>(loc, adj, params, controls, targets); }},
       {"h", [&](){ builder.create<quake::HOp>(loc, adj, params, controls, targets); }},
+      {"ch", [&](){ builder.create<quake::HOp>(loc, adj, params, controls, targets); }},
       {"s", [&](){ builder.create<quake::SOp>(loc, adj, params, controls, targets); }},
+      {"sx", [&](){ // since sx is not supported, replace it by rx with pi/2 rotation
+        mlir::Value halfPi = mqss::utils::createFloatValue(builder,loc,1.57079632679);
+        builder.create<quake::RxOp>(loc, adj, halfPi, controls, targets);
+      }},
+      {"sxdg", [&](){ // since sx is not supported, replace it by rx with -pi/2 rotation
+        mlir::Value minHalfPi = mqss::utils::createFloatValue(builder,loc,-1.57079632679);
+        builder.create<quake::RxOp>(loc, adj, minHalfPi, controls, targets);
+      }},
       {"t", [&](){ builder.create<quake::TOp>(loc, adj, params, controls, targets); }},
+      {"teleport", [&](){ throw std::runtime_error("Teleport operation is not supported!");  }},
       {"rx", [&](){ builder.create<quake::RxOp>(loc, adj, params, controls, targets); }},
+      {"crx", [&](){ builder.create<quake::RxOp>(loc, adj, params, controls, targets); }},
+      {"ry", [&](){ builder.create<quake::RyOp>(loc, adj, params, controls, targets); }},
+      {"cry", [&](){ builder.create<quake::RyOp>(loc, adj, params, controls, targets); }},
+      {"p", [&](){ builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
+      {"phase", [&](){ builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
+      {"cphase", [&](){ builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
+      {"z", [&](){ builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
+      {"cz", [&](){ builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
+
+
+      {"id", [&](){ /* do nothing because identity*/ }},
       {"cx", [&](){ builder.create<quake::XOp>(loc, adj, params, controls, targets); }},
+      {"CX", [&](){ builder.create<quake::XOp>(loc, adj, params, controls, targets); }},
+      {"ccx", [&](){ builder.create<quake::XOp>(loc, adj, params, controls, targets); }},
       {"cy", [&](){ builder.create<quake::YOp>(loc, adj, params, controls, targets); }},
       {"cz", [&](){ builder.create<quake::ZOp>(loc, adj, params, controls, targets); }},
       {"swap", [&](){ builder.create<quake::SwapOp>(loc, adj, params, controls, targets); }},
-      {"ccx", [&](){ builder.create<quake::XOp>(loc, adj, params, controls, targets); }},
+      {"u", [&](){ // since u is not supported, U(θ, φ, λ) = Rz(φ) * Ry(θ) * Rz(λ)
+        // u2(φ, λ)
+        if (params.size() != 3)
+          throw std::runtime_error("ill-formed u gate");
+        builder.create<quake::RzOp>(loc, adj, params[1], controls, targets); // phi
+        builder.create<quake::RyOp>(loc, adj, params[0], controls, targets); // theta
+        builder.create<quake::RzOp>(loc, adj, params[2], controls, targets); // lambda
+      }},
+      {"u1", [&](){ builder.create<quake::R1Op>(loc, adj, params, controls, targets); }},
+      {"u2", [&](){ // since u2 is not supported, it has to be decomposed
+        // u2(φ, λ)
+        if (params.size() !=2)
+          throw std::runtime_error("ill-formed u2 gate");
+        builder.create<quake::RzOp>(loc, adj, params[0], controls, targets); // phi
+        mlir::Value halfPi = mqss::utils::createFloatValue(builder,loc,1.57079632679);
+        builder.create<quake::RxOp>(loc, adj, halfPi, controls, targets); // pi/2
+        builder.create<quake::RzOp>(loc, adj, params[0], controls, targets); // phi
+      }},
+      {"u3", [&](){ builder.create<quake::U3Op>(loc, adj, params, controls, targets); }},
+      {"iswap", [&](){ // since iswap is not supported, it has to be decomposed
+        /*gate iswap q1, q2 {
+          h q2;
+          cx q1, q2;
+          h q2;
+        }*/
+        if (params.size() !=2)
+          throw std::runtime_error("ill-formed isswap gate");
+        builder.create<quake::HOp>(loc, adj, params, controls, targets[1]); // q2
+        builder.create<quake::XOp>(loc, adj, params, targets[0], targets[1]); // q1, q2
+        builder.create<quake::HOp>(loc, adj, params, controls, targets[1]); // q2
+      }},
+      {"iswapdg", [&](){ // since iswapdg is not supported, it has to be decomposed
+        /*gate iswapdg q1, q2 {
+            h q2;
+            cx q1, q2;
+            h q2;
+            cz q1, q2;
+            h q2;
+        }*/
+        if (params.size() !=2)
+          throw std::runtime_error("ill-formed isswapdg gate");
+        builder.create<quake::HOp>(loc, adj, params, controls, targets[1]); // q2
+        builder.create<quake::XOp>(loc, adj, params, targets[0], targets[1]); // q1, q2
+        builder.create<quake::HOp>(loc, adj, params, controls, targets[1]); // q2
+        builder.create<quake::ZOp>(loc, adj, params, targets[0], targets[1]); // q1, q2
+        builder.create<quake::HOp>(loc, adj, params, controls, targets[1]); // q2
+      }},
+      {"rxx", [&](){ // since rxx is not supported, it has to be decomposed
+        /*gate rxx(theta) a, b {
+            cx a, b;
+            rx(theta) b;
+            cx a, b;
+        }*/
+        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=2)
+          throw std::runtime_error("ill-formed rxx gate");
+        builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
+        builder.create<quake::RxOp>(loc, adj,params,controls,targets[1]);// rx b;
+        builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
+      }},
+      {"ryy", [&](){ // since ryy is not supported, it has to be decomposed
+        /*gate ryy(theta) a, b {
+            ry(pi/2) a;
+            ry(pi/2) b;
+            cx a, b;
+            ry(theta) b;
+            cx a, b;
+            ry(-pi/2) a;
+            ry(-pi/2) b;
+        }*/
+        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=2)
+          throw std::runtime_error("ill-formed ryy gate");
+        mlir::Value halfPi = mqss::utils::createFloatValue(builder,loc,1.57079632679);
+        mlir::Value minHalfPi = mqss::utils::createFloatValue(builder,loc,-1.57079632679);
+        builder.create<quake::RyOp>(loc,adj,halfPi,controls,targets[0]);//ry(pi/2) a;
+        builder.create<quake::RyOp>(loc,adj,halfPi,controls,targets[1]);//ry(pi/2) b;
+        builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
+        builder.create<quake::RyOp>(loc,adj,params,controls,targets[1]);//ry(theta) b;
+        builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
+        builder.create<quake::RyOp>(loc,adj,minHalfPi,controls,targets[0]);//ry(pi/2) a;
+        builder.create<quake::RyOp>(loc,adj,minHalfPi,controls,targets[1]);//ry(pi/2) b;
+      }},
+      {"rzz", [&](){ // since rzz is not supported, it has to be decomposed
+        /*gate rzz(theta) a, b {
+            cx a, b;
+            rz(theta) b;
+            cx a, b;
+        }*/
+        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=2)
+          throw std::runtime_error("ill-formed rzz gate");
+        builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
+        builder.create<quake::RzOp>(loc, adj,params,controls,targets[1]);//rz(theta) b
+        builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
+      }},
+      {"rzx", [&](){ // since rzx is not supported, it has to be decomposed
+        /*gate rzx(theta) a, b {
+            h b;
+            cx a, b;
+            rz(theta) b;
+            cx a, b;
+            h b;
+        }*/
+        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=2)
+          throw std::runtime_error("ill-formed rzx gate");
+        builder.create<quake::HOp>(loc, adj, controls, targets[1]);// h b;
+        builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
+        builder.create<quake::RzOp>(loc, adj,params,controls,targets[1]);//rz(theta) b
+        builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
+        builder.create<quake::HOp>(loc, adj, controls, targets[1]);// h b;
+      }},
+      {"dcx", [&](){ // since dcx is not supported, it has to be decomposed
+        /*gate dcx a, b {
+            cx a, b;
+            cx b, a;
+        }*/
+        if (params.size() !=0 || controls.size()!= 0 || targets.size()!=2)
+          throw std::runtime_error("ill-formed dcx gate");
+        builder.create<quake::XOp>(loc, adj, controls, targets[0], targets[1]);// cx a, b;
+        builder.create<quake::XOp>(loc, adj, controls, targets[1], targets[0]);// cx b, a;
+      }},
+      {"ecr", [&](){ // since ecr is not supported, it has to be decomposed
+        /*gate ecr a, b {
+            h b;
+            cx a, b;
+            rz(pi/2) b;
+            cx a, b;
+            h b;
+        }*/
+        if (params.size() !=0 || controls.size()!= 0 || targets.size()!=2)
+          throw std::runtime_error("ill-formed ecr gate");
+        builder.create<quake::HOp>(loc, adj, controls, targets[1]);// h b;
+        builder.create<quake::XOp>(loc, adj, controls, targets[0], targets[1]);// cx a, b;
+        mlir::Value halfPi = mqss::utils::createFloatValue(builder,loc,1.57079632679);
+        builder.create<quake::RzOp>(loc, adj,halfPi, controls, targets[1]);// rz(pi/2) b;
+        builder.create<quake::XOp>(loc, adj, controls, targets[0], targets[1]);// cx a, b;
+        builder.create<quake::HOp>(loc, adj, controls, targets[1]);// h b;
+      }},
       {"cswap", [&](){ builder.create<quake::SwapOp>(loc, adj, params, controls, targets);}}
   };
     auto it = gateMap.find(gateId);
@@ -106,7 +268,7 @@ using namespace mlir;
   }
 
   mlir::Value insertAllocatedQubits(const std::vector<
-                                        std::shared_ptr<qasm3::Statement>>& program,
+                                    std::shared_ptr<qasm3::Statement>>& program,
                                     mlir::func::FuncOp circuit,
                                     mlir::Operation *inOp ) {
     int totalQubits = 0;
@@ -231,11 +393,10 @@ using namespace mlir;
         //std::cout << std::endl;
       }
     }
-
     std::regex pattern("dg"); // Case-sensitive regex
     if (std::regex_search(std::string(gateCall->identifier), pattern)) isAdj = true;
 
-    insertGateIntoQuakeModule(std::string(gateCall->identifier),
+    insertQASMGateIntoQuakeModule(std::string(gateCall->identifier),
                               builder,
                               loc,
                               parameters,

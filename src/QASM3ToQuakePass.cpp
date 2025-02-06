@@ -48,6 +48,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "ir/parsers/qasm3_parser/Types.hpp"
 
 using namespace mlir;
+using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
 
   namespace {
 
@@ -344,18 +345,23 @@ using namespace mlir;
     }
   }
 
-  mlir::Value insertAllocatedQubits(const std::vector<
-                                    std::shared_ptr<qasm3::Statement>>& program,
-                                    mlir::func::FuncOp circuit,
-                                    mlir::Operation *inOp ) {
+  // returns a tuple of T1 and T2
+  // T1 a map of mlir indices: identifier, qasmqubit, mllirqubit
+  // T2 allocated vector of qubits, all the qubit registers are condensed into one
+  std::tuple<IDQASMMLIR, mlir::Value>
+    insertAllocatedQubits(const std::vector<
+                          std::shared_ptr<qasm3::Statement>>& program,
+                          mlir::func::FuncOp circuit,
+                          mlir::Operation *inOp ) {
+    std::map<std::string, int> expQubits;
     int totalQubits = 0;
     for (const auto& statement : program) {
       // Check if the statement is a DeclarationStatement
       if (auto declStmt = std::dynamic_pointer_cast<
                              qasm3::DeclarationStatement>(statement)) {
 //        std::cout << "type name " <<  typeid(*statement).name()  << "\n";
-//        std::cout << "identifier " <<  declStmt->identifier  << "\n";
-//        std::cout << "expression " <<  declStmt->expression << "\n";
+        //std::cout << "identifier " <<  declStmt->identifier  << "\n";
+        //std::cout << "expression " <<  declStmt->expression << "\n";
         // Checking the type contained in the variant
         auto& variantType = declStmt->type; 
         if (auto designatedPtr = std::get_if<std::shared_ptr<
@@ -364,13 +370,14 @@ using namespace mlir;
           // If we successfully got the Type<std::shared_ptr<Expression>>, handle it
           std::shared_ptr<qasm3::Type<std::shared_ptr<qasm3::Expression>>>
                                                     typeExpr = *designatedPtr;
-//          std::cout << "Type expression to string " << typeExpr->toString() << "\n";
-//          std::cout << "Successfully cast to Type<std::shared_ptr<Expression>>!" << std::endl;
+          //std::cout << "Type expression to string " << typeExpr->toString() << "\n";
+          //std::cout << "Successfully cast to Type<std::shared_ptr<Expression>>!" << std::endl;
           std::regex pattern("qubit"); // Case-sensitive regex
           if (!std::regex_search(typeExpr->toString(), pattern)) continue; // error code
           if (auto designator = typeExpr->getDesignator()) {
             if (auto constant = std::dynamic_pointer_cast<
                                       qasm3::Constant>(designator)) {
+              expQubits.insert({std::string(declStmt->identifier),constant->getSInt()});
               totalQubits += constant->getSInt();  // Access the variant
               //std::cout << "Total qubits: " << val << std::endl;
             }
@@ -378,8 +385,10 @@ using namespace mlir;
         }
       }
     }
+    // identifier, qasmqubit, mlirqubit
+    IDQASMMLIR mlirQubits;
     if (totalQubits == 0 || totalQubits == -1)
-      return nullptr; // do nothing
+      return std::make_tuple(mlirQubits,nullptr); // do nothing
     // instead of returning do the insertion of the measurement in the MLIR module
     //return totalQubits;
     OpBuilder builder(circuit.getContext());
@@ -389,14 +398,25 @@ using namespace mlir;
     auto qubitVecType = quake::VeqType::get(builder.getContext(), totalQubits);
     // Create the quake.alloca operation
     auto qubitReg = builder.create<quake::AllocaOp>(loc, qubitVecType);
-    return qubitReg.getResult();
+    int globalCount  = 0;
+    for(const auto& pair : expQubits){
+      std::map<int, int> innerMap;
+      for(int i = 0; i<pair.second; i++){
+        innerMap.insert({i,globalCount++});
+      }
+      mlirQubits.insert({pair.first, innerMap});
+    }
+    if (globalCount != totalQubits) // paranoia checks
+      throw std::runtime_error("Fatal error! This should never happen");
+    return std::make_tuple(mlirQubits, qubitReg.getResult());
   }
 
   // Function to print gate information
   void insertGate(const std::shared_ptr<qasm3::GateCallStatement>& gateCall,
                   mlir::func::FuncOp circuit,
                   mlir::Operation *inOp,
-                  mlir::Value qubits) {
+                  mlir::Value qubits,
+                  IDQASMMLIR mlirQubits) {
     bool isAdj = false;
     std::vector<mlir::Value> parameters = {};
     std::vector<mlir::Value> controls   = {};
@@ -452,18 +472,24 @@ using namespace mlir;
         if (auto constantExprOp = std::dynamic_pointer_cast<
                                       qasm3::Constant>(operand->expression))
           qubitOp = constantExprOp->getSInt();
-        //if (operand->expression) {
+        if (qubitOp == -1) throw std::runtime_error("Fatal error, this must not happen!");
+        int selectedQubit = -1;
+        try{
+          selectedQubit = mlirQubits.at(std::string(operand->identifier)).at(qubitOp);
+        } catch(const std::out_of_range& e){
+          throw std::runtime_error("Fatal error!");
+        }                                                  //if (operand->expression) {
         //  std::cout << "[" << qubitOp << "]";
         //}
         if (i < numControls) {
           auto controlQubit = builder.create<quake::ExtractRefOp>(loc,
                                                                   qubits,
-                                                                  qubitOp);
+                                                                  selectedQubit);
           controls.push_back(controlQubit);
         } else {
           auto targetQubit = builder.create<quake::ExtractRefOp>(loc,
                                                                  qubits,
-                                                                 qubitOp);
+                                                                 selectedQubit);
           targets.push_back(targetQubit);
           //std::cout << " (Target)";
         }
@@ -487,12 +513,73 @@ using namespace mlir;
   void parseAndInsertGates(const std::vector<std::shared_ptr<qasm3::Statement>>& program,
                            mlir::func::FuncOp circuit,
                            mlir::Operation *inOp,
-                           mlir::Value qubits) {
+                           mlir::Value qubits,
+                           IDQASMMLIR mlirQubits) {
     for (const auto& statement : program)
     // Check if the statement is a GateCallStatement
       if (auto gateCall = std::dynamic_pointer_cast<
                               qasm3::GateCallStatement>(statement))
-        insertGate(gateCall, circuit, inOp, qubits);
+        insertGate(gateCall, circuit, inOp, qubits, mlirQubits);
+  }
+
+  // Function to print the source qubit and target bit of each measurement
+  void printMeasurementInfo(const std::vector<std::shared_ptr<qasm3::Statement>>&
+                            statements,
+                            mlir::func::FuncOp circuit,
+                            mlir::Operation *inOp,
+                            mlir::Value allocatedQubits,
+                            IDQASMMLIR mlirQubits) {
+    // Defining the builder
+    OpBuilder builder(circuit.getContext());
+    Location loc = circuit.getLoc();
+    builder.setInsertionPoint(inOp);  // Set insertion before return
+    //llvm::outs() << "Printing measurements!\n";
+    for (const auto& statement : statements) {
+      //llvm::outs() << "Statement Type: " << typeid(*statement).name() << "\n";
+      // Check if the statement is a MeasureStatement
+      if (auto assignmentStmt = std::dynamic_pointer_cast<
+                                  qasm3::AssignmentStatement>(statement)) {
+        //llvm::outs() << "Found AssignmentStatement\n";
+        if (assignmentStmt->expression) {
+          //llvm::outs() << "Expression Type: " << typeid(assignmentStmt->expression).name() << "\n";
+          // Check if it's a DeclarationExpression (which holds the initializer)
+          if (auto declExpr = std::dynamic_pointer_cast<
+                              qasm3::DeclarationExpression>(assignmentStmt->expression)) {
+            //llvm::outs() << "Found DeclarationExpression\n";
+            // Check if the initializer is a MeasureExpression
+            if (auto measureExpr = std::dynamic_pointer_cast<
+                                qasm3::MeasureExpression>(declExpr->expression)) {
+              //llvm::outs() << "Found MeasureExpression\n";
+              if (measureExpr->gate) {
+                std::string qubit = measureExpr->gate->identifier;
+                //llvm::outs() << "Measured Qubit: " << qubit << "\n";
+                if (measureExpr->gate->expression) {
+                  //llvm::outs() << "Has expresion\n";
+                  if (auto operand = std::dynamic_pointer_cast<
+                              qasm3::Constant>(measureExpr->gate->expression)) {
+                    size_t localQubit = operand->getSInt();
+                    size_t measQubit = -1;
+                    try{
+                      measQubit = mlirQubits.at(qubit).at(localQubit);
+                    } catch(const std::out_of_range& e){
+                      throw std::runtime_error("Fatal error!");
+                    }
+                    // insert measurement
+                    auto measRef = builder.create<quake::ExtractRefOp>(loc, allocatedQubits, measQubit);
+                    SmallVector<Value> targetValues = {measRef};
+                    Type measTy = quake::MeasureType::get(builder.getContext());
+                    builder.create<quake::MzOp>(loc, measTy, targetValues).getMeasOut();
+                    //llvm::outs() << "Operand Identifier: " << operand->getSInt() << "\n";
+                  }
+                }
+              } else {
+                throw std::runtime_error("Measurement has not qubit associated to it!");
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   class QASM3ToQuakePass
@@ -532,11 +619,21 @@ using namespace mlir;
       }
     });
     // Traverse the AST
-    mlir::Value allocatedQubits = insertAllocatedQubits(program,circuit,returnOp);
+    auto [mlirQubits, allocatedQubits] = insertAllocatedQubits(program,circuit,returnOp);
     if(!allocatedQubits) return;  // if no allocated qubits return nothing
+    // for debuggin print maps of qubits
+    #ifdef DEBUG
+      for(const auto& pair : mlirQubits){
+        std::map<int, int> innerMap = pair.second;
+        for(const auto& innerPair : innerMap){
+          llvm::outs() << "id:" << pair.first << " qasmQubit: "<<innerPair.first << " mlirQubit: " << innerPair.second << "\n";
+        }
+      }
+    #endif
     // Parse and print gate information
-    parseAndInsertGates(program,circuit,returnOp,allocatedQubits);
+    parseAndInsertGates(program, circuit, returnOp, allocatedQubits, mlirQubits);
     // Parse measurements
+    printMeasurementInfo(program,circuit, returnOp, allocatedQubits, mlirQubits);
   }
 private:
   std::istringstream &qasmStream;

@@ -523,12 +523,12 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
   }
 
   // Function to print the source qubit and target bit of each measurement
-  void printMeasurementInfo(const std::vector<std::shared_ptr<qasm3::Statement>>&
-                            statements,
-                            mlir::func::FuncOp circuit,
-                            mlir::Operation *inOp,
-                            mlir::Value allocatedQubits,
-                            IDQASMMLIR mlirQubits) {
+  void parseAndInsertMeasurements(const std::vector<std::shared_ptr<qasm3::Statement>>&
+                                  statements,
+                                  mlir::func::FuncOp circuit,
+                                  mlir::Operation *inOp,
+                                  mlir::Value allocatedQubits,
+                                  IDQASMMLIR mlirQubits) {
     // Defining the builder
     OpBuilder builder(circuit.getContext());
     Location loc = circuit.getLoc();
@@ -607,7 +607,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
       program = parser.parseProgram();
     } catch (const std::runtime_error& e) {
       llvm::outs() << "Parsing failed: " << e.what() << "\n";
-      return;
+      throw std::runtime_error("Error!");
     }
     // First, I do need to know the place of the return operation
     // then every new inserted operation will be before the "return" statement
@@ -633,7 +633,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     // Parse and print gate information
     parseAndInsertGates(program, circuit, returnOp, allocatedQubits, mlirQubits);
     // Parse measurements
-    printMeasurementInfo(program,circuit, returnOp, allocatedQubits, mlirQubits);
+    parseAndInsertMeasurements(program,circuit, returnOp, allocatedQubits, mlirQubits);
   }
 private:
   std::istringstream &qasmStream;

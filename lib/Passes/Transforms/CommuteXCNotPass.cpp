@@ -31,9 +31,10 @@ Adapted from:  https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/Transforms.hpp"
 
 using namespace mlir;
+using namespace mqss::support::transforms;
 
 namespace {
 
@@ -48,7 +49,7 @@ public:
   void runOnOperation() override {
     auto circuit = getOperation();
     circuit.walk([&](Operation *op){
-      mqss::utils::commuteOperation<quake::XOp, quake::XOp>(op,0,1,1,1);
+      commuteOperation<quake::XOp, quake::XOp>(op,0,1,1,1);
       //CommuteXCNot(op);
     });
   }

@@ -134,7 +134,6 @@ public:
   void runOnOperation() override {
     auto circuit = getOperation();
     circuit.walk([&](Operation *op){
-      //mqss::utils::commuteOperation<quake::XOp, quake::ZOp>(op,1,1,0,1);
       commuteCNotZ(op);
     });
   }

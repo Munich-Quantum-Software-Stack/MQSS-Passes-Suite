@@ -31,9 +31,10 @@ Z⋅H = H⋅X
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/Transforms.hpp"
 
 using namespace mlir;
+using namespace mqss::support::transforms;
 
 namespace {
   class ZGateAndHadamardSwitchPass
@@ -47,8 +48,8 @@ namespace {
     void runOnOperation() override {
       auto circuit = getOperation();
       circuit.walk([&](Operation *op){
-        mqss::utils::patternSwitch<quake::ZOp,quake::HOp,
-                                   quake::HOp,quake::XOp>(op);
+        patternSwitch<quake::ZOp,quake::HOp,
+                      quake::HOp,quake::XOp>(op);
       });
     }
   };

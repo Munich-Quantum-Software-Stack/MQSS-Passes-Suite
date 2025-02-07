@@ -31,9 +31,10 @@ Y⋅H = H⋅Y
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/Transforms.hpp"
 
 using namespace mlir;
+using namespace mqss::support::transforms;
 
 namespace {
   class YGateAndHadamardSwitchPass
@@ -47,8 +48,8 @@ namespace {
     void runOnOperation() override {
       auto circuit = getOperation();
       circuit.walk([&](Operation *op){
-        mqss::utils::patternSwitch<quake::YOp,quake::HOp,
-                                   quake::HOp,quake::YOp>(op);
+        patternSwitch<quake::YOp,quake::HOp,
+                      quake::HOp,quake::YOp>(op);
       });
     }
   };

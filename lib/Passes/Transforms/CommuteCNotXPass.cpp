@@ -31,9 +31,10 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/Transforms.hpp"
 
 using namespace mlir;
+using namespace mqss::support::transforms;
 
 namespace {
 
@@ -48,7 +49,7 @@ public:
   void runOnOperation() override {
     auto circuit = getOperation();
     circuit.walk([&](Operation *op){
-      mqss::utils::commuteOperation<quake::XOp, quake::XOp>(op,1,1,0,1);
+      commuteOperation<quake::XOp, quake::XOp>(op,1,1,0,1);
       //CommuteCNotX(op);
     });
   }

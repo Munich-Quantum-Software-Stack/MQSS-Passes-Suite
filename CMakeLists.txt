@@ -221,6 +221,7 @@ message(STATUS "QINFO INCLUDE DIRS ${qinfo_INCLUDE_DIRS}")
 
 include_directories(BEFORE
         ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/include/Passes/
         ${MQT_QMAP_INCLUDE_DIR}
         ${MQT_CORE_INCLUDE_DIR}
         ${qdmi_INCLUDE_DIRS}
@@ -228,10 +229,34 @@ include_directories(BEFORE
 )
 
 # Collect all .cpp files in the src directory
-file(GLOB SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB SRC_CODEGEN "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/CodeGen/*.cpp")
+file(GLOB SRC_DECOMPO "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Decompositions/*.cpp")
+file(GLOB SRC_EXAMPLE "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Examples/*.cpp")
+file(GLOB SRC_TRANSFO "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Transforms/*.cpp")
 
-add_mlir_library(MQSSPasses SHARED
-    ${SRC_FILES}
+add_mlir_library(MQSSPassesCodeGen SHARED
+    ${SRC_CODEGEN}
+    LINK_LIBS PUBLIC
+    MLIRIR
+    MLIRPass
+    MLIRTransforms)
+
+add_mlir_library(MQSSPassesDecompositions SHARED
+    ${SRC_DECOMPO}
+    LINK_LIBS PUBLIC
+    MLIRIR
+    MLIRPass
+    MLIRTransforms)
+
+add_mlir_library(MQSSPassesExamples SHARED
+    ${SRC_EXAMPLE}
+    LINK_LIBS PUBLIC
+    MLIRIR
+    MLIRPass
+    MLIRTransforms)
+
+add_mlir_library(MQSSPassesTransforms SHARED
+    ${SRC_TRANSFO}
     LINK_LIBS PUBLIC
     MQT::CoreIR
     MQT::CoreNA

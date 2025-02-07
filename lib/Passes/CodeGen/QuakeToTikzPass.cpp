@@ -41,9 +41,10 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include <iomanip>
 #include <regex>
 #include "Passes/CodeGen.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
+using namespace mqss::support::quakeDialect;
 
 void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::string>> &qubitLines){
   if (op->getDialect()->getNamespace() != "quake")
@@ -66,7 +67,7 @@ void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::
   if (isa<quake::MxOp>(op) || isa<quake::MyOp>(op) || isa<quake::MzOp>(op)){
     for (auto operand : op->getOperands()) {
       if (operand.getType().isa<quake::RefType>()) {
-        int qubitIndex = mqss::utils::extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
+        int qubitIndex = extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
         if (qubitIndex == -1)
           throw std::runtime_error("Non valid qubit index for measurement!");
         measurements.push_back(qubitIndex);
@@ -82,9 +83,9 @@ void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::
   }
   else{ 
     auto gate   = dyn_cast<quake::OperatorInterface>(op);
-    parameters  = mqss::utils::getParametersValues(gate.getParameters());
-    targets     = mqss::utils::getIndicesOfValueRange(gate.getTargets());
-    controls    = mqss::utils::getIndicesOfValueRange(gate.getControls());
+    parameters  = getParametersValues(gate.getParameters());
+    targets     = getIndicesOfValueRange(gate.getTargets());
+    controls    = getIndicesOfValueRange(gate.getControls());
     isAdj       = gate.isAdj();
     #ifdef DEBUG
       llvm::outs() << "\tParameters: "  << parameters.size() << " Targets: " << targets.size() << " Controls :" << controls.size() << "\n";
@@ -162,8 +163,8 @@ void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::
         return; // do nothing if the funcion is not cudaq kernel
 
       std::map<int, int> measurements; // key: qubit, value register index   
-      int numQubits = mqss::utils::getNumberOfQubits(circuit);
-      int numBits   = mqss::utils::getNumberOfClassicalBits(circuit,measurements);
+      int numQubits = getNumberOfQubits(circuit);
+      int numBits   = getNumberOfClassicalBits(circuit,measurements);
       std::vector<std::vector<std::string>> qubitTikz(numQubits);
       for(int i=0; i < numQubits; i++)
         qubitTikz[i].push_back({"\\lstick{\\ket{0}}"});

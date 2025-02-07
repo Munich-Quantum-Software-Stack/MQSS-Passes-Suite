@@ -42,12 +42,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include <iomanip>
 #include <regex>
 #include "Passes/CodeGen.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 #include "ir/parsers/qasm3_parser/Parser.hpp"
 #include "ir/parsers/qasm3_parser/Statement.hpp"
 #include "ir/parsers/qasm3_parser/Types.hpp"
 
 using namespace mlir;
+using namespace mqss::support::quakeDialect;
 using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
 
   namespace {
@@ -115,13 +116,13 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
       {"sx", [&](){ // since sx is not supported, replace it by rx with pi/2 rotation
         if (params.size() !=0 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed sx gate");
-        mlir::Value halfPi = mqss::utils::createFloatValue(builder,loc,1.57079632679);
+        mlir::Value halfPi = createFloatValue(builder,loc,1.57079632679);
         builder.create<quake::RxOp>(loc, adj, halfPi, controls, targets);
       }},
       {"sxdg", [&](){ // since sx is not supported, replace it by rx with -pi/2 rotation
         if (params.size() !=0 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed sxdg gate");
-        mlir::Value minHalfPi = mqss::utils::createFloatValue(builder,loc,-1.57079632679);
+        mlir::Value minHalfPi = createFloatValue(builder,loc,-1.57079632679);
         builder.create<quake::RxOp>(loc, adj, minHalfPi, controls, targets);
       }},
       {"t", [&](){
@@ -207,7 +208,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         if (params.size() != 2 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed u2 gate");
         builder.create<quake::RzOp>(loc, adj, params[0], controls, targets); // phi
-        mlir::Value halfPi = mqss::utils::createFloatValue(builder,loc,1.57079632679);
+        mlir::Value halfPi = createFloatValue(builder,loc,1.57079632679);
         builder.create<quake::RxOp>(loc, adj, halfPi, controls, targets); // pi/2
         builder.create<quake::RzOp>(loc, adj, params[0], controls, targets); // phi
       }},
@@ -267,8 +268,8 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         }*/
         if (params.size() !=1 || controls.size()!= 0 || targets.size()!=2)
           throw std::runtime_error("ill-formed ryy gate");
-        mlir::Value halfPi = mqss::utils::createFloatValue(builder,loc,1.57079632679);
-        mlir::Value minHalfPi = mqss::utils::createFloatValue(builder,loc,-1.57079632679);
+        mlir::Value halfPi = createFloatValue(builder,loc,1.57079632679);
+        mlir::Value minHalfPi = createFloatValue(builder,loc,-1.57079632679);
         builder.create<quake::RyOp>(loc,adj,halfPi,controls,targets[0]);//ry(pi/2) a;
         builder.create<quake::RyOp>(loc,adj,halfPi,controls,targets[1]);//ry(pi/2) b;
         builder.create<quake::XOp>(loc, adj, targets[0], targets[1]);// cx a, b;
@@ -327,7 +328,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
           throw std::runtime_error("ill-formed ecr gate");
         builder.create<quake::HOp>(loc, adj, controls, targets[1]);// h b;
         builder.create<quake::XOp>(loc, adj, controls, targets[0], targets[1]);// cx a, b;
-        mlir::Value halfPi = mqss::utils::createFloatValue(builder,loc,1.57079632679);
+        mlir::Value halfPi = createFloatValue(builder,loc,1.57079632679);
         builder.create<quake::RzOp>(loc, adj,halfPi, controls, targets[1]);// rz(pi/2) b;
         builder.create<quake::XOp>(loc, adj, controls, targets[0], targets[1]);// cx a, b;
         builder.create<quake::HOp>(loc, adj, controls, targets[1]);// h b;
@@ -435,7 +436,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         if (auto constantExprArg = std::dynamic_pointer_cast<
                                         qasm3::Constant>(arg))
           argVal = constantExprArg->getFP();
-        mlir::Value argMlirVal = mqss::utils::createFloatValue(builder,loc,argVal);
+        mlir::Value argMlirVal = createFloatValue(builder,loc,argVal);
         parameters.push_back(argMlirVal);
         //std::cout << argVal << " ";
       }

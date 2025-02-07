@@ -7,7 +7,7 @@ using namespace mlir;
 
 namespace mqss::utils{
  
-  inline mlir::Value createFloatValue(mlir::OpBuilder &builder, mlir::Location loc, double value) {
+/*  inline mlir::Value createFloatValue(mlir::OpBuilder &builder, mlir::Location loc, double value) {
     // Create a constant value (20.0 of type f64)
     auto valueAttr = builder.getFloatAttr(builder.getF64Type(), value);
     auto constantOp = builder.create<mlir::arith::ConstantOp>(loc, valueAttr);
@@ -155,7 +155,7 @@ namespace mqss::utils{
   }
 
   // Finds the pattern composed of T2, T1 and commute them to T1, T2
-  template <typename T1, typename T2>
+  /*template <typename T1, typename T2>
   inline void commuteOperation(mlir::Operation *currentOp,
                                int nCtrlsOp1,
                                int nTgtsOp1,
@@ -206,117 +206,6 @@ namespace mqss::utils{
     // Erase the original operations
     rewriter.eraseOp(currentGate);
     rewriter.eraseOp(previousGate);
-  }
-
-  // Finds the pattern composed of T2, T1 and remove them
-  // and T1 and T2 share the same control
-  // Targets and controls should be the same on boths
-  template <typename T1, typename T2>
-  inline void patternCancellation(mlir::Operation *currentOp,
-                               int nCtrlsOp1,
-                               int nTgtsOp1,
-                               int nCtrlsOp2,
-                               int nTgtsOp2){
-    auto currentGate = dyn_cast_or_null<T2>(*currentOp);
-    if (!currentGate)
-      return;
-    // check that the current gate is compliant with the number of controls and targets
-    if (currentGate.getControls().size() != nCtrlsOp2 ||
-        currentGate.getTargets().size() != nTgtsOp2)
-      return;
-    // get the previous operation to check the swap pattern
-    auto prevOp = getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
-    if(!prevOp) return;
-    auto previousGate = dyn_cast_or_null<T1>(prevOp);
-    if (!previousGate)
-      return;
-    // check that the previous gate is compliant with the number of controls and targets
-    if (previousGate.getControls().size() != nCtrlsOp1 ||
-        previousGate.getTargets().size() != nTgtsOp1)
-      return;
-    // check that targets and controls are the same!
-    // At the moment I am checking all controls and all targets!
-    if(currentGate.getControls().size() == previousGate.getControls().size()){
-      std::vector<int> controlsCurr = getIndicesOfValueRange(currentGate.getControls());
-      std::vector<int> controlsPrev = getIndicesOfValueRange(previousGate.getControls());
-      // sort both arrays
-      std::sort(controlsCurr.begin(), controlsCurr.end(), std::greater<int>());
-      std::sort(controlsPrev.begin(), controlsPrev.end(), std::greater<int>());
-      // compare both arrays
-      if (!(std::equal(controlsCurr.begin(), controlsCurr.end(), controlsPrev.begin())))
-        return;
-    } else return;
-    // so far, controls are the same, now check the targets
-    if(currentGate.getTargets().size() == previousGate.getTargets().size()){
-      std::vector<int> targetsCurr = getIndicesOfValueRange(currentGate.getTargets());
-      std::vector<int> targetsPrev = getIndicesOfValueRange(previousGate.getTargets());
-      // sort both arrays
-      std::sort(targetsCurr.begin(), targetsCurr.end(), std::greater<int>());
-      std::sort(targetsPrev.begin(), targetsPrev.end(), std::greater<int>());
-      // compare both arrays
-      if (!(std::equal(targetsCurr.begin(), targetsCurr.end(), targetsPrev.begin())))
-        return;
-    } else return;
-    #ifdef DEBUG
-      llvm::outs() << "Current Operation: ";
-      currentGate->print(llvm::outs());
-      llvm::outs() << "\n";
-      llvm::outs() << "Previous Operation: ";
-      previousGate->print(llvm::outs());
-      llvm::outs() << "\n";
-    #endif
-    // At this point, I should de able to remove the pattern
-    mlir::IRRewriter rewriter(currentGate->getContext());
-    // Erase the operations
-    rewriter.eraseOp(currentGate);
-    rewriter.eraseOp(previousGate);
-  }
-
-  // Finds the pattern composed of T1, T2 and switches them
-  // and assigns the types T3, and T4
-  // Targets and controls should be the same on boths
-  // this only works at the moment for single qubit gates
-  template <typename T1, typename T2, typename T3, typename T4>
-  inline void patternSwitch(mlir::Operation *currentOp){
-    auto currentGate = dyn_cast_or_null<T2>(*currentOp);
-    if (!currentGate)
-      return;
-    // check single qubit T2 operation
-    if(currentGate.getControls().size()!=0 ||
-       currentGate.getTargets().size()!=1)
-    return;
-    // get previous
-    auto prevOp = getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
-    if(!prevOp) return;
-    auto prevGate = dyn_cast<T1>(prevOp);
-    // check single qubit operation
-    if(prevGate.getControls().size()!=0 ||
-       prevGate.getTargets().size()!=1)
-      return;
-    // I found the pattern, then I remove it from the circuit
-    #ifdef DEBUG
-      llvm::outs() << "Current Operation: ";
-      currentGate->print(llvm::outs());
-      llvm::outs() << "\n";
-      llvm::outs() << "Previous Operation: ";
-      prevGate->print(llvm::outs());
-      llvm::outs() << "\n";
-    #endif
-    mlir::IRRewriter rewriter(currentGate->getContext());
-    rewriter.setInsertionPointAfter(currentGate);
-    auto newGate = rewriter.create<T3>(currentGate.getLoc(),
-                                       currentGate.isAdj(),
-                                       currentGate.getParameters(),
-                                       currentGate.getControls(),
-                                       currentGate.getTargets());
-    rewriter.setInsertionPointAfter(newGate);
-    rewriter.create<T4>(prevGate.getLoc(),
-                        prevGate.isAdj(),
-                        prevGate.getParameters(),
-                        prevGate.getControls(),
-                        prevGate.getTargets());
-    rewriter.eraseOp(prevGate);
-    rewriter.eraseOp(currentGate);
-  }
+  }*/
 } // end namespace
 #endif // UTILS_H

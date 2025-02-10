@@ -30,7 +30,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include <numbers>
 #include <cmath>
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
 
@@ -52,7 +52,7 @@ void nullRotationCancellation(mlir::Operation *currentOp){
   // assuming that parameters are all rotation angles
   bool deleteGate = true;
   for(auto parameter : gate.getParameters()){
-    double param = mqss::utils::extractDoubleArgumentValue(parameter.getDefiningOp());
+    double param = supportQuake::extractDoubleArgumentValue(parameter.getDefiningOp());
     if(!checkDoublePiMultiplies(param) && param != 0 )
       deleteGate = false;
   }

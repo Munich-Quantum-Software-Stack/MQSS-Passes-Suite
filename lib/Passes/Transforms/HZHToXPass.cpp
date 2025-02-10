@@ -30,7 +30,7 @@ Adapted from: https://threeplusone.com/pubs/on_gates.pdf
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
 
@@ -45,7 +45,7 @@ void ReplaceHZHToX(mlir::Operation *currentOp) {
      currentGate.getTargets().size()!=1)
     return;
   // get previous
-  auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+  auto prevOp = supportQuake::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
   if (!prevOp) return;
   auto prevGate = dyn_cast_or_null<quake::ZOp>(*prevOp);
   if (!prevGate)
@@ -54,7 +54,7 @@ void ReplaceHZHToX(mlir::Operation *currentOp) {
   if(prevGate.getControls().size()!=0 ||
      prevGate.getTargets().size()!=1)
     return;
-  auto prevPrevOp = mqss::utils::getPreviousOperationOnTarget(prevGate,currentGate.getTargets()[0]);
+  auto prevPrevOp = supportQuake::getPreviousOperationOnTarget(prevGate,currentGate.getTargets()[0]);
   if (!prevPrevOp) return;
   auto prevPrevGate = dyn_cast_or_null<quake::HOp>(*prevPrevOp);
   // check single qubit gate

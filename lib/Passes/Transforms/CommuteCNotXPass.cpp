@@ -31,7 +31,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "Passes/Transforms.hpp"
-#include "Support/Transforms.hpp"
+#include "Support/Transforms/CommutateOperations.hpp"
 
 using namespace mlir;
 using namespace mqss::support::transforms;

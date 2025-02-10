@@ -31,7 +31,7 @@ Adapted from:  https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "Passes/Transforms.hpp"
-#include "Support/Transforms.hpp"
+#include "Support/Transforms/CommutateOperations.hpp"
 
 using namespace mlir;
 using namespace mqss::support::transforms;

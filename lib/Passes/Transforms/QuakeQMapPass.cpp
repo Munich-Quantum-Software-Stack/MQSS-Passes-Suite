@@ -39,7 +39,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "llvm/Support/raw_ostream.h"
 #include "mlir/Dialect/SCF/IR/SCF.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 //#include "qdmi.h"
 //#include "sc/heuristic/HeuristicMapper.hpp"
 
@@ -53,9 +53,9 @@ void loadRotationGatesToQC(Operation *op, qc::QuantumComputation &qc){
     if (op->getOperands().size()!=2)
       throw std::runtime_error("ill-formed rotation gate!");
     Value operand1 = op->getOperands()[0];
-    angle = mqss::utils::extractDoubleArgumentValue(operand1.getDefiningOp());
+    angle = supportQuake::extractDoubleArgumentValue(operand1.getDefiningOp());
     Value operand2 = op->getOperands()[1];
-    qubit= mqss::utils::extractIndexFromQuakeExtractRefOp(operand2.getDefiningOp());
+    qubit= supportQuake::extractIndexFromQuakeExtractRefOp(operand2.getDefiningOp());
     #ifdef DEBUG
       llvm::errs() << "Operation ";
       op->print(llvm::errs());
@@ -81,9 +81,9 @@ void loadXYZGatesToQC(Operation *op, qc::QuantumComputation &qc){
     if (op->getOperands().size() ==2){
       int qubit_ctrl,qubit_target;
       Value operand1 = op->getOperands()[0];
-      qubit_ctrl = mqss::utils::extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
+      qubit_ctrl = supportQuake::extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
       Value operand2 = op->getOperands()[1];
-      qubit_target = mqss::utils::extractIndexFromQuakeExtractRefOp(operand2.getDefiningOp());
+      qubit_target = supportQuake::extractIndexFromQuakeExtractRefOp(operand2.getDefiningOp());
       #ifdef DEBUG
         llvm::errs() << "Operation ";
         op->print(llvm::errs());
@@ -102,7 +102,7 @@ void loadXYZGatesToQC(Operation *op, qc::QuantumComputation &qc){
     // single qubit operations
     if (op->getOperands().size() ==1){
       Value operand1 = op->getOperands()[0];
-      int qubit= mqss::utils::extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
+      int qubit= supportQuake::extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
       #ifdef DEBUG
         llvm::errs() << "Operation ";
         op->print(llvm::errs());
@@ -127,7 +127,7 @@ void loadSTHGatesToQC(Operation *op, qc::QuantumComputation &qc){
     // single qubit operations
     if (op->getOperands().size() ==1){
       Value operand1 = op->getOperands()[0];
-      int qubit= mqss::utils::extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
+      int qubit= supportQuake::extractIndexFromQuakeExtractRefOp(operand1.getDefiningOp());
       #ifdef DEBUG
         llvm::errs() << "Operation ";
         op->print(llvm::errs());
@@ -158,7 +158,7 @@ void loadMeasurementsToQC(Operation *op, qc::QuantumComputation &qc,std::map<int
       throw std::runtime_error("ill-formed measurement gate!");
     Value operand = op->getOperands()[0];
     if (operand.getType().isa<quake::RefType>()) {
-      int qubitIndex = mqss::utils::extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
+      int qubitIndex = supportQuake::extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
       if (qubitIndex == -1)
         throw std::runtime_error("Non valid qubit index for measurement!");
       qc.measure(static_cast<qc::Qubit>(qubitIndex),measurements.at(qubitIndex));
@@ -202,8 +202,8 @@ public:
       return; // do nothing if the funcion is not cudaq kernel
 
     std::map<int, int> measurements; // key: qubit, value register index
-    int numQubits = mqss::utils::getNumberOfQubits(circuit);
-    int numBits   = mqss::utils::getNumberOfClassicalBits(circuit,measurements);
+    int numQubits = supportQuake::getNumberOfQubits(circuit);
+    int numBits   = supportQuake::getNumberOfClassicalBits(circuit,measurements);
     #ifdef DEBUG
       llvm::outs() << "Kernel name: " << funcName << "\n";
       llvm::errs() <<"Number of input qubits " << numQubits << "\n";

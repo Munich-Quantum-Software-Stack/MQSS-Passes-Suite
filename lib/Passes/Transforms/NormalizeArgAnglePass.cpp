@@ -32,7 +32,7 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 #include <numbers>
 #include <cmath>
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
 
@@ -48,9 +48,9 @@ void normalizeAngleOfRotations(mlir::Operation *currentOp,
   std::vector<mlir::Value> nParameters = {};
   mlir::IRRewriter rewriter(gate->getContext());
   for(auto parameter : gate.getParameters()){
-    double param = mqss::utils::extractDoubleArgumentValue(parameter.getDefiningOp());
+    double param = supportQuake::extractDoubleArgumentValue(parameter.getDefiningOp());
     param = param - (std::floor(param/(2*pi))*2*pi);//normalize the angle 
-    nParameters.push_back(mqss::utils::createFloatValue(builder, gate.getLoc(), param));
+    nParameters.push_back(supportQuake::createFloatValue(builder, gate.getLoc(), param));
   }
   ValueRange normParameters(nParameters);
   rewriter.setInsertionPointAfter(gate);

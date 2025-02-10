@@ -31,7 +31,7 @@ Adapted from: https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
 
@@ -46,7 +46,7 @@ void commuteZCNot(mlir::Operation *currentOp){
       currentGate.getTargets().size() != 1)
     return;
   // get the previous operation to check the swap pattern
-  auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getControls()[0]);
+  auto prevOp = supportQuake::getPreviousOperationOnTarget(currentGate, currentGate.getControls()[0]);
   if (!prevOp) return;
   auto previousGate = dyn_cast_or_null<quake::ZOp>(prevOp);
   if (!previousGate)
@@ -56,8 +56,8 @@ void commuteZCNot(mlir::Operation *currentOp){
       previousGate.getTargets().size() != 1)
     return;  // check both targets are the same
 
-    int targetPrev = mqss::utils::extractIndexFromQuakeExtractRefOp(previousGate.getTargets()[0].getDefiningOp());
-    int controlCurr = mqss::utils::extractIndexFromQuakeExtractRefOp(currentGate.getControls()[0].getDefiningOp());
+    int targetPrev = supportQuake::extractIndexFromQuakeExtractRefOp(previousGate.getTargets()[0].getDefiningOp());
+    int controlCurr = supportQuake::extractIndexFromQuakeExtractRefOp(currentGate.getControls()[0].getDefiningOp());
     if(targetPrev == controlCurr){
       // the pattern is:
       // -|z|---.---   ---.----|z|-     

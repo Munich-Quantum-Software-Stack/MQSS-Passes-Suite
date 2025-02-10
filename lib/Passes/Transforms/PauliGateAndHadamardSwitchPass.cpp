@@ -34,7 +34,7 @@ Z⋅H = H⋅X
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
 
@@ -49,7 +49,7 @@ void SwitchPauliH(mlir::Operation *currentOp) {
      currentGate.getTargets().size()!=1)
     return;
   // get previous
-  auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+  auto prevOp = supportQuake::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
   if(!prevOp) return;
   if(!isa<quake::XOp>(prevOp) && !isa<quake::YOp>(prevOp) && 
      !isa<quake::ZOp>(prevOp))

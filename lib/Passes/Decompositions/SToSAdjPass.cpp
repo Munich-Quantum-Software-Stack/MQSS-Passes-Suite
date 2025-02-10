@@ -30,7 +30,7 @@ Adapted from:  https://dl.acm.org/doi/10.5555/1972505
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "Passes/Decompositions.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
 
@@ -45,7 +45,7 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
      currentGate.getTargets().size()!=1)
     return;
   // get previous
-  auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+  auto prevOp = supportQuake::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
   if (!prevOp) return;
   auto prevGate = dyn_cast_or_null<quake::SOp>(*prevOp);
   if (!prevGate)

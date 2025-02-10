@@ -31,7 +31,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 #include "Passes/Transforms.hpp"
-#include "Utils.hpp"
+#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
 
@@ -46,7 +46,7 @@ void commuteCNotZ(mlir::Operation *currentOp){
       currentGate.getTargets().size() != 1)
     return;
   // get the previous operation to check the swap pattern
-  auto prevOp = mqss::utils::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
+  auto prevOp = supportQuake::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
   if (!prevOp) return;
   auto previousGate = dyn_cast_or_null<quake::XOp>(prevOp);
   if (!previousGate)
@@ -56,9 +56,9 @@ void commuteCNotZ(mlir::Operation *currentOp){
       previousGate.getTargets().size() != 1)
     return;  // check both targets are the same
 
-    int targetPrev = mqss::utils::extractIndexFromQuakeExtractRefOp(previousGate.getTargets()[0].getDefiningOp());
-    int controlPrev = mqss::utils::extractIndexFromQuakeExtractRefOp(previousGate.getControls()[0].getDefiningOp());
-    int targetCurr = mqss::utils::extractIndexFromQuakeExtractRefOp(currentGate.getTargets()[0].getDefiningOp());
+    int targetPrev = supportQuake::extractIndexFromQuakeExtractRefOp(previousGate.getTargets()[0].getDefiningOp());
+    int controlPrev = supportQuake::extractIndexFromQuakeExtractRefOp(previousGate.getControls()[0].getDefiningOp());
+    int targetCurr = supportQuake::extractIndexFromQuakeExtractRefOp(currentGate.getTargets()[0].getDefiningOp());
     if(targetCurr == controlPrev){
       // the pattern is:
       // ---.----|z|-     -|z|---.---

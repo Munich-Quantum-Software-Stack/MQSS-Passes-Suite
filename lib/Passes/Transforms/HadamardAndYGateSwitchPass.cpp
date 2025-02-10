@@ -32,7 +32,7 @@ H⋅Y = Y⋅H
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "Passes/Transforms.hpp"
-#include "Support/Transforms.hpp"
+#include "Support/Transforms/SwitchOperations.hpp"
 
 using namespace mlir;
 using namespace mqss::support::transforms;

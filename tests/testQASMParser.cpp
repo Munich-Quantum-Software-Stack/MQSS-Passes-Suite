@@ -72,6 +72,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include <gtest/gtest.h>
 #include <fstream>
 #include <regex>
+#include <zip.h>
+
 #define CUDAQ_GEN_PREFIX_NAME "__nvqpp__mlirgen__"
 
 std::string getEmptyQuakeKernel(const std::string kernelName, std::string functionName){
@@ -123,8 +125,56 @@ std::string readFileToString(const std::string &filename) {
     return fileContents.str();  // Convert the string stream to a string
 }
 
+std::vector<std::string> extractQASMFiles(const std::string& zipFilePath, const std::string& outputDir) {
+  std::vector<std::string> qasmFiles;
+  // Open the ZIP archive
+  int err = 0;
+  zip *archive = zip_open(zipFilePath.c_str(), ZIP_RDONLY, &err);
+  if (!archive) {
+    std::cerr << "Error opening ZIP file: " << zipFilePath << std::endl;
+    return qasmFiles;
+  }
+  // Get number of files inside the ZIP
+  zip_int64_t numEntries = zip_get_num_entries(archive, 0);
+  for (zip_int64_t i = 0; i < numEntries; ++i) {
+    const char *fileName = zip_get_name(archive, i, ZIP_FL_ENC_GUESS);
+    if (!fileName) continue;
+    std::string fileStr(fileName);
+    if (fileStr.size() >= 5 && fileStr.substr(fileStr.size() - 5) == ".qasm") {
+      // Extract the file
+      zip_file *zFile = zip_fopen_index(archive, i, 0);
+      if (!zFile) {
+        std::cerr << "Error opening file inside ZIP: " << fileStr << std::endl;
+        continue;
+      }
+      std::string outputPath = outputDir + "/" + fileStr;
+      std::ofstream outFile(outputPath, std::ios::binary);
+      if (!outFile) {
+        std::cerr << "Error creating output file: " << outputPath << std::endl;
+        zip_fclose(zFile);
+        continue;
+      }
+      // Read file content and write to disk
+      char buffer[4096];
+      zip_int64_t bytesRead;
+      while ((bytesRead = zip_fread(zFile, buffer, sizeof(buffer))) > 0) {
+        outFile.write(buffer, bytesRead);
+      }
+      zip_fclose(zFile);
+      outFile.close();
+      // Save extracted file name
+      qasmFiles.push_back(outputPath);
+      //std::cout << "Extracted: " << outputPath << std::endl;
+    }
+  }
+  // Close the ZIP archive
+  zip_close(archive);
+  return qasmFiles;
+}
+
 TEST(TestMQSSPasses, TestQASMToQuake){
   // Open the OpenQASM 3.0 file
+  std::vector<std::string> filesQASM = extractQASMFiles("./qasm/MQTBench.zip","./qasm/");
   std::ifstream inputQASMFile("./qasm/test-parser.qasm");
   std::string templateEmptyQuake = getEmptyQuakeKernel("ghz_indep_qiskit_10", "_ZN3ghzILm2EEclEv");
   // Read file content into a string

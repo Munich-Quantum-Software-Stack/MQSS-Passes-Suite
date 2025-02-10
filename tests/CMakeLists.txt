@@ -26,9 +26,15 @@ set(COMMON_LIBRARIES
 
 # Test executable
 add_executable(test-mqss-passes testMQSSPasses.cpp)
-target_link_libraries(test-mqss-passes PRIVATE ${COMMON_LIBRARIES} MQSSPasses)
+target_link_libraries(test-mqss-passes PRIVATE 
+                                          ${COMMON_LIBRARIES}
+                                          MQSSPasses)
+
 target_include_directories(test-mqss-passes PRIVATE
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/Passes/
+    ${CMAKE_SOURCE_DIR}/include/Support/
+    ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
 add_executable(test-decomposition-passes testCudaQDecompositionPasses.cpp)
@@ -44,9 +50,15 @@ target_include_directories(test-transpiler PRIVATE
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
 add_executable(test-verification-qcec testMQSS-QCEC.cpp)
-target_link_libraries(test-verification-qcec PRIVATE ${COMMON_LIBRARIES} MQT::QCEC MQSSPasses)
+target_link_libraries(test-verification-qcec PRIVATE ${COMMON_LIBRARIES} 
+                                                MQT::QCEC 
+                                                MQSSPasses)
+
 target_include_directories(test-verification-qcec PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
+#    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/Passes/
+    ${CMAKE_SOURCE_DIR}/include/Support/
+    ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
     ${MQT_QCEC_INCLUDE_DIR}
     ${CUDAQ_MLIR_RUNTIME_PATH})
 

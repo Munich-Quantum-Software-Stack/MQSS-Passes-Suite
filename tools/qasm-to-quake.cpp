@@ -66,9 +66,34 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include <stdio.h>
 #include <thread>
 #include <chrono>
+#include <regex>
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
+
+std::string getEmptyQuakeKernel(const std::string kernelName, std::string functionName){
+  std::string templateEmptyQuake =
+    "module attributes {"
+    "  llvm.data_layout = \"e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128\", "
+    "  llvm.triple = \"x86_64-unknown-linux-gnu\", "
+    "  quake.mangled_name_map = {__nvqpp__mlirgen__KERNELNAME = \"FUNCTIONNAME\"}"
+    "} {"
+    "  func.func @__nvqpp__mlirgen__KERNELNAME() attributes {\"cudaq-entrypoint\", \"cudaq-kernel\"} {"
+    "   return"
+    "  }"
+    ""
+    "  func.func @FUNCTIONNAME(%arg0: !cc.ptr<i8>) {"
+    "    return"
+    "  }"
+    "}"
+  ;
+  std::regex kernelNameRegex("KERNELNAME");
+  std::regex functionNameRegex("FUNCTIONNAME");
+  // Replace KERNELNAME and FUNCTIONNAME with the provided kernelName and functionName
+  templateEmptyQuake = std::regex_replace(templateEmptyQuake, kernelNameRegex, kernelName);
+  templateEmptyQuake = std::regex_replace(templateEmptyQuake, functionNameRegex, functionName);
+  return templateEmptyQuake;
+}
 
 std::tuple<mlir::ModuleOp, mlir::MLIRContext *>
   extractMLIRContext(const std::string& quakeModule){
@@ -123,8 +148,8 @@ int main(int argc, char *argv[])
   po::options_description desc("Allowed options");
   desc.add_options()
       ("help", "produce help message")
-      ("input", po::value<std::string>(), "The input file might be: *.cpp or *.qke (Quake module)")
-      ("output", po::value<std::string>(), "The name of the output file. It should be *.tikz");
+      ("input", po::value<std::string>(), "Input qasm file!. It must be .qasm")
+      ("output", po::value<std::string>(), "The name of the output file. It must be *.qke");
   
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -134,27 +159,24 @@ int main(int argc, char *argv[])
     std::cout << desc << std::endl;
     return 1;
   }
-  std::string moduleQke;
+
+  std::stringstream buffer;
   if (vm.count("input")){
-    if(!hasExtension(vm["input"].as<std::string>(), ".cpp") &&
-       !hasExtension(vm["input"].as<std::string>(), ".qke")){
+    if(!hasExtension(vm["input"].as<std::string>(), ".qasm")){
       std::cout << "File "<<vm["input"].as<std::string>() << " is not a valid supported file!" << std::endl;
       return 1;
     }
-    if(hasExtension(vm["input"].as<std::string>(), ".cpp"))
-      // lower the input c++ file to quake
-      moduleQke = lowerCppToQuake(vm["input"].as<std::string>());
-    else
-      // read the input file and stored into moduleQke
-      moduleQke = readFileToString(vm["input"].as<std::string>());
+    // read the input file and stored into qasmProgram
+    std::ifstream inputQASMFile(vm["input"].as<std::string>());
+    buffer << inputQASMFile.rdbuf();
     std::cout << "Input file name " << vm["input"].as<std::string>() << std::endl;
   } else {
     std::cout << "Input file name was not set." << std::endl;
     return 1;
   }
   if (vm.count("output")){
-    if(!hasExtension(vm["output"].as<std::string>(), ".tikz")){
-      std::cout << "Output file has not a correct tikz extension!" << std::endl;
+    if(!hasExtension(vm["output"].as<std::string>(), ".qke")){
+      std::cout << "Output file has not a correct qke extension!" << std::endl;
       return 1;
     }
     std::cout << "Output file name " << vm["output"].as<std::string>() << std::endl;
@@ -163,18 +185,36 @@ int main(int argc, char *argv[])
     return 1;
   }
   setbuf(stdout, NULL);
+  // loading qasm
+  // Convert to istringstream
+  std::istringstream qasmStream(buffer.str());
+  std::filesystem::path pathObj(vm["input"].as<std::string>());
+  std::string inputFileName = pathObj.filename().string();
+  std::regex pattern(R"(^(.*?)[-_]*\.qasm$)");
+  std::smatch match;
+  if (!std::regex_match(inputFileName, match, pattern))
+    throw std::runtime_error("Fatal error!");
+  std::string kernelName = match[1];
+  std::regex pattern2(R"([-_])");
+  // Replace all occurrences of "-" and "_"
+  kernelName = std::regex_replace(kernelName, pattern2, "");
+  std::cout <<  "kernelName " << kernelName << std::endl;
+  std::string templateEmptyQuake = getEmptyQuakeKernel(kernelName, "_function");
   // continue loading mlir modile and context
-  auto [mlirModule, contextPtr] = extractMLIRContext(moduleQke);
+  auto [mlirModule, contextPtr] = extractMLIRContext(templateEmptyQuake);
   mlir::MLIRContext &context = *contextPtr;
   // creating pass manager
   mlir::PassManager pm(&context);
   // Adding custom pass
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeToTikzPass(stringStream));
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream));
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+
   // Open the file in output mode (create or overwrite)
   std::ofstream outFile(vm["output"].as<std::string>());
   // Check if the file was opened successfully

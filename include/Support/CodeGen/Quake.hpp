@@ -48,4 +48,6 @@ namespace mqss::support::quakeDialect{
   mlir::Operation *getNextOperationOnTarget(mlir::Operation *currentOp, 
                                             mlir::Value targetQubit);
 }
+
+namespace supportQuake = mqss::support::quakeDialect;
 #endif //SUPPORT_QUAKE_H

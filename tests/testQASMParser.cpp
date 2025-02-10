@@ -175,6 +175,7 @@ std::vector<std::string> extractQASMFiles(const std::string& zipFilePath, const 
 TEST(TestMQSSPasses, TestQASMToQuake){
   // Open the OpenQASM 3.0 file
   std::vector<std::string> filesQASM = extractQASMFiles("./qasm/MQTBench.zip","./qasm/");
+  std::string goldenOutput = readFileToString("./golden-cases/test-parser-qasm.qke");
   std::ifstream inputQASMFile("./qasm/test-parser.qasm");
   std::string templateEmptyQuake = getEmptyQuakeKernel("ghz_indep_qiskit_10", "_ZN3ghzILm2EEclEv");
   // Read file content into a string
@@ -203,7 +204,11 @@ TEST(TestMQSSPasses, TestQASMToQuake){
     std::cout << "Parsed Circuit from QASM:\n";
     mlirModule->dump();
   #endif
-  //EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
 int main(int argc, char **argv) {

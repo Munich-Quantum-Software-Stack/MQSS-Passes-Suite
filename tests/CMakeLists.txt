@@ -29,7 +29,6 @@ add_executable(test-mqss-passes testMQSSPasses.cpp)
 target_link_libraries(test-mqss-passes PRIVATE 
                                           ${COMMON_LIBRARIES}
                                           MQSSPasses)
-
 target_include_directories(test-mqss-passes PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/include/Passes/
@@ -60,6 +59,17 @@ target_include_directories(test-verification-qcec PRIVATE
     ${CMAKE_SOURCE_DIR}/include/Support/
     ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
     ${MQT_QCEC_INCLUDE_DIR}
+    ${CUDAQ_MLIR_RUNTIME_PATH})
+
+add_executable(test-qasm-parser testQASMParser.cpp)
+target_link_libraries(test-qasm-parser PRIVATE
+                                          ${COMMON_LIBRARIES}
+                                          MQSSPasses)
+target_include_directories(test-qasm-parser PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/Passes/
+    ${CMAKE_SOURCE_DIR}/include/Support/
+    ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
 set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:test-mqss-passes>/golden-cases)

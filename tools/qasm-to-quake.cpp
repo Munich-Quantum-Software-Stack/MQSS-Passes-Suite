@@ -54,7 +54,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "cudaq/Optimizer/Transforms/Passes.h"
 #include "cudaq/algorithm.h"
 
-#include "Passes.hpp"
+#include "Passes/CodeGen.hpp"
 
 #include <cstdlib>
 #include <ctime>

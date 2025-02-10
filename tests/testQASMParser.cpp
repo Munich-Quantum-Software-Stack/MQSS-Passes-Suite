@@ -125,7 +125,7 @@ std::string readFileToString(const std::string &filename) {
 
 TEST(TestMQSSPasses, TestQASMToQuake){
   // Open the OpenQASM 3.0 file
-  std::ifstream inputQASMFile("./qasm/ghz_indep_qiskit_10.qasm");
+  std::ifstream inputQASMFile("./qasm/test-parser.qasm");
   std::string templateEmptyQuake = getEmptyQuakeKernel("ghz_indep_qiskit_10", "_ZN3ghzILm2EEclEv");
   // Read file content into a string
   std::stringstream buffer;

@@ -76,7 +76,10 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "cudaq/algorithm.h"
 
 // test includes
-#include "Passes.hpp"
+#include "Passes/CodeGen.hpp"
+#include "Passes/Decompositions.hpp"
+#include "Passes/Examples.hpp"
+#include "Passes/Transforms.hpp"
 #include <gtest/gtest.h>
 #include <fstream>
 

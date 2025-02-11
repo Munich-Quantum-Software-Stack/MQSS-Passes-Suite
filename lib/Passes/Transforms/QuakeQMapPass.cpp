@@ -269,7 +269,7 @@ public:
       }
       // get the parameters
       for(auto p : parameter){
-        // TODO: Apparently all the parameters are floats in QC, may be the the case
+        // TODO: Apparently all the parameters are floats in QC, may be the case
         //       this is not always true
         llvm::APFloat constantValue(p);
         // Define the type as f64.

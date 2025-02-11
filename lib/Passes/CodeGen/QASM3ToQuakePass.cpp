@@ -33,6 +33,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
+#include "cudaq/Optimizer/Dialect/CC/CCOps.h"
+#include "cudaq/Optimizer/Dialect/CC/CCTypes.h"
 #include "cudaq/Support/Plugin.h"
 #include "llvm/Support/Casting.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
@@ -588,7 +590,9 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
   public:
     MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(QASM3ToQuakePass)
   
-    QASM3ToQuakePass(std::istringstream &qasmStream) : qasmStream(qasmStream) {}
+    QASM3ToQuakePass(std::istringstream &qasmStream,
+                     bool measureAllQubits) : qasmStream(qasmStream),
+                                              measureAllQubits(measureAllQubits) {}
   
     llvm::StringRef getArgument() const override { return "convert-qasm3-to-quake"; }
     llvm::StringRef getDescription() const override { return "Convert QASM3 to Quake Operations"; };
@@ -633,15 +637,27 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     #endif
     // Parse and print gate information
     parseAndInsertGates(program, circuit, returnOp, allocatedQubits, mlirQubits);
-    // Parse measurements
-    parseAndInsertMeasurements(program,circuit, returnOp, allocatedQubits, mlirQubits);
+    //// Insert barriers if required
+    if (!measureAllQubits)
+      parseAndInsertMeasurements(program,circuit, returnOp, allocatedQubits, mlirQubits);
+    else{
+      // apply measurements in all allocated qubits
+      // Defining the builder
+      OpBuilder builder(circuit.getContext());
+      Location loc = circuit.getLoc();
+      builder.setInsertionPoint(returnOp);  // Set insertion before return
+      Type measTy = quake::MeasureType::get(builder.getContext());
+      auto stdVectType = cudaq::cc::StdvecType::get(measTy);
+      builder.create<quake::MzOp>(loc, stdVectType, allocatedQubits);//  .getMeasOut();
+    }
   }
 private:
   std::istringstream &qasmStream;
+  bool measureAllQubits=false;
 };
 
 } // namespace
 
-std::unique_ptr<mlir::Pass> mqss::opt::createQASM3ToQuakePass(std::istringstream &qasmStream){
-  return std::make_unique<QASM3ToQuakePass>(qasmStream);
+std::unique_ptr<mlir::Pass> mqss::opt::createQASM3ToQuakePass(std::istringstream &qasmStream, bool measureAllQubits){
+  return std::make_unique<QASM3ToQuakePass>(qasmStream, measureAllQubits);
 }

@@ -32,14 +32,12 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 ******************************************************************************/
 
-
 // QCEC checker headers
 #include "EquivalenceCheckingManager.hpp"
 #include "EquivalenceCriterion.hpp"
 #include "checker/dd/applicationscheme/ApplicationScheme.hpp"
 #include "dd/DDDefinitions.hpp"
 #include "ir/operations/Control.hpp"
-
 
 #include <string>
 #include <iostream>

@@ -132,6 +132,32 @@ std::string readFileToString(const std::string &filename) {
     return fileContents.str();  // Convert the string stream to a string
 }
 
+std::string lowerQuakeCodeToOpenQASM(std::string quantumTask){
+  auto [m_module, contextPtr] =
+      extractMLIRContext(quantumTask);
+
+  mlir::MLIRContext &context = *contextPtr;
+  std::string postCodeGenPasses = "";
+  bool printIR = false;
+  bool enablePassStatistics = false;
+  bool enablePrintMLIREachPass = false;
+
+  auto translation = cudaq::getTranslation("qasm2");
+  std::string codeStr;
+  {
+    llvm::raw_string_ostream outStr(codeStr);
+    m_module.getContext()->disableMultithreading();
+    if (mlir::failed(translation(m_module, outStr, postCodeGenPasses, printIR,
+                           enablePrintMLIREachPass, enablePassStatistics)))
+      throw std::runtime_error("Could not successfully translate to OpenQASM2");
+  }
+  // Regular expression to match the gate definition
+  std::regex gatePattern(R"(gate\s+\S+\(param0\)\s*\{\n\})");
+  // Remove the matching part from the string
+  codeStr = std::regex_replace(codeStr, gatePattern, "");
+  return codeStr;
+}
+
 std::vector<std::string> extractQASMFiles(const std::string& zipFilePath, const std::string& outputDir) {
   std::vector<std::string> qasmFiles;
   // Open the ZIP archive
@@ -257,7 +283,7 @@ std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
   #endif
   // creating pass manager
   mlir::PassManager pm(&context);
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream));
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream,false));
   // running the pass
   if(mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");
@@ -269,6 +295,9 @@ std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
   mlirModule->print(stringStream);
+  #ifdef DEBUG
+    std::cout << "Quake output module " << std::endl << moduleOutput << std::endl;
+  #endif
   // dump output to qasm
   std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
   #ifdef DEBUG
@@ -290,6 +319,9 @@ TEST_P(VerificationTestPassesMQSS, Run) {
     if (!std::regex_match(inputFileName, match, pattern))
       throw std::runtime_error("Fatal error!");
     std::string testName = match[1];
+    std::regex pattern2(R"([-_])");
+    // Replace all occurrences of "-" and "_"
+    testName = std::regex_replace(testName, pattern2, "");
 
     SCOPED_TRACE(testName);
     auto [qasmInput, qasmOutput] = verificationTest(fileName);
@@ -325,7 +357,11 @@ INSTANTIATE_TEST_SUITE_P(
     std::smatch match;
     if (!std::regex_match(inputFileName, match, pattern))
       throw std::runtime_error("Fatal error!");
-    std::string testNameName = match[1];
+    std::string testName = match[1];
+    std::regex pattern2(R"([-_])");
+    // Replace all occurrences of "-" and "_"
+    testName = std::regex_replace(testName, pattern2, "");
+
     // Use the first element of the tuple (testName) as the custom test name
     return testName;
   }

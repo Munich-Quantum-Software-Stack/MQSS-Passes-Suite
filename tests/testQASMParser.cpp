@@ -32,6 +32,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 ******************************************************************************/
 
+// QCEC checker headers
+#include "EquivalenceCheckingManager.hpp"
+#include "EquivalenceCriterion.hpp"
+#include "checker/dd/applicationscheme/ApplicationScheme.hpp"
+#include "dd/DDDefinitions.hpp"
+#include "ir/operations/Control.hpp"
+
 #include <string>
 #include <iostream>
 // llvm includes
@@ -210,6 +217,119 @@ TEST(TestMQSSPasses, TestQASMToQuake){
   mlirModule->print(stringStream);
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
+
+// Params:
+//  string the path of the input QASM file
+// Returs tuple:
+//  string containing the source qasm program
+//  string containing the qasm file obtained by the parser
+//  The parser first converts the QASM file into quake, thenk the quake code is
+//  lowered again to QASM
+std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
+  // assign the kernel name and the function name
+  std::filesystem::path pathObj(qasmFile);
+  std::string inputFileName = pathObj.filename().string();
+  std::regex pattern(R"(^(.*?)[-_]*\.qasm$)");
+  std::smatch match;
+  if (!std::regex_match(inputFileName, match, pattern))
+    throw std::runtime_error("Fatal error!");
+  std::string kernelName = match[1];
+  std::regex pattern2(R"([-_])");
+  // Replace all occurrences of "-" and "_"
+  kernelName = std::regex_replace(kernelName, pattern2, "");
+  std::string templateEmptyQuake=getEmptyQuakeKernel(kernelName, "_ZN3ghzILm2EEclEv");
+    // Read file content into a string
+  std::ifstream inputQASMFile(qasmFile);
+  std::stringstream buffer;
+  buffer << inputQASMFile.rdbuf();
+  #ifdef DEBUG
+    std::cout << "QASM input file:\n";
+    std::cout << buffer.str() << "\n";
+  #endif
+  // Convert to istringstream
+  std::istringstream qasmStream(buffer.str());
+  // creating empty mlir modulei
+  auto [mlirModule, contextPtr] = extractMLIRContext(templateEmptyQuake);
+  mlir::MLIRContext &context = *contextPtr;
+  #ifdef DEBUG
+    std::cout << "Empty mlir module:\n";
+    mlirModule->dump();
+  #endif
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream));
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule)))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Parsed Circuit from QASM:\n";
+    mlirModule->dump();
+  #endif
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  // dump output to qasm
+  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
+  #ifdef DEBUG
+    std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
+  #endif
+  return std::make_tuple(readFileToString(qasmFile), qasmOutput);
+}
+
+class VerificationTestPassesMQSS :
+  public ::testing::TestWithParam<std::string> {};
+
+TEST_P(VerificationTestPassesMQSS, Run) {
+    std::string fileName = GetParam();
+    // Assign the test name
+    std::filesystem::path pathObj(fileName);
+    std::string inputFileName = pathObj.filename().string();
+    std::regex pattern(R"(^(.*?)[-_]*\.qasm$)");
+    std::smatch match;
+    if (!std::regex_match(inputFileName, match, pattern))
+      throw std::runtime_error("Fatal error!");
+    std::string testName = match[1];
+
+    SCOPED_TRACE(testName);
+    auto [qasmInput, qasmOutput] = verificationTest(fileName);
+    // qcec objects required for verification
+    qc::QuantumComputation qc1, qc2;
+    ec::Configuration config{};
+    std::stringstream qasmStream = std::stringstream(qasmInput);
+    qc1.import(qasmStream, qc::Format::OpenQASM2);
+    qasmStream = std::stringstream(qasmOutput);
+    qc2.import(qasmStream, qc::Format::OpenQASM2);
+    // set the configuration
+    config.functionality.traceThreshold = 1e-2;
+    config.execution.runConstructionChecker = true;
+    config.execution.runAlternatingChecker = false;
+    config.execution.runZXChecker = false;
+    config.execution.runSimulationChecker = true;
+    ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
+    ecm.run();
+    std::cout << ecm.getResults() << "\n";
+    EXPECT_EQ(ecm.equivalence(),
+              ec::EquivalenceCriterion::Equivalent);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  MQSSPassTests,
+  VerificationTestPassesMQSS,
+  ::testing::Values("./qasm/test-parser.qasm"),
+  [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>& info) {
+    // Assign the test name
+    std::filesystem::path pathObj(info.param);
+    std::string inputFileName = pathObj.filename().string();
+    std::regex pattern(R"(^(.*?)[-_]*\.qasm$)");
+    std::smatch match;
+    if (!std::regex_match(inputFileName, match, pattern))
+      throw std::runtime_error("Fatal error!");
+    std::string testNameName = match[1];
+    // Use the first element of the tuple (testName) as the custom test name
+    return testName;
+  }
+);
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

@@ -107,7 +107,7 @@ std::string getEmptyQuakeKernel(const std::string kernelName, std::string functi
   return templateEmptyQuake;
 }
 
-std::tuple<mlir::ModuleOp, mlir::MLIRContext *>
+std::tuple<std::unique_ptr<mlir::MLIRContext>, mlir::OwningOpRef<mlir::ModuleOp>>
   extractMLIRContext(const std::string& quakeModule){
   auto contextPtr = cudaq::initializeMLIR();
   mlir::MLIRContext &context = *contextPtr.get();
@@ -118,7 +118,8 @@ std::tuple<mlir::ModuleOp, mlir::MLIRContext *>
   if (!m_module)
     throw std::runtime_error("Module cannot be parsed");
 
-  return std::make_tuple(m_module.release(), contextPtr.release());
+  return std::make_tuple(std::move(contextPtr), std::move(m_module));
+//  return std::make_tuple(std::move(m_module), std::move(contextPtr));
 }
 
 std::string readFileToString(const std::string &filename) {
@@ -133,8 +134,11 @@ std::string readFileToString(const std::string &filename) {
 }
 
 std::string lowerQuakeCodeToOpenQASM(std::string quantumTask){
-  auto [m_module, contextPtr] =
-      extractMLIRContext(quantumTask);
+  //auto [m_module, contextPtr] =
+  //    extractMLIRContext(quantumTask);
+  mlir::OwningOpRef<mlir::ModuleOp> m_module;
+  std::unique_ptr<mlir::MLIRContext> contextPtr;
+  std::tie(contextPtr, m_module) = extractMLIRContext(quantumTask);
 
   mlir::MLIRContext &context = *contextPtr;
   std::string postCodeGenPasses = "";
@@ -146,8 +150,8 @@ std::string lowerQuakeCodeToOpenQASM(std::string quantumTask){
   std::string codeStr;
   {
     llvm::raw_string_ostream outStr(codeStr);
-    m_module.getContext()->disableMultithreading();
-    if (mlir::failed(translation(m_module, outStr, postCodeGenPasses, printIR,
+    m_module->getContext()->disableMultithreading();
+    if (mlir::failed(translation(m_module.get(), outStr, postCodeGenPasses, printIR,
                            enablePrintMLIREachPass, enablePassStatistics)))
       throw std::runtime_error("Could not successfully translate to OpenQASM2");
   }
@@ -155,8 +159,11 @@ std::string lowerQuakeCodeToOpenQASM(std::string quantumTask){
   std::regex gatePattern(R"(gate\s+\S+\(param0\)\s*\{\n\})");
   // Remove the matching part from the string
   codeStr = std::regex_replace(codeStr, gatePattern, "");
+  //m_module.release();
+  //contextPtr.release();
   return codeStr;
 }
+
 
 std::vector<std::string> extractQASMFiles(const std::string& zipFilePath, const std::string& outputDir) {
   std::vector<std::string> qasmFiles;
@@ -220,8 +227,11 @@ TEST(TestMQSSPasses, TestQASMToQuake){
   #endif
   // Convert to istringstream
   std::istringstream qasmStream(buffer.str());
-  // creating empty mlir modulei
-  auto [mlirModule, contextPtr] = extractMLIRContext(templateEmptyQuake);
+  // creating empty mlir module
+  mlir::OwningOpRef<mlir::ModuleOp> mlirModule;
+  std::unique_ptr<mlir::MLIRContext> contextPtr;
+  std::tie(contextPtr,mlirModule) = extractMLIRContext(templateEmptyQuake);
+  mlirModule->getContext()->disableMultithreading();
   mlir::MLIRContext &context = *contextPtr;
   #ifdef DEBUG
     std::cout << "Empty mlir module:\n";
@@ -229,9 +239,9 @@ TEST(TestMQSSPasses, TestQASMToQuake){
   #endif
   // creating pass manager
   mlir::PassManager pm(&context);
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream));
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream,false));
   // running the pass
-  if(mlir::failed(pm.run(mlirModule)))
+  if(mlir::failed(pm.run(mlirModule.get())))
     std::runtime_error("The pass failed...");
   #ifdef DEBUG
     std::cout << "Parsed Circuit from QASM:\n";
@@ -241,17 +251,130 @@ TEST(TestMQSSPasses, TestQASMToQuake){
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
   mlirModule->print(stringStream);
+  // Destroy the module
+//  mlirModule.release();
   EXPECT_EQ(goldenOutput, std::string(moduleOutput));
 }
 
-// Params:
-//  string the path of the input QASM file
-// Returs tuple:
-//  string containing the source qasm program
-//  string containing the qasm file obtained by the parser
-//  The parser first converts the QASM file into quake, thenk the quake code is
-//  lowered again to QASM
-std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
+TEST(TestMQSSPasses, TestQASMToQuake2){
+  // Open the OpenQASM 3.0 file
+  std::vector<std::string> filesQASM = extractQASMFiles("./qasm/MQTBench.zip","./qasm/");
+  std::string goldenOutput = readFileToString("./golden-cases/test-parser-qasm.qke");
+  std::ifstream inputQASMFile("./qasm/test-parser.qasm");
+  std::string templateEmptyQuake = getEmptyQuakeKernel("ghz_indep_qiskit_10", "_ZN3ghzILm2EEclEv1");
+  // Read file content into a string
+  std::stringstream buffer;
+  buffer << inputQASMFile.rdbuf();
+  #ifdef DEBUG
+    std::cout << "QASM input file:\n";
+    std::cout << buffer.str() << "\n";
+  #endif
+  // Convert to istringstream
+  std::istringstream qasmStream(buffer.str());
+  // creating empty mlir module
+  mlir::OwningOpRef<mlir::ModuleOp> mlirModule;
+  std::unique_ptr<mlir::MLIRContext> contextPtr;
+  std::tie(contextPtr,mlirModule) = extractMLIRContext(templateEmptyQuake);
+  mlirModule->getContext()->disableMultithreading();
+  mlir::MLIRContext &context = *contextPtr;
+  #ifdef DEBUG
+    std::cout << "Empty mlir module:\n";
+    mlirModule->dump();
+  #endif
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream));
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule.get())))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Parsed Circuit from QASM:\n";
+    mlirModule->dump();
+  #endif
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  // Destroy the module
+//  mlirModule.release();
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
+TEST(TestMQSSPasses, TestQASMToQuake3){
+  // Open the OpenQASM 3.0 file
+  std::vector<std::string> filesQASM = extractQASMFiles("./qasm/MQTBench.zip","./qasm/");
+  std::string goldenOutput = readFileToString("./golden-cases/test-parser-qasm.qke");
+  std::ifstream inputQASMFile("./qasm/test-parser.qasm");
+  std::string templateEmptyQuake = getEmptyQuakeKernel("ghz_indep_qiskit_10", "_ZN3ghzILm2EEclEv2");
+  // Read file content into a string
+  std::stringstream buffer;
+  buffer << inputQASMFile.rdbuf();
+  #ifdef DEBUG
+    std::cout << "QASM input file:\n";
+    std::cout << buffer.str() << "\n";
+  #endif
+  // Convert to istringstream
+  std::istringstream qasmStream(buffer.str());
+  // creating empty mlir module
+  mlir::OwningOpRef<mlir::ModuleOp> mlirModule;
+  std::unique_ptr<mlir::MLIRContext> contextPtr;
+  std::tie(contextPtr,mlirModule) = extractMLIRContext(templateEmptyQuake);
+  mlirModule->getContext()->disableMultithreading();
+  mlir::MLIRContext &context = *contextPtr;
+  #ifdef DEBUG
+    std::cout << "Empty mlir module:\n";
+    mlirModule->dump();
+  #endif
+  // creating pass manager
+  mlir::PassManager pm(&context);
+  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream));
+  // running the pass
+  if(mlir::failed(pm.run(mlirModule.get())))
+    std::runtime_error("The pass failed...");
+  #ifdef DEBUG
+    std::cout << "Parsed Circuit from QASM:\n";
+    mlirModule->dump();
+  #endif
+  // Convert the module to a string
+  std::string moduleOutput;
+  llvm::raw_string_ostream stringStream(moduleOutput);
+  mlirModule->print(stringStream);
+  // Destroy the module
+//  mlirModule.release();
+  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*std::string convertQASMToQuake(std::string qasmFile){
   // assign the kernel name and the function name
   std::filesystem::path pathObj(qasmFile);
   std::string inputFileName = pathObj.filename().string();
@@ -264,7 +387,7 @@ std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
   // Replace all occurrences of "-" and "_"
   kernelName = std::regex_replace(kernelName, pattern2, "");
   std::string templateEmptyQuake=getEmptyQuakeKernel(kernelName, "_ZN3ghzILm2EEclEv");
-    // Read file content into a string
+  // Read file content into a string
   std::ifstream inputQASMFile(qasmFile);
   std::stringstream buffer;
   buffer << inputQASMFile.rdbuf();
@@ -274,8 +397,10 @@ std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
   #endif
   // Convert to istringstream
   std::istringstream qasmStream(buffer.str());
-  // creating empty mlir modulei
-  auto [mlirModule, contextPtr] = extractMLIRContext(templateEmptyQuake);
+  // creating empty mlir module
+  mlir::OwningOpRef<mlir::ModuleOp> mlirModule;
+  std::unique_ptr<mlir::MLIRContext> contextPtr;
+  std::tie(contextPtr,mlirModule) = extractMLIRContext(templateEmptyQuake);
   mlir::MLIRContext &context = *contextPtr;
   #ifdef DEBUG
     std::cout << "Empty mlir module:\n";
@@ -285,7 +410,7 @@ std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
   mlir::PassManager pm(&context);
   pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream,false));
   // running the pass
-  if(mlir::failed(pm.run(mlirModule)))
+  if(mlir::failed(pm.run(mlirModule.get())))
     std::runtime_error("The pass failed...");
   #ifdef DEBUG
     std::cout << "Parsed Circuit from QASM:\n";
@@ -295,11 +420,26 @@ std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
   mlirModule->print(stringStream);
+  mlirModule.release();
+  //contextPtr.release();
   #ifdef DEBUG
     std::cout << "Quake output module " << std::endl << moduleOutput << std::endl;
   #endif
+  return moduleOutput;
+}
+
+// Params:
+//  string the path of the input QASM file
+// Returs tuple:
+//  string containing the source qasm program
+//  string containing the qasm file obtained by the parser
+//  The parser first converts the QASM file into quake, thenk the quake code is
+//  lowered again to QASM
+std::tuple<std::string,std::string> verificationTest(std::string qasmFile){
+  // assign the kernel name and the function name
+  std::string quakeCode = convertQASMToQuake(qasmFile);
   // dump output to qasm
-  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
+  std::string qasmOutput = lowerQuakeCodeToOpenQASM(quakeCode);
   #ifdef DEBUG
     std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
   #endif
@@ -348,7 +488,7 @@ TEST_P(VerificationTestPassesMQSS, Run) {
 INSTANTIATE_TEST_SUITE_P(
   MQSSPassTests,
   VerificationTestPassesMQSS,
-  ::testing::Values("./qasm/test-parser.qasm"),
+  ::testing::Values("./qasm/test-parser.qasm", "./qasm/test-parser2.qasm" ),
   [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>& info) {
     // Assign the test name
     std::filesystem::path pathObj(info.param);
@@ -365,7 +505,7 @@ INSTANTIATE_TEST_SUITE_P(
     // Use the first element of the tuple (testName) as the custom test name
     return testName;
   }
-);
+);*/
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

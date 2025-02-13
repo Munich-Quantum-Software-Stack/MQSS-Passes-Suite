@@ -66,8 +66,9 @@ target_include_directories(test-verification-qcec PRIVATE
     ${CUDAQ_MLIR_RUNTIME_PATH})
 
 add_executable(test-qasm-parser testQASMParser.cpp)
+set_target_properties(test-qasm-parser PROPERTIES
+    GOOGLE_TEST_FLAGS "--gtest_disable_parallel")
 #target_compile_options(test-qasm-parser PRIVATE -fsanitize=address -g -O1 -fno-omit-frame-pointer)
-#sanitize is useful when struggling with memory problems
 target_link_libraries(test-qasm-parser PRIVATE
                                           ${COMMON_LIBRARIES}
                                           ${LIBZIP_LIBRARIES}

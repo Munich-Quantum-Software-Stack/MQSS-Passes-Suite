@@ -203,6 +203,7 @@ int main(int argc, char *argv[])
   // continue loading mlir modile and context
   auto [mlirModule, contextPtr] = extractMLIRContext(templateEmptyQuake);
   mlir::MLIRContext &context = *contextPtr;
+  mlirModule->getContext()->disableMultithreading();
   // creating pass manager
   mlir::PassManager pm(&context);
   // Adding custom pass

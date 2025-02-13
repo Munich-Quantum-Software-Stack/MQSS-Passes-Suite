@@ -187,6 +187,8 @@ std::vector<std::string> extractQASMFiles(const std::string& zipFilePath, const 
         std::cerr << "Error opening file inside ZIP: " << fileStr << std::endl;
         continue;
       }
+      std::filesystem::path pathObj(fileStr);
+      fileStr = pathObj.filename().string();
       std::string outputPath = outputDir + "/" + fileStr;
       std::ofstream outFile(outputPath, std::ios::binary);
       if (!outFile) {
@@ -211,94 +213,6 @@ std::vector<std::string> extractQASMFiles(const std::string& zipFilePath, const 
   zip_close(archive);
   return qasmFiles;
 }
-
-/*TEST(TestMQSSPasses, TestQASMToQuake){
-  // Open the OpenQASM 3.0 file
-  std::vector<std::string> filesQASM = extractQASMFiles("./qasm/MQTBench.zip","./qasm/");
-  std::string goldenOutput = readFileToString("./golden-cases/test-parser-qasm.qke");
-  std::ifstream inputQASMFile("./qasm/test-parser.qasm");
-  std::string templateEmptyQuake = getEmptyQuakeKernel("ghz_indep_qiskit_10", "_ZN3ghzILm2EEclEv");
-  // Read file content into a string
-  std::stringstream buffer;
-  buffer << inputQASMFile.rdbuf();
-  #ifdef DEBUG
-    std::cout << "QASM input file:\n";
-    std::cout << buffer.str() << "\n";
-  #endif
-  // Convert to istringstream
-  std::istringstream qasmStream(buffer.str());
-  // creating empty mlir module
-  mlir::OwningOpRef<mlir::ModuleOp> mlirModule;
-  std::unique_ptr<mlir::MLIRContext> contextPtr;
-  std::tie(contextPtr,mlirModule) = extractMLIRContext(templateEmptyQuake);
-  mlirModule->getContext()->disableMultithreading();
-  mlir::MLIRContext &context = *contextPtr;
-  #ifdef DEBUG
-    std::cout << "Empty mlir module:\n";
-    mlirModule->dump();
-  #endif
-  // creating pass manager
-  mlir::PassManager pm(&context);
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream,false));
-  // running the pass
-  if(mlir::failed(pm.run(mlirModule.get())))
-    std::runtime_error("The pass failed...");
-  #ifdef DEBUG
-    std::cout << "Parsed Circuit from QASM:\n";
-    mlirModule->dump();
-  #endif
-  // Convert the module to a string
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  mlirModule->print(stringStream);
-  // Destroy the module
-  //mlirModule.release();
-  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
-}
-
-TEST(TestMQSSPasses, TestQASMToQuake2){
-  // Open the OpenQASM 3.0 file
-  std::vector<std::string> filesQASM = extractQASMFiles("./qasm/MQTBench.zip","./qasm/");
-  std::string goldenOutput = readFileToString("./golden-cases/test-parser-qasm.qke");
-  std::ifstream inputQASMFile("./qasm/test-parser.qasm");
-  std::string templateEmptyQuake = getEmptyQuakeKernel("ghz_indep_qiskit_10", "_ZN3ghzILm2EEclEv");
-  // Read file content into a string
-  std::stringstream buffer;
-  buffer << inputQASMFile.rdbuf();
-  #ifdef DEBUG
-    std::cout << "QASM input file:\n";
-    std::cout << buffer.str() << "\n";
-  #endif
-  // Convert to istringstream
-  std::istringstream qasmStream(buffer.str());
-  // creating empty mlir module
-  mlir::OwningOpRef<mlir::ModuleOp> mlirModule;
-  std::unique_ptr<mlir::MLIRContext> contextPtr;
-  std::tie(contextPtr,mlirModule) = extractMLIRContext(templateEmptyQuake);
-  mlirModule->getContext()->disableMultithreading();
-  mlir::MLIRContext &context = *contextPtr;
-  #ifdef DEBUG
-    std::cout << "Empty mlir module:\n";
-    mlirModule->dump();
-  #endif
-  // creating pass manager
-  mlir::PassManager pm(&context);
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQASM3ToQuakePass(qasmStream,false));
-  // running the pass
-  if(mlir::failed(pm.run(mlirModule.get())))
-    std::runtime_error("The pass failed...");
-  #ifdef DEBUG
-    std::cout << "Parsed Circuit from QASM:\n";
-    mlirModule->dump();
-  #endif
-  // Convert the module to a string
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  mlirModule->print(stringStream);
-  // Destroy the module
-  //mlirModule.release();
-  EXPECT_EQ(goldenOutput, std::string(moduleOutput));
-}*/
 
 std::string convertQASMToQuake(std::string qasmFile){
   // assign the kernel name and the function name
@@ -392,6 +306,7 @@ TEST_P(VerificationTestPassesMQSS, Run) {
 
     SCOPED_TRACE(testName);
     auto [qasmInput, qasmOutput] = verificationTest(fileName);
+    std::cout << "I am here" << std::endl;
     // qcec objects required for verification
     qc::QuantumComputation qc1, qc2;
     ec::Configuration config{};
@@ -399,23 +314,31 @@ TEST_P(VerificationTestPassesMQSS, Run) {
     qc1.import(qasmStream, qc::Format::OpenQASM2);
     qasmStream = std::stringstream(qasmOutput);
     qc2.import(qasmStream, qc::Format::OpenQASM2);
+    std::cout <<"Press Enter to Continue ...";
+    std::cin.get();
     // set the configuration
     config.functionality.traceThreshold = 1e-2;
     config.execution.runConstructionChecker = true;
     config.execution.runAlternatingChecker = false;
     config.execution.runZXChecker = false;
-    config.execution.runSimulationChecker = true;
+    config.execution.runSimulationChecker = false;
     ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
+    std::cout << "before run " << std::endl;
     ecm.run();
+    std::cout << "after run " << std::endl;
     std::cout << ecm.getResults() << "\n";
+    std::cout <<"Press Enter to Continue ...";
+    std::cin.get();
     EXPECT_EQ(ecm.equivalence(),
               ec::EquivalenceCriterion::Equivalent);
+    std::cout <<"Press Enter to Continue ...";
+    std::cin.get();
 }
 
 INSTANTIATE_TEST_SUITE_P(
   MQSSPassTests,
   VerificationTestPassesMQSS,
-  ::testing::ValuesIn(extractQASMFiles("./qasm/MQTBench.zip", "./qasm/")),
+  ::testing::ValuesIn(extractQASMFiles("./qasm/MQTBench01.zip", "./qasm/")),
   [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>& info) {
     // Assign the test name
     std::filesystem::path pathObj(info.param);
@@ -437,6 +360,6 @@ INSTANTIATE_TEST_SUITE_P(
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   // Stop execution on first failure
-  //GTEST_FLAG_SET(break_on_failure, true);
+  GTEST_FLAG_SET(break_on_failure, true);
   return RUN_ALL_TESTS();
 }

@@ -55,6 +55,12 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
 
   namespace {
 
+const double PI = 3.141592653589793238462643383279502884197169399375105820974L;
+const double PI_2 = 1.570796326794896619231321691639751442098584699687552910487L;
+const double PI_4 = 0.785398163397448309615660845819875721049292349843776455243L;
+const double TAU = 6.283185307179586476925286766559005768394338798750211641950L;
+const double E = 2.718281828459045235360287471352662497757247093699959574967L;
+
   // Function to determine if a gate is a multi-qubit gate with implicit controls
   bool isMultiQubitGate(const std::string& gateType) {
     return gateType == "cx" ||
@@ -86,6 +92,13 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     mlir::ValueRange params(vecParams);
     mlir::ValueRange controls(vecControls);
     mlir::ValueRange targets(vecTargets);
+    std::cout << "gate " << gateId << std::endl;
+    std::cout << "controls size " << controls.size()  << std::endl;
+    std::cout << "target size " << targets.size()  << std::endl;
+    std::cout << "params size " << params.size()  << std::endl;
+
+
+
 //    if (!loc.getContext()) throw std::runtime_error("FATAL");
 //    std::cout << "Context: " << builder.getContext() << std::endl;
     static const std::unordered_map<std::string,std::function<void()>>gateMap = {
@@ -120,14 +133,14 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
       {"sx", [&](){ // since sx is not supported, replace it by rx with pi/2 rotation
         if (params.size() !=0 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed sx gate");
-        mlir::Value halfPi = createFloatValue(builder,loc,1.57079632679);
+        mlir::Value halfPi = createFloatValue(builder,loc, PI_2);
         builder.create<quake::RxOp>(loc, adj, halfPi, controls, targets);
       }},
       {"sxdg", [&](){ // since sx is not supported, replace it by rx with -pi/2 rotation
         if (params.size() !=0 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed sxdg gate");
-        mlir::Value minHalfPi = createFloatValue(builder,loc,-1.57079632679);
-        builder.create<quake::RxOp>(loc, adj, minHalfPi, controls, targets);
+        mlir::Value minHalfPi = createFloatValue(builder,loc,-PI_2);
+        builder.create<quake::RxOp>(loc, false, minHalfPi, controls, targets);
       }},
       {"t", [&](){
         if (params.size() !=0 || controls.size()!= 0 || targets.size()!=1)
@@ -138,36 +151,57 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         if (params.size() !=1 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed rx gate");
         builder.create<quake::RxOp>(loc, adj, params, controls, targets); }},
+      {"rz", [&](){
+        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=1)
+          throw std::runtime_error("ill-formed rx gate");
+        builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
       {"crx", [&](){
-        if (params.size() !=1 || controls.size()!= 1 || targets.size()!=1)
+        // apparently the parser get two targets
+        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=2)
           throw std::runtime_error("ill-formed crx gate");
-        builder.create<quake::RxOp>(loc, adj, params, controls, targets); }},
+        builder.create<quake::RxOp>(loc, adj, params, targets[0], targets[1]); }},
       {"ry", [&](){
         if (params.size() !=1 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed ry gate");
         builder.create<quake::RyOp>(loc, adj, params, controls, targets); }},
       {"cry", [&](){
-        if (params.size() !=1 || controls.size()!= 1 || targets.size()!=1)
+        // apparently the parser get two targets
+        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=2)
           throw std::runtime_error("ill-formed cry gate");
-        builder.create<quake::RyOp>(loc, adj, params, controls, targets); }},
+        builder.create<quake::RyOp>(loc, adj, params, targets[0], targets[1]); }},
       {"p", [&](){
         if (params.size() !=1 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed p gate");
         builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
       {"phase", [&](){
-        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=1)
+        /* update repo phase is supported now
+          if (params.size() !=1 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed phase gate");
-        builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
+        builder.create<quake::RzOp>(loc, adj, params, controls, targets); */}},
+      {"cp", [&](){
+        // update repo phase is supported now
+        /*std::cout << "controls size " << controls.size()  << std::endl;
+        std::cout << "target size " << targets.size()  << std::endl;
+        std::cout << "params size " << params.size()  << std::endl;
+        // for a strange reason the parser returms two targets
+        // assume first target is control
+        if (params.size() !=1 || controls.size()!= 0 || targets.size()!=2)
+          throw std::runtime_error("ill-formed cphase gate");
+        // cp decompose into:
+        //cx q1, q2;
+        //rz(theta) q2;
+        //cx q1, q2;
+        ValueRange empty;
+        builder.create<quake::XOp>(loc, adj, empty, targets[0], targets[1]);
+        builder.create<quake::RzOp>(loc, adj, params, empty, targets[1]);
+        builder.create<quake::XOp>(loc, adj, empty, targets[0], targets[1]);*/ }},
       {"cphase", [&](){
+        /* update repo phase is supported now
         if (params.size() !=1 || controls.size()!= 1 || targets.size()!=1)
           throw std::runtime_error("ill-formed cphase gate");
-        builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
+        builder.create<quake::RzOp>(loc, adj, params, controls, targets);*/ }},
       {"z", [&](){
         if (params.size() !=0 || controls.size()!= 0 || targets.size()!=1)
-          throw std::runtime_error("ill-formed z gate");
-        builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
-      {"cz", [&](){
-        if (params.size() !=0 || controls.size()!= 1 || targets.size()!=1)
           throw std::runtime_error("ill-formed z gate");
         builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
       {"id", [&](){ /* do nothing because identity*/ }},
@@ -178,9 +212,10 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         builder.create<quake::XOp>(loc, adj, params, controls, targets);
       }},
       {"CX", [&](){
-        if (params.size() !=0 || controls.size()!= 1 || targets.size()!=1)
+        // apparently the parser get two targets
+        if (params.size() !=0 || controls.size()!= 0 || targets.size()!=2)
           throw std::runtime_error("ill-formed CX gate");
-        builder.create<quake::XOp>(loc, adj, params, controls, targets); }},
+        builder.create<quake::XOp>(loc, adj, params, targets[0], targets[1]); }},
       {"ccx", [&](){
         if (params.size() !=0 || controls.size()!= 2 || targets.size()!=1)
           throw std::runtime_error("ill-formed ccx gate");
@@ -197,13 +232,13 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         if (params.size() !=0 || controls.size()!= 0 || targets.size()!=2)
           throw std::runtime_error("ill-formed swap gate");
         builder.create<quake::SwapOp>(loc, adj, params, controls, targets); }},
-      {"U", [&](){ // since u is not supported, U(θ, φ, λ) = Rz(φ) * Ry(θ) * Rz(λ)
+      {"u", [&](){ // since u is not supported, U(θ, φ, λ) = Rz(φ) * Ry(θ) * Rz(λ)
         // u2(φ, λ)
         if (params.size() != 3 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed U gate");
-        builder.create<quake::RzOp>(loc, adj, params[1], controls, targets); // phi
+        builder.create<quake::RzOp>(loc, adj, params[2], controls, targets); // phi
         builder.create<quake::RyOp>(loc, adj, params[0], controls, targets); // theta
-        builder.create<quake::RzOp>(loc, adj, params[2], controls, targets); // lambda
+        builder.create<quake::RzOp>(loc, adj, params[1], controls, targets); // lambda
       }},
       {"u1", [&](){
         if (params.size() != 1 || controls.size()!= 0 || targets.size()!=1)
@@ -211,12 +246,15 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         builder.create<quake::R1Op>(loc, adj, params, controls, targets); }},
       {"u2", [&](){ // since u2 is not supported, it has to be decomposed
         // u2(φ, λ)
+        std::cout << "controls size " << controls.size()  << std::endl;
+        std::cout << "target size " << targets.size()  << std::endl;
+        std::cout << "params size " << params.size()  << std::endl;
         if (params.size() != 2 || controls.size()!= 0 || targets.size()!=1)
           throw std::runtime_error("ill-formed u2 gate");
         builder.create<quake::RzOp>(loc, adj, params[0], controls, targets); // phi
-        mlir::Value halfPi = createFloatValue(builder,loc,1.57079632679);
+        mlir::Value halfPi = createFloatValue(builder,loc,PI_2);
         builder.create<quake::RxOp>(loc, adj, halfPi, controls, targets); // pi/2
-        builder.create<quake::RzOp>(loc, adj, params[0], controls, targets); // phi
+        builder.create<quake::RzOp>(loc, adj, params[1], controls, targets); // phi
       }},
       {"u3", [&](){
         if (params.size() != 3 || controls.size()!= 0 || targets.size()!=1)
@@ -340,6 +378,11 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         builder.create<quake::HOp>(loc, adj, controls, targets[1]);// h b;
       }},
       {"cswap", [&](){
+      /*cx q[0], q[1];  // CNOT gate, Control: q[0], Target: q[1]
+      cx q[0], q[2];  // CNOT gate, Control: q[0], Target: q[2]
+      ccx q[0], q[1], q[2]; // Toffoli gate, Control: q[0], Targets: q[1], q[2]
+      cx q[0], q[1];  // CNOT gate to undo the first step
+      cx q[0], q[2];  // CNOT gate to undo the second step*/
         if (params.size() !=0 || controls.size()!= 1 || targets.size()!=2)
           throw std::runtime_error("ill-formed cswap gate");
         builder.create<quake::SwapOp>(loc, adj, params, controls, targets);}}
@@ -417,6 +460,61 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     return std::make_tuple(mlirQubits, qubitReg.getResult());
   }
 
+  double evaluateExpression(const std::shared_ptr<qasm3::Expression>& expr) {
+    std::cout << "REACH HERE\n";
+    if (auto constantExpr = std::dynamic_pointer_cast<qasm3::Constant>(expr)) {
+      double val;
+      if (constantExpr->isInt() ||
+          constantExpr->isSInt() ||
+          constantExpr->isUInt())
+        val = constantExpr->getSInt();
+      else
+        val = constantExpr->getFP();
+      std::cout << "IS CONSTANT\n";
+      return val;
+    } else if (auto unaryExpr = std::dynamic_pointer_cast<
+                                    qasm3::UnaryExpression>(expr)) {
+      // Handle unary expressions like -pi
+      double operandValue = evaluateExpression(unaryExpr->operand);
+      switch (unaryExpr->op) {
+        case qasm3::UnaryExpression::Op::Negate:
+          return -operandValue;
+        // Add other unary operations if needed
+        default:
+          throw std::runtime_error("Unsupported unary operation");
+      }
+    } else if (auto binaryExpr = std::dynamic_pointer_cast<
+                                  qasm3::BinaryExpression>(expr)) {
+      // Handle binary expressions like pi/2
+      double lhsValue = evaluateExpression(binaryExpr->lhs);
+      double rhsValue = evaluateExpression(binaryExpr->rhs);
+      switch (binaryExpr->op) {
+        case qasm3::BinaryExpression::Op::Add:
+          return lhsValue + rhsValue;
+        case qasm3::BinaryExpression::Op::Subtract:
+          return lhsValue - rhsValue;
+        case qasm3::BinaryExpression::Op::Multiply:
+          return lhsValue * rhsValue;
+        case qasm3::BinaryExpression::Op::Divide:
+          return lhsValue / rhsValue;
+        // Add other binary operations if needed
+        default:
+          throw std::runtime_error("Unsupported binary operation");
+      }
+    } else if (auto identifierExpr = std::dynamic_pointer_cast<
+                                      qasm3::IdentifierExpression>(expr)) {
+      // Handle identifiers like pi
+      if (identifierExpr->identifier == "pi") {
+        return PI; // Use the value of pi from <cmath>
+      }
+      throw std::runtime_error("Unsupported identifier: "
+                                + identifierExpr->identifier);
+    } else {
+      throw std::runtime_error("Unsupported expression type");
+    }
+    std::cout << "FINISH HERE ...\n";
+  }
+
   // Function to print gate information
   void insertGate(const std::shared_ptr<qasm3::GateCallStatement>& gateCall,
                   OpBuilder &builder,
@@ -431,24 +529,22 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     // Defining the builder
     builder.setInsertionPoint(inOp);  // Set insertion before return
     // Print the gate type (identifier)
-    //std::cout << "Gate Type: " << gateCall->identifier << std::endl;
+    std::cout << "Gate Type: " << gateCall->identifier << std::endl;
+    std::cout << "Arguments size: " << gateCall->arguments.size() << std::endl;
     // Print parameters (arguments)
     if (!gateCall->arguments.empty()) {
-      //std::cout << "Parameters: ";
+      std::cout << "Parameters: ";
       for (const auto& arg : gateCall->arguments) {
-        double argVal = 0.0;
-        if (auto constantExprArg = std::dynamic_pointer_cast<
-                                        qasm3::Constant>(arg))
-          argVal = constantExprArg->getFP();
+        double argVal = evaluateExpression(arg);
         mlir::Value argMlirVal = createFloatValue(builder,loc,argVal);
         parameters.push_back(argMlirVal);
-        //std::cout << argVal << " ";
+        std::cout << argVal << " ";
       }
-      //std::cout << std::endl;
+      std::cout << std::endl;
     }
     // Print operands and their types (control or target)
     if (!gateCall->operands.empty()) {
-      //std::cout << "Operands: " << std::endl;
+      std::cout << "Operands: " << std::endl;
       // Determine the number of controls
       size_t numControls = 0;
       for (const auto& modifier : gateCall->modifiers) {
@@ -458,7 +554,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
             if (auto constantExpr = std::dynamic_pointer_cast<
                                       qasm3::Constant>(ctrlMod->expression)) {
               int numControls = constantExpr->getSInt();
-              //std::cout << "numControls " << numControls << "\n";
+              std::cout << "numControls " << numControls << "\n";
               break;
             }
           }
@@ -471,7 +567,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
       // Iterate over operands and classify them as controls or targets
       for (size_t i = 0; i < gateCall->operands.size(); ++i) {
         const auto& operand = gateCall->operands[i];
-        //std::cout << "  - " << operand->identifier;
+        std::cout << "  - " << operand->identifier;
         // get the qubit index
         int qubitOp = -1;
         if (auto constantExprOp = std::dynamic_pointer_cast<
@@ -484,22 +580,23 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         } catch(const std::out_of_range& e){
           throw std::runtime_error("Fatal error!");
         }
-        //if (operand->expression) {
-        //  std::cout << "[" << qubitOp << "]";
-        //}
+        if (operand->expression) {
+          std::cout << "[" << qubitOp << "]";
+        }
         if (i < numControls) {
           auto controlQubit = builder.create<quake::ExtractRefOp>(loc,
                                                                   qubits,
                                                                   selectedQubit);
           controls.push_back(controlQubit);
+          std::cout << " (Control)";
         } else {
           auto targetQubit = builder.create<quake::ExtractRefOp>(loc,
                                                                  qubits,
                                                                  selectedQubit);
           targets.push_back(targetQubit);
-          //std::cout << " (Target)";
+          std::cout << " (Target)";
         }
-        //std::cout << std::endl;
+        std::cout << std::endl;
       }
     }
     std::regex pattern("dg"); // Case-sensitive regex
@@ -511,7 +608,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
                               controls,
                               targets,
                               isAdj);
-    //std::cout << "-------------------------" << std::endl;
+    std::cout << "-------------------------" << std::endl;
   }
 
   // Function to print the source qubit and target bit of each measurement

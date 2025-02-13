@@ -68,13 +68,13 @@ target_include_directories(test-verification-qcec PRIVATE
 add_executable(test-qasm-parser testQASMParser.cpp)
 set_target_properties(test-qasm-parser PROPERTIES
     GOOGLE_TEST_FLAGS "--gtest_disable_parallel")
-#target_compile_options(test-qasm-parser PRIVATE -fsanitize=address -g -O1 -fno-omit-frame-pointer)
+target_compile_options(test-qasm-parser PRIVATE -fsanitize=address -g -O1 -fno-omit-frame-pointer)
 target_link_libraries(test-qasm-parser PRIVATE
                                           ${COMMON_LIBRARIES}
                                           ${LIBZIP_LIBRARIES}
                                           MQT::QCEC
-                                          MQSSPasses)
-                                         #-fsanitize=address) # sanitize is useful when struggling with memory problems
+                                          MQSSPasses
+                                         -fsanitize=address) # sanitize is useful when struggling with memory problems
 target_include_directories(test-qasm-parser PRIVATE
     ${LIBZIP_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/include
@@ -83,6 +83,45 @@ target_include_directories(test-qasm-parser PRIVATE
     ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
     ${MQT_QCEC_INCLUDE_DIR}
     ${CUDAQ_MLIR_RUNTIME_PATH})
+
+add_executable(test-qasm-parser-simple testQASMParserSimple.cpp)
+set_target_properties(test-qasm-parser-simple PROPERTIES
+    GOOGLE_TEST_FLAGS "--gtest_disable_parallel")
+target_compile_options(test-qasm-parser-simple PRIVATE -fsanitize=address -g -O1 -fno-omit-frame-pointer)
+target_link_libraries(test-qasm-parser-simple PRIVATE
+                                          ${COMMON_LIBRARIES}
+                                          ${LIBZIP_LIBRARIES}
+                                          MQT::QCEC
+                                          MQSSPasses
+                                         -fsanitize=address) # sanitize is useful when struggling with memory problems
+target_include_directories(test-qasm-parser-simple PRIVATE
+    ${LIBZIP_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/Passes/
+    ${CMAKE_SOURCE_DIR}/include/Support/
+    ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
+    ${MQT_QCEC_INCLUDE_DIR}
+    ${CUDAQ_MLIR_RUNTIME_PATH})
+
+add_executable(test-qasm-parser-correctness testQASMParserCorrectness.cpp)
+set_target_properties(test-qasm-parser-correctness PROPERTIES
+    GOOGLE_TEST_FLAGS "--gtest_disable_parallel")
+target_compile_options(test-qasm-parser-correctness PRIVATE -fsanitize=address -g -O1 -fno-omit-frame-pointer)
+target_link_libraries(test-qasm-parser-correctness PRIVATE
+                                          ${COMMON_LIBRARIES}
+                                          ${LIBZIP_LIBRARIES}
+                                          MQT::QCEC
+                                          MQSSPasses
+                                         -fsanitize=address) # sanitize is useful when struggling with memory problems
+target_include_directories(test-qasm-parser-correctness PRIVATE
+    ${LIBZIP_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/Passes/
+    ${CMAKE_SOURCE_DIR}/include/Support/
+    ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
+    ${MQT_QCEC_INCLUDE_DIR}
+    ${CUDAQ_MLIR_RUNTIME_PATH})
+
 
 set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:test-mqss-passes>/golden-cases)
 add_custom_target(copy-golden-cases ALL

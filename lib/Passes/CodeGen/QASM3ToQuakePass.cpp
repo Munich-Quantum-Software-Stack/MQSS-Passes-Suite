@@ -77,7 +77,7 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
   }
 
   void insertQASMGateIntoQuakeModule(std::string gateId,
-                                 OpBuilder builder,
+                                 OpBuilder &builder,
                                  Location loc,
                                  std::vector<mlir::Value> vecParams,
                                  std::vector<mlir::Value> vecControls,
@@ -86,6 +86,8 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     mlir::ValueRange params(vecParams);
     mlir::ValueRange controls(vecControls);
     mlir::ValueRange targets(vecTargets);
+//    if (!loc.getContext()) throw std::runtime_error("FATAL");
+//    std::cout << "Context: " << builder.getContext() << std::endl;
     static const std::unordered_map<std::string,std::function<void()>>gateMap = {
       {"gphase", [&](){ throw std::runtime_error("Global phase operation is not supported!"); }},
       {"xx_minus_yy", [&](){ throw std::runtime_error("xx_minus_yy phase operation is not supported!"); }},
@@ -169,10 +171,12 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
           throw std::runtime_error("ill-formed z gate");
         builder.create<quake::RzOp>(loc, adj, params, controls, targets); }},
       {"id", [&](){ /* do nothing because identity*/ }},
-      {"cx", [&](){
+      {"cx", [& ](){
+        //std::cout << "Context: " << builder.getContext() << std::endl;
         if (params.size() !=0 || controls.size()!= 1 || targets.size()!=1)
           throw std::runtime_error("ill-formed cx gate");
-        builder.create<quake::XOp>(loc, adj, params, controls, targets); }},
+        builder.create<quake::XOp>(loc, adj, params, controls, targets);
+      }},
       {"CX", [&](){
         if (params.size() !=0 || controls.size()!= 1 || targets.size()!=1)
           throw std::runtime_error("ill-formed CX gate");
@@ -354,7 +358,8 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
   std::tuple<IDQASMMLIR, mlir::Value>
     insertAllocatedQubits(const std::vector<
                           std::shared_ptr<qasm3::Statement>>& program,
-                          mlir::func::FuncOp circuit,
+                          OpBuilder &builder,
+                          Location loc,
                           mlir::Operation *inOp ) {
     std::map<std::string, int> expQubits;
     int totalQubits = 0;
@@ -394,8 +399,6 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
       return std::make_tuple(mlirQubits,nullptr); // do nothing
     // instead of returning do the insertion of the measurement in the MLIR module
     //return totalQubits;
-    OpBuilder builder(circuit.getContext());
-    Location loc = circuit.getLoc();
     builder.setInsertionPoint(inOp);  // Set insertion before return
     // Define the type for a vector of totalQubits qubits
     auto qubitVecType = quake::VeqType::get(builder.getContext(), totalQubits);
@@ -416,7 +419,8 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
 
   // Function to print gate information
   void insertGate(const std::shared_ptr<qasm3::GateCallStatement>& gateCall,
-                  mlir::func::FuncOp circuit,
+                  OpBuilder &builder,
+                  Location loc,
                   mlir::Operation *inOp,
                   mlir::Value qubits,
                   IDQASMMLIR mlirQubits) {
@@ -425,8 +429,6 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     std::vector<mlir::Value> controls   = {};
     std::vector<mlir::Value> targets    = {};
     // Defining the builder
-    OpBuilder builder(circuit.getContext());
-    Location loc = circuit.getLoc();
     builder.setInsertionPoint(inOp);  // Set insertion before return
     // Print the gate type (identifier)
     //std::cout << "Gate Type: " << gateCall->identifier << std::endl;
@@ -481,7 +483,8 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
           selectedQubit = mlirQubits.at(std::string(operand->identifier)).at(qubitOp);
         } catch(const std::out_of_range& e){
           throw std::runtime_error("Fatal error!");
-        }                                                  //if (operand->expression) {
+        }
+        //if (operand->expression) {
         //  std::cout << "[" << qubitOp << "]";
         //}
         if (i < numControls) {
@@ -501,7 +504,6 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     }
     std::regex pattern("dg"); // Case-sensitive regex
     if (std::regex_search(std::string(gateCall->identifier), pattern)) isAdj = true;
-
     insertQASMGateIntoQuakeModule(std::string(gateCall->identifier),
                               builder,
                               loc,
@@ -512,29 +514,15 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
     //std::cout << "-------------------------" << std::endl;
   }
 
-  // Function to parse and print gate information
-  void parseAndInsertGates(const std::vector<std::shared_ptr<qasm3::Statement>>& program,
-                           mlir::func::FuncOp circuit,
-                           mlir::Operation *inOp,
-                           mlir::Value qubits,
-                           IDQASMMLIR mlirQubits) {
-    for (const auto& statement : program)
-    // Check if the statement is a GateCallStatement
-      if (auto gateCall = std::dynamic_pointer_cast<
-                              qasm3::GateCallStatement>(statement))
-        insertGate(gateCall, circuit, inOp, qubits, mlirQubits);
-  }
-
   // Function to print the source qubit and target bit of each measurement
   void parseAndInsertMeasurements(const std::vector<std::shared_ptr<qasm3::Statement>>&
                                   statements,
-                                  mlir::func::FuncOp circuit,
+                                  OpBuilder &builder,
+                                  Location loc,
                                   mlir::Operation *inOp,
                                   mlir::Value allocatedQubits,
                                   IDQASMMLIR mlirQubits) {
     // Defining the builder
-    OpBuilder builder(circuit.getContext());
-    Location loc = circuit.getLoc();
     builder.setInsertionPoint(inOp);  // Set insertion before return
     //llvm::outs() << "Printing measurements!\n";
     for (const auto& statement : statements) {
@@ -623,8 +611,14 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         return;
       }
     });
+    if (!returnOp) {
+      throw std::runtime_error("Error: No return operation found!\n");
+    }
+    // I declare a single Builder that can be used by the different parsing process!
+    OpBuilder builder(circuit.getContext());
+    Location loc = circuit.getLoc();
     // Traverse the AST
-    auto [mlirQubits, allocatedQubits] = insertAllocatedQubits(program,circuit,returnOp);
+    auto [mlirQubits, allocatedQubits] = insertAllocatedQubits(program,builder,loc,returnOp);
     if(!allocatedQubits) return;  // if no allocated qubits return nothing
     // for debuggin print maps of qubits
     #ifdef DEBUG
@@ -635,20 +629,22 @@ using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
         }
       }
     #endif
-    // Parse and print gate information
-    parseAndInsertGates(program, circuit, returnOp, allocatedQubits, mlirQubits);
+    // Parse and insert gates
+    for (const auto& statement : program)
+    // Check if the statement is a GateCallStatement
+      if (auto gateCall = std::dynamic_pointer_cast<
+                              qasm3::GateCallStatement>(statement))
+        insertGate(gateCall, builder, loc, returnOp, allocatedQubits, mlirQubits);
+    llvm::outs() << "Gates were inserted!\n";
     //// Insert barriers if required
-    if (!measureAllQubits)
-      parseAndInsertMeasurements(program,circuit, returnOp, allocatedQubits, mlirQubits);
-    else{
+    if (measureAllQubits){
       // apply measurements in all allocated qubits
-      // Defining the builder
-      OpBuilder builder(circuit.getContext());
-      Location loc = circuit.getLoc();
       builder.setInsertionPoint(returnOp);  // Set insertion before return
       Type measTy = quake::MeasureType::get(builder.getContext());
       auto stdVectType = cudaq::cc::StdvecType::get(measTy);
       builder.create<quake::MzOp>(loc, stdVectType, allocatedQubits);//  .getMeasOut();
+    } else{
+      parseAndInsertMeasurements(program,builder, loc, returnOp, allocatedQubits, mlirQubits);
     }
   }
 private:

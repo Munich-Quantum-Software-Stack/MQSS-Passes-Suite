@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# Define directoriesi
+CURRENT_DIR=$(pwd)
+
+# Default values
+NUM_JOBS=1  # Default number of jobs
+BUILD_DOCS=OFF  # Default: Do not build documentation
+BUILD_TESTS=OFF  # Default: Do not build tests
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -j|--jobs)
+      NUM_JOBS="$2"
+      shift 2
+      ;;
+    --build-docs)
+      BUILD_DOCS=ON
+      shift
+      ;;
+    --build-tests)
+      BUILD_TESTS=ON
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
+BUILD_DIR=${CURRENT_DIR}"/build"
+DEPS_DIR="${BUILD_DIR}/_deps"
+CUDAQ_DIR="${DEPS_DIR}/cuda-quantum"
+CUDAQ_REPO="https://github.com/NVIDIA/cuda-quantum.git"
+
+# Create directories if they don't exist
+mkdir -p "${BUILD_DIR}"
+mkdir -p "${DEPS_DIR}"
+
+# Clone the CUDA Quantum repository
+echo "Cloning CUDA Quantum repository into ${CUDAQ_DIR}..."
+if [ ! -d "${CUDAQ_DIR}" ]; then
+  git clone "${CUDAQ_REPO}" "${CUDAQ_DIR}"
+  if [ $? -ne 0 ]; then
+    echo "Failed to clone CUDA Quantum repository."
+    exit 1
+  fi
+else
+  echo "CUDA Quantum repository already exists at ${CUDAQ_DIR}. Skipping clone."
+fi
+
+# Navigate to the CUDA Quantum directory
+cd "${CUDAQ_DIR}" || { echo "Failed to navigate to ${CUDAQ_DIR}."; exit 1; }
+
+# Create a build directory
+mkdir -p build && cd build || { echo "Failed to create or navigate to build directory."; exit 1; }
+
+# Configure CUDA Quantum using CMake
+echo "Configuring CUDA Quantum with CMake..."
+cmake -G Ninja \
+  -DMLIR_DIR=/opt/llvm/lib/cmake/mlir \
+  -DClang_DIR=/opt/llvm/lib/cmake/clang \
+  -DLLVM_DIR=/opt/llvm/lib/cmake/llvm \
+  -DZLIB_LIBRARY=/usr/local/zlib/lib/libz.a \
+  -DZLIB_INCLUDE_DIR=/usr/local/zlib/include \
+  ..
+
+if [ $? -ne 0 ]; then
+  echo "CMake configuration failed."
+  exit 1
+fi
+
+# Build the cudaq-mlir-runtime target using Ninja
+echo "Building cudaq-mlir-runtime target with ${NUM_JOBS} jobs..."
+ninja -j"${NUM_JOBS}" cudaq-mlir-runtime
+
+if [ $? -ne 0 ]; then
+  echo "Failed to build cudaq-mlir-runtime target."
+  exit 1
+fi
+
+echo "Build completed successfully!"
+
+echo ${BUILD_DIR}
+cd  "${BUILD_DIR}" || { echo "Failed to navigate back to the original directory."; exit 1; }
+
+echo "Configuring MQSS Passes Repository CMake..."
+cmake .. \
+  -DBUILD_MLIR_PASSES_DOCS="${BUILD_DOCS}" \
+  -DBUILD_MLIR_PASSES_TESTS="${BUILD_TESTS}"
+echo "Building MQSS Repository Passes with ${NUM_JOBS} jobs..."
+make -j"${NUM_JOBS}"
+echo "Build of MQSS Repository Passes completed succesfully!..."

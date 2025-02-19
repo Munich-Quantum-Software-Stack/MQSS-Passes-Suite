@@ -1,4 +1,4 @@
-# The CMakeLists for passes requires to enable RTTI and FEXCEPTIONS
+
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions")
 # There is an issue if LLVM is not built with RRTI. In case LLVM was not built with RTTI,
 # LLVM has to be rebuilt again with RRTI.
@@ -27,7 +27,9 @@
 
 cmake_minimum_required(VERSION 3.19...3.30)
 # Project name and language specification
-project(MQSSMLIRCustomPasses LANGUAGES CXX)
+project(MQSSMLIRPasses 
+        VERSION 1.0
+        LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
@@ -231,13 +233,13 @@ include_directories(BEFORE
 
 # Collect all .cpp files in the src directory
 file(GLOB SRC_CODEGEN "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/CodeGen/*.cpp")
-file(GLOB SRC_DECOMPO "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Decompositions/*.cpp")
-file(GLOB SRC_EXAMPLE "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Examples/*.cpp")
-file(GLOB SRC_TRANSFO "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Transforms/*.cpp")
-file(GLOB SRC_SUP_QUA "${CMAKE_CURRENT_SOURCE_DIR}/lib/Support/CodeGen/Quake/*.cpp")
+file(GLOB SRC_DECOMPOSITIONS "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Decompositions/*.cpp")
+file(GLOB SRC_EXAMPLES "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Examples/*.cpp")
+file(GLOB SRC_TRANSFORMS "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Transforms/*.cpp")
+file(GLOB SRC_SUPPORT_QUAKE "${CMAKE_CURRENT_SOURCE_DIR}/lib/Support/CodeGen/Quake/*.cpp")
 
 add_mlir_library(SupportQuake SHARED
-    ${SRC_SUP_QUA}
+    ${SRC_SUPPORT_QUAKE}
     LINK_LIBS PUBLIC
     MLIRIR
     MLIRPass
@@ -245,9 +247,9 @@ add_mlir_library(SupportQuake SHARED
 
 add_mlir_library(MQSSPasses SHARED
     ${SRC_CODEGEN}
-    ${SRC_DECOMPO}
-    ${SRC_EXAMPLE}
-    ${SRC_TRANSFO}
+    ${SRC_DECOMPOSITIONS}
+    ${SRC_EXAMPLES}
+    ${SRC_TRANSFORMS}
     LINK_LIBS PUBLIC
     SupportQuake
     MQT::CoreIR
@@ -272,3 +274,32 @@ if(BUILD_MLIR_PASSES_DOCS)
 endif()
 
 add_subdirectory(tools)
+
+# Install headers
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+# Install shared libraries
+install(TARGETS MQSSPasses SupportQuake
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin)
+
+# Install CMake package config files
+install(EXPORT MQSSPasses
+        FILE MQSSPassesConfig.cmake
+        NAMESPACE MQSS::
+        DESTINATION lib/cmake/MQSSPasses)
+
+# Generate a CMake package configuration file
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/MQSSPassesConfigVersion.cmake"
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/MQSSPassesConfigVersion.cmake"
+    DESTINATION lib/cmake/MQSSPasses
+)

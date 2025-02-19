@@ -121,6 +121,11 @@ cd  "${BUILD_DIR}" || { echo "Failed to navigate back to the original directory.
 echo "Configuring MQSS Passes Repository CMake..."
 cmake .. \
   -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+  -DMLIR_DIR="${MLIR_DIR}" \
+  -DClang_DIR="${CLANG_DIR}" \
+  -DLLVM_DIR="${LLVM_DIR}" \
+  -DZLIB_LIBRARY="${ZLIB_LIBRARY}" \
+  -DZLIB_INCLUDE_DIR="${ZLIB_INCLUDE_DIR}" \
   -DBUILD_MLIR_PASSES_DOCS="${BUILD_DOCS}" \
   -DBUILD_MLIR_PASSES_TESTS="${BUILD_TESTS}"\
   -DCUDAQ_SOURCE_DIR="${CUDAQ_DIR}"

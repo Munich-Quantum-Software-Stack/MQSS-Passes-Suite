@@ -186,17 +186,16 @@ set(CMAKE_CXX_STANDARD 20)
 
 ####################### CUDAQ settings ############################################
 
-set(CUDAQ_MAIN_INCLUDE_DIR "/workspaces/cuda-quantum/include")
-set(CUDAQ_SOURCE_DIR "/workspaces/cuda-quantum")
-set(CUDAQ_BINARY_DIR "/workspaces/cuda-quantum/build")
-set(CUDAQ_CMAKE_DIR "/workspaces/cuda-quantum/cmake")
-set(CUDAQ_INCLUDE_DIR "/workspaces/cuda-quantum/build/include")
-set(CUDAQ_LIBRARY_DIR "/workspaces/cuda-quantum/build/lib")
-set(CUDAQ_TOOLS_DIR "/workspaces/cuda-quantum/build/bin")
-set(CUDAQ_MLIR_RUNTIME_PATH "/workspaces/cuda-quantum/build/lib")
+set(CUDAQ_MAIN_INCLUDE_DIR  "${CUDAQ_SOURCE_DIR}/include")
+set(CUDAQ_BINARY_DIR        "${CUDAQ_SOURCE_DIR}/build")
+set(CUDAQ_CMAKE_DIR         "${CUDAQ_SOURCE_DIR}/cmake")
+set(CUDAQ_INCLUDE_DIR       "${CUDAQ_SOURCE_DIR}/build/include")
+set(CUDAQ_LIBRARY_DIR       "${CUDAQ_SOURCE_DIR}/build/lib")
+set(CUDAQ_TOOLS_DIR         "${CUDAQ_SOURCE_DIR}/build/bin")
+set(CUDAQ_MLIR_RUNTIME_PATH "${CUDAQ_SOURCE_DIR}/build/lib")
 
 include_directories(BEFORE
-         ${CUDAQ_SOURCE_DIR}/include
+         ${CUDAQ_MAIN_INCLUDE_DIR}
          ${CUDAQ_BINARY_DIR}/include
 #         ${CUDAQ_SOURCE_DIR}/runtime
         )

@@ -47,7 +47,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG)
 endif()
 
-include(cmake/ExternalDependencies.cmake)
+include(cmake/ExternalDependencies.cmake) #doxygen dependencies
 
 ############################## CONFIGURATION OF LLVM ##########################
 find_package(LLVM 16 CONFIG QUIET)
@@ -171,10 +171,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 #set(CMAKE_CXX_STANDARD 11)
 
 # Find QDMI package
-find_package(qdmi REQUIRED)
+#find_package(qdmi REQUIRED)
 
 # Find QInfo package
-find_package(qinfo REQUIRED)
+#find_package(qinfo REQUIRED)
 
 find_package(mqt-qcec REQUIRED)
 # Find the QMAP package

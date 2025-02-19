@@ -14,6 +14,7 @@ CLANG_DIR="/opt/llvm/lib/cmake/clang"
 LLVM_DIR="/opt/llvm/lib/cmake/llvm"
 ZLIB_LIBRARY="/usr/local/zlib/lib/libz.a"
 ZLIB_INCLUDE_DIR="/usr/local/zlib/include"
+INSTALL_DIR="$HOME/mqss-passes" # this is the default install destination
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
@@ -24,6 +25,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --mlir-dir)
       MLIR_DIR="$2"
+      shift 2
+      ;;
+    --install-dir)
+      INSTALL_DIR="$2"
       shift 2
       ;;
     --clang-dir)
@@ -115,6 +120,7 @@ cd  "${BUILD_DIR}" || { echo "Failed to navigate back to the original directory.
 
 echo "Configuring MQSS Passes Repository CMake..."
 cmake .. \
+  -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
   -DBUILD_MLIR_PASSES_DOCS="${BUILD_DOCS}" \
   -DBUILD_MLIR_PASSES_TESTS="${BUILD_TESTS}"\
   -DCUDAQ_SOURCE_DIR="${CUDAQ_DIR}"

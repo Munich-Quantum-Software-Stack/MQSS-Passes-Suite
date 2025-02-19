@@ -8,11 +8,38 @@ NUM_JOBS=1  # Default number of jobs
 BUILD_DOCS=OFF  # Default: Do not build documentation
 BUILD_TESTS=OFF  # Default: Do not build tests
 
+# Default directories (can be overridden by arguments)
+MLIR_DIR="/opt/llvm/lib/cmake/mlir"
+CLANG_DIR="/opt/llvm/lib/cmake/clang"
+LLVM_DIR="/opt/llvm/lib/cmake/llvm"
+ZLIB_LIBRARY="/usr/local/zlib/lib/libz.a"
+ZLIB_INCLUDE_DIR="/usr/local/zlib/include"
+
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
     -j|--jobs)
       NUM_JOBS="$2"
+      shift 2
+      ;;
+    --mlir-dir)
+      MLIR_DIR="$2"
+      shift 2
+      ;;
+    --clang-dir)
+      CLANG_DIR="$2"
+      shift 2
+      ;;
+    --llvm-dir)
+      LLVM_DIR="$2"
+      shift 2
+      ;;
+    --zlib-library)
+      ZLIB_LIBRARY="$2"
+      shift 2
+      ;;
+    --zlib-include)
+      ZLIB_INCLUDE_DIR="$2"
       shift 2
       ;;
     --build-docs)
@@ -60,11 +87,11 @@ mkdir -p build && cd build || { echo "Failed to create or navigate to build dire
 # Configure CUDA Quantum using CMake
 echo "Configuring CUDA Quantum with CMake..."
 cmake -G Ninja \
-  -DMLIR_DIR=/opt/llvm/lib/cmake/mlir \
-  -DClang_DIR=/opt/llvm/lib/cmake/clang \
-  -DLLVM_DIR=/opt/llvm/lib/cmake/llvm \
-  -DZLIB_LIBRARY=/usr/local/zlib/lib/libz.a \
-  -DZLIB_INCLUDE_DIR=/usr/local/zlib/include \
+  -DMLIR_DIR="${MLIR_DIR}" \
+  -DClang_DIR="${CLANG_DIR}" \
+  -DLLVM_DIR="${LLVM_DIR}" \
+  -DZLIB_LIBRARY="${ZLIB_LIBRARY}" \
+  -DZLIB_INCLUDE_DIR="${ZLIB_INCLUDE_DIR}" \
   ..
 
 if [ $? -ne 0 ]; then
@@ -89,7 +116,8 @@ cd  "${BUILD_DIR}" || { echo "Failed to navigate back to the original directory.
 echo "Configuring MQSS Passes Repository CMake..."
 cmake .. \
   -DBUILD_MLIR_PASSES_DOCS="${BUILD_DOCS}" \
-  -DBUILD_MLIR_PASSES_TESTS="${BUILD_TESTS}"
+  -DBUILD_MLIR_PASSES_TESTS="${BUILD_TESTS}"\
+  -DCUDAQ_SOURCE_DIR="${CUDAQ_DIR}"
 echo "Building MQSS Repository Passes with ${NUM_JOBS} jobs..."
 make -j"${NUM_JOBS}"
 echo "Build of MQSS Repository Passes completed succesfully!..."

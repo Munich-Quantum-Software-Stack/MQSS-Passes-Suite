@@ -68,8 +68,7 @@ void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::
     for (auto operand : op->getOperands()) {
       if (operand.getType().isa<quake::RefType>()) {
         int qubitIndex = extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
-        if (qubitIndex == -1)
-          throw std::runtime_error("Non valid qubit index for measurement!");
+        assert(qubitIndex != -1 && "Non valid qubit index for measurement!");
         measurements.push_back(qubitIndex);
         qubitLines[qubitIndex].push_back("\\meter{}");
       }else if (operand.getType().isa<quake::VeqType>()) {
@@ -104,8 +103,7 @@ void dumpQuakeOperationToTikz(mlir::Operation *op, std::vector<std::vector<std::
     return;
 
   if(isa<quake::SwapOp>(op)){
-    if(targets.size()!=2) 
-      throw std::runtime_error("At the moment the SWAP only works on two targets...");
+    assert(targets.size()==2 && "At the moment the SWAP only works on two targets...");
     qubitLines[targets[0]].push_back("\\swap{"+std::to_string(targets[1]-targets[0])+"}");
     qubitLines[targets[1]].push_back("\\swap{}");
     return; // special handle for swap because it has multiple targets

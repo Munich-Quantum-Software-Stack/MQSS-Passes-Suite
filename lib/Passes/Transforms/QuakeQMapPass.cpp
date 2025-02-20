@@ -50,8 +50,7 @@ void loadRotationGatesToQC(Operation *op, qc::QuantumComputation &qc){
   if (isa<quake::RxOp>(op) || isa<quake::RyOp>(op) || isa<quake::RzOp>(op)){
     int qubit = -1;
     double angle = -1.0;
-    if (op->getOperands().size()!=2)
-      throw std::runtime_error("ill-formed rotation gate!");
+    assert(op->getOperands().size()==2 && "ill-formed rotation gate!");
     Value operand1 = op->getOperands()[0];
     angle = supportQuake::extractDoubleArgumentValue(operand1.getDefiningOp());
     Value operand2 = op->getOperands()[1];
@@ -62,8 +61,7 @@ void loadRotationGatesToQC(Operation *op, qc::QuantumComputation &qc){
       llvm::errs() <<"\n";
       llvm::errs() << "\tRotation with angle " << angle << " on qubit "<< qubit<<"\n";
     #endif
-    if(angle == -1.0 || qubit == -1)
-      throw std::runtime_error("ill-formed rotation gate!");
+    assert(!(angle == -1.0 || qubit == -1) && "ill-formed rotation gate!");
     if (isa<quake::RxOp>(op))
       qc.rx(angle,qubit);
     if (isa<quake::RyOp>(op))
@@ -90,8 +88,7 @@ void loadXYZGatesToQC(Operation *op, qc::QuantumComputation &qc){
         llvm::errs() <<"\n";
         llvm::errs() << "\tqubit_ctrl " << qubit_ctrl << " qubit_target "<< qubit_target <<"\n";
       #endif
-      if(qubit_ctrl == -1 || qubit_target == -1)
-        throw std::runtime_error("ill-formed controlled gate!");
+      assert(!(qubit_ctrl == -1 || qubit_target == -1) && "ill-formed controlled gate!");
       if (isa<quake::XOp>(op))
         qc.cx(qubit_ctrl,qubit_target);
       if (isa<quake::YOp>(op))
@@ -109,8 +106,7 @@ void loadXYZGatesToQC(Operation *op, qc::QuantumComputation &qc){
         llvm::errs() <<"\n";
         llvm::errs() << "\tSingle qubit operation on qubit " << qubit <<"\n";
       #endif
-      if(qubit == -1)
-        throw std::runtime_error("ill-formed single gate X, Y and Z!");
+      assert (qubit != -1 && "ill-formed single gate X, Y and Z!");
       if (isa<quake::XOp>(op))
         qc.x(qubit);
       if (isa<quake::YOp>(op))
@@ -134,8 +130,7 @@ void loadSTHGatesToQC(Operation *op, qc::QuantumComputation &qc){
         llvm::errs() <<"\n";
         llvm::errs() << "\tSingle qubit operation on qubit " << qubit <<"\n";
       #endif
-      if(qubit == -1)
-        throw std::runtime_error("ill-formed single gate, S, T or H !");
+      assert(qubit != -1 && "ill-formed single gate, S, T or H !");
       if (isa<quake::SOp>(op))
         qc.s(qubit);
       if (isa<quake::TOp>(op))
@@ -154,13 +149,11 @@ void loadMeasurementsToQC(Operation *op, qc::QuantumComputation &qc,std::map<int
       op->print(llvm::errs());
       llvm::errs() <<"\n";
     #endif
-    if (op->getOperands().size()!=1)
-      throw std::runtime_error("ill-formed measurement gate!");
+    assert(op->getOperands().size()==1 && "ill-formed measurement gate!");
     Value operand = op->getOperands()[0];
     if (operand.getType().isa<quake::RefType>()) {
       int qubitIndex = supportQuake::extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
-      if (qubitIndex == -1)
-        throw std::runtime_error("Non valid qubit index for measurement!");
+      assert(qubitIndex != -1 && "Non valid qubit index for measurement!");
       qc.measure(static_cast<qc::Qubit>(qubitIndex),measurements.at(qubitIndex));
       #ifdef DEBUG
         llvm::errs() << "\tMeasurement on qubit index " <<qubitIndex << "\n";

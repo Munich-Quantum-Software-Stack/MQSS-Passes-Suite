@@ -84,8 +84,7 @@ int mqss::support::quakeDialect::getNumberOfClassicalBits(func::FuncOp circuit,
       for (auto operand : op->getOperands()) {
         if (operand.getType().isa<quake::RefType>()) {//Check if it's qubit reference
           int qubitIndex = extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
-          if (qubitIndex == -1)
-            throw std::runtime_error("Non valid qubit index for measurement!");
+          assert (qubitIndex != -1 && "Non valid qubit index for measurement!");
           measurements[qubitIndex] = numBits;
           numBits += 1;
         }else if (operand.getType().isa<quake::VeqType>()) {
@@ -110,8 +109,7 @@ int mqss::support::quakeDialect::getNumberOfClassicalBits(func::FuncOp circuit){
       for (auto operand : op->getOperands()) {
         if (operand.getType().isa<quake::RefType>()) { // Check if it's a qubit reference
           int qubitIndex = extractIndexFromQuakeExtractRefOp(operand.getDefiningOp());
-          if (qubitIndex == -1)
-            throw std::runtime_error("Non valid qubit index for measurement!");
+          assert (qubitIndex != -1 && "Non valid qubit index for measurement!");
           numBits += 1;
         }else if (operand.getType().isa<quake::VeqType>()) {
           auto qvecType = operand.getType().dyn_cast<quake::VeqType>();

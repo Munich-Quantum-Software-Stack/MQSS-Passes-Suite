@@ -152,7 +152,8 @@ std::string lowerQuakeCodeToOpenQASM(std::string quantumTask){
     llvm::raw_string_ostream outStr(codeStr);
     m_module->getContext()->disableMultithreading();
     if (mlir::failed(translation(m_module.get(), outStr, postCodeGenPasses, printIR,
-                           enablePrintMLIREachPass, enablePassStatistics)))
+                      					 //enablePrintMLIREachPass, 
+																 enablePassStatistics)))
       throw std::runtime_error("Could not successfully translate to OpenQASM2");
   }
   // Regular expression to match the gate definition

@@ -17,13 +17,6 @@ include_directories(${MLIR_INCLUDE_DIRS})
 
 # Define the common libraries to link
 set(COMMON_LIBRARIES
-#  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq.so
-#  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-spin.so
-#  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-common.so
-#  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-nlopt.so
-#  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-platform-default.so
-#  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-em-default.so
-#  ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-ensmallen.so
   ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-mlir-runtime.so
   ${GTEST_LIBRARIES}
   pthread)

@@ -29,7 +29,7 @@ cmake_minimum_required(VERSION 3.19...3.30)
 # Project name and language specification
 project(MQSSMLIRPasses 
         VERSION 1.0
-        LANGUAGES CXX)
+        LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
@@ -177,6 +177,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Find QInfo package
 #find_package(qinfo REQUIRED)
+find_package(Z3 REQUIRED)
 
 find_package(mqt-qcec REQUIRED)
 # Find the QMAP package
@@ -262,6 +263,19 @@ add_mlir_library(MQSSPasses SHARED
     #qdmi
     #qinfo
 )
+target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
+target_compile_options(MQSSPasses PRIVATE -fexceptions -frtti)
+## Install shared libraries
+#install(TARGETS MQSSPasses SupportQuake
+#        LIBRARY DESTINATION lib
+#        ARCHIVE DESTINATION lib
+#        RUNTIME DESTINATION bin)
+#
+## Install CMake package config files
+#install(EXPORT MQSSPasses
+#        FILE MQSSPassesConfig.cmake
+#        NAMESPACE MQSS::
+#        DESTINATION lib/cmake/MQSSPasses)
 
 #add tests
 if(BUILD_MLIR_PASSES_TESTS)
@@ -276,30 +290,18 @@ endif()
 add_subdirectory(tools)
 
 # Install headers
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+#install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+#        DESTINATION include
+#        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
-# Install shared libraries
-install(TARGETS MQSSPasses SupportQuake
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin)
-
-# Install CMake package config files
-install(EXPORT MQSSPasses
-        FILE MQSSPassesConfig.cmake
-        NAMESPACE MQSS::
-        DESTINATION lib/cmake/MQSSPasses)
-
-# Generate a CMake package configuration file
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/MQSSPassesConfigVersion.cmake"
-    COMPATIBILITY SameMajorVersion
-)
-
-install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/MQSSPassesConfigVersion.cmake"
-    DESTINATION lib/cmake/MQSSPasses
-)
+## Generate a CMake package configuration file
+#include(CMakePackageConfigHelpers)
+#write_basic_package_version_file(
+#    "${CMAKE_CURRENT_BINARY_DIR}/MQSSPassesConfigVersion.cmake"
+#    COMPATIBILITY SameMajorVersion
+#)
+#
+#install(FILES
+#    "${CMAKE_CURRENT_BINARY_DIR}/MQSSPassesConfigVersion.cmake"
+#    DESTINATION lib/cmake/MQSSPasses
+#)

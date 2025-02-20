@@ -120,6 +120,8 @@ cd  "${BUILD_DIR}" || { echo "Failed to navigate back to the original directory.
 
 echo "Configuring MQSS Passes Repository CMake..."
 cmake .. \
+  -DCMAKE_C_COMPILER=gcc \
+  -DCMAKE_CXX_COMPILER=g++ \
   -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
   -DMLIR_DIR="${MLIR_DIR}" \
   -DClang_DIR="${CLANG_DIR}" \

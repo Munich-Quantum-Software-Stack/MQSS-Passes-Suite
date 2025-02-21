@@ -190,6 +190,7 @@ set(CMAKE_CXX_STANDARD 20)
 ####################### CUDAQ settings ############################################
 
 set(CUDAQ_MAIN_INCLUDE_DIR  "${CUDAQ_SOURCE_DIR}/include")
+
 set(CUDAQ_BINARY_DIR        "${CUDAQ_SOURCE_DIR}/build")
 set(CUDAQ_CMAKE_DIR         "${CUDAQ_SOURCE_DIR}/cmake")
 set(CUDAQ_INCLUDE_DIR       "${CUDAQ_SOURCE_DIR}/build/include")
@@ -200,7 +201,7 @@ set(CUDAQ_MLIR_RUNTIME_PATH "${CUDAQ_SOURCE_DIR}/build/lib")
 include_directories(BEFORE
          ${CUDAQ_MAIN_INCLUDE_DIR}
          ${CUDAQ_BINARY_DIR}/include
-#         ${CUDAQ_SOURCE_DIR}/runtime
+         ${CUDAQ_SOURCE_DIR}/runtime
         )
 
 #################################################################################

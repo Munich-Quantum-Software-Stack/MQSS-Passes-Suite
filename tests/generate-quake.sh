@@ -23,9 +23,10 @@ find "$base_dir" -type f -name "*.cpp" | while read -r cpp_file; do
     # Run the cudaq-quake command
     cudaq-quake "$cpp_file" -o o.qke && \
     # Run the cudaq-opt command
-    cudaq-opt --canonicalize --unrolling-pipeline o.qke -o "$output_file" && \
+    cudaq-opt --canonicalize --unrolling-pipeline o.qke -o x.qke && \
+    ../build/tools/cpp-to-only-quake --input x.qke --output "$output_file" && \
     # Remove the intermediate o.qke file
-    rm -f o.qke
+    rm -f o.qke x.qke
     
     echo "Processed $cpp_file -> $output_file"
 done

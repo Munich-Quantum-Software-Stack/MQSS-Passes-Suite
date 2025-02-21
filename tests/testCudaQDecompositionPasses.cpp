@@ -97,17 +97,11 @@ std::string readFileToString(const std::string &filename) {
     return fileContents.str();  // Convert the string stream to a string
 }
 
-std::tuple<std::string, std::string> getQuakeAndGolden(std::string cppFile,
+std::tuple<std::string, std::string> getQuakeAndGolden(std::string inputFile,
                                                        std::string goldenFile){
-  int retCode = std::system(("cudaq-quake "+cppFile+" -o ./o.qke").c_str());
-  if (retCode) throw std::runtime_error("Quake transformation failed!!!");
-  retCode = std::system("cudaq-opt --canonicalize --unrolling-pipeline o.qke -o ./kernel.qke");
-  if (retCode) throw std::runtime_error("Quake transformation failed!!!");
-  // loading the generated mlir kernel of the given cpp
-  std::string quakeModule  = readFileToString("./kernel.qke");
+
+  std::string quakeModule  = readFileToString(inputFile);
   std::string goldenOutput = readFileToString(goldenFile);
-  std::remove("./o.qke");
-  std::remove("./kernel.qke");
   return std::make_tuple(quakeModule, goldenOutput);
 }
 
@@ -189,7 +183,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.phased_rx(π/2, π/2) target
 // quake.phased_rx(π, 0) target
     std::make_tuple("TestHToPhasedRx",
-                    "./code/cudaq-decompositions/HToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/HToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/HToPhasedRx.qke" ,
                     std::vector<std::string>{"HToPhasedRx"}),
 // quake.exp_pauli(theta) target pauliWord
@@ -197,7 +191,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Basis change operations, cnots, rz(theta), adjoint basis change
 // TODO: ask how this should work
     std::make_tuple("TestExpPauliDecomposition",
-                    "./code/cudaq-decompositions/ExpPauliDecomposition.cpp",
+                    "./quake/cudaq-decompositions/ExpPauliDecomposition.qke",
                     "./golden-cases/cudaq-decompositions/ExpPauliDecomposition.qke" ,
                     std::vector<std::string>{"ExpPauliDecomposition"}),
 // Naive mapping of R1 to Rz, ignoring the global phase.
@@ -205,7 +199,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake apply specialization.
 // TODO: apparently does nothing
     std::make_tuple("TestR1ToRz",
-                    "./code/cudaq-decompositions/R1ToRz.cpp",
+                    "./quake/cudaq-decompositions/R1ToRz.qke",
                     "./golden-cases/cudaq-decompositions/R1ToRz.qke" ,
                     std::vector<std::string>{"R1ToRz"}),
 // quake.swap a, b
@@ -214,7 +208,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.cnot a, b;
 // quake.cnot b, a;
     std::make_tuple("TestSwapToCX",
-                    "./code/cudaq-decompositions/SwapToCX.cpp",
+                    "./quake/cudaq-decompositions/SwapToCX.qke",
                     "./golden-cases/cudaq-decompositions/SwapToCX.qke" ,
                     std::vector<std::string>{"SwapToCX"}),
 // quake.h control, target
@@ -227,7 +221,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.h target;
 // quake.s<adj> target;
     std::make_tuple("TestCHToCX",
-                    "./code/cudaq-decompositions/CHToCX.cpp",
+                    "./quake/cudaq-decompositions/CHToCX.qke",
                     "./golden-cases/cudaq-decompositions/CHToCX.qke" ,
                     std::vector<std::string>{"CHToCX"}),
 //===----------------------------------------------------------------------===//
@@ -239,7 +233,7 @@ INSTANTIATE_TEST_SUITE_P(
 // phased_rx(-π/2, π/2) target
 // phased_rx(-π/2, 0) target
     std::make_tuple("TestSToPhasedRx",
-                    "./code/cudaq-decompositions/SToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/SToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/SToPhasedRx.qke" ,
                     std::vector<std::string>{"SToPhasedRx"}),
 // quake.s [control] target
@@ -249,7 +243,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Adding this gate equivalence will enable further decomposition via other
 // patterns such as controlled-r1 to cnot.
     std::make_tuple("TestSToR1",
-                    "./code/cudaq-decompositions/SToR1.cpp",
+                    "./quake/cudaq-decompositions/SToR1.qke",
                     "./golden-cases/cudaq-decompositions/SToR1.qke" ,
                     std::vector<std::string>{"SToR1"}),
 //===----------------------------------------------------------------------===//
@@ -261,7 +255,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.phased_rx(-π/4, π/2) target
 // quake.phased_rx(-π/2, 0) target
     std::make_tuple("TestTToPhasedRx",
-                    "./code/cudaq-decompositions/TToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/TToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/TToPhasedRx.qke" ,
                     std::vector<std::string>{"TToPhasedRx"}),
 // quake.t [control] target
@@ -271,7 +265,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Adding this gate equivalence will enable further decomposition via other
 // patterns such as controlled-r1 to cnot.
     std::make_tuple("TestTToR1",
-                    "./code/cudaq-decompositions/TToR1.cpp",
+                    "./quake/cudaq-decompositions/TToR1.qke",
                     "./golden-cases/cudaq-decompositions/TToR1.qke" ,
                     std::vector<std::string>{"TToR1"}),
 //===----------------------------------------------------------------------===//
@@ -283,7 +277,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.z [control] target
 // quake.h target
     std::make_tuple("TestCXToCZ",
-                    "./code/cudaq-decompositions/CXToCZ.cpp",
+                    "./quake/cudaq-decompositions/CXToCZ.qke",
                     "./golden-cases/cudaq-decompositions/CXToCZ.qke" ,
                     std::vector<std::string>{"CXToCZ"}),
 // quake.x [controls] target
@@ -292,14 +286,14 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.z [controls] target
 // quake.h target
     std::make_tuple("TestCCXToCCZ",
-                    "./code/cudaq-decompositions/CCXToCCZ.cpp",
+                    "./quake/cudaq-decompositions/CCXToCCZ.qke",
                     "./golden-cases/cudaq-decompositions/CCXToCCZ.qke" ,
                     std::vector<std::string>{"CCXToCCZ"}),
 // quake.x target
 // ───────────────────────────────
 // quake.phased_rx(π, 0) target
     std::make_tuple("TestXToPhasedRx",
-                    "./code/cudaq-decompositions/XToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/XToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/XToPhasedRx.qke" ,
                     std::vector<std::string>{"XToPhasedRx"}),
 //===----------------------------------------------------------------------===//
@@ -310,7 +304,7 @@ INSTANTIATE_TEST_SUITE_P(
 // ─────────────────────────────────
 // quake.phased_rx(π, -π/2) target
     std::make_tuple("TestYToPhasedRx",
-                    "./code/cudaq-decompositions/YToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/YToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/YToPhasedRx.qke" ,
                     std::vector<std::string>{"YToPhasedRx"}),
 //===----------------------------------------------------------------------===//
@@ -329,7 +323,7 @@ INSTANTIATE_TEST_SUITE_P(
 //
 // NOTE: `┴` denotes the adjoint of `T`.
     std::make_tuple("TestCCZToCX",
-                    "./code/cudaq-decompositions/CCZToCX.cpp",
+                    "./quake/cudaq-decompositions/CCZToCX.qke",
                     "./golden-cases/cudaq-decompositions/CCZToCX.qke" ,
                     std::vector<std::string>{"CCZToCX"}),
 // quake.z [control] target
@@ -338,7 +332,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.x [control] target
 // quake.h target
     std::make_tuple("TestCZToCX",
-                    "./code/cudaq-decompositions/CZToCX.cpp",
+                    "./quake/cudaq-decompositions/CZToCX.qke",
                     "./golden-cases/cudaq-decompositions/CZToCX.qke" ,
                     std::vector<std::string>{"CZToCX"}),
 // quake.z target
@@ -347,7 +341,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.phased_rx(-π, π/2) target
 // quake.phased_rx(-π/2, 0) target
     std::make_tuple("TestZToPhasedRx",
-                    "./code/cudaq-decompositions/ZToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/ZToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/ZToPhasedRx.qke" ,
                     std::vector<std::string>{"ZToPhasedRx"}),
 //===----------------------------------------------------------------------===//
@@ -361,7 +355,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.x [control] target
 // quake.r1(λ/2) target
     std::make_tuple("TestCR1ToCX",
-                    "./code/cudaq-decompositions/CR1ToCX.cpp",
+                    "./quake/cudaq-decompositions/CR1ToCX.qke",
                     "./golden-cases/cudaq-decompositions/CR1ToCX.qke" ,
                     std::vector<std::string>{"CR1ToCX"}),
 // quake.r1(λ) target
@@ -370,7 +364,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.phased_rx(-λ, π/2) target
 // quake.phased_rx(-π/2, 0) target
     std::make_tuple("TestR1ToPhasedRx",
-                    "./code/cudaq-decompositions/R1ToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/R1ToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/R1ToPhasedRx.qke" ,
                     std::vector<std::string>{"R1ToPhasedRx"}),
 //===----------------------------------------------------------------------===//
@@ -386,14 +380,14 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.ry(θ/2) target
 // quake.rz(-π/2) target
     std::make_tuple("TestCRxToCX",
-                    "./code/cudaq-decompositions/CRxToCX.cpp",
+                    "./quake/cudaq-decompositions/CRxToCX.qke",
                     "./golden-cases/cudaq-decompositions/CRxToCX.qke" ,
                     std::vector<std::string>{"CRxToCX"}),
 // quake.rx(θ) target
 // ───────────────────────────────
 // quake.phased_rx(θ, 0) target
     std::make_tuple("TestRxToPhasedRx",
-                    "./code/cudaq-decompositions/RxToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/RxToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/RxToPhasedRx.qke" ,
                     std::vector<std::string>{"RxToPhasedRx"}),
 //===----------------------------------------------------------------------===//
@@ -407,14 +401,14 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.ry(-θ/2) target
 // quake.x [control] target
     std::make_tuple("TestCRyToCX",
-                    "./code/cudaq-decompositions/CRyToCX.cpp",
+                    "./quake/cudaq-decompositions/CRyToCX.qke",
                     "./golden-cases/cudaq-decompositions/CRyToCX.qke" ,
                     std::vector<std::string>{"CRyToCX"}),
 // quake.ry(θ) target
 // ─────────────────────────────────
 // quake.phased_rx(θ, π/2) target
     std::make_tuple("TestRyToPhasedRx",
-                    "./code/cudaq-decompositions/RyToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/RyToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/RyToPhasedRx.qke" ,
                     std::vector<std::string>{"RyToPhasedRx"}),
 //===----------------------------------------------------------------------===//
@@ -428,7 +422,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.rz(-λ/2) target
 // quake.x [control] target
     std::make_tuple("TestCRzToCX",
-                    "./code/cudaq-decompositions/CRzToCX.cpp",
+                    "./quake/cudaq-decompositions/CRzToCX.qke",
                     "./golden-cases/cudaq-decompositions/CRzToCX.qke",
                     std::vector<std::string>{"CRzToCX"}),
 // quake.rz(θ) target
@@ -437,7 +431,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.phased_rx(-θ, π/2) target
 // quake.phased_rx(-π/2, 0) target
     std::make_tuple("TestRzToPhasedRx",
-                    "./code/cudaq-decompositions/RzToPhasedRx.cpp",
+                    "./quake/cudaq-decompositions/RzToPhasedRx.qke",
                     "./golden-cases/cudaq-decompositions/RzToPhasedRx.qke" ,
                     std::vector<std::string>{"RzToPhasedRx"}),
 //===----------------------------------------------------------------------===//
@@ -452,7 +446,7 @@ INSTANTIATE_TEST_SUITE_P(
 // quake.rx(-π/2) target
 // quake.rz(ϕ) target
     std::make_tuple("TestU3ToRotations",
-                    "./code/cudaq-decompositions/U3ToRotations.cpp",
+                    "./quake/cudaq-decompositions/U3ToRotations.qke",
                     "./golden-cases/cudaq-decompositions/U3ToRotations.qke",
                     std::vector<std::string>{"U3ToRotations"})
 ),

@@ -90,17 +90,10 @@ std::string readFileToString(const std::string &filename) {
     return fileContents.str();  // Convert the string stream to a string
 }
 
-std::tuple<std::string, std::string> getQuakeAndGolden(std::string cppFile,
+std::tuple<std::string, std::string> getQuakeAndGolden(std::string inputFile,
                                                        std::string goldenFile){
-  int retCode = std::system(("cudaq-quake "+cppFile+" -o ./o.qke").c_str());
-  if (retCode) throw std::runtime_error("Quake transformation failed!!!");
-  retCode = std::system("cudaq-opt --canonicalize --unrolling-pipeline o.qke -o ./kernel.qke");
-  if (retCode) throw std::runtime_error("Quake transformation failed!!!");
-  // loading the generated mlir kernel of the given cpp
-  std::string quakeModule  = readFileToString("./kernel.qke");
+  std::string quakeModule  = readFileToString(inputFile);
   std::string goldenOutput = readFileToString(goldenFile);
-  std::remove("./o.qke");
-  std::remove("./kernel.qke");
   return std::make_tuple(quakeModule, goldenOutput);
 }
 
@@ -180,22 +173,22 @@ INSTANTIATE_TEST_SUITE_P(
   BehaviouralCudaqTranspiler,
   ::testing::Values(
     std::make_tuple("TestIQMTranspilation",
-                    "./code/cudaq-transpiler/TranspilerInput.cpp",
+                    "./quake/cudaq-transpiler/TranspilerInput.qke",
                     "./golden-cases/cudaq-transpiler/IQMTranspilation.qke" ,
                     std::vector<std::string>{"phased_rx","z(1)"}),//IQM Native Gate Set
     // needed a decomposition of H
     /*std::make_tuple("TestPlanQTranspilation",
-                    "./code/cudaq-transpiler/TranspilerInput.cpp",
+                    "./quake/cudaq-transpiler/TranspilerInput.qke",
                     "./golden-cases/cudaq-transpiler/PlanQTranspilation.qke" ,
                     std::vector<std::string>{"rx", "ry", "rz", "x(1)", "z(1)"}),//PlanQ Native Gate Set*/
     // MS is missing
     std::make_tuple("TestAQTTranspilation",
-                    "./code/cudaq-transpiler/TranspilerInput.cpp",
+                    "./quake/cudaq-transpiler/TranspilerInput.qke",
                     "./golden-cases/cudaq-transpiler/AQTTranspilation.qke" ,
                     std::vector<std::string>{"x", "y", "z", "h", "s", "t", "rx",
                                              "ry", "rz", "x(1)", "z(1)", "swap"}),//AQT Native Gate Set
     std::make_tuple("TestWMITranspilation",
-                    "./code/cudaq-transpiler/TranspilerInput.cpp",
+                    "./quake/cudaq-transpiler/TranspilerInput.qke",
                     "./golden-cases/cudaq-transpiler/WMITranspilation.qke" ,
                     std::vector<std::string>{"rx", "ry", "rz", "h", "phased_rx",
                                              "phased_ry", "phased_rz", "x(1)", "z(1)"})//WMI Native Gate Set

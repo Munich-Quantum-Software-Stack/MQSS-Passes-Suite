@@ -126,6 +126,11 @@ add_custom_target(copy-code-test ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/tests/code ${TEST_OUTPUT_DIR})
 
+set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:test-mqss-passes>/quake)
+add_custom_target(copy-quake-test ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/tests/quake ${TEST_OUTPUT_DIR})
+
 set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:test-mqss-passes>/qasm)
 add_custom_target(copy-qasm-test ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory

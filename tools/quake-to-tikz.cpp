@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
   po::options_description desc("Allowed options");
   desc.add_options()
       ("help", "produce help message")
-      ("input", po::value<std::string>(), "The input file might be: *.cpp or *.qke (Quake module)")
+      ("input", po::value<std::string>(), "The input file might be: *.cpp (cpp only works if cudaq compiler is installed!) or *.qke (Quake module)")
       ("output", po::value<std::string>(), "The name of the output file. It should be *.tikz");
   
   po::variables_map vm;

@@ -61,18 +61,18 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "cudaq/Frontend/nvqpp/AttributeNames.h"
 #include "cudaq/Optimizer/Transforms/Passes.h"
 // includes in runtime
-#include "cudaq/qis/execution_manager.h"
-#include "cudaq.h"
-#include "common/Executor.h"
+//#include "cudaq/qis/execution_manager.h"
+//#include "cudaq.h"
+//#include "common/Executor.h"
 #include "common/RuntimeMLIR.h"
-#include "common/Logger.h"
-#include "common/ExecutionContext.h"
-#include "cudaq/spin_op.h"
-#include "cudaq/Optimizer/CodeGen/Pipelines.h"
-#include "cudaq/Optimizer/CodeGen/Passes.h"
-#include "cudaq/Optimizer/Transforms/Passes.h"
-#include "cudaq/algorithm.h"
-#include "cudaq/Optimizer/Dialect/CC/CCOps.h"
+//#include "common/Logger.h"
+//#include "common/ExecutionContext.h"
+//#include "cudaq/spin_op.h"
+//#include "cudaq/Optimizer/CodeGen/Pipelines.h"
+//#include "cudaq/Optimizer/CodeGen/Passes.h"
+//#include "cudaq/Optimizer/Transforms/Passes.h"
+//#include "cudaq/algorithm.h"
+//#include "cudaq/Optimizer/Dialect/CC/CCOps.h"
 
 // test includes
 #include "Passes/CodeGen.hpp"
@@ -152,7 +152,7 @@ std::string lowerQuakeCodeToOpenQASM(std::string quantumTask){
     llvm::raw_string_ostream outStr(codeStr);
     m_module->getContext()->disableMultithreading();
     if (mlir::failed(translation(m_module.get(), outStr, postCodeGenPasses, printIR,
-                      					 //enablePrintMLIREachPass, 
+                      					 enablePrintMLIREachPass, 
 																 enablePassStatistics)))
       throw std::runtime_error("Could not successfully translate to OpenQASM2");
   }

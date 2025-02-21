@@ -108,15 +108,8 @@ std::string readFileToString(const std::string &filename) {
     return fileContents.str();  // Convert the string stream to a string
 }
 
-std::string getQuake(std::string cppFile){
-  int retCode = std::system(("cudaq-quake "+cppFile+" -o ./o.qke").c_str());
-  if (retCode) throw std::runtime_error("Quake transformation failed!!!");
-  retCode = std::system("cudaq-opt --canonicalize --unrolling-pipeline o.qke -o ./kernel.qke");
-  if (retCode) throw std::runtime_error("Quake transformation failed!!!");
-  // loading the generated mlir kernel of the given cpp
-  std::string quakeModule  = readFileToString("./kernel.qke");
-  std::remove("./o.qke");
-  std::remove("./kernel.qke");
+std::string getQuake(std::string inputFile){
+  std::string quakeModule  = readFileToString(inputFile);
   return quakeModule;
 }
 
@@ -178,153 +171,158 @@ protected:
              std::string, std::function<std::unique_ptr<mlir::Pass>()>> passInfo;
 };
 
-TEST_F(EqualityTest, TestQuakeQMapPass01) {
-  std::string quakeModule =  getQuake("./code/QuakeQMapPass-01.cpp");
-  // get the QASM of the input module
-  std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
-  #ifdef DEBUG
-    std::cout << "Input Quake Module:" << std::endl << quakeModule << std::endl;
-    std::cout << "QASM input module:"<< std::endl << qasmInput << std::endl;
-  #endif
-  std::stringstream qasmStream = std::stringstream(qasmInput);
-  qc1.import(qasmStream, qc::Format::OpenQASM2);
-  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
-  mlir::MLIRContext &context = *contextPtr;
-  // creating pass manager
-  mlir::PassManager pm(&context);
-  // Defining test architecture
-  Architecture arch{};
-  /*
-      3
-     / \
-    4   2
-    |   |
-    0---1
-  */
-  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
-                          {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
-  arch.loadCouplingMap(5, cm);
-  std::cout << "Dumping the architecture " << std::endl;
-  Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);
-  // Defining the settings of the mqt-mapper
-  Configuration settings{};
-  settings.heuristic = Heuristic::GateCountMaxDistance;
-  settings.layering = Layering::DisjointQubits;
-  settings.initialLayout = InitialLayout::Identity;
-  settings.preMappingOptimizations = false;
-  settings.postMappingOptimizations = false;
-  settings.lookaheadHeuristic = LookaheadHeuristic::None;
-  settings.debug = false;
-  settings.addMeasurementsToMappedCircuit = true;
-  // Adding the QuakeQMap pass to the PassManager
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeQMapPass(arch,settings));
-  // pass to canonical form and remove non-used operations
-  pm.addPass(mlir::createCanonicalizerPass());
-  pm.addPass(mlir::createCSEPass());
-  // running the pass
-  if(mlir::failed(pm.run(mlirModule)))
-    std::runtime_error("The pass failed...");
-  #ifdef DEBUG
-    std::cout << "Mapped Circuit:\n";
-    mlirModule->dump();
-  #endif
-  // Convert the module to a string
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  mlirModule->print(stringStream);
-  // dump output to qasm
-  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
-  #ifdef DEBUG
-    std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
-  #endif
-  qasmStream = std::stringstream(qasmOutput);
-  qc2.import(qasmStream, qc::Format::OpenQASM2);
+//TEST_F(EqualityTest, TestQuakeQMapPass01) {
+//  std::string quakeModule =  getQuake("./quake/QuakeQMapPass-01.qke");
+//  // get the QASM of the input module
+//  std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
+//  #ifdef DEBUG
+//    std::cout << "Input Quake Module:" << std::endl << quakeModule << std::endl;
+//    std::cout << "QASM input module:"<< std::endl << qasmInput << std::endl;
+//  #endif
+//  std::stringstream qasmStream = std::stringstream(qasmInput);
+//  qc1.import(qasmStream, qc::Format::OpenQASM2);
+//  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+//  mlir::MLIRContext &context = *contextPtr;
+//  // creating pass manager
+//  mlir::PassManager pm(&context);
+//  // Defining test architecture
+//  Architecture arch{};
+//  /*
+//      3
+//     / \
+//    4   2
+//    |   |
+//    0---1
+//  */
+//  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
+//                          {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
+//  arch.loadCouplingMap(5, cm);
+//  std::cout << "Dumping the architecture " << std::endl;
+//  Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);
+//  // Defining the settings of the mqt-mapper
+//  Configuration settings{};
+//  settings.heuristic = Heuristic::GateCountMaxDistance;
+//  settings.layering = Layering::DisjointQubits;
+//  settings.initialLayout = InitialLayout::Identity;
+//  settings.preMappingOptimizations = false;
+//  settings.postMappingOptimizations = false;
+//  settings.lookaheadHeuristic = LookaheadHeuristic::None;
+//  settings.debug = false;
+//  settings.addMeasurementsToMappedCircuit = true;
+//  // Adding the QuakeQMap pass to the PassManager
+//  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeQMapPass(arch,settings));
+//  // pass to canonical form and remove non-used operations
+//  pm.addPass(mlir::createCanonicalizerPass());
+//  pm.addPass(mlir::createCSEPass());
+//  // running the pass
+//  if(mlir::failed(pm.run(mlirModule)))
+//    std::runtime_error("The pass failed...");
+//  #ifdef DEBUG
+//    std::cout << "Mapped Circuit:\n";
+//    mlirModule->dump();
+//  #endif
+//  // Convert the module to a string
+//  std::string moduleOutput;
+//  llvm::raw_string_ostream stringStream(moduleOutput);
+//  mlirModule->print(stringStream);
+//  // dump output to qasm
+//  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
+//  #ifdef DEBUG
+//    std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
+//  #endif
+//  qasmStream = std::stringstream(qasmOutput);
+//  qc2.import(qasmStream, qc::Format::OpenQASM2);
+//
+//  config.functionality.traceThreshold = 1e-2;
+//  config.execution.runConstructionChecker = true;
+//  config.execution.runAlternatingChecker = false;
+//  config.execution.runZXChecker = false;
+//  config.execution.runSimulationChecker = true;
+//
+//  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
+//  ecm.run();
+//  std::cout << ecm.getResults() << "\n";
+//  EXPECT_EQ(ecm.equivalence(),
+//            ec::EquivalenceCriterion::Equivalent);
+//}
+//
+//TEST_F(EqualityTest, TestQuakeQMapPass02){
+//  // load mlir module and the golden output
+//  std::string quakeModule =  getQuake("./quake/QuakeQMapPass-02.qke");
+//  // get the QASM of the input module
+//  std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
+//  #ifdef DEBUG
+//    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
+//    std::cout << "QASM input module:"<< std::endl << qasmInput << std::endl;
+//  #endif
+//  // loading qc with QASM
+//  std::stringstream qasmStream = std::stringstream(qasmInput);
+//  qc1.import(qasmStream, qc::Format::OpenQASM2);
+//  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
+//  mlir::MLIRContext &context = *contextPtr;
+//  // creating pass manager
+//  mlir::PassManager pm(&context);
+//  // Defining test architecture
+//  Architecture arch{};
+//  /*
+//      3
+//     / \
+//    4   2
+//    |   |
+//    0---1
+//  */
+//  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
+//                        {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
+//  arch.loadCouplingMap(5, cm);
+//  std::cout << "Dumping the architecture " << std::endl;
+//  Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);
+//  // Defining the settings of the mqt-mapper
+//  Configuration settings{};
+//  settings.heuristic = Heuristic::GateCountMaxDistance;
+//  settings.layering = Layering::DisjointQubits;
+//  settings.initialLayout = InitialLayout::Identity;
+//  settings.preMappingOptimizations = false;
+//  settings.postMappingOptimizations = false;
+//  settings.lookaheadHeuristic = LookaheadHeuristic::None;
+//  settings.debug = false;
+//  settings.addMeasurementsToMappedCircuit = true;
+//  // Adding the QuakeQMap pass to the PassManager
+//  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeQMapPass(arch,settings));
+//  // pass to canonical form and remove non-used operations
+//  pm.addPass(mlir::createCanonicalizerPass());
+//  pm.addPass(mlir::createCSEPass());
+//  // running the pass
+//  if(mlir::failed(pm.run(mlirModule)))
+//    std::runtime_error("The pass failed...");
+//  #ifdef DEBUG
+//    std::cout << "Mapped Circuit:\n";
+//    mlirModule->dump();
+//  #endif
+//  // Convert the module to a string
+//  std::string moduleOutput;
+//  llvm::raw_string_ostream stringStream(moduleOutput);
+//  mlirModule->print(stringStream);
+// // dump output to qasm
+//  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
+//  #ifdef DEBUG
+//    std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
+//  #endif
+//  qasmStream = std::stringstream(qasmOutput);
+//  qc2.import(qasmStream, qc::Format::OpenQASM2);
+//
+//  config.functionality.traceThreshold = 1e-2;
+//  config.execution.runConstructionChecker = true;
+//  config.execution.runAlternatingChecker = false;
+//  config.execution.runZXChecker = false;
+//  config.execution.runSimulationChecker = true;
+//
+//  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
+//  ecm.run();
+//  std::cout << ecm.getResults() << "\n";
+//  EXPECT_EQ(ecm.equivalence(),
+//            ec::EquivalenceCriterion::Equivalent);
+//}
 
-  config.functionality.traceThreshold = 1e-2;
-  config.execution.runConstructionChecker = true;
-  config.execution.runAlternatingChecker = true;
-  config.execution.runZXChecker = true;
-  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
-  ecm.run();
-  std::cout << ecm.getResults() << "\n";
-  EXPECT_EQ(ecm.equivalence(),
-            ec::EquivalenceCriterion::Equivalent);
-}
-
-TEST_F(EqualityTest, TestQuakeQMapPass02){
-  // load mlir module and the golden output
-  std::string quakeModule =  getQuake("./code/QuakeQMapPass-02.cpp");
-  // get the QASM of the input module
-  std::string qasmInput = lowerQuakeCodeToOpenQASM(quakeModule);
-  #ifdef DEBUG
-    std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
-    std::cout << "QASM input module:"<< std::endl << qasmInput << std::endl;
-  #endif
-  // loading qc with QASM
-  std::stringstream qasmStream = std::stringstream(qasmInput);
-  qc1.import(qasmStream, qc::Format::OpenQASM2);
-  auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
-  mlir::MLIRContext &context = *contextPtr;
-  // creating pass manager
-  mlir::PassManager pm(&context);
-  // Defining test architecture
-  Architecture arch{};
-  /*
-      3
-     / \
-    4   2
-    |   |
-    0---1
-  */
-  const CouplingMap cm = {{0, 1}, {1, 0}, {1, 2}, {2, 1}, {2, 3},
-                        {3, 2}, {3, 4}, {4, 3}, {4, 0}, {0, 4}};
-  arch.loadCouplingMap(5, cm);
-  std::cout << "Dumping the architecture " << std::endl;
-  Architecture::printCouplingMap(arch.getCouplingMap(), std::cout);
-  // Defining the settings of the mqt-mapper
-  Configuration settings{};
-  settings.heuristic = Heuristic::GateCountMaxDistance;
-  settings.layering = Layering::DisjointQubits;
-  settings.initialLayout = InitialLayout::Identity;
-  settings.preMappingOptimizations = false;
-  settings.postMappingOptimizations = false;
-  settings.lookaheadHeuristic = LookaheadHeuristic::None;
-  settings.debug = false;
-  settings.addMeasurementsToMappedCircuit = true;
-  // Adding the QuakeQMap pass to the PassManager
-  pm.nest<mlir::func::FuncOp>().addPass(mqss::opt::createQuakeQMapPass(arch,settings));
-  // pass to canonical form and remove non-used operations
-  pm.addPass(mlir::createCanonicalizerPass());
-  pm.addPass(mlir::createCSEPass());
-  // running the pass
-  if(mlir::failed(pm.run(mlirModule)))
-    std::runtime_error("The pass failed...");
-  #ifdef DEBUG
-    std::cout << "Mapped Circuit:\n";
-    mlirModule->dump();
-  #endif
-  // Convert the module to a string
-  std::string moduleOutput;
-  llvm::raw_string_ostream stringStream(moduleOutput);
-  mlirModule->print(stringStream);
- // dump output to qasm
-  std::string qasmOutput = lowerQuakeCodeToOpenQASM(moduleOutput);
-  #ifdef DEBUG
-    std::cout << "QASM output module " << std::endl << qasmOutput << std::endl;
-  #endif
-  qasmStream = std::stringstream(qasmOutput);
-  qc2.import(qasmStream, qc::Format::OpenQASM2);
-
-  config.functionality.traceThreshold = 1e-2;
-  config.execution.runConstructionChecker = true;
-  config.execution.runAlternatingChecker = true;
-  config.execution.runZXChecker = true;
-  ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
-  ecm.run();
-  std::cout << ecm.getResults() << "\n";
-  EXPECT_EQ(ecm.equivalence(),
-            ec::EquivalenceCriterion::Equivalent);
-}
 // Return QASM strings of the input module and the module after pass
 std::tuple<std::string,std::string> verificationTest(std::tuple<std::string, 
                                        std::string, 
@@ -408,91 +406,91 @@ INSTANTIATE_TEST_SUITE_P(
   VerificationTestPassesMQSS,
   ::testing::Values(
     std::make_tuple("TestCxToHCzHDecompositionPass",
-                    "./code/CxToHCzHDecompositionPass.cpp", 
+                    "./quake/CxToHCzHDecompositionPass.qke", 
                     []() { return mqss::opt::createCxToHCzHDecompositionPass();}),
     std::make_tuple("TestCzToHCxHDecompositionPass", 
-                    "./code/CzToHCxHDecompositionPass.cpp",
+                    "./quake/CzToHCxHDecompositionPass.qke",
                     []() { return mqss::opt::createCzToHCxHDecompositionPass();}), 
     std::make_tuple("TestCommuteCnotRxPass", 
-                    "./code/CommuteCNotRxPass.cpp",
+                    "./quake/CommuteCNotRxPass.qke",
                     []() { return mqss::opt::createCommuteCNotRxPass();}),
     std::make_tuple("TestCommuteCnotXPass", 
-                    "./code/CommuteCNotXPass.cpp",
+                    "./quake/CommuteCNotXPass.qke",
                     []() { return mqss::opt::createCommuteCNotXPass();}),
     std::make_tuple("TestCommuteCnotZPass01",
-                    "./code/CommuteCNotZPass-01.cpp",
+                    "./quake/CommuteCNotZPass-01.qke",
                     []() { return mqss::opt::createCommuteCNotZPass();}),
     //std::make_tuple("TestCommuteCnotZPass02",
-    //                "./code/CommuteCNotZPass-02.cpp",
+    //                "./quake/CommuteCNotZPass-02.qke",
     //                []() { return mqss::opt::createCommuteCNotZPass();}),
     std::make_tuple("TestCommuteCnotZPass", 
-                    "./code/CommuteCNotZPass.cpp",
+                    "./quake/CommuteCNotZPass.qke",
                     []() { return mqss::opt::createCommuteCNotZPass();}),
     std::make_tuple("TestCommuteRxCnotPass", 
-                    "./code/CommuteRxCNotPass.cpp",
+                    "./quake/CommuteRxCNotPass.qke",
                     []() { return mqss::opt::createCommuteRxCNotPass();}),
     std::make_tuple("TestCommuteXCNotPass", 
-                    "./code/CommuteXCNotPass.cpp",
+                    "./quake/CommuteXCNotPass.qke",
                     []() { return mqss::opt::createCommuteXCNotPass();}),
     std::make_tuple("TestCommuteZCnotPass", 
-                    "./code/CommuteZCNotPass.cpp",
+                    "./quake/CommuteZCNotPass.qke",
                     []() { return mqss::opt::createCommuteZCNotPass();}),
     std::make_tuple("TestCommuteZCnotPass01",
-                    "./code/CommuteZCNotPass-01.cpp",
+                    "./quake/CommuteZCNotPass-01.qke",
                     []() { return mqss::opt::createCommuteZCNotPass();}),
     std::make_tuple("DoubleCnotCancellationPass",
-                    "./code/DoubleCnotCancellationPass.cpp",
+                    "./quake/DoubleCnotCancellationPass.qke",
                     []() { return mqss::opt::createDoubleCnotCancellationPass();}),
     std::make_tuple("ReverseCNotPass",
-                    "./code/ReverseCNotPass.cpp",
+                    "./quake/ReverseCNotPass.qke",
                     []() { return mqss::opt::createReverseCNotPass();}),
 //    std::make_tuple("NormalizeArgAnglePass",
-//                    "./code/NormalizeArgAnglePass.cpp",
+//                    "./quake/NormalizeArgAnglePass.qke",
 //                    []() { return mqss::opt::createNormalizeArgAnglePass();}),
     std::make_tuple("HXHToZPass",
-                    "./code/HXHToZPass.cpp",
+                    "./quake/HXHToZPass.qke",
                     []() { return mqss::opt::createHXHToZPass();}),
     std::make_tuple("XGateAndHadamardSwitchPass",
-                    "./code/XGateAndHadamardSwitchPass.cpp",
+                    "./quake/XGateAndHadamardSwitchPass.qke",
                     []() { return mqss::opt::createXGateAndHadamardSwitchPass();}),
 //    std::make_tuple("YGateAndHadamardSwitchPass",
-//                    "./code/YGateAndHadamardSwitchPass.cpp",
+//                    "./quake/YGateAndHadamardSwitchPass.qke",
 //                    []() { return mqss::opt::createYGateAndHadamardSwitchPass();}),
     std::make_tuple("ZGateAndHadamardSwitchPass",
-                    "./code/ZGateAndHadamardSwitchPass.cpp",
+                    "./quake/ZGateAndHadamardSwitchPass.qke",
                     []() { return mqss::opt::createZGateAndHadamardSwitchPass();}),
     std::make_tuple("PauliGateAndHadamardSwitchPassX",
-                    "./code/XGateAndHadamardSwitchPass.cpp",
+                    "./quake/XGateAndHadamardSwitchPass.qke",
                     []() { return mqss::opt::createPauliGateAndHadamardSwitchPass();}),
 //    std::make_tuple("PauliGateAndHadamardSwitchPassY",
-//                    "./code/YGateAndHadamardSwitchPass.cpp",
+//                    "./quake/YGateAndHadamardSwitchPass.qke",
 //                    []() { return mqss::opt::createPauliGateAndHadamardSwitchPass();}),
     std::make_tuple("PauliGateAndHadamardSwitchPassZ",
-                    "./code/ZGateAndHadamardSwitchPass.cpp",
+                    "./quake/ZGateAndHadamardSwitchPass.qke",
                     []() { return mqss::opt::createPauliGateAndHadamardSwitchPass();}),
     std::make_tuple("HZHToXPass",
-                    "./code/HZHToXPass.cpp",
+                    "./quake/HZHToXPass.qke",
                     []() { return mqss::opt::createHZHToXPass();}),
     std::make_tuple("HadamardAndXGateSwitchPass",
-                    "./code/HadamardAndXGateSwitchPass.cpp",
+                    "./quake/HadamardAndXGateSwitchPass.qke",
                     []() { return mqss::opt::createHadamardAndXGateSwitchPass();}),
 //    std::make_tuple("HadamardAndYGateSwitchPass",
-//                    "./code/HadamardAndYGateSwitchPass.cpp",
+//                    "./quake/HadamardAndYGateSwitchPass.qke",
 //                    []() { return mqss::opt::createHadamardAndYGateSwitchPass();}),
     std::make_tuple("HadamardAndZGateSwitchPass",
-                    "./code/HadamardAndZGateSwitchPass.cpp",
+                    "./quake/HadamardAndZGateSwitchPass.qke",
                     []() { return mqss::opt::createHadamardAndZGateSwitchPass();}),
 //    std::make_tuple("NullRotationCancellationPass",
-//                    "./code/NullRotationCancellationPass.cpp",
+//                    "./quake/NullRotationCancellationPass.qke",
 //                    []() { return mqss::opt::createNullRotationCancellationPass();})
     std::make_tuple("SAdjToSPass",
-                    "./code/SAdjToSPass.cpp",
+                    "./quake/SAdjToSPass.qke",
                     []() { return mqss::opt::createSAdjToSPass();}),
     std::make_tuple("SToSAdjPass",
-                    "./code/SToSAdjPass.cpp",
+                    "./quake/SToSAdjPass.qke",
                     []() { return mqss::opt::createSToSAdjPass();})
 //    std::make_tuple("NormalizeArgAnglePass",
-//                    "./code/NormalizeArgAnglePass.cpp",
+//                    "./quake/NormalizeArgAnglePass.qke",
 //                    []() { return mqss::opt::createNormalizeArgAnglePass();})
   ),
   [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>& info) {

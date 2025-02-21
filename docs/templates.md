@@ -1,4 +1,4 @@
-# Declaring Custom Passes
+# Writing Passes for the MQSS
 
 <!-- IMPORTANT: Keep the line above as the first line. -->
 <!----------------------------------------------------------------------------

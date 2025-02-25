@@ -1,3 +1,0 @@
-[submodule "extern/mqt-qmap"]
-	path = extern/mqt-qmap
-	url = git@github.com:cda-tum/mqt-qmap.git

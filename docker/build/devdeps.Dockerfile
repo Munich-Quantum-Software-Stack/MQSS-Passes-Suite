@@ -14,4 +14,3 @@ WORKDIR "$destination"
 RUN git clone https://github.com/NVIDIA/cuda-quantum.git ${CUDAQ_REPO_ROOT} && \
     cd ${CUDAQ_REPO_ROOT} && \
     bash scripts/build_cudaq.sh
-

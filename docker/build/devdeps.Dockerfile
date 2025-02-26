@@ -53,11 +53,11 @@ ENV CURL_INSTALL_PREFIX=/usr/local/curl
 ENV AWS_INSTALL_PREFIX=/usr/local/aws
 
 ## [Build Dependencies]
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        wget git unzip \
-        python3-dev python3-pip && \
-    python3 -m pip install --no-cache-dir numpy && \
-    apt-get autoremove -y --purge && apt-get clean && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#        wget git unzip \
+#        python3-dev python3-pip && \
+#    python3 -m pip install --no-cache-dir numpy && \
+#    apt-get autoremove -y --purge && apt-get clean && rm -rf /var/lib/apt/lists/*
 #ADD scripts/install_toolchain.sh /cuda-quantum/scripts/install_toolchain.sh
 #RUN source /cuda-quantum/scripts/install_toolchain.sh \
 #        -e "$LLVM_INSTALL_PREFIX/bootstrap" -t ${toolchain}

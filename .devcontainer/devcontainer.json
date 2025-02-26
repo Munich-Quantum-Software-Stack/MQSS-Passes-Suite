@@ -1,9 +1,9 @@
 {
-	"name": "cuda-quantum-dev",
+	"name": "passes-dev",
 	"build": {
 		"dockerfile": "../docker/build/devdeps.Dockerfile",
 		"args": { 
-			"destination": "workspaces/host"
+			"destination": "workspaces/passes"
 		}
 	},
 	// If you do not have the NVIDIA container runtime installed, available GPUs will not be automatically detected.

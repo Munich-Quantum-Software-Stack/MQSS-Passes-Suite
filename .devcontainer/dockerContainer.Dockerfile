@@ -22,7 +22,10 @@ ADD "$workspace" "$destination"
 # Install prerequisites
 WORKDIR "$CUDAQ_REPO_ROOT"
 
-RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes" bash "$CUDAQ_REPO_ROOT"/scripts/install_prerequisites.sh -t clang16
+ENV MAKEFLAGS="-j7"  # Replace 4 with the desired number of jobs
+ENV NINJAFLAGS="-j7"  # Replace 4 with the desired number of jobs
+
+RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes" bash "$CUDAQ_REPO_ROOT"/scripts/install_prerequisites.sh -t clang16 -j 6
 
 # Set terminal type for colors
 ENV TERM xterm-256color

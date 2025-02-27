@@ -11,8 +11,7 @@ ENV CUQUANTUM_INSTALL_PREFIX=/opt/nvidia/cuquantum
 ENV CUTENSOR_INSTALL_PREFIX=/opt/nvidia/cutensor
 
 # Clone the repository
-RUN git clone https://github.com/NVIDIA/cuda-quantum.git ${CUDAQ_REPO_ROOT} && \
-    ls -la ${CUDAQ_REPO_ROOT}  # Debug: Check if the repository was cloned
+RUN git clone https://github.com/NVIDIA/cuda-quantum.git ${CUDAQ_REPO_ROOT}
 
 # Add local files to a separate directory (if needed)
 ARG workspace=.
@@ -22,10 +21,10 @@ ADD "$workspace" "$destination"
 # Install prerequisites
 WORKDIR "$CUDAQ_REPO_ROOT"
 
-ENV MAKEFLAGS="-j7"  # Replace 4 with the desired number of jobs
-ENV NINJAFLAGS="-j7"  # Replace 4 with the desired number of jobs
+ENV MAKEFLAGS="-j7"
+ENV NINJAFLAGS="-j7"
 
-RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes" bash "$CUDAQ_REPO_ROOT"/scripts/install_prerequisites.sh -t clang16 -j 6
+RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes" source "$CUDAQ_REPO_ROOT"/scripts/install_prerequisites.sh -t clang16
 
 # Set terminal type for colors
 ENV TERM xterm-256color

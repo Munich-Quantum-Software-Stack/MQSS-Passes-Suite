@@ -13,5 +13,13 @@ ADD "$workspace" "$destination"
 WORKDIR "$destination"
 
 RUN git clone https://github.com/NVIDIA/cuda-quantum.git ${CUDAQ_REPO_ROOT}
+
+# Install Boost development libraries
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libboost-all-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes" source ${CUDAQ_REPO_ROOT}/scripts/build_cudaq.sh -j 7
 

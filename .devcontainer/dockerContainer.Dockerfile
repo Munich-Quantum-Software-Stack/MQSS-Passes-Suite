@@ -13,36 +13,5 @@ ADD "$workspace" "$destination"
 WORKDIR "$destination"
 
 RUN git clone https://github.com/NVIDIA/cuda-quantum.git ${CUDAQ_REPO_ROOT}
-RUN source ${CUDAQ_REPO_ROOT}/scripts/build_cudaq.sh -j 7
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes" source ${CUDAQ_REPO_ROOT}/scripts/build_cudaq.sh -j 7
 

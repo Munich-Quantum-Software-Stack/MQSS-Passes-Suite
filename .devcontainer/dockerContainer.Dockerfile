@@ -12,6 +12,7 @@ WORKDIR "$destination"
 
 RUN git clone https://github.com/NVIDIA/cuda-quantum.git ${CUDAQ_REPO_ROOT}
 ENV LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes"
+RUN mkdir -p /opt/nvidia/cuquantum /opt/nvidia/cutensor
 ENV CUQUANTUM_INSTALL_PREFIX=/opt/nvidia/cuquantum
 ENV PATH="$CUQUANTUM_INSTALL_PREFIX/bin:${PATH}"
 ENV CUTENSOR_INSTALL_PREFIX=/opt/nvidia/cutensor

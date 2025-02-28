@@ -1,5 +1,7 @@
 # Use NVIDIA's CUDA Quantum base image
-# Use NVIDIA's CUDA Quantum base image
+# [Operating System]
+ARG base_image=ubuntu:22.04
+
 FROM ghcr.io/nvidia/cuda-quantum-devdeps:ext-cu12.0-gcc11-main
 
 ENV CUDAQ_REPO_ROOT=/workspaces/cuda-quantum
@@ -12,7 +14,7 @@ ARG destination="$CUDAQ_REPO_ROOT"
 ADD "$workspace" "$destination"
 WORKDIR "$destination"
 
-RUN git clone https://github.com/NVIDIA/cuda-quantum.git ${CUDAQ_REPO_ROOT}
+#RUN git clone https://github.com/NVIDIA/cuda-quantum.git ${CUDAQ_REPO_ROOT}
 
 # Install Boost development libraries
 RUN apt-get update && \
@@ -21,5 +23,5 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes" source ${CUDAQ_REPO_ROOT}/scripts/build_cudaq.sh -j 7
+#RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes" source ${CUDAQ_REPO_ROOT}/scripts/build_cudaq.sh -j 7
 

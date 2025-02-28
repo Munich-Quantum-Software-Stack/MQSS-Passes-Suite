@@ -1,7 +1,7 @@
 {
 	"name": "passes-dev",
 	"build": {
-		"dockerfile": "dockerContainer.Dockerfile",
+		"dockerfile": "base.Dockerfile",
 		"args": { 
 			"destination": "workspaces/passes"
 		}

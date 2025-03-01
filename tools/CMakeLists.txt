@@ -33,9 +33,9 @@ target_link_libraries(quake-to-tikz PRIVATE
 target_include_directories(quake-to-tikz PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
-set_target_properties(quake-to-tikz PROPERTIES
-    INSTALL_RPATH "$ORIGIN/../lib"
-    BUILD_WITH_INSTALL_RPATH ON)
+#set_target_properties(quake-to-tikz PROPERTIES
+#    INSTALL_RPATH "$ORIGIN/../lib"
+#    BUILD_WITH_INSTALL_RPATH ON)
 
 add_executable(qasm-to-quake qasm-to-quake.cpp)
 target_link_libraries(qasm-to-quake PRIVATE
@@ -45,9 +45,9 @@ target_link_libraries(qasm-to-quake PRIVATE
 target_include_directories(qasm-to-quake PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
-set_target_properties(qasm-to-quake PROPERTIES
-    INSTALL_RPATH "$ORIGIN/../lib"
-    BUILD_WITH_INSTALL_RPATH ON)
+#set_target_properties(qasm-to-quake PROPERTIES
+#    INSTALL_RPATH "$ORIGIN/../lib"
+#    BUILD_WITH_INSTALL_RPATH ON)
 
 add_executable(cpp-to-only-quake cpp-to-only-quake.cpp)
 target_link_libraries(cpp-to-only-quake  PRIVATE
@@ -57,9 +57,9 @@ target_link_libraries(cpp-to-only-quake  PRIVATE
 target_include_directories(cpp-to-only-quake PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CUDAQ_MLIR_RUNTIME_PATH})
-set_target_properties(cpp-to-only-quake PROPERTIES
-    INSTALL_RPATH "$ORIGIN/../lib"
-    BUILD_WITH_INSTALL_RPATH ON)
+#set_target_properties(cpp-to-only-quake PROPERTIES
+#    INSTALL_RPATH "$ORIGIN/../lib"
+#    BUILD_WITH_INSTALL_RPATH ON)
 
 # Install the quake-to-tikz tool
 install(TARGETS quake-to-tikz

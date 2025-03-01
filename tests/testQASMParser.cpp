@@ -361,6 +361,7 @@ INSTANTIATE_TEST_SUITE_P(
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   // Stop execution on first failure
-  GTEST_FLAG_SET(break_on_failure, true);
+  testing::FLAGS_gtest_break_on_failure = true;
+  //GTEST_FLAG_SET(break_on_failure, true);
   return RUN_ALL_TESTS();
 }

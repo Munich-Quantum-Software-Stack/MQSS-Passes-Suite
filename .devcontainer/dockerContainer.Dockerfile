@@ -46,3 +46,7 @@ RUN apt-get update && \
     libzip-dev && \
     # Clean up cache to reduce image size
     rm -rf /var/lib/apt/lists/*
+
+RUN git config --global gc.auto 0
+RUN git clone https://github.com/NVIDIA/cuda-quantum.git /workspaces/cuda-quantum
+RUN LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes;compiler-rt" bash /workspaces/cuda-quantum/scripts/install_prerequisites.sh -t clang16

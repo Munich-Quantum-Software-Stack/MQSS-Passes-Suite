@@ -177,10 +177,10 @@ INSTANTIATE_TEST_SUITE_P(
                     "./golden-cases/cudaq-transpiler/IQMTranspilation.qke" ,
                     std::vector<std::string>{"phased_rx","z(1)"}),//IQM Native Gate Set
     // needed a decomposition of H
-    /*std::make_tuple("TestPlanQTranspilation",
+    std::make_tuple("TestPlanQTranspilation",
                     "./quake/cudaq-transpiler/TranspilerInput.qke",
                     "./golden-cases/cudaq-transpiler/PlanQTranspilation.qke" ,
-                    std::vector<std::string>{"rx", "ry", "rz", "x(1)", "z(1)"}),//PlanQ Native Gate Set*/
+                    std::vector<std::string>{"h","rx", "ry", "rz", "x(1)", "z(1)"}),//PlanQ Native Gate Set*/
     // MS is missing
     std::make_tuple("TestAQTTranspilation",
                     "./quake/cudaq-transpiler/TranspilerInput.qke",

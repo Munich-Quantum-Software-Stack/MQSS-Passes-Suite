@@ -139,4 +139,4 @@ cmake .. \
 	-DCMAKE_BUILD_TYPE="${BUILD_TYPE}"
 echo "Building MQSS Repository Passes with ${NUM_JOBS} jobs..."
 make -j"${NUM_JOBS}"
-echo "Build of MQSS Repository Passes completed succesfully!..."
+echo "Build of MQSS Repository Passes completed successfully!..."

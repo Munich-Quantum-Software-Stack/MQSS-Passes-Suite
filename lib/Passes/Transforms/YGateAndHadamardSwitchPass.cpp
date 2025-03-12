@@ -14,7 +14,7 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 
-SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception 
+SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 *************************************************************************
   author Martin Letras
   date   January 2025
@@ -25,36 +25,39 @@ It applies the following transformations
 Y⋅H = H⋅Y
 *************************************************************************/
 
+#include "Passes/Transforms.hpp"
+#include "Support/Transforms/SwitchOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
-#include "Passes/Transforms.hpp"
-#include "Support/Transforms/SwitchOperations.hpp"
 
 using namespace mlir;
 using namespace mqss::support::transforms;
 
 namespace {
-  class YGateAndHadamardSwitchPass
-      : public PassWrapper<YGateAndHadamardSwitchPass, OperationPass<func::FuncOp>> {
-  public:
-    MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(YGateAndHadamardSwitchPass)
-  
-    llvm::StringRef getArgument() const override { return "switch-y-hadamard"; }
-    llvm::StringRef getDescription() const override { return "Pass that switches a pattern composed by Y and Hadamard to Hadamard and Y";}
-  
-    void runOnOperation() override {
-      auto circuit = getOperation();
-      circuit.walk([&](Operation *op){
-        patternSwitch<quake::YOp,quake::HOp,
-                      quake::HOp,quake::YOp>(op);
-      });
-    }
-  };
+class YGateAndHadamardSwitchPass
+    : public PassWrapper<YGateAndHadamardSwitchPass,
+                         OperationPass<func::FuncOp>> {
+public:
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(YGateAndHadamardSwitchPass)
+
+  llvm::StringRef getArgument() const override { return "switch-y-hadamard"; }
+  llvm::StringRef getDescription() const override {
+    return "Pass that switches a pattern composed by Y and Hadamard to "
+           "Hadamard and Y";
+  }
+
+  void runOnOperation() override {
+    auto circuit = getOperation();
+    circuit.walk([&](Operation *op) {
+      patternSwitch<quake::YOp, quake::HOp, quake::HOp, quake::YOp>(op);
+    });
+  }
+};
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createYGateAndHadamardSwitchPass(){
+std::unique_ptr<Pass> mqss::opt::createYGateAndHadamardSwitchPass() {
   return std::make_unique<YGateAndHadamardSwitchPass>();
 }

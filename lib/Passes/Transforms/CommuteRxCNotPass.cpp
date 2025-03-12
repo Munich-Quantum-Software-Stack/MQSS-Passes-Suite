@@ -14,7 +14,7 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 
-SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception 
+SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 *************************************************************************
   author Martin Letras
   date   January 2025
@@ -24,14 +24,14 @@ Adapted from: https://arxiv.org/pdf/quant-ph/0308033.pdf
 
 *************************************************************************/
 
+#include "Passes/Transforms.hpp"
+#include "Support/Transforms/CommutateOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
-#include "Passes/Transforms.hpp"
-#include "Support/Transforms/CommutateOperations.hpp"
 
 using namespace mlir;
 using namespace mqss::support::transforms;
@@ -39,23 +39,25 @@ using namespace mqss::support::transforms;
 namespace {
 
 class CommuteRxCNotPass
-    : public PassWrapper<CommuteRxCNotPass , OperationPass<func::FuncOp>> {
+    : public PassWrapper<CommuteRxCNotPass, OperationPass<func::FuncOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteRxCNotPass)
 
   llvm::StringRef getArgument() const override { return "commute-rxcnot-pass"; }
-  llvm::StringRef getDescription() const override { return "Apply commutation pass of the pattern Rx-CNot to CNot-Rx";}
+  llvm::StringRef getDescription() const override {
+    return "Apply commutation pass of the pattern Rx-CNot to CNot-Rx";
+  }
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    circuit.walk([&](Operation *op){
-      commuteOperation<quake::RxOp, quake::XOp>(op,0,1,1,1);
-      //CommuteRxCNot(op);
+    circuit.walk([&](Operation *op) {
+      commuteOperation<quake::RxOp, quake::XOp>(op, 0, 1, 1, 1);
+      // CommuteRxCNot(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteRxCNotPass(){
+std::unique_ptr<Pass> mqss::opt::createCommuteRxCNotPass() {
   return std::make_unique<CommuteRxCNotPass>();
 }

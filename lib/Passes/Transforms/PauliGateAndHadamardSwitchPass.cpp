@@ -14,7 +14,7 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 
-SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception 
+SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 *************************************************************************
   author Martin Letras
   date   January 2025
@@ -28,13 +28,13 @@ Z⋅H = H⋅X
 
 *************************************************************************/
 
+#include "Passes/Transforms.hpp"
+#include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
-#include "Passes/Transforms.hpp"
-#include "Support/CodeGen/Quake.hpp"
 
 using namespace mlir;
 
@@ -45,78 +45,81 @@ void SwitchPauliH(mlir::Operation *currentOp) {
   if (!currentGate)
     return;
   // check single qubit h operation
-  if(currentGate.getControls().size()!=0 ||
-     currentGate.getTargets().size()!=1)
+  if (currentGate.getControls().size() != 0 ||
+      currentGate.getTargets().size() != 1)
     return;
   // get previous
-  auto prevOp = supportQuake::getPreviousOperationOnTarget(currentGate, currentGate.getTargets()[0]);
-  if(!prevOp) return;
-  if(!isa<quake::XOp>(prevOp) && !isa<quake::YOp>(prevOp) && 
-     !isa<quake::ZOp>(prevOp))
+  auto prevOp = supportQuake::getPreviousOperationOnTarget(
+      currentGate, currentGate.getTargets()[0]);
+  if (!prevOp)
+    return;
+  if (!isa<quake::XOp>(prevOp) && !isa<quake::YOp>(prevOp) &&
+      !isa<quake::ZOp>(prevOp))
     return; // if no pauli, do nothing
   auto prevGateInt = dyn_cast<quake::OperatorInterface>(prevOp);
   // check single qubit pauli operation
-  if(prevGateInt.getControls().size()!=0 ||
-     prevGateInt.getTargets().size()!=1)
+  if (prevGateInt.getControls().size() != 0 ||
+      prevGateInt.getTargets().size() != 1)
     return;
-  // I found the pattern, then I remove it from the circuit
-  #ifdef DEBUG
-    llvm::outs() << "Current Operation: ";
-    currentGate->print(llvm::outs());
-    llvm::outs() << "\n";
-    llvm::outs() << "Previous Operation: ";
-    prevGateInt->print(llvm::outs());
-    llvm::outs() << "\n";
-  #endif
+// I found the pattern, then I remove it from the circuit
+#ifdef DEBUG
+  llvm::outs() << "Current Operation: ";
+  currentGate->print(llvm::outs());
+  llvm::outs() << "\n";
+  llvm::outs() << "Previous Operation: ";
+  prevGateInt->print(llvm::outs());
+  llvm::outs() << "\n";
+#endif
   mlir::IRRewriter rewriter(currentGate->getContext());
   rewriter.setInsertionPointAfter(currentGate);
-  if(isa<quake::XOp>(prevOp)){
+  if (isa<quake::XOp>(prevOp)) {
     auto prevGate = dyn_cast_or_null<quake::XOp>(*prevOp);
-    if (!prevGate) return;
-    rewriter.create<quake::ZOp>(prevGate.getLoc(),
-                                prevGate.isAdj(),
+    if (!prevGate)
+      return;
+    rewriter.create<quake::ZOp>(prevGate.getLoc(), prevGate.isAdj(),
                                 prevGate.getParameters(),
-                                prevGate.getControls(),
-                                prevGate.getTargets());
+                                prevGate.getControls(), prevGate.getTargets());
     rewriter.eraseOp(prevGate);
-  }else if(isa<quake::YOp>(prevOp)){
+  } else if (isa<quake::YOp>(prevOp)) {
     auto prevGate = dyn_cast_or_null<quake::YOp>(*prevOp);
-    if (!prevGate) return;
-    rewriter.create<quake::YOp>(prevGate.getLoc(),
-                                prevGate.isAdj(),
+    if (!prevGate)
+      return;
+    rewriter.create<quake::YOp>(prevGate.getLoc(), prevGate.isAdj(),
                                 prevGate.getParameters(),
-                                prevGate.getControls(),
-                                prevGate.getTargets()); 
+                                prevGate.getControls(), prevGate.getTargets());
     rewriter.eraseOp(prevGate);
-  }else if(isa<quake::ZOp>(prevOp)){
+  } else if (isa<quake::ZOp>(prevOp)) {
     auto prevGate = dyn_cast_or_null<quake::ZOp>(*prevOp);
-    if (!prevGate) return;
-    rewriter.create<quake::XOp>(prevGate.getLoc(),
-                                prevGate.isAdj(),
+    if (!prevGate)
+      return;
+    rewriter.create<quake::XOp>(prevGate.getLoc(), prevGate.isAdj(),
                                 prevGate.getParameters(),
-                                prevGate.getControls(),
-                                prevGate.getTargets()); 
+                                prevGate.getControls(), prevGate.getTargets());
     rewriter.eraseOp(prevGate);
   }
 }
-  
-  class PauliGateAndHadamardSwitchPass
-      : public PassWrapper<PauliGateAndHadamardSwitchPass, OperationPass<func::FuncOp>> {
-  public:
-    MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(PauliGateAndHadamardSwitchPass)
-  
-    llvm::StringRef getArgument() const override { return "switch-pauli-hadamard"; }
-    llvm::StringRef getDescription() const override { return "Pass that switches a pattern composed by {X,Y,Z} (Pauli) and Hadamard";}
-  
-    void runOnOperation() override {
-      auto circuit = getOperation();
-      circuit.walk([&](Operation *op){
-        SwitchPauliH(op);
-      });
-    }
-  };
+
+class PauliGateAndHadamardSwitchPass
+    : public PassWrapper<PauliGateAndHadamardSwitchPass,
+                         OperationPass<func::FuncOp>> {
+public:
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(PauliGateAndHadamardSwitchPass)
+
+  llvm::StringRef getArgument() const override {
+    return "switch-pauli-hadamard";
+  }
+  llvm::StringRef getDescription() const override {
+    return "Pass that switches a pattern composed by {X,Y,Z} (Pauli) and "
+           "Hadamard";
+  }
+
+  void runOnOperation() override {
+    auto circuit = getOperation();
+    circuit.walk([&](Operation *op) { SwitchPauliH(op); });
+  }
+};
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createPauliGateAndHadamardSwitchPass(){
+std::unique_ptr<Pass> mqss::opt::createPauliGateAndHadamardSwitchPass() {
   return std::make_unique<PauliGateAndHadamardSwitchPass>();
 }

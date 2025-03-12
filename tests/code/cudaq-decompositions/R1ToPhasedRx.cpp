@@ -5,12 +5,11 @@
 // ```
 
 #include <cudaq.h>
-template<std::size_t N>
-struct ghz {
+template <std::size_t N> struct ghz {
   auto operator()() __qpu__ {
     cudaq::qvector q(N);
     z(q[0]);
-    r1(1.44,q[1]);
+    r1(1.44, q[1]);
     mz(q);
   }
 };

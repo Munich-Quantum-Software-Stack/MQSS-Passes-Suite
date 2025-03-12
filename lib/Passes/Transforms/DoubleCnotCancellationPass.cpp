@@ -24,14 +24,14 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 *************************************************************************/
 
+#include "Passes/Transforms.hpp"
+#include "Support/Transforms/CancellationOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
-#include "Passes/Transforms.hpp"
-#include "Support/Transforms/CancellationOperations.hpp"
 
 using namespace mlir;
 using namespace mqss::support::transforms;
@@ -39,23 +39,29 @@ using namespace mqss::support::transforms;
 namespace {
 
 class DoubleCnotCancellationPass
-    : public PassWrapper<DoubleCnotCancellationPass , OperationPass<func::FuncOp>> {
+    : public PassWrapper<DoubleCnotCancellationPass,
+                         OperationPass<func::FuncOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(DoubleCnotCancellationPass)
 
-  llvm::StringRef getArgument() const override { return "double-cnot-cancellation-pass"; }
-  llvm::StringRef getDescription() const override { return "This pass removes the pattern CNot, CNot if both gates operates on the same control and targets.";}
+  llvm::StringRef getArgument() const override {
+    return "double-cnot-cancellation-pass";
+  }
+  llvm::StringRef getDescription() const override {
+    return "This pass removes the pattern CNot, CNot if both gates operates on "
+           "the same control and targets.";
+  }
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    circuit.walk([&](Operation *op){
-      patternCancellation<quake::XOp,quake::XOp>(op, 1, 1, 1, 1);
+    circuit.walk([&](Operation *op) {
+      patternCancellation<quake::XOp, quake::XOp>(op, 1, 1, 1, 1);
       // remove pattern
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createDoubleCnotCancellationPass(){
+std::unique_ptr<Pass> mqss::opt::createDoubleCnotCancellationPass() {
   return std::make_unique<DoubleCnotCancellationPass>();
 }

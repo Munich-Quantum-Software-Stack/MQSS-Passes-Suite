@@ -14,19 +14,19 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 
-SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception 
+SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 *************************************************************************
   author Martin Letras
   date   December 2024
   version 1.0
 *************************************************************************/
 
+#include "Passes/Examples.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
-#include "Passes/Examples.hpp"
 
 // Here is an example MLIR Pass that one can write externally and
 // use via the cudaq-opt tool, with the --load-cudaq-plugin flag.
@@ -53,7 +53,9 @@ public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CustomExamplePassPlugin)
 
   llvm::StringRef getArgument() const override { return "cudaq-custom-pass"; }
-  llvm::StringRef getDescription() const override { return "Apply dummy example pass that replaces each H gate by a S gate";}
+  llvm::StringRef getDescription() const override {
+    return "Apply dummy example pass that replaces each H gate by a S gate";
+  }
   void runOnOperation() override {
     auto circuit = getOperation();
     auto ctx = circuit.getContext();
@@ -71,6 +73,6 @@ public:
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCustomExamplePass(){
+std::unique_ptr<Pass> mqss::opt::createCustomExamplePass() {
   return std::make_unique<CustomExamplePassPlugin>();
 }

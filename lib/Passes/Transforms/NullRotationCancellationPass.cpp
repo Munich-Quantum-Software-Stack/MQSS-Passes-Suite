@@ -14,7 +14,7 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 
-SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception 
+SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 *************************************************************************
   author Martin Letras
   date   January 2025
@@ -22,21 +22,22 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 *************************************************************************/
 
+#include "Passes/Transforms.hpp"
+#include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
-#include <numbers>
+
 #include <cmath>
-#include "Passes/Transforms.hpp"
-#include "Support/CodeGen/Quake.hpp"
+#include <numbers>
 
 using namespace mlir;
 
 namespace {
 
-bool checkDoublePiMultiplies(double angle){
+bool checkDoublePiMultiplies(double angle) {
   const double pi = std::numbers::pi;
   const double doublePi = 2 * pi;
   if (std::fmod(angle, doublePi) == 0)
@@ -44,42 +45,46 @@ bool checkDoublePiMultiplies(double angle){
   return false;
 }
 
-void nullRotationCancellation(mlir::Operation *currentOp){
-  if (!isa<quake::RxOp>(currentOp) && !isa<quake::RyOp>(currentOp)
-      && !isa<quake::RzOp>(currentOp))
+void nullRotationCancellation(mlir::Operation *currentOp) {
+  if (!isa<quake::RxOp>(currentOp) && !isa<quake::RyOp>(currentOp) &&
+      !isa<quake::RzOp>(currentOp))
     return; // do nothing if it is not rotation
-  auto gate   = dyn_cast<quake::OperatorInterface>(currentOp);
+  auto gate = dyn_cast<quake::OperatorInterface>(currentOp);
   // assuming that parameters are all rotation angles
   bool deleteGate = true;
-  for(auto parameter : gate.getParameters()){
-    double param = supportQuake::extractDoubleArgumentValue(parameter.getDefiningOp());
-    if(!checkDoublePiMultiplies(param) && param != 0 )
+  for (auto parameter : gate.getParameters()) {
+    double param =
+        supportQuake::extractDoubleArgumentValue(parameter.getDefiningOp());
+    if (!checkDoublePiMultiplies(param) && param != 0)
       deleteGate = false;
   }
-  if(deleteGate){
+  if (deleteGate) {
     // remove the rotation gate
-    mlir::IRRewriter rewriter(gate->getContext());   
+    mlir::IRRewriter rewriter(gate->getContext());
     rewriter.eraseOp(gate);
   }
 }
 
 class NullRotationCancellationPass
-    : public PassWrapper<NullRotationCancellationPass , OperationPass<func::FuncOp>> {
+    : public PassWrapper<NullRotationCancellationPass,
+                         OperationPass<func::FuncOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NullRotationCancellationPass)
 
-  llvm::StringRef getArgument() const override { return "null-rotation-cancellation"; }
-  llvm::StringRef getDescription() const override { return "Optimization pass that removes of Rx, Ry and Rz null rotations";}
+  llvm::StringRef getArgument() const override {
+    return "null-rotation-cancellation";
+  }
+  llvm::StringRef getDescription() const override {
+    return "Optimization pass that removes of Rx, Ry and Rz null rotations";
+  }
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    circuit.walk([&](Operation *op){
-      nullRotationCancellation(op);
-    });
+    circuit.walk([&](Operation *op) { nullRotationCancellation(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<mlir::Pass> mqss::opt::createNullRotationCancellationPass(){
+std::unique_ptr<mlir::Pass> mqss::opt::createNullRotationCancellationPass() {
   return std::make_unique<NullRotationCancellationPass>();
 }

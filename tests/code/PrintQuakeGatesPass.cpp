@@ -1,17 +1,17 @@
 // Compile and run with:
 // ```
 // cudaq-quake test_PrintQuakeGatesPass.cpp -o o.qke  &&
-// cudaq-opt --canonicalize --unrolling-pipeline o.qke -o test_PrintQuakeGatesPass.qke
+// cudaq-opt --canonicalize --unrolling-pipeline o.qke -o
+// test_PrintQuakeGatesPass.qke
 // ```
 
-#include <iostream>
 #include <cudaq.h>
 #include <fstream>
+#include <iostream>
 
 // Define a CUDA-Q kernel that is fully specified
 // at compile time via templates.
-template <std::size_t N>
-struct ghz {
+template <std::size_t N> struct ghz {
   auto operator()() __qpu__ {
 
     // Compile-time sized array like std::array

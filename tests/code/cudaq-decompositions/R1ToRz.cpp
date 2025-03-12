@@ -6,8 +6,7 @@
 
 #include <cudaq.h>
 #include <numbers>
-template<std::size_t N>
-struct ghz {
+template <std::size_t N> struct ghz {
   auto operator()() __qpu__ {
     cudaq::qvector q(N);
     x<cudaq::ctrl>(q[0], q[1]);

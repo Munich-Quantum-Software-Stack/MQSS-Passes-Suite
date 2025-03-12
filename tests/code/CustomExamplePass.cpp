@@ -1,12 +1,12 @@
 // Compile and run with:
 // ```
 // cudaq-quake test_CustomExamplePass.cpp -o o.qke  &&
-// cudaq-opt --canonicalize --unrolling-pipeline o.qke -o test_CustomExamplePass.qke
+// cudaq-opt --canonicalize --unrolling-pipeline o.qke -o
+// test_CustomExamplePass.qke
 // ```
 
 #include <cudaq.h>
-template<std::size_t N>
-struct ghz {
+template <std::size_t N> struct ghz {
   auto operator()() __qpu__ {
     cudaq::qvector q(N);
     h(q[0]);

@@ -1,12 +1,11 @@
 // Compile and run with:
 // ```
 // cudaq-quake CR1ToCX.cpp -o o.qke  &&
-// cudaq-opt --canonicalize --unrolling-pipeline o.qke -o CR1ToCX.qke 
+// cudaq-opt --canonicalize --unrolling-pipeline o.qke -o CR1ToCX.qke
 // ```
 
 #include <cudaq.h>
-template<std::size_t N>
-struct ghz {
+template <std::size_t N> struct ghz {
   auto operator()() __qpu__ {
     cudaq::qvector q(N);
     z(q[0]);

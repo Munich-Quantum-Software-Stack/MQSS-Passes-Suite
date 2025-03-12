@@ -42,7 +42,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "llvm/Support/raw_ostream.h"
 
 #include <stdexcept>
-//#include "qdmi.h"
+// #include "qdmi.h"
 #include "sc/heuristic/HeuristicMapper.hpp"
 
 /**
@@ -71,7 +71,7 @@ namespace mqss::opt {
 
   \image html docs/_static/mqss-passes/connectivity_graph.png width=45%
 
-  The MQT-QMAP tool re-maps the following two input circuts as follows:
+  The MQT-QMAP tool re-maps the following two input circuits as follows:
 
   \image html docs/_static/mqss-passes/QuakeQMapPass-01.png width=50%
   \image html docs/_static/mqss-passes/QuakeQMapPass-02.png width=95%

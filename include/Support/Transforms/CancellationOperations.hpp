@@ -45,7 +45,7 @@ using namespace mqss::support::quakeDialect;
 namespace mqss::support::transforms {
 // Finds the pattern composed of T2, T1 and remove them
 // and T1 and T2 share the same control
-// Targets and controls should be the same on boths
+// Targets and controls should be the same on both
 template <typename T1, typename T2>
 void patternCancellation(mlir::Operation *currentOp, int nCtrlsOp1,
                          int nTgtsOp1, int nCtrlsOp2, int nTgtsOp2) {

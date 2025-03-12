@@ -45,7 +45,7 @@ namespace mqss::support::transforms {
 
 // Finds the pattern composed of T1, T2 and switches them
 // and assigns the types T3, and T4
-// Targets and controls should be the same on boths
+// Targets and controls should be the same on both
 // this only works at the moment for single qubit gates
 template <typename T1, typename T2, typename T3, typename T4>
 void patternSwitch(mlir::Operation *currentOp) {

@@ -24,7 +24,7 @@ def merge_folders(input_dir1, input_dir2, output_dir):
     if not os.path.isdir(input_dir1) or not os.path.isdir(input_dir2):
         print("Both input directories must exist.")
         sys.exit(1)
-    
+
     # Check if the output directory exists, create it if not
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -58,4 +58,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

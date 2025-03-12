@@ -35,13 +35,13 @@ def main():
   parser = argparse.ArgumentParser(description="Convert .cpp files to .tikz files using quake-to-tikz.")
 
   # Define the argument to specify the dumper tool
-  parser.add_argument('tool', metavar='tool_dir', type=str, 
+  parser.add_argument('tool', metavar='tool_dir', type=str,
                       help="The tool used to dump each cpp or qke file")
 
   # Define the arguments for input and output directories
-  parser.add_argument('input_dir', metavar='input_directory', type=str, 
+  parser.add_argument('input_dir', metavar='input_directory', type=str,
                       help="Directory containing the .cpp files to convert. This argument is mandatory.")
-  parser.add_argument('output_dir', metavar='output_directory', type=str, 
+  parser.add_argument('output_dir', metavar='output_directory', type=str,
                       help="Directory to store the generated .tikz files. This argument is mandatory.")
 
   # Parse the arguments
@@ -57,4 +57,3 @@ def main():
 
 if __name__ == "__main__":
   main()
-

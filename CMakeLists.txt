@@ -151,8 +151,7 @@ endif()
 set(LLVM_LIT_ARGS
     "${LIT_ARGS_DEFAULT}"
     CACHE STRING "Default options for lit")
-# ############### ADDITIONAL PACKAGES
-# ##############################################################################
+# ############### ADDITIONAL PACKAGES #######################################
 # Tell where to search for Find<package>.cmake files
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -171,8 +170,7 @@ find_package(mqt-qmap REQUIRED)
 # Restore the original CXX flags and compiler
 set(CMAKE_CXX_STANDARD 20)
 
-# ###################### CUDAQ settings
-# ##############################################################################
+# ###################### CUDAQ settings ###################################
 
 set(CUDAQ_MAIN_INCLUDE_DIR "${CUDAQ_SOURCE_DIR}/include")
 

@@ -41,8 +41,8 @@ mapping configurations.
 #include "mlir/Transforms/DialectConversion.h"
 
 #include "llvm/Support/raw_ostream.h"
-//#include "qdmi.h"
-//#include "sc/heuristic/HeuristicMapper.hpp"
+// #include "qdmi.h"
+// #include "sc/heuristic/HeuristicMapper.hpp"
 
 using namespace mlir;
 
@@ -208,7 +208,7 @@ public:
     StringRef funcName = circuit.getName();
     if (!(funcName.find(std::string(CUDAQ_PREFIX_FUNCTION)) !=
           std::string::npos))
-      return; // do nothing if the funcion is not cudaq kernel
+      return; // do nothing if the function is not cudaq kernel
 
     std::map<int, int> measurements; // key: qubit, value register index
     int numQubits = supportQuake::getNumberOfQubits(circuit);

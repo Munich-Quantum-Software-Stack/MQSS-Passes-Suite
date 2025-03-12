@@ -243,7 +243,7 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           /*std::cout << "controls size " << controls.size()  << std::endl;
           std::cout << "target size " << targets.size()  << std::endl;
           std::cout << "params size " << params.size()  << std::endl;
-          // for a strange reason the parser returms two targets
+          // for a strange reason the parser returns two targets
           // assume first target is control
           assert(!(params.size() !=1 || controls.size()!= 0 ||
           targets.size()!=2) && "ill-formed cphase gate");
@@ -782,7 +782,7 @@ void parseAndInsertMeasurements(
               std::string qubit = measureExpr->gate->identifier;
               // llvm::outs() << "Measured Qubit: " << qubit << "\n";
               if (measureExpr->gate->expression) {
-                // llvm::outs() << "Has expresion\n";
+                // llvm::outs() << "Has expression\n";
                 if (auto operand = std::dynamic_pointer_cast<qasm3::Constant>(
                         measureExpr->gate->expression)) {
                   size_t localQubit = operand->getSInt();
@@ -834,7 +834,7 @@ public:
     StringRef funcName = circuit.getName();
     if (!(funcName.find(std::string(CUDAQ_PREFIX_FUNCTION)) !=
           std::string::npos))
-      return; // do nothing if the funcion is not cudaq kernel
+      return; // do nothing if the function is not cudaq kernel
     // Create the parser
     qasm3::Parser parser(&qasmStream, true);
     // Parse the program to get the AST
@@ -865,7 +865,7 @@ public:
         insertAllocatedQubits(program, builder, loc, returnOp);
     if (!allocatedQubits)
       return; // if no allocated qubits return nothing
-// for debuggin print maps of qubits
+// for debugging print maps of qubits
 #ifdef DEBUG
     for (const auto &pair : mlirQubits) {
       std::map<int, int> innerMap = pair.second;

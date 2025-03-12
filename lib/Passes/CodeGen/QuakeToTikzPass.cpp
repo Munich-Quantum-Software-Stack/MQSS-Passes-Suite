@@ -17,7 +17,7 @@ the License.
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 -------------------------------------------------------------------------
   author Martin Letras
-  date   Januray 2025
+  date   January 2025
   version 1.0
   brief
   PrintQuakeGatesPass(llvm::raw_string_ostream ostream)
@@ -144,7 +144,7 @@ void dumpQuakeOperationToTikz(
     qubitLines[target_qubit].push_back("\\gate{" + labelGate + "}");
   }
   // CHECK: I am assuming at the moment multiple controls and single targets
-  // the oposite case, single control and multiple target should not be a valid
+  // the opposite case, single control and multiple target should not be a valid
   // gate
   int targetGate = targets[0];
   for (int control_qubit : controls)
@@ -174,7 +174,7 @@ public:
     StringRef funcName = circuit.getName();
     if (!(funcName.find(std::string(CUDAQ_PREFIX_FUNCTION)) !=
           std::string::npos))
-      return; // do nothing if the funcion is not cudaq kernel
+      return; // do nothing if the function is not cudaq kernel
 
     std::map<int, int> measurements; // key: qubit, value register index
     int numQubits = getNumberOfQubits(circuit);

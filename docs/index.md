@@ -33,15 +33,18 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 </div>
 ### How to Use this Documentation?
 
-This documentation provides helpful information to get you started with the collection of MLIR passes of the Munich Quantum Software Stack (MQSS).
+This documentation provides helpful information to get you started with the collection of MLIR
+passes of the Munich Quantum Software Stack (MQSS).
 
 #### General Information
 
-The [FAQ](faq.md) page gives an overview over frequently asked questions. 
+The [FAQ](faq.md) page gives an overview over frequently asked questions.
 
 #### Hands-On
 
-[Declaring Custom Passes](templates.md) page provides an step-by-step guide to show you how you can implement custom MLIR passes to be used into the MQSS. When you want to validate your custom MLIR passes, the [Guide](guide.md) page is a good starting point.
+[Declaring Custom Passes](templates.md) page provides an step-by-step guide to show you how you can
+implement custom MLIR passes to be used into the MQSS. When you want to validate your custom MLIR
+passes, the [Guide](guide.md) page is a good starting point.
 
 #### Specific Information about the Implementation of this Collection
 

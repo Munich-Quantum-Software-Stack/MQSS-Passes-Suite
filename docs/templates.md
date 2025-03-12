@@ -27,24 +27,30 @@ The following sections describe how expand this collection of MLIR passes by def
 
 ## Registering a new pass {#pass-definition}
 
-To define a new pass you have to register it into the `include/Passes.hpp` file. Let say, you want to include a custom pass called `CustomExamplePass`.
-The method to create the pass must be registered as follows:
+To define a new pass you have to register it into the `include/Passes.hpp` file. Let say, you want
+to include a custom pass called `CustomExamplePass`. The method to create the pass must be
+registered as follows:
 
 ```cpp
 std::unique_ptr<mlir::Pass> createCustomExamplePass();
 ```
 
-If the pass requires arguments, those have to be also declared into the signature of the method that creates the pass. For instance, we declare a `CustomExampleArgumentPass` that receives the argument `int value`.
+If the pass requires arguments, those have to be also declared into the signature of the method that
+creates the pass. For instance, we declare a `CustomExampleArgumentPass` that receives the argument
+`int value`.
 
 ```cpp
-std::unique_ptr<mlir::Pass> createCustomExampleArguementPass(int value);
+std::unique_ptr<mlir::Pass> createCustomExampleArgumentPass(int value);
 ```
 
-Notice that the pass has to be declared into `namespace mqss::opt` to be integrated as part of the MQSS.
+Notice that the pass has to be declared into `namespace mqss::opt` to be integrated as part of the
+MQSS.
 
 ## Writing a new pass {#pass-new}
 
-This example serves as a very simple template for creating custom MLIR passes using QUAKE MLIR dialect and perform some general transformation. In this example, you can create a rewrite pattern that replaces `Hadamard` operations with `S` operations.
+This example serves as a very simple template for creating custom MLIR passes using QUAKE MLIR
+dialect and perform some general transformation. In this example, you can create a rewrite pattern
+that replaces `Hadamard` operations with `S` operations.
 
 ```cpp
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
@@ -100,7 +106,8 @@ std::unique_ptr<Pass> mqss::opt::createCustomExamplePass(){
 }
 ```
 
-In order to be integrated into this project, the file `CustomExamplePass.cpp` must be in the `src` directory of this repository.
+In order to be integrated into this project, the file `CustomExamplePass.cpp` must be in the `src`
+directory of this repository.
 
 ## Building your pass {#pass-build}
 
@@ -109,35 +116,46 @@ After including your pass in the project, you can build it as follows:
 ```bash
 cd build
 cmake ..
-make 
+make
 ```
 
 ## Using your new pass {#pass-use}
 
-Once your pass is integrated into this project. You can use it to transform any given QUAKE MLIR module. Assuming that your MLIR module is into a string named `quakeModule`.
-First, you need to get the context and the module itself as follows:
+Once your pass is integrated into this project. You can use it to transform any given QUAKE MLIR
+module. Assuming that your MLIR module is into a string named `quakeModule`. First, you need to get
+the context and the module itself as follows:
 
 ```cpp
 auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
 mlir::MLIRContext &context = *contextPtr;
 ```
 
-Apart of getting context and module, the function `extractMLIRContext` register the dialects to be used, in our case QUAKE dialect too. This tells to MLIR to recognize operations and functions belonging to QUAKE dialect.
+Apart of getting context and module, the function `extractMLIRContext` register the dialects to be
+used, in our case QUAKE dialect too. This tells to MLIR to recognize operations and functions
+belonging to QUAKE dialect.
 
-Next, you have to declare a pass manager `mlir::PassManager` and load your custom pass `mqss::opt::createCustomExamplePass` as follows:
+Next, you have to declare a pass manager `mlir::PassManager` and load your custom pass
+`mqss::opt::createCustomExamplePass` as follows:
+
 ```cpp
 // creating pass manager
 mlir::PassManager pm(&context);
 // Adding custom pass
 pm.addNestedPass<mlir::func::FuncOp>(mqss::opt::createCustomExamplePass());
 ```
-To apply your custom pass on the MLIR module `mlirModule`, you have to run the pass manager as follows:
+
+To apply your custom pass on the MLIR module `mlirModule`, you have to run the pass manager as
+follows:
+
 ```cpp
 // running the pass
 if(mlir::failed(pm.run(mlirModule)))
   std::runtime_error("The pass failed...");
 ```
-If your pass is successfully applied, you can dump your module to visualize the effects of your pass in the module, as follows:
+
+If your pass is successfully applied, you can dump your module to visualize the effects of your pass
+in the module, as follows:
+
 ```cpp
 // Convert the module to a string
 std::string moduleAsString;
@@ -147,4 +165,6 @@ mlirModule->print(stringStream);
 // Printing the transformed module
 std::cout << "Module after Pass\n" << moduleAsString << std::endl;
 ```
-Finally, more examples of use of custom passes and an step-by-step guide on how to test your passes can be found in [Testing your passes](guide.md).
+
+Finally, more examples of use of custom passes and an step-by-step guide on how to test your passes
+can be found in [Testing your passes](guide.md).

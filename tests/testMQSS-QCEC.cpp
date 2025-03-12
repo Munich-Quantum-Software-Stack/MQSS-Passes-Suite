@@ -22,13 +22,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   brief
   This file contains the unitary tests for each MLIR pass in the Munich Quantum
   Software Stack (MQSS).
-  * Folder code has quantum kernels writen in CudaQ (cpp).
+  * Folder code has quantum kernels written in CudaQ (cpp).
   * Folder golden contains the expected modified quantum kernel in MLIR for each
     MLIR pass.
   1. In each test, the quantum kernel in CudaQ is lowered to QUAKE MLIR.
   2. Then the pass is applied to the QUAKE MLIR kernel.
   3. The output of the pass is compared to the expected output.
-  4. Succes if both expected output and the output obtained by the pass match.
+  4. Success if both expected output and the output obtained by the pass match.
 
 ******************************************************************************/
 
@@ -61,17 +61,17 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "cudaq/Frontend/nvqpp/AttributeNames.h"
 #include "cudaq/Optimizer/Transforms/Passes.h"
 // includes in runtime
-//#include "cudaq/qis/execution_manager.h"
-//#include "cudaq.h"
-//#include "common/Executor.h"
+// #include "cudaq/qis/execution_manager.h"
+// #include "cudaq.h"
+// #include "common/Executor.h"
 #include "common/RuntimeMLIR.h"
-//#include "common/Logger.h"
-//#include "common/ExecutionContext.h"
-//#include "cudaq/spin_op.h"
-//#include "cudaq/Optimizer/CodeGen/Pipelines.h"
-//#include "cudaq/Optimizer/CodeGen/Passes.h"
-//#include "cudaq/Optimizer/Transforms/Passes.h"
-//#include "cudaq/algorithm.h"
+// #include "common/Logger.h"
+// #include "common/ExecutionContext.h"
+// #include "cudaq/spin_op.h"
+// #include "cudaq/Optimizer/CodeGen/Pipelines.h"
+// #include "cudaq/Optimizer/CodeGen/Passes.h"
+// #include "cudaq/Optimizer/Transforms/Passes.h"
+// #include "cudaq/algorithm.h"
 
 // test includes
 #include "Passes/CodeGen.hpp"

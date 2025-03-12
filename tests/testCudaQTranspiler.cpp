@@ -47,17 +47,17 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "cudaq/Frontend/nvqpp/AttributeNames.h"
 #include "cudaq/Optimizer/Transforms/Passes.h"
 // includes in runtime
-//#include "cudaq/qis/execution_manager.h"
-//#include "cudaq.h"
-//#include "common/Executor.h"
+// #include "cudaq/qis/execution_manager.h"
+// #include "cudaq.h"
+// #include "common/Executor.h"
 #include "common/RuntimeMLIR.h"
-//#include "common/Logger.h"
-//#include "common/ExecutionContext.h"
-//#include "cudaq/spin_op.h"
-//#include "cudaq/Optimizer/CodeGen/Pipelines.h"
-//#include "cudaq/Optimizer/CodeGen/Passes.h"
-//#include "cudaq/Optimizer/Transforms/Passes.h"
-//#include "cudaq/algorithm.h"
+// #include "common/Logger.h"
+// #include "common/ExecutionContext.h"
+// #include "cudaq/spin_op.h"
+// #include "cudaq/Optimizer/CodeGen/Pipelines.h"
+// #include "cudaq/Optimizer/CodeGen/Passes.h"
+// #include "cudaq/Optimizer/Transforms/Passes.h"
+// #include "cudaq/algorithm.h"
 
 // test includes
 #include <fstream>

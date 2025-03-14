@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
 "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-TODO:
+https://github.com/Munich-Quantum-Software-Stack/passes/blob/develop/LICENSE
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -175,12 +175,13 @@ the Quantum device, and the results are collected and sent back to the hybrid ap
 
 ### Where is the code?
 
-The code is publicly available and hosted on GitHub: TODO.
+The code is publicly available and hosted on GitHub:
+https://github.com/Munich-Quantum-Software-Stack/passes.
 
 ### Under which license is this collection of passes released?
 
 This collection of MLIR passes is released under the Apache License v2.0 with LLVM Exceptions. See
-[LICENSE](TODO) for more information. Any contribution to the project is assumed to be under the
-same license.
+[LICENSE](https://github.com/Munich-Quantum-Software-Stack/passes/blob/develop/LICENSE) for more
+information. Any contribution to the project is assumed to be under the same license.
 
 <!-- [DOXYGEN FAQ] -->

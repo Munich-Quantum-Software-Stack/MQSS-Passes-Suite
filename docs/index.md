@@ -8,7 +8,7 @@ Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
 "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-TODO: URL LICENSE
+https://github.com/Munich-Quantum-Software-Stack/passes/blob/develop/LICENSE
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -44,7 +44,7 @@ The [FAQ](faq.md) page gives an overview over frequently asked questions.
 
 [Declaring Custom Passes](templates.md) page provides an step-by-step guide to show you how you can
 implement custom MLIR passes to be used into the MQSS. When you want to validate your custom MLIR
-passes, the [Guide](guide.md) page is a good starting point.
+passes, the [Development Guide](guide.md) page is a good starting point.
 
 #### Specific Information about the Implementation of this Collection
 

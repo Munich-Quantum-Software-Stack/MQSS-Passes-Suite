@@ -8,7 +8,7 @@ Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
 "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-TODO: LICENSE
+https://github.com/Munich-Quantum-Software-Stack/passes/blob/develop/LICENSE
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -89,7 +89,7 @@ The WMI backend supports the following gates:
 
 The WMI backend supports the following gates: `"rx", "ry", "rz", "x(1)", "z(1)"`.
 
-TODO
+<!--TODO -->
 
 ## IQM
 

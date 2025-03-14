@@ -29,6 +29,7 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/include/Support/
           ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
           ${CUDAQ_MLIR_RUNTIME_PATH})
+add_test(NAME Tesst-MQSS-passes COMMAND test-mqss-passes)
 
 add_executable(test-decomposition-passes testCudaQDecompositionPasses.cpp)
 target_link_libraries(test-decomposition-passes PRIVATE ${COMMON_LIBRARIES})
@@ -53,6 +54,7 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
           ${MQT_QCEC_INCLUDE_DIR}
           ${CUDAQ_MLIR_RUNTIME_PATH})
+add_test(NAME Test-verification-QCEC COMMAND test-verification-qcec)
 
 add_executable(test-qasm-parser testQASMParser.cpp)
 set_target_properties(test-qasm-parser PROPERTIES GOOGLE_TEST_FLAGS
@@ -73,6 +75,7 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
           ${MQT_QCEC_INCLUDE_DIR}
           ${CUDAQ_MLIR_RUNTIME_PATH})
+# add_test(NAME Test-QASM-parser COMMAND test-qasm-parser)
 
 add_executable(test-qasm-parser-simple testQASMParserSimple.cpp)
 set_target_properties(test-qasm-parser-simple
@@ -93,6 +96,7 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
           ${MQT_QCEC_INCLUDE_DIR}
           ${CUDAQ_MLIR_RUNTIME_PATH})
+add_test(NAME Test-QASM-parser-simple COMMAND test-qasm-parser-simple)
 
 add_executable(test-qasm-parser-correctness testQASMParserCorrectness.cpp)
 set_target_properties(test-qasm-parser-correctness
@@ -113,6 +117,7 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
           ${MQT_QCEC_INCLUDE_DIR}
           ${CUDAQ_MLIR_RUNTIME_PATH})
+add_test(NAME Test-QASM-parser-correctness COMMAND test-qasm-parser-correctness)
 
 set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:test-mqss-passes>/golden-cases)
 add_custom_target(

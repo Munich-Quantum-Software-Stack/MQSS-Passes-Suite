@@ -14,8 +14,6 @@ BUILD_TYPE="Release"  # Default: Release mode
 MLIR_DIR="/opt/llvm/lib/cmake/mlir"
 CLANG_DIR="/opt/llvm/lib/cmake/clang"
 LLVM_DIR="/opt/llvm/lib/cmake/llvm"
-ZLIB_LIBRARY="/usr/local/zlib/lib/libz.a"
-ZLIB_INCLUDE_DIR="/usr/local/zlib/include"
 INSTALL_DIR="$HOME/mqss-passes" # this is the default install destination
 
 # Parse command-line arguments
@@ -43,14 +41,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --llvm-dir)
       LLVM_DIR="$2"
-      shift 2
-      ;;
-    --zlib-library)
-      ZLIB_LIBRARY="$2"
-      shift 2
-      ;;
-    --zlib-include)
-      ZLIB_INCLUDE_DIR="$2"
       shift 2
       ;;
     --build-tools)
@@ -105,8 +95,6 @@ cmake -G Ninja \
   -DMLIR_DIR="${MLIR_DIR}" \
   -DClang_DIR="${CLANG_DIR}" \
   -DLLVM_DIR="${LLVM_DIR}" \
-  -DZLIB_LIBRARY="${ZLIB_LIBRARY}" \
-  -DZLIB_INCLUDE_DIR="${ZLIB_INCLUDE_DIR}" \
   ..
 
 if [ $? -ne 0 ]; then
@@ -136,8 +124,6 @@ cmake .. \
   -DMLIR_DIR="${MLIR_DIR}" \
   -DClang_DIR="${CLANG_DIR}" \
   -DLLVM_DIR="${LLVM_DIR}" \
-  -DZLIB_LIBRARY="${ZLIB_LIBRARY}" \
-  -DZLIB_INCLUDE_DIR="${ZLIB_INCLUDE_DIR}" \
   -DBUILD_MLIR_PASSES_TOOLS="${BUILD_TOOLS}" \
   -DBUILD_MLIR_PASSES_DOCS="${BUILD_DOCS}" \
   -DBUILD_MLIR_PASSES_TESTS="${BUILD_TESTS}"\

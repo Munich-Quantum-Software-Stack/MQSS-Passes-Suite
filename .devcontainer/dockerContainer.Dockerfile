@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-c"]
 ARG toolchain=gcc11
 
 # When a dialogue box would be needed during install, assume default configurations.
-# Set here to avoid setting it for all install commands. 
+# Set here to avoid setting it for all install commands.
 # Given as arg to make sure that this value is only set during build but not in the launched container.
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \

@@ -4,14 +4,13 @@
 // cudaq-opt --canonicalize --unrolling-pipeline o.qke -o CommuteCNotZPass.qke
 // ```
 
-#include <iostream>
 #include <cudaq.h>
 #include <fstream>
+#include <iostream>
 
 // Define a CUDA-Q kernel that is fully specified
 // at compile time via templates.
-template <std::size_t N>
-struct test {
+template <std::size_t N> struct test {
   auto operator()() __qpu__ {
 
     // Compile-time sized array like std::array
@@ -19,7 +18,6 @@ struct test {
     x<cudaq::ctrl>(q[0], q[1]);
     z(q[0]);
     mz(q);
-
   }
 };
 

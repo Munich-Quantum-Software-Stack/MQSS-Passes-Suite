@@ -8,7 +8,7 @@ Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
 "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-TODO: LICENSE
+https://github.com/Munich-Quantum-Software-Stack/passes/blob/develop/LICENSE
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -21,41 +21,48 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 <!-- This file is a static page and included in the CMakeLists.txt file. -->
 
-Ready to contribute to the Collection of MLIR Passes of the MQSS? This guide will help you get started.
+Ready to contribute to the Collection of MLIR Passes of the MQSS? This guide will help you get
+started.
 
-## Intalling LLVM/MLIR
+## Installing LLVM/MLIR
 
-Since the MQSS compiler is based on LLVM/MLIR infrastructure and CudaQ compiler, your system must contain an installation of the LLVM project as a main prerequisite.
+Since the MQSS compiler is based on LLVM/MLIR infrastructure and CudaQ compiler, your system must
+contain an installation of the LLVM project as a main prerequisite.
 
-We recommend using the scripts given by CudaQ (see <https://github.com/NVIDIA/cuda-quantum/tree/main/scripts>) . Those scripts help install LLVM/MLIR. 
+We recommend using the scripts given by CudaQ (see
+<https://github.com/NVIDIA/cuda-quantum/tree/main/scripts>) . Those scripts help install LLVM/MLIR.
 
-We recommend `clang16` as toolchain for the compilation of the LLVM project.
-Use the script `install_toolchain.sh` as follows:
-   ```sh
-    bash scripts/install_toolchain.sh -t clang16
-   ```
+We recommend `clang16` as toolchain for the compilation of the LLVM project. Use the script
+`install_toolchain.sh` as follows:
+
+```sh
+ bash scripts/install_toolchain.sh -t clang16
+```
 
 Then, you can install LLVM/MLIR and the prerequisites required by CudaQ by running:
-   ```sh
-    LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes"  bash scripts/install_prerequisites.sh
-   ```
 
-\note Do not forget to include `runtimes` in the `LLVM_PROJECTS`. This is required by some of the MQSS MLIR passes. If you do not include it, compilation will not work.
+```sh
+ LLVM_PROJECTS="clang;lld;mlir;python-bindings;compiler-rt"  bash scripts/install_prerequisites.sh
+```
+
+\note Do not forget to include `compiler-rt` in the `LLVM_PROJECTS`. This is required by some of the
+MQSS MLIR passes. If you do not include it, compilation will not work.
 
 ## Initial Setup
 
-1. Fork the [Passes](TODO) repository on GitHub (see <https://TODO>).
+1. Fork the Passes repository on GitHub (see
+   <https://github.com/Munich-Quantum-Software-Stack/passes>).
 
 2. Clone your fork locally
 
    ```sh
-   git clone TODO
+   git clone https://forked-url/passes
    ```
 
 3. Change into the project directory
 
    ```sh
-   cd mlir-passes TODO
+   cd passes
    ```
 
 4. Create a branch for local development
@@ -66,44 +73,70 @@ Then, you can install LLVM/MLIR and the prerequisites required by CudaQ by runni
 
    Now you can make your changes locally.
 
+## Alternative: Visual Studio Code DevContainer (Strongly recommended)
+
+**Dev Containers** (short for Development Containers) are an environment configuration that allows
+developers to create a consistent, isolated environment for development, testing, and deployment.
+They are typically used in conjunction with Visual Studio Code (**VS Code**) and **Docker** to
+ensure that the development environment is the same across all team members, regardless of their
+host machine or operating system.
+
+- Open the repository in VS-code
+- Use the Dev Container plugin to Open Folder in Container. This should pull and install LLVM/MLIR
+  and the required dependencies.
+
+The previous steps creates an isolated environment where you can tests this project. The project is
+located:
+
+```shell
+cd /workspaces/passes
+```
+
 ## Working on Source Code
 
 Building the project requires a C compiler supporting _C11_ and a minimum CMake version of _3.19_.
-The example devices and the tests require a C++ compiler supporting _C++17_ and _C++20_.
+The example devices and the tests require a C++ compiler supporting _C++17_ and _C++20_ dialects.
 
 ### Configure and Build
 
-This collection of MLIR passes uses CMake as its build system. However, we provide an script `build.sh` that first builds CudaQ library `cudaq-mlir-runtime`. 
-Then, the script builds the MQSS passes project.
-You, can configure and build the project as follows:
+This collection of MLIR passes uses CMake as its build system. However, we provide an script
+`build.sh` that first builds CudaQ library `cudaq-mlir-runtime`. Then, the script builds the MQSS
+passes project. You, can configure and build the project as follows:
 
 ```shell
 bash build.sh --jobs 5 --debug --mlir-dir "dir-to-mlir" --clang-dir "dir-to-clang"
-              --llvm-dir "dir-to-llvm" --zlib-include "dir-to-zlib-include"
-              --zlib-library "dir-to-zlib-lib" --build-tests --build-docs
+              --llvm-dir "dir-to-llvm" --build-tests --build-docs --build-tools
 ```
 
 In the following, we describe each of the arguments accepted by `build.sh`.
-- `--jobs` (__optional__) The number of jobs utilized to configure and compile the project. If not specified, one job is used. 
-- `--debug` (__optional__) Used to show debug information. If you want to build the project without debug information, do not include it. 
-- `--mlir-dir` Path of your MLIR installation. 
-- `--clang-dir` Path of your Clang installation. 
-- `--llvm-dir` Path of your LLVM installation. 
-- `--zlib-include` Path of the include directory of your zlib installation. 
-- `--zlib-library` Path of the library directory of your zlib installation. 
-- `--build-tests` (__optional__) Include it if you want to build the tests of this project.
-- `--build-docs` (__optional__) Include it if you want to build this documentation.
+
+- `--jobs` (**optional**) The number of jobs utilized to configure and compile the project. If not
+  specified, one job is used.
+- `--debug` (**optional**) Used to show debug information. If you want to build the project without
+  debug information, do not include it.
+- `--mlir-dir` Path of your MLIR installation.
+- `--clang-dir` Path of your Clang installation.
+- `--llvm-dir` Path of your LLVM installation.
+- `--build-tests` (**optional**) Include it if you want to build the tests of this project.
+- `--build-docs` (**optional**) Include it if you want to build this documentation.
+- `--build-tools` (**optional**) Include it if you want to build additional tools.
 
 ### Running Tests
 
-We use the [GoogleTest](https://google.github.io/googletest/primer.html) framework for unit testing each MLIR in this collection. All tests are contained in the `test` directory. You can configure and build the project using CMake as follows:
+We use the [GoogleTest](https://google.github.io/googletest/primer.html) framework for unit testing
+each MLIR in this collection. All tests are contained in the `test` directory. You can configure and
+build the project using CMake as follows:
 
 ```shell
 bash build.sh --build-tests
 ```
 
-The executables used to run the tests can be found at `build/tests/`.
+The executables used to run the tests can be found at `build/tests/`. To verify all the available
+tests, run:
 
+```shell
+ctest --test-dir build --output-on-failure
+```
 
 ### Format for Comments
 
@@ -132,15 +165,20 @@ The documentation can be built configuring the CMake as follows:
 bash build.sh --build-docs
 ```
 
-The generated webpage can be inspected by opening the file in `docs/html/index.html` in the CMake build directory.
+The generated webpage can be inspected by opening the file in `docs/html/index.html` in the CMake
+build directory.
 
 ### Static Content
 
-The generated webpage also contains four static sites, namely the main page, the support page, the FAQ page, and this development guide. The respective markdown files that serve as the source for those sites are contained in `docs/` where `index.md` contains the content of the main page.
+The generated webpage also contains four static sites, namely the main page, the support page, the
+FAQ page, and this development guide. The respective markdown files that serve as the source for
+those sites are contained in `docs/` where `index.md` contains the content of the main page.
 
 ### Dynamic Content
 
-In order to include source files to be listed among the menu item `API Reference/Files`, these files must be marked as documented. This is accomplished by adding a comment like the following to the top of the file. Right now, this is done for all files in the include directory.
+In order to include source files to be listed among the menu item `API Reference/Files`, these files
+must be marked as documented. This is accomplished by adding a comment like the following to the top
+of the file. Right now, this is done for all files in the include directory.
 
 ### Further Links
 

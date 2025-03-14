@@ -7,14 +7,13 @@ CURRENT_DIR=$(pwd)
 NUM_JOBS=1  # Default number of jobs
 BUILD_DOCS=OFF  # Default: Do not build documentation
 BUILD_TESTS=OFF  # Default: Do not build tests
+BUILD_TOOLS=OFF  # Default: Do not build tests
 BUILD_TYPE="Release"  # Default: Release mode
 
 # Default directories (can be overridden by arguments)
 MLIR_DIR="/opt/llvm/lib/cmake/mlir"
 CLANG_DIR="/opt/llvm/lib/cmake/clang"
 LLVM_DIR="/opt/llvm/lib/cmake/llvm"
-ZLIB_LIBRARY="/usr/local/zlib/lib/libz.a"
-ZLIB_INCLUDE_DIR="/usr/local/zlib/include"
 INSTALL_DIR="$HOME/mqss-passes" # this is the default install destination
 
 # Parse command-line arguments
@@ -44,13 +43,9 @@ while [[ $# -gt 0 ]]; do
       LLVM_DIR="$2"
       shift 2
       ;;
-    --zlib-library)
-      ZLIB_LIBRARY="$2"
-      shift 2
-      ;;
-    --zlib-include)
-      ZLIB_INCLUDE_DIR="$2"
-      shift 2
+    --build-tools)
+      BUILD_TOOLS=ON
+      shift
       ;;
     --build-docs)
       BUILD_DOCS=ON
@@ -100,8 +95,6 @@ cmake -G Ninja \
   -DMLIR_DIR="${MLIR_DIR}" \
   -DClang_DIR="${CLANG_DIR}" \
   -DLLVM_DIR="${LLVM_DIR}" \
-  -DZLIB_LIBRARY="${ZLIB_LIBRARY}" \
-  -DZLIB_INCLUDE_DIR="${ZLIB_INCLUDE_DIR}" \
   ..
 
 if [ $? -ne 0 ]; then
@@ -131,12 +124,11 @@ cmake .. \
   -DMLIR_DIR="${MLIR_DIR}" \
   -DClang_DIR="${CLANG_DIR}" \
   -DLLVM_DIR="${LLVM_DIR}" \
-  -DZLIB_LIBRARY="${ZLIB_LIBRARY}" \
-  -DZLIB_INCLUDE_DIR="${ZLIB_INCLUDE_DIR}" \
+  -DBUILD_MLIR_PASSES_TOOLS="${BUILD_TOOLS}" \
   -DBUILD_MLIR_PASSES_DOCS="${BUILD_DOCS}" \
   -DBUILD_MLIR_PASSES_TESTS="${BUILD_TESTS}"\
   -DCUDAQ_SOURCE_DIR="${CUDAQ_DIR}" \
 	-DCMAKE_BUILD_TYPE="${BUILD_TYPE}"
 echo "Building MQSS Repository Passes with ${NUM_JOBS} jobs..."
 make -j"${NUM_JOBS}"
-echo "Build of MQSS Repository Passes completed succesfully!..."
+echo "Build of MQSS Repository Passes completed successfully!..."

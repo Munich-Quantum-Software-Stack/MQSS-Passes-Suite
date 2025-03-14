@@ -14,6 +14,6 @@ for pdf_file in "$input_dir"/*.pdf; do
 
   # Convert the PDF to PNG using ImageMagick
   convert -density 300 "$pdf_file" -quality 100 "$output_dir/$base_name.png"
-  
+
   echo "Converted $pdf_file to $output_dir/$base_name.png"
 done

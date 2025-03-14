@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.19...3.30)
 # Project name and language specification
+cmake_minimum_required(VERSION 3.19...3.30)
 project(
   MLIRPasses
   VERSION 1.0
@@ -155,11 +155,8 @@ set(LLVM_LIT_ARGS
 # Tell where to search for Find<package>.cmake files
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-# set(CMAKE_CXX_STANDARD 11)
-
-# Find QDMI package find_package(qdmi REQUIRED)
-
-# Find QInfo package find_package(qinfo REQUIRED)
+# set(CMAKE_CXX_STANDARD 11) Find QDMI package find_package(qdmi REQUIRED) Find
+# QInfo package find_package(qinfo REQUIRED)
 find_package(Z3 REQUIRED)
 
 find_package(mqt-qcec REQUIRED)
@@ -171,7 +168,6 @@ find_package(mqt-qmap REQUIRED)
 set(CMAKE_CXX_STANDARD 20)
 
 # ###################### CUDAQ settings ###################################
-
 set(CUDAQ_MAIN_INCLUDE_DIR "${CUDAQ_SOURCE_DIR}/include")
 
 set(CUDAQ_BINARY_DIR "${CUDAQ_SOURCE_DIR}/build")
@@ -184,6 +180,13 @@ set(CUDAQ_MLIR_RUNTIME_PATH "${CUDAQ_SOURCE_DIR}/build/lib")
 include_directories(BEFORE ${CUDAQ_MAIN_INCLUDE_DIR}
                     ${CUDAQ_BINARY_DIR}/include ${CUDAQ_SOURCE_DIR}/runtime)
 
+# Validate CUDAQ dependencies
+if(NOT EXISTS ${CUDAQ_BINARY_DIR}/lib/libcudaq-mlir-runtime.so)
+  message(
+    FATAL_ERROR
+      "Invalid CUDAQ dir: ${CUDAQ_SOURCE_DIR}. Cannot find libcudaq.so in build directory."
+  )
+endif()
 # ##############################################################################
 
 set(MQT_QMAP_INCLUDE_DIR "${mqt-qmap_SOURCE_DIR}/include/")
@@ -249,14 +252,11 @@ add_mlir_library(
   MLIRTransforms)
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MQSSPasses PRIVATE -fexceptions -frtti)
-# Install shared libraries install(TARGETS MQSSPasses SupportQuake LIBRARY
-# DESTINATION lib ARCHIVE DESTINATION lib RUNTIME DESTINATION bin)
-#
-# Install CMake package config files install(EXPORT MQSSPasses FILE
-# MQSSPassesConfig.cmake NAMESPACE MQSS:: DESTINATION lib/cmake/MQSSPasses)
 
 # add tests
 if(BUILD_MLIR_PASSES_TESTS)
+  enable_testing()
+  include(GoogleTest)
   add_subdirectory(tests)
 endif()
 
@@ -265,15 +265,6 @@ if(BUILD_MLIR_PASSES_DOCS)
   add_subdirectory(docs)
 endif()
 
-add_subdirectory(tools)
-
-# Install headers install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION
-# include FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
-# Generate a CMake package configuration file include(CMakePackageConfigHelpers)
-# write_basic_package_version_file(
-# "${CMAKE_CURRENT_BINARY_DIR}/MQSSPassesConfigVersion.cmake" COMPATIBILITY
-# SameMajorVersion )
-#
-# install(FILES "${CMAKE_CURRENT_BINARY_DIR}/MQSSPassesConfigVersion.cmake"
-# DESTINATION lib/cmake/MQSSPasses )
+if(BUILD_MLIR_PASSES_TOOLS)
+  add_subdirectory(tools)
+endif()

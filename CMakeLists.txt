@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19...3.30)
 # Project name and language specification
 project(
-  MQSSMLIRPasses
+  MLIRPasses
   VERSION 1.0
   LANGUAGES C CXX)
 
@@ -246,9 +246,7 @@ add_mlir_library(
   MQT::QMapSCHeuristic
   MLIRIR
   MLIRPass
-  MLIRTransforms
-  # qdmi qinfo
-)
+  MLIRTransforms)
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MQSSPasses PRIVATE -fexceptions -frtti)
 # Install shared libraries install(TARGETS MQSSPasses SupportQuake LIBRARY

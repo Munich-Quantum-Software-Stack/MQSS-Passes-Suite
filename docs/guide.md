@@ -8,7 +8,7 @@ Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
 "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-TODO: LICENSE
+https://github.com/Munich-Quantum-Software-Stack/passes/blob/develop/LICENSE
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -42,26 +42,27 @@ We recommend `clang16` as toolchain for the compilation of the LLVM project. Use
 Then, you can install LLVM/MLIR and the prerequisites required by CudaQ by running:
 
 ```sh
- LLVM_PROJECTS="clang;lld;mlir;python-bindings;runtimes"  bash scripts/install_prerequisites.sh
+ LLVM_PROJECTS="clang;lld;mlir;python-bindings;compiler-rt"  bash scripts/install_prerequisites.sh
 ```
 
-\note Do not forget to include `runtimes` in the `LLVM_PROJECTS`. This is required by some of the
+\note Do not forget to include `compiler-rt` in the `LLVM_PROJECTS`. This is required by some of the
 MQSS MLIR passes. If you do not include it, compilation will not work.
 
 ## Initial Setup
 
-1. Fork the [Passes](TODO) repository on GitHub (see <https://TODO>).
+1. Fork the Passes repository on GitHub (see
+   <https://github.com/Munich-Quantum-Software-Stack/passes>).
 
 2. Clone your fork locally
 
    ```sh
-   git clone TODO
+   git clone https://forked-url/passes
    ```
 
 3. Change into the project directory
 
    ```sh
-   cd mlir-passes TODO
+   cd passes
    ```
 
 4. Create a branch for local development
@@ -72,10 +73,29 @@ MQSS MLIR passes. If you do not include it, compilation will not work.
 
    Now you can make your changes locally.
 
+## Alternative: Visual Studio Code DevContainer (Strongly recommended)
+
+**Dev Containers** (short for Development Containers) are an environment configuration that allows
+developers to create a consistent, isolated environment for development, testing, and deployment.
+They are typically used in conjunction with Visual Studio Code (**VS Code**) and **Docker** to
+ensure that the development environment is the same across all team members, regardless of their
+host machine or operating system.
+
+- Open the repository in VS-code
+- Use the Dev Container plugin to Open Folder in Container. This should pull and install LLVM/MLIR
+  and the required dependencies.
+
+The previous steps creates an isolated environment where you can tests this project. The project is
+located:
+
+```shell
+cd /workspaces/passes
+```
+
 ## Working on Source Code
 
 Building the project requires a C compiler supporting _C11_ and a minimum CMake version of _3.19_.
-The example devices and the tests require a C++ compiler supporting _C++17_ and _C++20_.
+The example devices and the tests require a C++ compiler supporting _C++17_ and _C++20_ dialects.
 
 ### Configure and Build
 
@@ -85,8 +105,7 @@ passes project. You, can configure and build the project as follows:
 
 ```shell
 bash build.sh --jobs 5 --debug --mlir-dir "dir-to-mlir" --clang-dir "dir-to-clang"
-              --llvm-dir "dir-to-llvm" --zlib-include "dir-to-zlib-include"
-              --zlib-library "dir-to-zlib-lib" --build-tests --build-docs
+              --llvm-dir "dir-to-llvm" --build-tests --build-docs --build-tools
 ```
 
 In the following, we describe each of the arguments accepted by `build.sh`.
@@ -98,10 +117,9 @@ In the following, we describe each of the arguments accepted by `build.sh`.
 - `--mlir-dir` Path of your MLIR installation.
 - `--clang-dir` Path of your Clang installation.
 - `--llvm-dir` Path of your LLVM installation.
-- `--zlib-include` Path of the include directory of your zlib installation.
-- `--zlib-library` Path of the library directory of your zlib installation.
 - `--build-tests` (**optional**) Include it if you want to build the tests of this project.
 - `--build-docs` (**optional**) Include it if you want to build this documentation.
+- `--build-tools` (**optional**) Include it if you want to build additional tools.
 
 ### Running Tests
 
@@ -113,7 +131,12 @@ build the project using CMake as follows:
 bash build.sh --build-tests
 ```
 
-The executables used to run the tests can be found at `build/tests/`.
+The executables used to run the tests can be found at `build/tests/`. To verify all the available
+tests, run:
+
+```shell
+ctest --test-dir build --output-on-failure
+```
 
 ### Format for Comments
 

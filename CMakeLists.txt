@@ -236,6 +236,12 @@ target_include_directories(
   SupportQuake PUBLIC ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
                       ${CMAKE_SOURCE_DIR}/include/Support/Transforms)
 
+target_include_directories(
+  SupportQuake
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/Support/CodeGen>
+         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/Support/Transforms>
+         $<INSTALL_INTERFACE:include>)
+
 add_mlir_library(
   MLIRPasses
   SHARED

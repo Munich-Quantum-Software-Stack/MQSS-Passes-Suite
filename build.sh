@@ -3,6 +3,7 @@
 # Define directoriesi
 CURRENT_DIR=$(pwd)
 
+INSTALL_PATH="${INSTALL_PATH:-$HOME/.passes}"
 # Default values
 NUM_JOBS=1  # Default number of jobs
 BUILD_DOCS=OFF  # Default: Do not build documentation
@@ -14,7 +15,7 @@ BUILD_TYPE="Release"  # Default: Release mode
 MLIR_DIR="/opt/llvm/lib/cmake/mlir"
 CLANG_DIR="/opt/llvm/lib/cmake/clang"
 LLVM_DIR="/opt/llvm/lib/cmake/llvm"
-INSTALL_DIR="$HOME/mqss-passes" # this is the default install destination
+INSTALL_DIR="${INSTALL_PATH:-$HOME/.passes}"
 
 # Parse command-line arguments
 while [[ $# -gt 0 ]]; do

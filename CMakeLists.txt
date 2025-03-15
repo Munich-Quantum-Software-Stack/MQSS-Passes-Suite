@@ -232,9 +232,12 @@ add_mlir_library(
   MLIRIR
   MLIRPass
   MLIRTransforms)
+target_include_directories(
+  SupportQuake PUBLIC ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
+                      ${CMAKE_SOURCE_DIR}/include/Support/Transforms)
 
 add_mlir_library(
-  MQSSPasses
+  MLIRPasses
   SHARED
   ${SRC_CODEGEN}
   ${SRC_DECOMPOSITIONS}
@@ -251,7 +254,15 @@ add_mlir_library(
   MLIRPass
   MLIRTransforms)
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
-target_compile_options(MQSSPasses PRIVATE -fexceptions -frtti)
+target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)
+
+# Specify include directories target_include_directories(MLIRPasses PUBLIC
+# $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Passes>
+# $<INSTALL_INTERFACE:include> )
+
+# Create an alias target for convenience
+add_library(MQSS::MLIRPasses ALIAS MLIRPasses)
+add_library(MQSS::SupportQuake ALIAS SupportQuake)
 
 # add tests
 if(BUILD_MLIR_PASSES_TESTS)
@@ -268,3 +279,6 @@ endif()
 if(BUILD_MLIR_PASSES_TOOLS)
   add_subdirectory(tools)
 endif()
+
+# Enable FetchContent for integration
+include(FetchContent)

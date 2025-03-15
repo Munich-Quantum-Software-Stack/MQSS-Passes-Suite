@@ -24,7 +24,7 @@ set(COMMON_LIBRARIES ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-mlir-runtime.so
 
 # quake-to-tikz executable
 add_executable(quake-to-tikz quake-to-tikz.cpp)
-target_link_libraries(quake-to-tikz PRIVATE ${COMMON_LIBRARIES} MQSSPasses
+target_link_libraries(quake-to-tikz PRIVATE ${COMMON_LIBRARIES} MLIRPasses
                                             Boost::program_options)
 target_include_directories(quake-to-tikz PRIVATE ${CMAKE_SOURCE_DIR}/include
                                                  ${CUDAQ_MLIR_RUNTIME_PATH})
@@ -32,7 +32,7 @@ target_include_directories(quake-to-tikz PRIVATE ${CMAKE_SOURCE_DIR}/include
 # BUILD_WITH_INSTALL_RPATH ON)
 
 add_executable(qasm-to-quake qasm-to-quake.cpp)
-target_link_libraries(qasm-to-quake PRIVATE ${COMMON_LIBRARIES} MQSSPasses
+target_link_libraries(qasm-to-quake PRIVATE ${COMMON_LIBRARIES} MLIRPasses
                                             Boost::program_options)
 target_include_directories(qasm-to-quake PRIVATE ${CMAKE_SOURCE_DIR}/include
                                                  ${CUDAQ_MLIR_RUNTIME_PATH})
@@ -40,7 +40,7 @@ target_include_directories(qasm-to-quake PRIVATE ${CMAKE_SOURCE_DIR}/include
 # BUILD_WITH_INSTALL_RPATH ON)
 
 add_executable(cpp-to-only-quake cpp-to-only-quake.cpp)
-target_link_libraries(cpp-to-only-quake PRIVATE ${COMMON_LIBRARIES} MQSSPasses
+target_link_libraries(cpp-to-only-quake PRIVATE ${COMMON_LIBRARIES} MLIRPasses
                                                 Boost::program_options)
 target_include_directories(cpp-to-only-quake PRIVATE ${CMAKE_SOURCE_DIR}/include
                                                      ${CUDAQ_MLIR_RUNTIME_PATH})

@@ -20,7 +20,7 @@ set(COMMON_LIBRARIES ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-mlir-runtime.so
 
 # Test executable
 add_executable(test-mqss-passes testMQSSPasses.cpp)
-target_link_libraries(test-mqss-passes PRIVATE ${COMMON_LIBRARIES} MQSSPasses)
+target_link_libraries(test-mqss-passes PRIVATE ${COMMON_LIBRARIES} MLIRPasses)
 target_include_directories(
   test-mqss-passes
   PRIVATE ${CMAKE_SOURCE_DIR}/include
@@ -43,7 +43,7 @@ target_include_directories(test-transpiler PRIVATE ${CMAKE_SOURCE_DIR}/include
 
 add_executable(test-verification-qcec testMQSS-QCEC.cpp)
 target_link_libraries(test-verification-qcec PRIVATE ${COMMON_LIBRARIES}
-                                                     MQT::QCEC MQSSPasses)
+                                                     MQT::QCEC MLIRPasses)
 
 target_include_directories(
   test-verification-qcec
@@ -62,7 +62,7 @@ target_compile_options(test-qasm-parser PRIVATE -fsanitize=address -g -O1
                                                 -fno-omit-frame-pointer)
 target_link_libraries(
   test-qasm-parser PRIVATE ${COMMON_LIBRARIES} ${LIBZIP_LIBRARIES} MQT::QCEC
-                           MQSSPasses -fsanitize=address) # sanitize is useful
+                           MLIRPasses -fsanitize=address) # sanitize is useful
                                                           # when struggling with
                                                           # memory problems
 target_include_directories(
@@ -84,7 +84,7 @@ target_compile_options(
                                   -fno-omit-frame-pointer)
 target_link_libraries(
   test-qasm-parser-simple PRIVATE ${COMMON_LIBRARIES} ${LIBZIP_LIBRARIES}
-                                  MQT::QCEC MQSSPasses -fsanitize=address
+                                  MQT::QCEC MLIRPasses -fsanitize=address
 )# sanitize is useful when struggling with memory problems
 target_include_directories(
   test-qasm-parser-simple
@@ -105,7 +105,7 @@ target_compile_options(
                                        -fno-omit-frame-pointer)
 target_link_libraries(
   test-qasm-parser-correctness PRIVATE ${COMMON_LIBRARIES} ${LIBZIP_LIBRARIES}
-                                       MQT::QCEC MQSSPasses -fsanitize=address
+                                       MQT::QCEC MLIRPasses -fsanitize=address
 )# sanitize is useful when struggling with memory problems
 target_include_directories(
   test-qasm-parser-correctness

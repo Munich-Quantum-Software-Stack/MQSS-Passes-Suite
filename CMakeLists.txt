@@ -233,14 +233,8 @@ add_mlir_library(
   MLIRPass
   MLIRTransforms)
 target_include_directories(
-  SupportQuake PUBLIC ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
-                      ${CMAKE_SOURCE_DIR}/include/Support/Transforms)
-
-target_include_directories(
-  SupportQuake
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/Support/CodeGen>
-         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/Support/Transforms>
-         $<INSTALL_INTERFACE:include>)
+  SupportQuake PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                      $<INSTALL_INTERFACE:include>)
 
 add_mlir_library(
   MLIRPasses
@@ -285,6 +279,8 @@ endif()
 if(BUILD_MLIR_PASSES_TOOLS)
   add_subdirectory(tools)
 endif()
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include)
 
 # Enable FetchContent for integration
 include(FetchContent)

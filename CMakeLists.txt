@@ -222,6 +222,7 @@ file(GLOB SRC_TRANSFORMS
      "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Transforms/*.cpp")
 file(GLOB SRC_SUPPORT_QUAKE
      "${CMAKE_CURRENT_SOURCE_DIR}/lib/Support/CodeGen/Quake/*.cpp")
+file(GLOB SRC_OPTIMIZER "${CMAKE_CURRENT_SOURCE_DIR}/lib/Optimizer/*.cpp")
 
 add_mlir_library(
   SupportQuake
@@ -253,6 +254,10 @@ add_mlir_library(
   MLIRIR
   MLIRPass
   MLIRTransforms)
+
+add_mlir_library(Optimization SHARED ${SRC_OPTIMIZER} LINK_LIBS PUBLIC MLIRIR)
+# MLIRPass MLIRTransforms)
+
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)
 

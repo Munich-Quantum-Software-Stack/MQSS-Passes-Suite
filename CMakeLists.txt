@@ -253,7 +253,14 @@ add_mlir_library(
   MLIRPass
   MLIRTransforms)
 
-add_mlir_library(Optimizer SHARED ${SRC_OPTIMIZER} LINK_LIBS PUBLIC MLIRIR)
+add_mlir_library(
+  Optimizer
+  SHARED
+  ${SRC_OPTIMIZER}
+  LINK_LIBS
+  PUBLIC
+  MLIRIR
+  MLIRPasse)
 
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)

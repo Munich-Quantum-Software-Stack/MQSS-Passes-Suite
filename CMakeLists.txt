@@ -234,9 +234,6 @@ add_mlir_library(
   MLIRIR
   MLIRPass
   MLIRTransforms)
-# target_include_directories( SupportQuake PUBLIC
-# $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-# $<INSTALL_INTERFACE:include>)
 
 add_mlir_library(
   MLIRPasses
@@ -257,9 +254,6 @@ add_mlir_library(
   MLIRTransforms)
 
 add_mlir_library(Optimizer SHARED ${SRC_OPTIMIZER} LINK_LIBS PUBLIC MLIRIR)
-# target_include_directories( Optimizer PUBLIC
-# $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Optimizer>
-# $<INSTALL_INTERFACE:include>)
 
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)

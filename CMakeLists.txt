@@ -204,11 +204,11 @@ message(STATUS "QINFO INCLUDE DIRS ${qinfo_INCLUDE_DIRS}")
 
 include_directories(
   BEFORE
-  ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/include/Passes/
-  ${CMAKE_SOURCE_DIR}/include/Support/
-  ${CMAKE_SOURCE_DIR}/include/Support/CodeGen/
-  ${CMAKE_SOURCE_DIR}/include/Optimizer/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Passes/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Support/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Support/CodeGen/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Optimizer/
   ${MQT_QMAP_INCLUDE_DIR}
   ${MQT_CORE_INCLUDE_DIR}
   ${qdmi_INCLUDE_DIRS}
@@ -264,10 +264,6 @@ target_include_directories(
 
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)
-
-# Specify include directories target_include_directories(MLIRPasses PUBLIC
-# $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Passes>
-# $<INSTALL_INTERFACE:include> )
 
 # Create an alias target for convenience
 add_library(MQSS::MLIRPasses ALIAS MLIRPasses)

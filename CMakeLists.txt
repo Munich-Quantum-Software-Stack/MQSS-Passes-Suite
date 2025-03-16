@@ -233,9 +233,8 @@ add_mlir_library(
   MLIRPass
   MLIRTransforms)
 target_include_directories(
-  SupportQuake
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Support>
-         $<INSTALL_INTERFACE:include>)
+  SupportQuake PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                      $<INSTALL_INTERFACE:include>)
 
 add_mlir_library(
   MLIRPasses

@@ -1,24 +1,17 @@
-#include "Optimizer/Pipelines.h"
+#include "Optimizer/Pipelines.hpp"
 
 using namespace mlir;
 
-void cudaq::opt::o1(PassManager &pm) {
-  pm.addNestedPass<func::FuncOp>(createApplyControlNegations());
-  pm.addNestedPass<func::FuncOp>(createCanonicalizerPass());
-  pm.addNestedPass<func::FuncOp>(createUnwindLoweringPass());
+void mqss::opt::o1(PassManager &pm) {
   pm.addNestedPass<func::FuncOp>(createCanonicalizerPass());
 }
 
-void cudaq::opt::o2(PassManager &pm) {
-  pm.addNestedPass<func::FuncOp>(createApplyControlNegations());
+void mqss::opt::o2(PassManager &pm) {
   pm.addNestedPass<func::FuncOp>(createCanonicalizerPass());
-  pm.addNestedPass<func::FuncOp>(createUnwindLoweringPass());
-  pm.addNestedPass<func::FuncOp>(createCanonicalizerPass());
+  // more passes to be added here
 }
 
-void cudaq::opt::o3 : (PassManager &pm) {
-  pm.addNestedPass<func::FuncOp>(createApplyControlNegations());
+void mqss::opt::o3(PassManager &pm) {
   pm.addNestedPass<func::FuncOp>(createCanonicalizerPass());
-  pm.addNestedPass<func::FuncOp>(createUnwindLoweringPass());
-  pm.addNestedPass<func::FuncOp>(createCanonicalizerPass());
+  // more passes to be added here
 }

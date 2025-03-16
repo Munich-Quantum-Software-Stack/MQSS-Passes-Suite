@@ -7,8 +7,8 @@
 
 namespace mqss::opt {
 
-void o1(mlir::OpPassManager &pm);
-void o2(mlir::OpPassManager &pm);
-void o3(mlir::OpPassManager &pm);
+void o1(mlir::PassManager &pm);
+void o2(mlir::PassManager &pm);
+void o3(mlir::PassManager &pm);
 
 } // namespace mqss::opt

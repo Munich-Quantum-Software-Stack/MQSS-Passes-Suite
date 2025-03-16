@@ -208,6 +208,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/include/Passes/
   ${CMAKE_SOURCE_DIR}/include/Support/
   ${CMAKE_SOURCE_DIR}/include/Support/CodeGen/
+  ${CMAKE_SOURCE_DIR}/include/Optimizer/
   ${MQT_QMAP_INCLUDE_DIR}
   ${MQT_CORE_INCLUDE_DIR}
   ${qdmi_INCLUDE_DIRS}
@@ -255,8 +256,7 @@ add_mlir_library(
   MLIRPass
   MLIRTransforms)
 
-add_mlir_library(Optimization SHARED ${SRC_OPTIMIZER} LINK_LIBS PUBLIC MLIRIR)
-# MLIRPass MLIRTransforms)
+add_mlir_library(Optimizer SHARED ${SRC_OPTIMIZER} LINK_LIBS PUBLIC MLIRIR)
 
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)
@@ -268,6 +268,7 @@ target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)
 # Create an alias target for convenience
 add_library(MQSS::MLIRPasses ALIAS MLIRPasses)
 add_library(MQSS::SupportQuake ALIAS SupportQuake)
+add_library(MQSS::Optimizer ALIAS Optimizer)
 
 # add tests
 if(BUILD_MLIR_PASSES_TESTS)

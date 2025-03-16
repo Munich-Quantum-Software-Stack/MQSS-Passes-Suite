@@ -260,7 +260,7 @@ add_mlir_library(
   LINK_LIBS
   PUBLIC
   MLIRIR
-  MLIRPasse)
+  MLIRPasses)
 
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)

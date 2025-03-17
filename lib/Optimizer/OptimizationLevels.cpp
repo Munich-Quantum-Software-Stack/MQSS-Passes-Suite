@@ -15,4 +15,6 @@ void mqss::opt::o2(PassManager &pm) {
 void mqss::opt::o3(PassManager &pm) {
   // more passes to be added here
   pm.addNestedPass<func::FuncOp>(createDoubleCnotCancellationPass());
+  pm.addPass(createCanonicalizerPass());
+  pm.addPass(createCSEPass());
 }

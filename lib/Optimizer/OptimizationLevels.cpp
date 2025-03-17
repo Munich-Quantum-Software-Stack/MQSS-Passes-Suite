@@ -1,4 +1,5 @@
 #include "Optimizer/Pipelines.hpp"
+#include "Passes/Transforms.hpp"
 
 using namespace mlir;
 
@@ -12,6 +13,6 @@ void mqss::opt::o2(PassManager &pm) {
 }
 
 void mqss::opt::o3(PassManager &pm) {
-  pm.addNestedPass<func::FuncOp>(createCanonicalizerPass());
   // more passes to be added here
+  pm.addNestedPass<func::FuncOp>(createDoubleCnotCancellationPass());
 }

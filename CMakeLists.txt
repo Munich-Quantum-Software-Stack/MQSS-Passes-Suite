@@ -204,10 +204,11 @@ message(STATUS "QINFO INCLUDE DIRS ${qinfo_INCLUDE_DIRS}")
 
 include_directories(
   BEFORE
-  ${CMAKE_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/include/Passes/
-  ${CMAKE_SOURCE_DIR}/include/Support/
-  ${CMAKE_SOURCE_DIR}/include/Support/CodeGen/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Passes/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Support/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Support/CodeGen/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Optimizer/
   ${MQT_QMAP_INCLUDE_DIR}
   ${MQT_CORE_INCLUDE_DIR}
   ${qdmi_INCLUDE_DIRS}
@@ -222,6 +223,7 @@ file(GLOB SRC_TRANSFORMS
      "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Transforms/*.cpp")
 file(GLOB SRC_SUPPORT_QUAKE
      "${CMAKE_CURRENT_SOURCE_DIR}/lib/Support/CodeGen/Quake/*.cpp")
+file(GLOB SRC_OPTIMIZER "${CMAKE_CURRENT_SOURCE_DIR}/lib/Optimizer/*.cpp")
 
 add_mlir_library(
   SupportQuake
@@ -232,9 +234,6 @@ add_mlir_library(
   MLIRIR
   MLIRPass
   MLIRTransforms)
-target_include_directories(
-  SupportQuake PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                      $<INSTALL_INTERFACE:include>)
 
 add_mlir_library(
   MLIRPasses
@@ -253,16 +252,23 @@ add_mlir_library(
   MLIRIR
   MLIRPass
   MLIRTransforms)
+
+add_mlir_library(
+  Optimizer
+  SHARED
+  ${SRC_OPTIMIZER}
+  LINK_LIBS
+  PUBLIC
+  MLIRIR
+  MLIRPasses)
+
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)
-
-# Specify include directories target_include_directories(MLIRPasses PUBLIC
-# $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/Passes>
-# $<INSTALL_INTERFACE:include> )
 
 # Create an alias target for convenience
 add_library(MQSS::MLIRPasses ALIAS MLIRPasses)
 add_library(MQSS::SupportQuake ALIAS SupportQuake)
+add_library(MQSS::Optimizer ALIAS Optimizer)
 
 # add tests
 if(BUILD_MLIR_PASSES_TESTS)

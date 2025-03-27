@@ -34,6 +34,11 @@ https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-c
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 using namespace mqss::support::transforms;
 
@@ -44,9 +49,9 @@ class CommuteCNotRxPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCNotRxPass)
 
-  llvm::StringRef getArgument() const override { return "commute-cnotrx-pass"; }
+  llvm::StringRef getArgument() const override { return "CommuteCxRx"; }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass of the pattern CNot-Rx";
+    return "Apply commutation pass of pattern CNot-Rx";
   }
 
   void runOnOperation() override {
@@ -62,3 +67,6 @@ public:
 std::unique_ptr<Pass> mqss::opt::createCommuteCNotRxPass() {
   return std::make_unique<CommuteCNotRxPass>();
 }
+
+// Register the pass on initialization
+void registerCommuteCNotRxPass() { ::registerCommuteCNotRxPass(); }

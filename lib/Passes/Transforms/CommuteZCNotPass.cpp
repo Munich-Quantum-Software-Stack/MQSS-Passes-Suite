@@ -33,6 +33,11 @@ Adapted from: https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -97,9 +102,9 @@ class CommuteZCNotPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteZCNotPass)
 
-  llvm::StringRef getArgument() const override { return "commute-zcnot-pass"; }
+  llvm::StringRef getArgument() const override { return "CommuteZCx"; }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass of the pattern Z-CNot to CNot-Z";
+    return "Apply commutation pass to pattern Z-CNot to CNot-Z";
   }
 
   void runOnOperation() override {
@@ -112,3 +117,6 @@ public:
 std::unique_ptr<Pass> mqss::opt::createCommuteZCNotPass() {
   return std::make_unique<CommuteZCNotPass>();
 }
+
+// Register the pass on initialization
+void registerCommuteZCNotPass() { ::registerCommuteZCNotPass(); }

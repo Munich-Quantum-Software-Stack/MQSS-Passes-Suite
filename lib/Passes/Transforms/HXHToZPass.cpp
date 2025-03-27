@@ -32,6 +32,11 @@ Adapted from: https://threeplusone.com/pubs/on_gates.pdf
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -89,7 +94,7 @@ class HXHToZPass : public PassWrapper<HXHToZPass, OperationPass<func::FuncOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HXHToZPass)
 
-  llvm::StringRef getArgument() const override { return "h-x-h-to-z"; }
+  llvm::StringRef getArgument() const override { return "HXHToZ"; }
   llvm::StringRef getDescription() const override {
     return "Optimization pass that replaces a pattern composed of H, X, H by Z";
   }
@@ -104,3 +109,6 @@ public:
 std::unique_ptr<Pass> mqss::opt::createHXHToZPass() {
   return std::make_unique<HXHToZPass>();
 }
+
+// Register the pass on initialization
+void registerHXHToZPass() { ::registerHXHToZPass(); }

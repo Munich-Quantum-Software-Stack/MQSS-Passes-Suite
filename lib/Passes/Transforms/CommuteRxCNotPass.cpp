@@ -33,6 +33,11 @@ Adapted from: https://arxiv.org/pdf/quant-ph/0308033.pdf
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 using namespace mqss::support::transforms;
 
@@ -43,9 +48,9 @@ class CommuteRxCNotPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteRxCNotPass)
 
-  llvm::StringRef getArgument() const override { return "commute-rxcnot-pass"; }
+  llvm::StringRef getArgument() const override { return "CommuteRxCx"; }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass of the pattern Rx-CNot to CNot-Rx";
+    return "Apply commutation pass to pattern Rx-CNot to CNot-Rx";
   }
 
   void runOnOperation() override {
@@ -61,3 +66,6 @@ public:
 std::unique_ptr<Pass> mqss::opt::createCommuteRxCNotPass() {
   return std::make_unique<CommuteRxCNotPass>();
 }
+
+// Register the pass on initialization
+void registerCommuteRxCNotPass() { ::registerCommuteRxCNotPass(); }

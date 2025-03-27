@@ -33,6 +33,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -134,7 +139,7 @@ class CommuteCNotZPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCNotZPass)
 
-  llvm::StringRef getArgument() const override { return "commute-cnotz-pass"; }
+  llvm::StringRef getArgument() const override { return "CommuteCxZ"; }
   llvm::StringRef getDescription() const override {
     return "Apply commutation pass of the pattern CNot-Z to Z-CNot";
   }
@@ -149,3 +154,6 @@ public:
 std::unique_ptr<Pass> mqss::opt::createCommuteCNotZPass() {
   return std::make_unique<CommuteCNotZPass>();
 }
+
+// Register the pass on initialization
+void registerCommuteCNotZPass() { ::registerCommuteCNotZPass(); }

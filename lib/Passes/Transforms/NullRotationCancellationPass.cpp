@@ -33,6 +33,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include <cmath>
 #include <numbers>
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -71,9 +76,7 @@ class NullRotationCancellationPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NullRotationCancellationPass)
 
-  llvm::StringRef getArgument() const override {
-    return "null-rotation-cancellation";
-  }
+  llvm::StringRef getArgument() const override { return "CancelNullRotations"; }
   llvm::StringRef getDescription() const override {
     return "Optimization pass that removes of Rx, Ry and Rz null rotations";
   }
@@ -87,4 +90,9 @@ public:
 
 std::unique_ptr<mlir::Pass> mqss::opt::createNullRotationCancellationPass() {
   return std::make_unique<NullRotationCancellationPass>();
+}
+
+// Register the pass on initialization
+void registerNullRotationCancellationPass() {
+  ::registerNullRotationCancellationPass();
 }

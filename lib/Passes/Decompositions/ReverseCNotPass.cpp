@@ -32,6 +32,11 @@ https://agra.informatik.uni-bremen.de/doc/konf/2021_DSD_CNOTs_remote_gates.pdf
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Decompositions.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -67,7 +72,7 @@ class ReverseCNotPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(ReverseCNotPass)
 
-  llvm::StringRef getArgument() const override { return "reverse-cnot"; }
+  llvm::StringRef getArgument() const override { return "ReverseCx"; }
   llvm::StringRef getDescription() const override {
     return "Decomposition pass that reverses the control and targets of each "
            "two-qubits CNot gate in a circuit";
@@ -83,3 +88,6 @@ public:
 std::unique_ptr<Pass> mqss::opt::createReverseCNotPass() {
   return std::make_unique<ReverseCNotPass>();
 }
+
+// Register the pass on initialization
+void registerReverseCNotPass() { ::registerReverseCNotPass(); }

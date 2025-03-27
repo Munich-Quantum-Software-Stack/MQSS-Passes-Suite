@@ -32,6 +32,11 @@ https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-c
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Decompositions.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -65,9 +70,7 @@ class CzToHCxHDecompositionPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CzToHCxHDecompositionPass)
 
-  llvm::StringRef getArgument() const override {
-    return "decomposition-cz-to-hcxh";
-  }
+  llvm::StringRef getArgument() const override { return "CzToHCxH"; }
   llvm::StringRef getDescription() const override {
     return "Decomposition pass of Cz by H, Cx, and H";
   }
@@ -91,4 +94,9 @@ public:
 
 std::unique_ptr<Pass> mqss::opt::createCzToHCxHDecompositionPass() {
   return std::make_unique<CzToHCxHDecompositionPass>();
+}
+
+// Register the pass on initialization
+void registerCzToHCxHDecompositionPass() {
+  ::registerCzToHCxHDecompositionPass();
 }

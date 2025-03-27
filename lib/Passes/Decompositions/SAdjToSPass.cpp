@@ -32,6 +32,11 @@ Adapted from:  https://dl.acm.org/doi/10.5555/1972505
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Decompositions.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -80,7 +85,7 @@ class SAdjToSPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SAdjToSPass)
 
-  llvm::StringRef getArgument() const override { return "s(adj)-z-to-s"; }
+  llvm::StringRef getArgument() const override { return "SadjZToS"; }
   llvm::StringRef getDescription() const override {
     return "Optimization pass that replaces a pattern composed of S adjoint "
            "and Z by S";
@@ -96,3 +101,6 @@ public:
 std::unique_ptr<Pass> mqss::opt::createSAdjToSPass() {
   return std::make_unique<SAdjToSPass>();
 }
+
+// Register the pass on initialization
+void registerSAdjToSPass() { ::registerSAdjToSPass(); }

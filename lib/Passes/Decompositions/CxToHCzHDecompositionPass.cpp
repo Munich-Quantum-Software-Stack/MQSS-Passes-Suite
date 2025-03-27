@@ -31,6 +31,11 @@ Adapted from: https://quantumcomputing.stackexchange.com/a/13784
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Decompositions.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -64,9 +69,7 @@ class CxToHCzHDecompositionPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CxToHCzHDecompositionPass)
 
-  llvm::StringRef getArgument() const override {
-    return "decomposition-cx-to-hczh";
-  }
+  llvm::StringRef getArgument() const override { return "CxToHCzH"; }
   llvm::StringRef getDescription() const override {
     return "Decomposition pass of two-qubits cnot by H, Cz, and H";
   }
@@ -90,4 +93,9 @@ public:
 
 std::unique_ptr<Pass> mqss::opt::createCxToHCzHDecompositionPass() {
   return std::make_unique<CxToHCzHDecompositionPass>();
+}
+
+// Register the pass on initialization
+void registerCxToHCzHDecompositionPass() {
+  ::registerCxToHCzHDecompositionPass();
 }

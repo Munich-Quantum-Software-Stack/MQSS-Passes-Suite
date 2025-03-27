@@ -35,6 +35,11 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 #include <cmath>
 #include <numbers>
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 
 namespace {
@@ -77,7 +82,7 @@ class NormalizeArgAnglePass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NormalizeArgAnglePass)
 
-  llvm::StringRef getArgument() const override { return "normalize-arg-angle"; }
+  llvm::StringRef getArgument() const override { return "NormalizeArgAngle"; }
   llvm::StringRef getDescription() const override {
     return "Optimization pass that normalizes the angle of Rx, Ry and Rz "
            "rotations";
@@ -95,3 +100,6 @@ public:
 std::unique_ptr<mlir::Pass> mqss::opt::createNormalizeArgAnglePass() {
   return std::make_unique<NormalizeArgAnglePass>();
 }
+
+// Register the pass on initialization
+void registerNormalizeArgAnglePass() { ::registerNormalizeArgAnglePass(); }

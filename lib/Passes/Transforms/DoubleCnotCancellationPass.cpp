@@ -33,6 +33,11 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 using namespace mqss::support::transforms;
 
@@ -45,7 +50,7 @@ public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(DoubleCnotCancellationPass)
 
   llvm::StringRef getArgument() const override {
-    return "double-cnot-cancellation-pass";
+    return "CancellationDoubleCx";
   }
   llvm::StringRef getDescription() const override {
     return "This pass removes the pattern CNot, CNot if both gates operates on "
@@ -64,4 +69,9 @@ public:
 
 std::unique_ptr<Pass> mqss::opt::createDoubleCnotCancellationPass() {
   return std::make_unique<DoubleCnotCancellationPass>();
+}
+
+// Register the pass on initialization
+void registerDoubleCNotCancellationPass() {
+  ::registerDoubleCNotCancellationPass();
 }

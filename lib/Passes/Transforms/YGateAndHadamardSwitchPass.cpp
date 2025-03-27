@@ -33,6 +33,11 @@ Y⋅H = H⋅Y
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 using namespace mqss::support::transforms;
 
@@ -43,7 +48,7 @@ class YGateAndHadamardSwitchPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(YGateAndHadamardSwitchPass)
 
-  llvm::StringRef getArgument() const override { return "switch-y-hadamard"; }
+  llvm::StringRef getArgument() const override { return "SwitchYH"; }
   llvm::StringRef getDescription() const override {
     return "Pass that switches a pattern composed by Y and Hadamard to "
            "Hadamard and Y";
@@ -60,4 +65,9 @@ public:
 
 std::unique_ptr<Pass> mqss::opt::createYGateAndHadamardSwitchPass() {
   return std::make_unique<YGateAndHadamardSwitchPass>();
+}
+
+// Register the pass on initialization
+void registerYGateAndHadamardSwitchPass() {
+  ::registerYGateAndHadamardSwitchPass();
 }

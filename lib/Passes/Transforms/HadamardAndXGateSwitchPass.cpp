@@ -34,6 +34,11 @@ H⋅X = Z⋅H
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+// Include auto-generated pass registration
+namespace mqss::opt {
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"
+} // namespace mqss::opt
 using namespace mlir;
 using namespace mqss::support::transforms;
 
@@ -45,7 +50,7 @@ class HadamardAndXGateSwitchPass
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HadamardAndXGateSwitchPass)
 
-  llvm::StringRef getArgument() const override { return "switch-hadamard-x"; }
+  llvm::StringRef getArgument() const override { return "SwitchHX"; }
   llvm::StringRef getDescription() const override {
     return "Pass that switches a pattern composed Hadamard and X to Z and "
            "Hadamard";
@@ -62,4 +67,9 @@ public:
 
 std::unique_ptr<Pass> mqss::opt::createHadamardAndXGateSwitchPass() {
   return std::make_unique<HadamardAndXGateSwitchPass>();
+}
+
+// Register the pass on initialization
+void registerHadamardAndXGateSwitchPass() {
+  ::registerHadamardAndXGateSwitchPass();
 }

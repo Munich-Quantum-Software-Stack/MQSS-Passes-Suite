@@ -38,8 +38,8 @@ list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 # Include the MLIR helper macros.
+include(TableGen)
 include(AddMLIR)
-# Include additional LLVM CMake utilities
 include(AddLLVM)
 # Add LLVM, Clang and MLIR headers to the include path
 include_directories(SYSTEM ${LLVM_INCLUDE_DIRS} ${MLIR_INCLUDE_DIRS})
@@ -102,6 +102,16 @@ include_directories(
   ${qdmi_INCLUDE_DIRS}
   ${qinfo_INCLUDE_DIRS})
 
+# Set explicit paths
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include/Passes)
+set(LLVM_TARGET_DEFINITIONS
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Passes/Transforms.td)
+# Generate .inc files from TableGen
+mlir_tablegen(include/Passes/Transforms.h.inc -gen-pass-decls -name
+              MQSSOptTransforms)
+add_public_tablegen_target(MQSSTransformsPassIncGen)
+include_directories(BEFORE ${CMAKE_BINARY_DIR}/include)
+
 # Collect all .cpp files in the src directory
 file(GLOB SRC_CODEGEN "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/CodeGen/*.cpp")
 file(GLOB SRC_DECOMPOSITIONS
@@ -130,6 +140,8 @@ add_mlir_library(
   ${SRC_DECOMPOSITIONS}
   ${SRC_EXAMPLES}
   ${SRC_TRANSFORMS}
+  DEPENDS
+  MQSSTransformsPassIncGen
   LINK_LIBS
   PUBLIC
   SupportQuake

@@ -104,12 +104,21 @@ include_directories(
 
 # Set explicit paths
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include/Passes)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include/Optimizer)
 set(LLVM_TARGET_DEFINITIONS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Passes/Transforms.td)
 # Generate .inc files from TableGen
 mlir_tablegen(include/Passes/Transforms.h.inc -gen-pass-decls -name
               MQSSOptTransforms)
 add_public_tablegen_target(MQSSTransformsPassIncGen)
+
+set(LLVM_TARGET_DEFINITIONS
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Passes/Decompositions.td)
+# Generate .inc files from TableGen
+mlir_tablegen(include/Passes/Decompositions.h.inc -gen-pass-decls -name
+              MQSSOptDecompositions)
+add_public_tablegen_target(MQSSDecompositionsPassIncGen)
+
 include_directories(BEFORE ${CMAKE_BINARY_DIR}/include)
 
 # Collect all .cpp files in the src directory
@@ -142,6 +151,7 @@ add_mlir_library(
   ${SRC_TRANSFORMS}
   DEPENDS
   MQSSTransformsPassIncGen
+  MQSSDecompositionsPassIncGen
   LINK_LIBS
   PUBLIC
   SupportQuake

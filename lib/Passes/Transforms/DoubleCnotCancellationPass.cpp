@@ -45,7 +45,7 @@ namespace {
 
 class DoubleCnotCancellationPass
     : public PassWrapper<DoubleCnotCancellationPass,
-                         OperationPass<func::FuncOp>> {
+                         OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(DoubleCnotCancellationPass)
 

@@ -35,7 +35,7 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_DOUBLECNOTCANCELLATIONPASS
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;

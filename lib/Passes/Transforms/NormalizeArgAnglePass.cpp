@@ -100,6 +100,3 @@ public:
 std::unique_ptr<mlir::Pass> mqss::opt::createNormalizeArgAnglePass() {
   return std::make_unique<NormalizeArgAnglePass>();
 }
-
-// Register the pass on initialization
-void registerNormalizeArgAnglePass() { ::registerNormalizeArgAnglePass(); }

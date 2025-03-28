@@ -66,6 +66,3 @@ public:
 std::unique_ptr<Pass> mqss::opt::createCommuteXCNotPass() {
   return std::make_unique<CommuteXCNotPass>();
 }
-
-// Register the pass on initialization
-void registerCommuteXCNotPass() { ::registerCommuteXCNotPass(); }

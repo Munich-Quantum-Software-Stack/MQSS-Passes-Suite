@@ -35,7 +35,7 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_DOUBLECNOTCANCELLATIONPASS
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -45,7 +45,7 @@ namespace {
 
 class DoubleCnotCancellationPass
     : public PassWrapper<DoubleCnotCancellationPass,
-                         OperationPass<func::FuncOp>> {
+                         OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(DoubleCnotCancellationPass)
 
@@ -69,9 +69,4 @@ public:
 
 std::unique_ptr<Pass> mqss::opt::createDoubleCnotCancellationPass() {
   return std::make_unique<DoubleCnotCancellationPass>();
-}
-
-// Register the pass on initialization
-void registerDoubleCNotCancellationPass() {
-  ::registerDoubleCNotCancellationPass();
 }

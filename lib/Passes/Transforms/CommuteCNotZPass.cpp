@@ -154,6 +154,3 @@ public:
 std::unique_ptr<Pass> mqss::opt::createCommuteCNotZPass() {
   return std::make_unique<CommuteCNotZPass>();
 }
-
-// Register the pass on initialization
-void registerCommuteCNotZPass() { ::registerCommuteCNotZPass(); }

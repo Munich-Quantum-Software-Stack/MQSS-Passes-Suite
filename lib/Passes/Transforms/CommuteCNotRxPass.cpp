@@ -36,7 +36,7 @@ https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-c
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_COMMUTECNOTRX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -67,6 +67,3 @@ public:
 std::unique_ptr<Pass> mqss::opt::createCommuteCNotRxPass() {
   return std::make_unique<CommuteCNotRxPass>();
 }
-
-// Register the pass on initialization
-void registerCommuteCNotRxPass() { ::registerCommuteCNotRxPass(); }

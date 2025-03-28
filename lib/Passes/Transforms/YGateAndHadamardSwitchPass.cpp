@@ -66,8 +66,3 @@ public:
 std::unique_ptr<Pass> mqss::opt::createYGateAndHadamardSwitchPass() {
   return std::make_unique<YGateAndHadamardSwitchPass>();
 }
-
-// Register the pass on initialization
-void registerYGateAndHadamardSwitchPass() {
-  ::registerYGateAndHadamardSwitchPass();
-}

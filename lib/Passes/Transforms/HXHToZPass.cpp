@@ -109,6 +109,3 @@ public:
 std::unique_ptr<Pass> mqss::opt::createHXHToZPass() {
   return std::make_unique<HXHToZPass>();
 }
-
-// Register the pass on initialization
-void registerHXHToZPass() { ::registerHXHToZPass(); }

@@ -126,8 +126,3 @@ public:
 std::unique_ptr<Pass> mqss::opt::createPauliGateAndHadamardSwitchPass() {
   return std::make_unique<PauliGateAndHadamardSwitchPass>();
 }
-
-// Register the pass on initialization
-void registerPauliGateAndHadamardSwitchPass() {
-  ::registerPauliGateAndHadamardSwitchPass();
-}

@@ -91,8 +91,3 @@ public:
 std::unique_ptr<mlir::Pass> mqss::opt::createNullRotationCancellationPass() {
   return std::make_unique<NullRotationCancellationPass>();
 }
-
-// Register the pass on initialization
-void registerNullRotationCancellationPass() {
-  ::registerNullRotationCancellationPass();
-}

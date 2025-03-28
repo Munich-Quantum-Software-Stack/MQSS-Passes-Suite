@@ -70,8 +70,3 @@ public:
 std::unique_ptr<Pass> mqss::opt::createDoubleCnotCancellationPass() {
   return std::make_unique<DoubleCnotCancellationPass>();
 }
-
-// Register the pass on initialization
-void registerDoubleCNotCancellationPass() {
-  ::registerDoubleCNotCancellationPass();
-}

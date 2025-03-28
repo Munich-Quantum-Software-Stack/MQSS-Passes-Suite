@@ -378,3 +378,8 @@ std::unique_ptr<mlir::Pass> createHadamardAndYGateSwitchPass();
 std::unique_ptr<mlir::Pass> createHadamardAndZGateSwitchPass();
 } // namespace mqss::opt
 #endif // TRANSFORMS_H
+
+// declarative passes
+#define GEN_PASS_DECL
+#define GEN_PASS_REGISTRATION
+#include "Passes/Transforms.h.inc"

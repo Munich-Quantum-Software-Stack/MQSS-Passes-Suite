@@ -98,7 +98,7 @@ std::unique_ptr<mlir::Pass> createQuakeQMapPass(Architecture &architecture,
  CommuteCNotRxPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createCommuteCNotRxPass();
+std::unique_ptr<mlir::Pass> createCommuteCxRxPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of two-qubits Cx
@@ -115,7 +115,7 @@ std::unique_ptr<mlir::Pass> createCommuteCNotRxPass();
  CommuteCNotXPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createCommuteCNotXPass();
+std::unique_ptr<mlir::Pass> createCommuteCxXPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of two-qubits Cx
@@ -135,7 +135,7 @@ std::unique_ptr<mlir::Pass> createCommuteCNotXPass();
  CommuteCNotZPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createCommuteCNotZPass();
+std::unique_ptr<mlir::Pass> createCommuteCxZPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of Rx and a
@@ -151,7 +151,7 @@ std::unique_ptr<mlir::Pass> createCommuteCNotZPass();
  CommuteRxCNotPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createCommuteRxCNotPass();
+std::unique_ptr<mlir::Pass> createCommuteRxCxPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of X and a
@@ -167,7 +167,7 @@ std::unique_ptr<mlir::Pass> createCommuteRxCNotPass();
  CommuteXCNotPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createCommuteXCNotPass();
+std::unique_ptr<mlir::Pass> createCommuteXCxPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of Z and a
@@ -186,7 +186,7 @@ std::unique_ptr<mlir::Pass> createCommuteXCNotPass();
  CommuteZCNotPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createCommuteZCNotPass();
+std::unique_ptr<mlir::Pass> createCommuteZCxPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of CNot and
@@ -202,7 +202,7 @@ std::unique_ptr<mlir::Pass> createCommuteZCNotPass();
  DoubleCnotCancellationPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createDoubleCnotCancellationPass();
+std::unique_ptr<mlir::Pass> createCancellationDoubleCxPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on each rotation Rx, Ry, and Rz gate in
@@ -235,7 +235,7 @@ std::unique_ptr<mlir::Pass> createNormalizeArgAnglePass();
  NullRotationCancellationPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createNullRotationCancellationPass();
+std::unique_ptr<mlir::Pass> createCancellationNullRotationPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard, X
@@ -285,7 +285,7 @@ std::unique_ptr<mlir::Pass> createHZHToXPass();
  PauliGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createPauliGateAndHadamardSwitchPass();
+std::unique_ptr<mlir::Pass> createSwitchPauliHPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of single-qubit
@@ -300,7 +300,7 @@ std::unique_ptr<mlir::Pass> createPauliGateAndHadamardSwitchPass();
  XGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createXGateAndHadamardSwitchPass();
+std::unique_ptr<mlir::Pass> createSwitchXHPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of single-qubit
@@ -315,7 +315,7 @@ std::unique_ptr<mlir::Pass> createXGateAndHadamardSwitchPass();
  YGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createYGateAndHadamardSwitchPass();
+std::unique_ptr<mlir::Pass> createSwitchYHPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of single-qubit
@@ -330,7 +330,7 @@ std::unique_ptr<mlir::Pass> createYGateAndHadamardSwitchPass();
  ZGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createZGateAndHadamardSwitchPass();
+std::unique_ptr<mlir::Pass> createSwitchZHPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard and
@@ -345,7 +345,7 @@ std::unique_ptr<mlir::Pass> createZGateAndHadamardSwitchPass();
  HadamardAndXGateSwitchPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createHadamardAndXGateSwitchPass();
+std::unique_ptr<mlir::Pass> createSwitchHXPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard and
@@ -360,7 +360,7 @@ std::unique_ptr<mlir::Pass> createHadamardAndXGateSwitchPass();
  HadamardAndYGateSwitchPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createHadamardAndYGateSwitchPass();
+std::unique_ptr<mlir::Pass> createSwitchHYPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of Hadamard and
@@ -375,7 +375,7 @@ std::unique_ptr<mlir::Pass> createHadamardAndYGateSwitchPass();
  HadamardAndZGateSwitchPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createHadamardAndZGateSwitchPass();
+std::unique_ptr<mlir::Pass> createSwitchHZPass();
 } // namespace mqss::opt
 #endif // TRANSFORMS_H
 

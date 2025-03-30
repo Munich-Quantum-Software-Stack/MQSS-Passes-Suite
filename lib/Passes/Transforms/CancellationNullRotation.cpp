@@ -20,51 +20,76 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-It applies the following transformations
-
-H⋅X = Z⋅H
-
 *************************************************************************/
 
 #include "Passes/Transforms.hpp"
-#include "Support/Transforms/SwitchOperations.hpp"
+#include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
+#include <cmath>
+#include <numbers>
+
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_CANCELLATIONNULLROTATION
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
-using namespace mqss::support::transforms;
 
 namespace {
 
-class HadamardAndXGateSwitchPass
-    : public PassWrapper<HadamardAndXGateSwitchPass,
+bool checkDoublePiMultiplies(double angle) {
+  const double pi = std::numbers::pi;
+  const double doublePi = 2 * pi;
+  if (std::fmod(angle, doublePi) == 0)
+    return true;
+  return false;
+}
+
+void nullRotationCancellation(mlir::Operation *currentOp) {
+  if (!isa<quake::RxOp>(currentOp) && !isa<quake::RyOp>(currentOp) &&
+      !isa<quake::RzOp>(currentOp))
+    return; // do nothing if it is not rotation
+  auto gate = dyn_cast<quake::OperatorInterface>(currentOp);
+  // assuming that parameters are all rotation angles
+  bool deleteGate = true;
+  for (auto parameter : gate.getParameters()) {
+    double param =
+        supportQuake::extractDoubleArgumentValue(parameter.getDefiningOp());
+    if (!checkDoublePiMultiplies(param) && param != 0)
+      deleteGate = false;
+  }
+  if (deleteGate) {
+    // remove the rotation gate
+    mlir::IRRewriter rewriter(gate->getContext());
+    rewriter.eraseOp(gate);
+  }
+}
+
+class CancellationNullRotation
+    : public PassWrapper<CancellationNullRotation,
                          OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HadamardAndXGateSwitchPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CancellationNullRotation)
 
-  llvm::StringRef getArgument() const override { return "SwitchHX"; }
+  llvm::StringRef getArgument() const override {
+    return "CancellationNullRotation";
+  }
   llvm::StringRef getDescription() const override {
-    return "Pass that switches a pattern composed Hadamard and X to Z and "
-           "Hadamard";
+    return "Optimization pass that removes of Rx, Ry and Rz null rotations";
   }
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
-      patternSwitch<quake::HOp, quake::XOp, quake::ZOp, quake::HOp>(op);
-    });
+    circuit.walk([&](Operation *op) { nullRotationCancellation(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createHadamardAndXGateSwitchPass() {
-  return std::make_unique<HadamardAndXGateSwitchPass>();
+std::unique_ptr<mlir::Pass> mqss::opt::createCancellationNullRotationPass() {
+  return std::make_unique<CancellationNullRotation>();
 }

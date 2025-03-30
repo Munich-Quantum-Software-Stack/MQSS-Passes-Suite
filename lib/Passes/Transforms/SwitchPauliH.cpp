@@ -20,7 +20,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from: https://threeplusone.com/pubs/on_gates.pdf
+It applies the following transformations
+
+X⋅H = H⋅Z
+Y⋅H = H⋅Y
+Z⋅H = H⋅X
 
 *************************************************************************/
 
@@ -34,14 +38,14 @@ Adapted from: https://threeplusone.com/pubs/on_gates.pdf
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_SWITCHPAULIH
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-void ReplaceHXHToZ(mlir::Operation *currentOp) {
+void SwitchPauliHOperation(mlir::Operation *currentOp) {
   auto currentGate = dyn_cast_or_null<quake::HOp>(*currentOp);
   if (!currentGate)
     return;
@@ -54,20 +58,13 @@ void ReplaceHXHToZ(mlir::Operation *currentOp) {
       currentGate, currentGate.getTargets()[0]);
   if (!prevOp)
     return;
-  auto prevGate = dyn_cast_or_null<quake::XOp>(*prevOp);
-  if (!prevGate)
-    return;
-  // check single qubit gate
-  if (prevGate.getControls().size() != 0 || prevGate.getTargets().size() != 1)
-    return;
-  auto prevPrevOp = supportQuake::getPreviousOperationOnTarget(
-      prevGate, currentGate.getTargets()[0]);
-  if (!prevPrevOp)
-    return;
-  auto prevPrevGate = dyn_cast_or_null<quake::HOp>(*prevPrevOp);
-  // check single qubit gate
-  if (prevPrevGate.getControls().size() != 0 ||
-      prevPrevGate.getTargets().size() != 1)
+  if (!isa<quake::XOp>(prevOp) && !isa<quake::YOp>(prevOp) &&
+      !isa<quake::ZOp>(prevOp))
+    return; // if no pauli, do nothing
+  auto prevGateInt = dyn_cast<quake::OperatorInterface>(prevOp);
+  // check single qubit pauli operation
+  if (prevGateInt.getControls().size() != 0 ||
+      prevGateInt.getTargets().size() != 1)
     return;
 // I found the pattern, then I remove it from the circuit
 #ifdef DEBUG
@@ -75,37 +72,56 @@ void ReplaceHXHToZ(mlir::Operation *currentOp) {
   currentGate->print(llvm::outs());
   llvm::outs() << "\n";
   llvm::outs() << "Previous Operation: ";
-  prevGate->print(llvm::outs());
-  llvm::outs() << "\n";
-  llvm::outs() << "Previous Previous Operation: ";
-  prevPrevGate->print(llvm::outs());
+  prevGateInt->print(llvm::outs());
   llvm::outs() << "\n";
 #endif
   mlir::IRRewriter rewriter(currentGate->getContext());
   rewriter.setInsertionPointAfter(currentGate);
-  rewriter.create<quake::ZOp>(currentGate.getLoc(), currentGate.getControls(),
-                              currentGate.getTargets());
-  rewriter.eraseOp(currentGate);
-  rewriter.eraseOp(prevGate);
-  rewriter.eraseOp(prevPrevGate);
+  if (isa<quake::XOp>(prevOp)) {
+    auto prevGate = dyn_cast_or_null<quake::XOp>(*prevOp);
+    if (!prevGate)
+      return;
+    rewriter.create<quake::ZOp>(prevGate.getLoc(), prevGate.isAdj(),
+                                prevGate.getParameters(),
+                                prevGate.getControls(), prevGate.getTargets());
+    rewriter.eraseOp(prevGate);
+  } else if (isa<quake::YOp>(prevOp)) {
+    auto prevGate = dyn_cast_or_null<quake::YOp>(*prevOp);
+    if (!prevGate)
+      return;
+    rewriter.create<quake::YOp>(prevGate.getLoc(), prevGate.isAdj(),
+                                prevGate.getParameters(),
+                                prevGate.getControls(), prevGate.getTargets());
+    rewriter.eraseOp(prevGate);
+  } else if (isa<quake::ZOp>(prevOp)) {
+    auto prevGate = dyn_cast_or_null<quake::ZOp>(*prevOp);
+    if (!prevGate)
+      return;
+    rewriter.create<quake::XOp>(prevGate.getLoc(), prevGate.isAdj(),
+                                prevGate.getParameters(),
+                                prevGate.getControls(), prevGate.getTargets());
+    rewriter.eraseOp(prevGate);
+  }
 }
 
-class HXHToZPass : public PassWrapper<HXHToZPass, OperationPass<func::FuncOp>> {
+class SwitchPauliH
+    : public PassWrapper<SwitchPauliH, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HXHToZPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchPauliH)
 
-  llvm::StringRef getArgument() const override { return "HXHToZ"; }
+  llvm::StringRef getArgument() const override { return "SwitchPauliH"; }
   llvm::StringRef getDescription() const override {
-    return "Optimization pass that replaces a pattern composed of H, X, H by Z";
+    return "Pass that switches a pattern composed by {X,Y,Z} (Pauli) and "
+           "Hadamard";
   }
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceHXHToZ(op); });
+    circuit.walk([&](Operation *op) { SwitchPauliHOperation(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createHXHToZPass() {
-  return std::make_unique<HXHToZPass>();
+std::unique_ptr<Pass> mqss::opt::createSwitchPauliHPass() {
+  return std::make_unique<SwitchPauliH>();
 }

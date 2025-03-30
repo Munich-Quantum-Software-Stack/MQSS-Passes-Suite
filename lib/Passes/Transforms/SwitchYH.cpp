@@ -35,18 +35,16 @@ Y⋅H = H⋅Y
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_SWITCHYH
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 using namespace mqss::support::transforms;
 
 namespace {
-class YGateAndHadamardSwitchPass
-    : public PassWrapper<YGateAndHadamardSwitchPass,
-                         OperationPass<func::FuncOp>> {
+class SwitchYH : public PassWrapper<SwitchYH, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(YGateAndHadamardSwitchPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchYH)
 
   llvm::StringRef getArgument() const override { return "SwitchYH"; }
   llvm::StringRef getDescription() const override {
@@ -63,6 +61,6 @@ public:
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createYGateAndHadamardSwitchPass() {
-  return std::make_unique<YGateAndHadamardSwitchPass>();
+std::unique_ptr<Pass> mqss::opt::createSwitchYHPass() {
+  return std::make_unique<SwitchYH>();
 }

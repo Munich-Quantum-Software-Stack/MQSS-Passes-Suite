@@ -35,7 +35,7 @@ Adapted from: https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_COMMUTEZCX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -97,10 +97,9 @@ void commuteZCNot(mlir::Operation *currentOp) {
   }
 }
 
-class CommuteZCNotPass
-    : public PassWrapper<CommuteZCNotPass, OperationPass<func::FuncOp>> {
+class CommuteZCx : public PassWrapper<CommuteZCx, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteZCNotPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteZCx)
 
   llvm::StringRef getArgument() const override { return "CommuteZCx"; }
   llvm::StringRef getDescription() const override {
@@ -114,6 +113,6 @@ public:
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteZCNotPass() {
-  return std::make_unique<CommuteZCNotPass>();
+std::unique_ptr<Pass> mqss::opt::createCommuteZCxPass() {
+  return std::make_unique<CommuteZCx>();
 }

@@ -20,22 +20,23 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from: https://arxiv.org/pdf/quant-ph/0308033.pdf
+It applies the following transformations
+
+H⋅X = Z⋅H
 
 *************************************************************************/
 
 #include "Passes/Transforms.hpp"
-#include "Support/Transforms/CommutateOperations.hpp"
+#include "Support/Transforms/SwitchOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
-#include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_SWITCHHX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -43,26 +44,25 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class CommuteRxCNotPass
-    : public PassWrapper<CommuteRxCNotPass, OperationPass<func::FuncOp>> {
+class SwitchHX : public PassWrapper<SwitchHX, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteRxCNotPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchHX)
 
-  llvm::StringRef getArgument() const override { return "CommuteRxCx"; }
+  llvm::StringRef getArgument() const override { return "SwitchHX"; }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass to pattern Rx-CNot to CNot-Rx";
+    return "Pass that switches a pattern composed Hadamard and X to Z and "
+           "Hadamard";
   }
 
   void runOnOperation() override {
     auto circuit = getOperation();
     circuit.walk([&](Operation *op) {
-      commuteOperation<quake::RxOp, quake::XOp>(op, 0, 1, 1, 1);
-      // CommuteRxCNot(op);
+      patternSwitch<quake::HOp, quake::XOp, quake::ZOp, quake::HOp>(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteRxCNotPass() {
-  return std::make_unique<CommuteRxCNotPass>();
+std::unique_ptr<Pass> mqss::opt::createSwitchHXPass() {
+  return std::make_unique<SwitchHX>();
 }

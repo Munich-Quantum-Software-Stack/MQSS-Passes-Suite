@@ -22,8 +22,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 It applies the following transformations
 
-H⋅Y = Y⋅H
-
+Z⋅H = H⋅X
 *************************************************************************/
 
 #include "Passes/Transforms.hpp"
@@ -36,35 +35,32 @@ H⋅Y = Y⋅H
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_SWITCHZH
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 using namespace mqss::support::transforms;
 
 namespace {
-
-class HadamardAndYGateSwitchPass
-    : public PassWrapper<HadamardAndYGateSwitchPass,
-                         OperationPass<func::FuncOp>> {
+class SwitchZH : public PassWrapper<SwitchZH, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HadamardAndYGateSwitchPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchZH)
 
-  llvm::StringRef getArgument() const override { return "SwitchHY"; }
+  llvm::StringRef getArgument() const override { return "SwitchZH"; }
   llvm::StringRef getDescription() const override {
-    return "Pass that switches a pattern composed Hadamard and Y to Y and "
-           "Hadamard";
+    return "Pass that switches a pattern composed by Z and Hadamard to "
+           "Hadamard and X";
   }
 
   void runOnOperation() override {
     auto circuit = getOperation();
     circuit.walk([&](Operation *op) {
-      patternSwitch<quake::HOp, quake::YOp, quake::YOp, quake::HOp>(op);
+      patternSwitch<quake::ZOp, quake::HOp, quake::HOp, quake::XOp>(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createHadamardAndYGateSwitchPass() {
-  return std::make_unique<HadamardAndYGateSwitchPass>();
+std::unique_ptr<Pass> mqss::opt::createSwitchZHPass() {
+  return std::make_unique<SwitchZH>();
 }

@@ -35,7 +35,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_COMMUTECXZ
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -134,10 +134,9 @@ void commuteCNotZ(mlir::Operation *currentOp) {
   }*/
 }
 
-class CommuteCNotZPass
-    : public PassWrapper<CommuteCNotZPass, OperationPass<func::FuncOp>> {
+class CommuteCxZ : public PassWrapper<CommuteCxZ, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCNotZPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCxZ)
 
   llvm::StringRef getArgument() const override { return "CommuteCxZ"; }
   llvm::StringRef getDescription() const override {
@@ -151,6 +150,6 @@ public:
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteCNotZPass() {
-  return std::make_unique<CommuteCNotZPass>();
+std::unique_ptr<Pass> mqss::opt::createCommuteCxZPass() {
+  return std::make_unique<CommuteCxZ>();
 }

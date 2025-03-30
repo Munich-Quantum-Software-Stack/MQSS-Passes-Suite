@@ -20,7 +20,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from:  https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
+Adapted from:
+https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-can-be-implemented-using-a-cnot-gate-and-hadamard-gates
 
 *************************************************************************/
 
@@ -35,7 +36,7 @@ Adapted from:  https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_COMMUTECXRX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -43,26 +44,26 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class CommuteXCNotPass
-    : public PassWrapper<CommuteXCNotPass, OperationPass<func::FuncOp>> {
+class CommuteCxRx
+    : public PassWrapper<CommuteCxRx, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteXCNotPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCxRx)
 
-  llvm::StringRef getArgument() const override { return "CommuteXCx"; }
+  llvm::StringRef getArgument() const override { return "CommuteCxRx"; }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass to pattern X-CNot to CNot-X";
+    return "Apply commutation pass of pattern CNot-Rx";
   }
 
   void runOnOperation() override {
     auto circuit = getOperation();
     circuit.walk([&](Operation *op) {
-      commuteOperation<quake::XOp, quake::XOp>(op, 0, 1, 1, 1);
-      // CommuteXCNot(op);
+      commuteOperation<quake::XOp, quake::RxOp>(op, 1, 1, 0, 1);
+      // CommuteCNotRx(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteXCNotPass() {
-  return std::make_unique<CommuteXCNotPass>();
+std::unique_ptr<Pass> mqss::opt::createCommuteCxRxPass() {
+  return std::make_unique<CommuteCxRx>();
 }

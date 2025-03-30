@@ -34,14 +34,14 @@ Adapted from: https://threeplusone.com/pubs/on_gates.pdf
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_HXHTOZ
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-void ReplaceHZHToX(mlir::Operation *currentOp) {
+void ReplaceHXHToZ(mlir::Operation *currentOp) {
   auto currentGate = dyn_cast_or_null<quake::HOp>(*currentOp);
   if (!currentGate)
     return;
@@ -54,7 +54,7 @@ void ReplaceHZHToX(mlir::Operation *currentOp) {
       currentGate, currentGate.getTargets()[0]);
   if (!prevOp)
     return;
-  auto prevGate = dyn_cast_or_null<quake::ZOp>(*prevOp);
+  auto prevGate = dyn_cast_or_null<quake::XOp>(*prevOp);
   if (!prevGate)
     return;
   // check single qubit gate
@@ -83,29 +83,29 @@ void ReplaceHZHToX(mlir::Operation *currentOp) {
 #endif
   mlir::IRRewriter rewriter(currentGate->getContext());
   rewriter.setInsertionPointAfter(currentGate);
-  rewriter.create<quake::XOp>(currentGate.getLoc(), currentGate.getControls(),
+  rewriter.create<quake::ZOp>(currentGate.getLoc(), currentGate.getControls(),
                               currentGate.getTargets());
   rewriter.eraseOp(currentGate);
   rewriter.eraseOp(prevGate);
   rewriter.eraseOp(prevPrevGate);
 }
 
-class HZHToXPass : public PassWrapper<HZHToXPass, OperationPass<func::FuncOp>> {
+class HXHToZ : public PassWrapper<HXHToZ, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HZHToXPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HXHToZ)
 
-  llvm::StringRef getArgument() const override { return "HZHToX"; }
+  llvm::StringRef getArgument() const override { return "HXHToZ"; }
   llvm::StringRef getDescription() const override {
-    return "Optimization pass that replaces a pattern composed of H, Z, H by X";
+    return "Optimization pass that replaces a pattern composed of H, X, H by Z";
   }
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceHZHToX(op); });
+    circuit.walk([&](Operation *op) { ReplaceHXHToZ(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createHZHToXPass() {
-  return std::make_unique<HZHToXPass>();
+std::unique_ptr<Pass> mqss::opt::createHXHToZPass() {
+  return std::make_unique<HXHToZ>();
 }

@@ -17,10 +17,10 @@ the License.
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 *************************************************************************
   author Martin Letras
-  date   December 2024
+  date   January 2025
   version 1.0
 
-  Adapted from: https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
+Adapted from: https://arxiv.org/pdf/quant-ph/0308033.pdf
 
 *************************************************************************/
 
@@ -35,7 +35,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_DEF_COMMUTECNOTX
+#define GEN_PASS_DEF_COMMUTERXCX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -43,26 +43,26 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class CommuteCNotXPass
-    : public PassWrapper<CommuteCNotXPass, OperationPass<func::FuncOp>> {
+class CommuteRxCx
+    : public PassWrapper<CommuteRxCx, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCNotXPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteRxCx)
 
-  llvm::StringRef getArgument() const override { return "CommuteCxX"; }
+  llvm::StringRef getArgument() const override { return "CommuteRxCx"; }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass to pattern CNot-X";
+    return "Apply commutation pass to pattern Rx-CNot to CNot-Rx";
   }
 
   void runOnOperation() override {
     auto circuit = getOperation();
     circuit.walk([&](Operation *op) {
-      commuteOperation<quake::XOp, quake::XOp>(op, 1, 1, 0, 1);
-      // CommuteCNotX(op);
+      commuteOperation<quake::RxOp, quake::XOp>(op, 0, 1, 1, 1);
+      // CommuteRxCNot(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteCNotXPass() {
-  return std::make_unique<CommuteCNotXPass>();
+std::unique_ptr<Pass> mqss::opt::createCommuteRxCxPass() {
+  return std::make_unique<CommuteRxCx>();
 }

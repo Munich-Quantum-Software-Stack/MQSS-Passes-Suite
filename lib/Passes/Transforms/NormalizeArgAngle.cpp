@@ -37,7 +37,7 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_NORMALIZEARGANGLE
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -77,10 +77,10 @@ void normalizeAngleOfRotations(mlir::Operation *currentOp, OpBuilder builder) {
   rewriter.eraseOp(gate);
 }
 
-class NormalizeArgAnglePass
-    : public PassWrapper<NormalizeArgAnglePass, OperationPass<func::FuncOp>> {
+class NormalizeArgAngle
+    : public PassWrapper<NormalizeArgAngle, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NormalizeArgAnglePass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NormalizeArgAngle)
 
   llvm::StringRef getArgument() const override { return "NormalizeArgAngle"; }
   llvm::StringRef getDescription() const override {
@@ -98,5 +98,5 @@ public:
 } // namespace
 
 std::unique_ptr<mlir::Pass> mqss::opt::createNormalizeArgAnglePass() {
-  return std::make_unique<NormalizeArgAnglePass>();
+  return std::make_unique<NormalizeArgAngle>();
 }

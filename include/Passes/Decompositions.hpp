@@ -96,7 +96,7 @@ std::unique_ptr<mlir::Pass> createCzToHCxHDecompositionPass();
  ReverseCNotPass. This `mlir::Pass` object has to be passed to an
  `mlir::PassManager` to take effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createReverseCNotPass();
+std::unique_ptr<mlir::Pass> createReverseCxPass();
 
 /**
  * @brief QUAKE MLIR pass that operates on the pattern composed of S adjoint and

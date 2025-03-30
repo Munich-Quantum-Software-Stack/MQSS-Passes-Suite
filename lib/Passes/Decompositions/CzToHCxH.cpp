@@ -20,7 +20,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   December 2024
   version 1.0
 
-Adapted from: https://quantumcomputing.stackexchange.com/a/13784
+Adapted from:
+https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-can-be-implemented-using-a-cnot-gate-and-hadamard-gates
 
 *************************************************************************/
 
@@ -33,45 +34,43 @@ Adapted from: https://quantumcomputing.stackexchange.com/a/13784
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_CZTOHCXH
 #include "Passes/Decompositions.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-struct ReplaceCxToHCzH : public OpRewritePattern<quake::XOp> {
+struct ReplaceCzToHCxH : public OpRewritePattern<quake::ZOp> {
   using OpRewritePattern::OpRewritePattern;
-  LogicalResult matchAndRewrite(quake::XOp cxOp,
+  LogicalResult matchAndRewrite(quake::ZOp czOp,
                                 PatternRewriter &rewriter) const override {
-    if (cxOp.getControls().size() != 1 && cxOp.getTargets().size() != 1)
+    if (czOp.getControls().size() != 1 && czOp.getTargets().size() != 1)
       return success(); // if the cx operation is not two qubit then do nothing
     // Get the operands of the XOp (control and target qubits)
-    Value control = cxOp.getControls()[0];
-    Value target = cxOp.getTargets()[0];
-    Location loc = cxOp.getLoc();
-    // TODO: howt to pass hOp.isAdj(), hOp.getParameters()
+    Value control = czOp.getControls()[0];
+    Value target = czOp.getTargets()[0];
+    Location loc = czOp.getLoc();
+    // TODO: how to pass hOp.isAdj(), hOp.getParameters()
     // Insert the H gate on the original target qubit
     rewriter.create<quake::HOp>(loc, target);
     // Insert the Z gate swapping the control and target qubits
-    rewriter.create<quake::ZOp>(loc, target, control);
+    rewriter.create<quake::XOp>(loc, control, target);
     // Insert the H gate on the original target qubit
     rewriter.create<quake::HOp>(loc, target);
-    // Erase the original Cx operation
-    rewriter.eraseOp(cxOp);
+    // Erase the original Cz operation
+    rewriter.eraseOp(czOp);
     return success();
   }
 };
 
-class CxToHCzHDecompositionPass
-    : public PassWrapper<CxToHCzHDecompositionPass,
-                         OperationPass<func::FuncOp>> {
+class CzToHCxH : public PassWrapper<CzToHCxH, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CxToHCzHDecompositionPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CzToHCxH)
 
-  llvm::StringRef getArgument() const override { return "CxToHCzH"; }
+  llvm::StringRef getArgument() const override { return "CzToHCxH"; }
   llvm::StringRef getDescription() const override {
-    return "Decomposition pass of two-qubits cnot by H, Cz, and H";
+    return "Decomposition pass of Cz by H, Cx, and H";
   }
 
   void runOnOperation() override {
@@ -79,23 +78,23 @@ public:
     auto ctx = circuit.getContext();
 
     RewritePatternSet patterns(ctx);
-    patterns.insert<ReplaceCxToHCzH>(ctx);
+    patterns.insert<ReplaceCzToHCxH>(ctx);
     ConversionTarget target(*ctx);
     target.addLegalDialect<quake::QuakeDialect>();
-    target.addIllegalOp<quake::XOp>();
+    target.addIllegalOp<quake::ZOp>();
     if (failed(applyPartialConversion(circuit, target, std::move(patterns)))) {
-      circuit.emitOpError("CxToHCzHDecompositionPass failed");
+      circuit.emitOpError("CzToHCxHDecompositionPass failed");
       signalPassFailure();
     }
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCxToHCzHDecompositionPass() {
-  return std::make_unique<CxToHCzHDecompositionPass>();
+std::unique_ptr<Pass> mqss::opt::createCzToHCxHDecompositionPass() {
+  return std::make_unique<CzToHCxH>();
 }
 
 // Register the pass on initialization
-void registerCxToHCzHDecompositionPass() {
-  ::registerCxToHCzHDecompositionPass();
+void registerCzToHCxHDecompositionPass() {
+  ::registerCzToHCxHDecompositionPass();
 }

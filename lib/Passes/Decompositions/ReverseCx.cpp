@@ -34,7 +34,7 @@ https://agra.informatik.uni-bremen.de/doc/konf/2021_DSD_CNOTs_remote_gates.pdf
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_REVERSECX
 #include "Passes/Decompositions.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -67,10 +67,9 @@ void ReverseCNot(mlir::Operation *currentOp) {
   rewriter.eraseOp(cxOp);
 }
 
-class ReverseCNotPass
-    : public PassWrapper<ReverseCNotPass, OperationPass<func::FuncOp>> {
+class ReverseCx : public PassWrapper<ReverseCx, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(ReverseCNotPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(ReverseCx)
 
   llvm::StringRef getArgument() const override { return "ReverseCx"; }
   llvm::StringRef getDescription() const override {
@@ -85,9 +84,6 @@ public:
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createReverseCNotPass() {
-  return std::make_unique<ReverseCNotPass>();
+std::unique_ptr<Pass> mqss::opt::createReverseCxPass() {
+  return std::make_unique<ReverseCx>();
 }
-
-// Register the pass on initialization
-void registerReverseCNotPass() { ::registerReverseCNotPass(); }

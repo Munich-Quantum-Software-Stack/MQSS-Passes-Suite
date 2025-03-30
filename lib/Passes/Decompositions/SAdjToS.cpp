@@ -34,14 +34,14 @@ Adapted from:  https://dl.acm.org/doi/10.5555/1972505
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_SADJTOS
 #include "Passes/Decompositions.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-void ReplaceSZToSAdj(mlir::Operation *currentOp) {
+void ReplaceSAdjZToS(mlir::Operation *currentOp) {
   auto currentGate = dyn_cast_or_null<quake::ZOp>(*currentOp);
   if (!currentGate)
     return;
@@ -60,8 +60,8 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
   // check single qubit gate
   if (prevGate.getControls().size() != 0 || prevGate.getTargets().size() != 1)
     return;
-  if (prevGate.isAdj())
-    return;
+  if (!prevGate.isAdj())
+    return; // if it is not adjoint, do nothing
 // I found the pattern, then I remove it from the circuit
 #ifdef DEBUG
   llvm::outs() << "Current Operation: ";
@@ -73,33 +73,30 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
 #endif
   mlir::IRRewriter rewriter(currentGate->getContext());
   rewriter.setInsertionPointAfter(currentGate);
-  rewriter.create<quake::SOp>(prevGate.getLoc(), true, prevGate.getParameters(),
-                              prevGate.getControls(), prevGate.getTargets());
+  rewriter.create<quake::SOp>(prevGate.getLoc(), false,
+                              prevGate.getParameters(), prevGate.getControls(),
+                              prevGate.getTargets());
   rewriter.eraseOp(currentGate);
   rewriter.eraseOp(prevGate);
 }
 
-class SToSAdjPass
-    : public PassWrapper<SToSAdjPass, OperationPass<func::FuncOp>> {
+class SAdjToS : public PassWrapper<SAdjToS, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SToSAdjPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SAdjToS)
 
-  llvm::StringRef getArgument() const override { return "SZToSadj"; }
+  llvm::StringRef getArgument() const override { return "SAdjZToS"; }
   llvm::StringRef getDescription() const override {
-    return "Optimization pass that replaces a pattern composed of S and Z by "
-           "S(adj)";
+    return "Optimization pass that replaces a pattern composed of S adjoint "
+           "and Z by S";
   }
 
   void runOnOperation() override {
     auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceSZToSAdj(op); });
+    circuit.walk([&](Operation *op) { ReplaceSAdjZToS(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createSToSAdjPass() {
-  return std::make_unique<SToSAdjPass>();
+std::unique_ptr<Pass> mqss::opt::createSAdjToSPass() {
+  return std::make_unique<SAdjToS>();
 }
-
-// Register the pass on initialization
-void registerSToSAdjPass() { ::registerSToSAdjPass(); }

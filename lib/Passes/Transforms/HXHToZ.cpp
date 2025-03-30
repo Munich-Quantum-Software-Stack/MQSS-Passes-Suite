@@ -90,7 +90,7 @@ void ReplaceHXHToZ(mlir::Operation *currentOp) {
   rewriter.eraseOp(prevPrevGate);
 }
 
-class HXHToZ : public PassWrapper<HXHToZ, OperationPass<func::FuncOp>> {
+class HXHToZ : public PassWrapper<HXHToZ, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HXHToZ)
 

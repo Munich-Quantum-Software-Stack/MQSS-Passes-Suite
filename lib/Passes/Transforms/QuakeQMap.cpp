@@ -183,7 +183,7 @@ void loadMeasurementsToQC(Operation *op, qc::QuantumComputation &qc,
 
 namespace {
 
-class QuakeQMap : public PassWrapper<QuakeQMap, OperationPass<func::FuncOp>> {
+class QuakeQMap : public PassWrapper<QuakeQMap, OperationPass<mlir::ModuleOp>> {
 private:
   Architecture &architecture;
   const Configuration &settings;

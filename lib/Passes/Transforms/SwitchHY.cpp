@@ -44,7 +44,7 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class SwitchHY : public PassWrapper<SwitchHY, OperationPass<func::FuncOp>> {
+class SwitchHY : public PassWrapper<SwitchHY, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchHY)
 

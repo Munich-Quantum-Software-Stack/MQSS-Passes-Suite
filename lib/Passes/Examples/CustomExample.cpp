@@ -48,7 +48,8 @@ struct ReplaceH : public OpRewritePattern<quake::HOp> {
 };
 
 class CustomExamplePassPlugin
-    : public PassWrapper<CustomExamplePassPlugin, OperationPass<func::FuncOp>> {
+    : public PassWrapper<CustomExamplePassPlugin,
+                         OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CustomExamplePassPlugin)
 

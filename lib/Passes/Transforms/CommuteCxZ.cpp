@@ -134,7 +134,8 @@ void commuteCNotZ(mlir::Operation *currentOp) {
   }*/
 }
 
-class CommuteCxZ : public PassWrapper<CommuteCxZ, OperationPass<func::FuncOp>> {
+class CommuteCxZ
+    : public PassWrapper<CommuteCxZ, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCxZ)
 

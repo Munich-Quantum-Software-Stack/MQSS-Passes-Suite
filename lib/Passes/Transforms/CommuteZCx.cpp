@@ -97,7 +97,8 @@ void commuteZCNot(mlir::Operation *currentOp) {
   }
 }
 
-class CommuteZCx : public PassWrapper<CommuteZCx, OperationPass<func::FuncOp>> {
+class CommuteZCx
+    : public PassWrapper<CommuteZCx, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteZCx)
 

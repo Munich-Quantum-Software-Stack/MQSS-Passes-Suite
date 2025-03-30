@@ -45,7 +45,7 @@ using namespace mqss::support::transforms;
 namespace {
 
 class CommuteCxRx
-    : public PassWrapper<CommuteCxRx, OperationPass<func::FuncOp>> {
+    : public PassWrapper<CommuteCxRx, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCxRx)
 

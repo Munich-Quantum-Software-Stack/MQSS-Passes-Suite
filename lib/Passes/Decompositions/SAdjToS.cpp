@@ -80,7 +80,7 @@ void ReplaceSAdjZToS(mlir::Operation *currentOp) {
   rewriter.eraseOp(prevGate);
 }
 
-class SAdjToS : public PassWrapper<SAdjToS, OperationPass<func::FuncOp>> {
+class SAdjToS : public PassWrapper<SAdjToS, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SAdjToS)
 

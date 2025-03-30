@@ -814,7 +814,7 @@ void parseAndInsertMeasurements(
 }
 
 class QASM3ToQuake
-    : public PassWrapper<QASM3ToQuake, OperationPass<func::FuncOp>> {
+    : public PassWrapper<QASM3ToQuake, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(QASM3ToQuake)
 

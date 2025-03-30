@@ -42,7 +42,7 @@ using namespace mlir;
 using namespace mqss::support::transforms;
 
 namespace {
-class SwitchZH : public PassWrapper<SwitchZH, OperationPass<func::FuncOp>> {
+class SwitchZH : public PassWrapper<SwitchZH, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchZH)
 

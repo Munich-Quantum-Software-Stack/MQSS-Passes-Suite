@@ -72,7 +72,7 @@ void nullRotationCancellation(mlir::Operation *currentOp) {
 
 class CancellationNullRotation
     : public PassWrapper<CancellationNullRotation,
-                         OperationPass<func::FuncOp>> {
+                         OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CancellationNullRotation)
 

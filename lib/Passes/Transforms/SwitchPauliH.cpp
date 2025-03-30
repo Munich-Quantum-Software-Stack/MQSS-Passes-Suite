@@ -105,7 +105,7 @@ void SwitchPauliHOperation(mlir::Operation *currentOp) {
 }
 
 class SwitchPauliH
-    : public PassWrapper<SwitchPauliH, OperationPass<func::FuncOp>> {
+    : public PassWrapper<SwitchPauliH, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchPauliH)
 

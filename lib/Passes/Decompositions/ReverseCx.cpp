@@ -67,7 +67,7 @@ void ReverseCNot(mlir::Operation *currentOp) {
   rewriter.eraseOp(cxOp);
 }
 
-class ReverseCx : public PassWrapper<ReverseCx, OperationPass<func::FuncOp>> {
+class ReverseCx : public PassWrapper<ReverseCx, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(ReverseCx)
 

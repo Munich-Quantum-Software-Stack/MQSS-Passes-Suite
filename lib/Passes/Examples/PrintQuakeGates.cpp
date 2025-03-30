@@ -45,7 +45,7 @@ using namespace mlir;
 namespace {
 
 class PrintQuakeGates
-    : public PassWrapper<PrintQuakeGates, OperationPass<func::FuncOp>> {
+    : public PassWrapper<PrintQuakeGates, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(PrintQuakeGates)
 

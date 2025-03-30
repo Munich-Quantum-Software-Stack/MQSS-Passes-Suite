@@ -79,7 +79,7 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
   rewriter.eraseOp(prevGate);
 }
 
-class SToSAdj : public PassWrapper<SToSAdj, OperationPass<func::FuncOp>> {
+class SToSAdj : public PassWrapper<SToSAdj, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SToSAdj)
 

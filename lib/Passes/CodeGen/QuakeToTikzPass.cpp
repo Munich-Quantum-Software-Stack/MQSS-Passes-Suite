@@ -155,7 +155,7 @@ void dumpQuakeOperationToTikz(
 namespace {
 
 class QuakeToTikzPass
-    : public PassWrapper<QuakeToTikzPass, OperationPass<func::FuncOp>> {
+    : public PassWrapper<QuakeToTikzPass, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(QuakeToTikzPass)
 

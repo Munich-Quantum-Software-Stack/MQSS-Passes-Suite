@@ -64,7 +64,7 @@ struct ReplaceCzToHCxH : public OpRewritePattern<quake::ZOp> {
   }
 };
 
-class CzToHCxH : public PassWrapper<CzToHCxH, OperationPass<func::FuncOp>> {
+class CzToHCxH : public PassWrapper<CzToHCxH, OperationPass<mlir::ModuleOp>> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CzToHCxH)
 

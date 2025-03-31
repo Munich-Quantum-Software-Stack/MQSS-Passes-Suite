@@ -24,11 +24,13 @@ Adapted from: https://threeplusone.com/pubs/on_gates.pdf
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -90,7 +92,7 @@ void ReplaceHXHToZ(mlir::Operation *currentOp) {
   rewriter.eraseOp(prevPrevGate);
 }
 
-class HXHToZ : public PassWrapper<HXHToZ, OperationPass<mlir::ModuleOp>> {
+class HXHToZ : public BaseMQSSPass<HXHToZ> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HXHToZ)
 
@@ -99,9 +101,8 @@ public:
     return "Optimization pass that replaces a pattern composed of H, X, H by Z";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceHXHToZ(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { ReplaceHXHToZ(op); });
   }
 };
 } // namespace

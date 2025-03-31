@@ -24,11 +24,13 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/Transforms/CancellationOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
@@ -43,8 +45,7 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class CancellationDoubleCx
-    : public PassWrapper<CancellationDoubleCx, OperationPass<mlir::ModuleOp>> {
+class CancellationDoubleCx : public BaseMQSSPass<CancellationDoubleCx> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CancellationDoubleCx)
 
@@ -56,11 +57,9 @@ public:
            "the same control and targets.";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
       patternCancellation<quake::XOp, quake::XOp>(op, 1, 1, 1, 1);
-      // remove pattern
     });
   }
 };

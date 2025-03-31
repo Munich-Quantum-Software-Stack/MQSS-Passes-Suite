@@ -26,11 +26,13 @@ H⋅Y = Y⋅H
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/Transforms/SwitchOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -44,7 +46,7 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class SwitchHY : public PassWrapper<SwitchHY, OperationPass<mlir::ModuleOp>> {
+class SwitchHY : public BaseMQSSPass<SwitchHY> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchHY)
 
@@ -54,9 +56,8 @@ public:
            "Hadamard";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
       patternSwitch<quake::HOp, quake::YOp, quake::YOp, quake::HOp>(op);
     });
   }

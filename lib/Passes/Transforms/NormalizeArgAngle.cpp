@@ -24,11 +24,13 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -77,8 +79,7 @@ void normalizeAngleOfRotations(mlir::Operation *currentOp, OpBuilder builder) {
   rewriter.eraseOp(gate);
 }
 
-class NormalizeArgAngle
-    : public PassWrapper<NormalizeArgAngle, OperationPass<mlir::ModuleOp>> {
+class NormalizeArgAngle : public BaseMQSSPass<NormalizeArgAngle> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NormalizeArgAngle)
 
@@ -88,13 +89,9 @@ public:
            "rotations";
   }
 
-  void runOnOperation() override {
-    auto mlirModule = getOperation();
-    mlirModule.walk([&](func::FuncOp circuit) {
-      OpBuilder builder(&circuit.getBody());
-      circuit.walk(
-          [&](Operation *op) { normalizeAngleOfRotations(op, builder); });
-    });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    OpBuilder builder(&kernel.getBody());
+    kernel.walk([&](Operation *op) { normalizeAngleOfRotations(op, builder); });
   }
 };
 } // namespace

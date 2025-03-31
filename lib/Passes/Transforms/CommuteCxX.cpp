@@ -24,11 +24,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/Transforms/CommutateOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
@@ -43,8 +45,7 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class CommuteCxX
-    : public PassWrapper<CommuteCxX, OperationPass<mlir::ModuleOp>> {
+class CommuteCxX : public BaseMQSSPass<CommuteCxX> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCxX)
 
@@ -53,9 +54,8 @@ public:
     return "Apply commutation pass to pattern CNot-X";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
       commuteOperation<quake::XOp, quake::XOp>(op, 1, 1, 0, 1);
       // CommuteCNotX(op);
     });

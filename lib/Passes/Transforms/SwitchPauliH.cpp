@@ -28,11 +28,13 @@ Z⋅H = H⋅X
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -104,8 +106,7 @@ void SwitchPauliHOperation(mlir::Operation *currentOp) {
   }
 }
 
-class SwitchPauliH
-    : public PassWrapper<SwitchPauliH, OperationPass<mlir::ModuleOp>> {
+class SwitchPauliH : public BaseMQSSPass<SwitchPauliH> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchPauliH)
 
@@ -115,9 +116,8 @@ public:
            "Hadamard";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { SwitchPauliHOperation(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { SwitchPauliHOperation(op); });
   }
 };
 } // namespace

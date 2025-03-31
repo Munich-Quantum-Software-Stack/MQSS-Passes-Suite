@@ -25,11 +25,13 @@ https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-c
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/Transforms/CommutateOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
@@ -44,8 +46,7 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class CommuteCxRx
-    : public PassWrapper<CommuteCxRx, OperationPass<mlir::ModuleOp>> {
+class CommuteCxRx : public BaseMQSSPass<CommuteCxRx> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCxRx)
 
@@ -54,9 +55,8 @@ public:
     return "Apply commutation pass of pattern CNot-Rx";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
       commuteOperation<quake::XOp, quake::RxOp>(op, 1, 1, 0, 1);
       // CommuteCNotRx(op);
     });

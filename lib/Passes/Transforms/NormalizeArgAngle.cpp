@@ -89,10 +89,12 @@ public:
   }
 
   void runOnOperation() override {
-    auto circuit = getOperation();
-    OpBuilder builder(&circuit.getBody());
-    circuit.walk(
-        [&](Operation *op) { normalizeAngleOfRotations(op, builder); });
+    auto mlirModule = getOperation();
+    mlirModule.walk([&](func::FuncOp circuit) {
+      OpBuilder builder(&circuit.getBody());
+      circuit.walk(
+          [&](Operation *op) { normalizeAngleOfRotations(op, builder); });
+    });
   }
 };
 } // namespace

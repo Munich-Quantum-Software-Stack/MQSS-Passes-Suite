@@ -183,16 +183,15 @@ void loadMeasurementsToQC(Operation *op, qc::QuantumComputation &qc,
 
 namespace {
 
-class QuakeQMapPass
-    : public PassWrapper<QuakeQMapPass, OperationPass<func::FuncOp>> {
+class QuakeQMap : public PassWrapper<QuakeQMap, OperationPass<func::FuncOp>> {
 private:
   Architecture &architecture;
   const Configuration &settings;
 
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(QuakeQMapPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(QuakeQMap)
 
-  QuakeQMapPass(Architecture &architecture, const Configuration &settings)
+  QuakeQMap(Architecture &architecture, const Configuration &settings)
       : architecture(architecture), settings(settings) {}
 
   llvm::StringRef getArgument() const override { return "quake-to-qmap-pass"; }
@@ -345,3 +344,9 @@ public:
   }
 };
 } // namespace
+
+std::unique_ptr<mlir::Pass>
+mqss::opt::createQuakeQMapPass(Architecture &architecture,
+                               const Configuration &settings) {
+  return std::make_unique<QuakeQMap>(architecture, settings);
+}

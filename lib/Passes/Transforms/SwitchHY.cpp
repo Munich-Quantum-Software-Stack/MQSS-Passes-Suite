@@ -22,21 +22,23 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 It applies the following transformations
 
-H⋅X = Z⋅H
+H⋅Y = Y⋅H
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/Transforms/SwitchOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_SWITCHHY
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -44,27 +46,24 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class HadamardAndXGateSwitchPass
-    : public PassWrapper<HadamardAndXGateSwitchPass,
-                         OperationPass<func::FuncOp>> {
+class SwitchHY : public BaseMQSSPass<SwitchHY> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HadamardAndXGateSwitchPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchHY)
 
-  llvm::StringRef getArgument() const override { return "SwitchHX"; }
+  llvm::StringRef getArgument() const override { return "SwitchHY"; }
   llvm::StringRef getDescription() const override {
-    return "Pass that switches a pattern composed Hadamard and X to Z and "
+    return "Pass that switches a pattern composed Hadamard and Y to Y and "
            "Hadamard";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
-      patternSwitch<quake::HOp, quake::XOp, quake::ZOp, quake::HOp>(op);
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
+      patternSwitch<quake::HOp, quake::YOp, quake::YOp, quake::HOp>(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createHadamardAndXGateSwitchPass() {
-  return std::make_unique<HadamardAndXGateSwitchPass>();
+std::unique_ptr<Pass> mqss::opt::createSwitchHYPass() {
+  return std::make_unique<SwitchHY>();
 }

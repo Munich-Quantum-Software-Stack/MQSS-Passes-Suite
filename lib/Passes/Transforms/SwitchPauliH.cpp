@@ -28,24 +28,26 @@ Z⋅H = H⋅X
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_SWITCHPAULIH
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-void SwitchPauliH(mlir::Operation *currentOp) {
+void SwitchPauliHOperation(mlir::Operation *currentOp) {
   auto currentGate = dyn_cast_or_null<quake::HOp>(*currentOp);
   if (!currentGate)
     return;
@@ -104,11 +106,9 @@ void SwitchPauliH(mlir::Operation *currentOp) {
   }
 }
 
-class PauliGateAndHadamardSwitchPass
-    : public PassWrapper<PauliGateAndHadamardSwitchPass,
-                         OperationPass<func::FuncOp>> {
+class SwitchPauliH : public BaseMQSSPass<SwitchPauliH> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(PauliGateAndHadamardSwitchPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchPauliH)
 
   llvm::StringRef getArgument() const override { return "SwitchPauliH"; }
   llvm::StringRef getDescription() const override {
@@ -116,13 +116,12 @@ public:
            "Hadamard";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { SwitchPauliH(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { SwitchPauliHOperation(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createPauliGateAndHadamardSwitchPass() {
-  return std::make_unique<PauliGateAndHadamardSwitchPass>();
+std::unique_ptr<Pass> mqss::opt::createSwitchPauliHPass() {
+  return std::make_unique<SwitchPauliH>();
 }

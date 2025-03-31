@@ -20,60 +20,64 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from: https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
+  Adapted from: https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_COMMUTECXZ
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-void commuteZCNot(mlir::Operation *currentOp) {
-  auto currentGate = dyn_cast_or_null<quake::XOp>(*currentOp);
+void commuteCNotZ(mlir::Operation *currentOp) {
+  auto currentGate = dyn_cast_or_null<quake::ZOp>(*currentOp);
   if (!currentGate)
     return;
   // check that the current gate is compliant with the number of controls and
   // targets
-  if (currentGate.getControls().size() != 1 ||
+  if (currentGate.getControls().size() != 0 ||
       currentGate.getTargets().size() != 1)
     return;
   // get the previous operation to check the swap pattern
   auto prevOp = supportQuake::getPreviousOperationOnTarget(
-      currentGate, currentGate.getControls()[0]);
+      currentGate, currentGate.getTargets()[0]);
   if (!prevOp)
     return;
-  auto previousGate = dyn_cast_or_null<quake::ZOp>(prevOp);
+  auto previousGate = dyn_cast_or_null<quake::XOp>(prevOp);
   if (!previousGate)
     return;
   // check that the previous gate is compliant with the number of controls and
   // targets
-  if (previousGate.getControls().size() != 0 ||
+  if (previousGate.getControls().size() != 1 ||
       previousGate.getTargets().size() != 1)
     return; // check both targets are the same
 
   int targetPrev = supportQuake::extractIndexFromQuakeExtractRefOp(
       previousGate.getTargets()[0].getDefiningOp());
-  int controlCurr = supportQuake::extractIndexFromQuakeExtractRefOp(
-      currentGate.getControls()[0].getDefiningOp());
-  if (targetPrev == controlCurr) {
+  int controlPrev = supportQuake::extractIndexFromQuakeExtractRefOp(
+      previousGate.getControls()[0].getDefiningOp());
+  int targetCurr = supportQuake::extractIndexFromQuakeExtractRefOp(
+      currentGate.getTargets()[0].getDefiningOp());
+  if (targetCurr == controlPrev) {
 // the pattern is:
-// -|z|---.---   ---.----|z|-
-//        |    =    |
-// ------|x|--   --|x|-------
+// ---.----|z|-     -|z|---.---
+//    |          =         |
+// --|x|-------     ------|x|--
 #ifdef DEBUG
     llvm::outs() << "Current Operation: ";
     currentGate->print(llvm::outs());
@@ -86,7 +90,7 @@ void commuteZCNot(mlir::Operation *currentOp) {
     // Swap the two operations by cloning them in reverse order.
     mlir::IRRewriter rewriter(currentGate->getContext());
     rewriter.setInsertionPointAfter(currentGate);
-    rewriter.create<quake::ZOp>(previousGate.getLoc(), previousGate.isAdj(),
+    rewriter.create<quake::XOp>(previousGate.getLoc(), previousGate.isAdj(),
                                 previousGate.getParameters(),
                                 previousGate.getControls(),
                                 previousGate.getTargets());
@@ -95,25 +99,58 @@ void commuteZCNot(mlir::Operation *currentOp) {
     rewriter.eraseOp(previousGate);
     return;
   }
+  /*if(targetCurr == targetPrev){
+    // Target-Z non-commute
+    // the pattern is:
+    // ---.---------     -|z|---.---
+    //    |           =         |
+    // --|x|---|z|--     ------|x|--
+    #ifdef DEBUG
+      llvm::outs() << "Current Operation: ";
+      currentGate->print(llvm::outs());
+      llvm::outs() << "\n";
+      llvm::outs() << "Previous Operation: ";
+      previousGate->print(llvm::outs());
+      llvm::outs() << "\n";
+    #endif
+    // At this point, I should de able to do the commutation
+    // Swap the two operations by cloning them in reverse order.
+    mlir::IRRewriter rewriter(currentGate->getContext());
+    rewriter.setInsertionPointAfter(currentGate);
+    auto newGate = rewriter.create<quake::ZOp>(currentGate.getLoc(),
+                                               currentGate.isAdj(),
+                                               currentGate.getParameters(),
+                                               currentGate.getControls(),
+                                               // target = control previous
+                                               previousGate.getControls()[0]);
+    rewriter.setInsertionPointAfter(newGate);
+    rewriter.create<quake::XOp>(previousGate.getLoc(),
+                                previousGate.isAdj(),
+                                previousGate.getParameters(),
+                                previousGate.getControls(),
+                                previousGate.getTargets());
+    // Erase the original operations
+    rewriter.eraseOp(currentGate);
+    rewriter.eraseOp(previousGate);
+    return;
+  }*/
 }
 
-class CommuteZCNotPass
-    : public PassWrapper<CommuteZCNotPass, OperationPass<func::FuncOp>> {
+class CommuteCxZ : public BaseMQSSPass<CommuteCxZ> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteZCNotPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCxZ)
 
-  llvm::StringRef getArgument() const override { return "CommuteZCx"; }
+  llvm::StringRef getArgument() const override { return "CommuteCxZ"; }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass to pattern Z-CNot to CNot-Z";
+    return "Apply commutation pass of the pattern CNot-Z to Z-CNot";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { commuteZCNot(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { commuteCNotZ(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteZCNotPass() {
-  return std::make_unique<CommuteZCNotPass>();
+std::unique_ptr<Pass> mqss::opt::createCommuteCxZPass() {
+  return std::make_unique<CommuteCxZ>();
 }

@@ -20,29 +20,31 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from:  https://dl.acm.org/doi/10.5555/1972505
+Adapted from: https://threeplusone.com/pubs/on_gates.pdf
 
 *************************************************************************/
 
-#include "Passes/Decompositions.hpp"
+#include "Passes/BaseMQSSPass.hpp"
+#include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
-#include "Passes/Decompositions.h.inc"
+#define GEN_PASS_DEF_HXHTOZ
+#include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-void ReplaceSZToSAdj(mlir::Operation *currentOp) {
-  auto currentGate = dyn_cast_or_null<quake::ZOp>(*currentOp);
+void ReplaceHXHToZ(mlir::Operation *currentOp) {
+  auto currentGate = dyn_cast_or_null<quake::HOp>(*currentOp);
   if (!currentGate)
     return;
   // check single qubit h operation
@@ -54,13 +56,20 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
       currentGate, currentGate.getTargets()[0]);
   if (!prevOp)
     return;
-  auto prevGate = dyn_cast_or_null<quake::SOp>(*prevOp);
+  auto prevGate = dyn_cast_or_null<quake::XOp>(*prevOp);
   if (!prevGate)
     return;
   // check single qubit gate
   if (prevGate.getControls().size() != 0 || prevGate.getTargets().size() != 1)
     return;
-  if (prevGate.isAdj())
+  auto prevPrevOp = supportQuake::getPreviousOperationOnTarget(
+      prevGate, currentGate.getTargets()[0]);
+  if (!prevPrevOp)
+    return;
+  auto prevPrevGate = dyn_cast_or_null<quake::HOp>(*prevPrevOp);
+  // check single qubit gate
+  if (prevPrevGate.getControls().size() != 0 ||
+      prevPrevGate.getTargets().size() != 1)
     return;
 // I found the pattern, then I remove it from the circuit
 #ifdef DEBUG
@@ -70,36 +79,34 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
   llvm::outs() << "Previous Operation: ";
   prevGate->print(llvm::outs());
   llvm::outs() << "\n";
+  llvm::outs() << "Previous Previous Operation: ";
+  prevPrevGate->print(llvm::outs());
+  llvm::outs() << "\n";
 #endif
   mlir::IRRewriter rewriter(currentGate->getContext());
   rewriter.setInsertionPointAfter(currentGate);
-  rewriter.create<quake::SOp>(prevGate.getLoc(), true, prevGate.getParameters(),
-                              prevGate.getControls(), prevGate.getTargets());
+  rewriter.create<quake::ZOp>(currentGate.getLoc(), currentGate.getControls(),
+                              currentGate.getTargets());
   rewriter.eraseOp(currentGate);
   rewriter.eraseOp(prevGate);
+  rewriter.eraseOp(prevPrevGate);
 }
 
-class SToSAdjPass
-    : public PassWrapper<SToSAdjPass, OperationPass<func::FuncOp>> {
+class HXHToZ : public BaseMQSSPass<HXHToZ> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SToSAdjPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HXHToZ)
 
-  llvm::StringRef getArgument() const override { return "SZToSadj"; }
+  llvm::StringRef getArgument() const override { return "HXHToZ"; }
   llvm::StringRef getDescription() const override {
-    return "Optimization pass that replaces a pattern composed of S and Z by "
-           "S(adj)";
+    return "Optimization pass that replaces a pattern composed of H, X, H by Z";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceSZToSAdj(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { ReplaceHXHToZ(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createSToSAdjPass() {
-  return std::make_unique<SToSAdjPass>();
+std::unique_ptr<Pass> mqss::opt::createHXHToZPass() {
+  return std::make_unique<HXHToZ>();
 }
-
-// Register the pass on initialization
-void registerSToSAdjPass() { ::registerSToSAdjPass(); }

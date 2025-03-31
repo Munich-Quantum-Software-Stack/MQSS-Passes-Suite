@@ -20,22 +20,24 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from:  https://link.springer.com/chapter/10.1007/978-981-287-996-7_2
+Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
-#include "Support/Transforms/CommutateOperations.hpp"
+#include "Support/Transforms/CancellationOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_CANCELLATIONDOUBLECX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -43,26 +45,26 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class CommuteXCNotPass
-    : public PassWrapper<CommuteXCNotPass, OperationPass<func::FuncOp>> {
+class CancellationDoubleCx : public BaseMQSSPass<CancellationDoubleCx> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteXCNotPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CancellationDoubleCx)
 
-  llvm::StringRef getArgument() const override { return "CommuteXCx"; }
+  llvm::StringRef getArgument() const override {
+    return "CancellationDoubleCx";
+  }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass to pattern X-CNot to CNot-X";
+    return "This pass removes the pattern CNot, CNot if both gates operates on "
+           "the same control and targets.";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
-      commuteOperation<quake::XOp, quake::XOp>(op, 0, 1, 1, 1);
-      // CommuteXCNot(op);
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
+      patternCancellation<quake::XOp, quake::XOp>(op, 1, 1, 1, 1);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteXCNotPass() {
-  return std::make_unique<CommuteXCNotPass>();
+std::unique_ptr<Pass> mqss::opt::createCancellationDoubleCxPass() {
+  return std::make_unique<CancellationDoubleCx>();
 }

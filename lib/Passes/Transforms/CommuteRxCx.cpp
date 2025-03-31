@@ -20,23 +20,24 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from:
-https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-can-be-implemented-using-a-cnot-gate-and-hadamard-gates
+Adapted from: https://arxiv.org/pdf/quant-ph/0308033.pdf
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/Transforms/CommutateOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 #include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_DEF_COMMUTECNOTRX
+#define GEN_PASS_DEF_COMMUTERXCX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -44,26 +45,24 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class CommuteCNotRxPass
-    : public PassWrapper<CommuteCNotRxPass, OperationPass<func::FuncOp>> {
+class CommuteRxCx : public BaseMQSSPass<CommuteRxCx> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCNotRxPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteRxCx)
 
-  llvm::StringRef getArgument() const override { return "CommuteCxRx"; }
+  llvm::StringRef getArgument() const override { return "CommuteRxCx"; }
   llvm::StringRef getDescription() const override {
-    return "Apply commutation pass of pattern CNot-Rx";
+    return "Apply commutation pass to pattern Rx-CNot to CNot-Rx";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
-      commuteOperation<quake::XOp, quake::RxOp>(op, 1, 1, 0, 1);
-      // CommuteCNotRx(op);
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
+      commuteOperation<quake::RxOp, quake::XOp>(op, 0, 1, 1, 1);
+      // CommuteRxCNot(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createCommuteCNotRxPass() {
-  return std::make_unique<CommuteCNotRxPass>();
+std::unique_ptr<Pass> mqss::opt::createCommuteRxCxPass() {
+  return std::make_unique<CommuteRxCx>();
 }

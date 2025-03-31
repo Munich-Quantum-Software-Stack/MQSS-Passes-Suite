@@ -24,24 +24,26 @@ Adapted from: https://threeplusone.com/pubs/on_gates.pdf
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_HZHTOX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-void ReplaceHXHToZ(mlir::Operation *currentOp) {
+void ReplaceHZHToX(mlir::Operation *currentOp) {
   auto currentGate = dyn_cast_or_null<quake::HOp>(*currentOp);
   if (!currentGate)
     return;
@@ -54,7 +56,7 @@ void ReplaceHXHToZ(mlir::Operation *currentOp) {
       currentGate, currentGate.getTargets()[0]);
   if (!prevOp)
     return;
-  auto prevGate = dyn_cast_or_null<quake::XOp>(*prevOp);
+  auto prevGate = dyn_cast_or_null<quake::ZOp>(*prevOp);
   if (!prevGate)
     return;
   // check single qubit gate
@@ -83,29 +85,28 @@ void ReplaceHXHToZ(mlir::Operation *currentOp) {
 #endif
   mlir::IRRewriter rewriter(currentGate->getContext());
   rewriter.setInsertionPointAfter(currentGate);
-  rewriter.create<quake::ZOp>(currentGate.getLoc(), currentGate.getControls(),
+  rewriter.create<quake::XOp>(currentGate.getLoc(), currentGate.getControls(),
                               currentGate.getTargets());
   rewriter.eraseOp(currentGate);
   rewriter.eraseOp(prevGate);
   rewriter.eraseOp(prevPrevGate);
 }
 
-class HXHToZPass : public PassWrapper<HXHToZPass, OperationPass<func::FuncOp>> {
+class HZHToX : public BaseMQSSPass<HZHToX> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HXHToZPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HZHToX)
 
-  llvm::StringRef getArgument() const override { return "HXHToZ"; }
+  llvm::StringRef getArgument() const override { return "HZHToX"; }
   llvm::StringRef getDescription() const override {
-    return "Optimization pass that replaces a pattern composed of H, X, H by Z";
+    return "Optimization pass that replaces a pattern composed of H, Z, H by X";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceHXHToZ(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { ReplaceHZHToX(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createHXHToZPass() {
-  return std::make_unique<HXHToZPass>();
+std::unique_ptr<Pass> mqss::opt::createHZHToXPass() {
+  return std::make_unique<HZHToX>();
 }

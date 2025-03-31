@@ -25,16 +25,18 @@ https://agra.informatik.uni-bremen.de/doc/konf/2021_DSD_CNOTs_remote_gates.pdf
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Decompositions.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_REVERSECX
 #include "Passes/Decompositions.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -67,10 +69,9 @@ void ReverseCNot(mlir::Operation *currentOp) {
   rewriter.eraseOp(cxOp);
 }
 
-class ReverseCNotPass
-    : public PassWrapper<ReverseCNotPass, OperationPass<func::FuncOp>> {
+class ReverseCx : public BaseMQSSPass<ReverseCx> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(ReverseCNotPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(ReverseCx)
 
   llvm::StringRef getArgument() const override { return "ReverseCx"; }
   llvm::StringRef getDescription() const override {
@@ -78,16 +79,12 @@ public:
            "two-qubits CNot gate in a circuit";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReverseCNot(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { ReverseCNot(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createReverseCNotPass() {
-  return std::make_unique<ReverseCNotPass>();
+std::unique_ptr<Pass> mqss::opt::createReverseCxPass() {
+  return std::make_unique<ReverseCx>();
 }
-
-// Register the pass on initialization
-void registerReverseCNotPass() { ::registerReverseCNotPass(); }

@@ -24,11 +24,13 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -37,7 +39,7 @@ Adapted from: https://dl.acm.org/doi/10.5555/1972505
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_NORMALIZEARGANGLE
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -77,10 +79,9 @@ void normalizeAngleOfRotations(mlir::Operation *currentOp, OpBuilder builder) {
   rewriter.eraseOp(gate);
 }
 
-class NormalizeArgAnglePass
-    : public PassWrapper<NormalizeArgAnglePass, OperationPass<func::FuncOp>> {
+class NormalizeArgAngle : public BaseMQSSPass<NormalizeArgAngle> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NormalizeArgAnglePass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NormalizeArgAngle)
 
   llvm::StringRef getArgument() const override { return "NormalizeArgAngle"; }
   llvm::StringRef getDescription() const override {
@@ -88,15 +89,13 @@ public:
            "rotations";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    OpBuilder builder(&circuit.getBody());
-    circuit.walk(
-        [&](Operation *op) { normalizeAngleOfRotations(op, builder); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    OpBuilder builder(&kernel.getBody());
+    kernel.walk([&](Operation *op) { normalizeAngleOfRotations(op, builder); });
   }
 };
 } // namespace
 
 std::unique_ptr<mlir::Pass> mqss::opt::createNormalizeArgAnglePass() {
-  return std::make_unique<NormalizeArgAnglePass>();
+  return std::make_unique<NormalizeArgAngle>();
 }

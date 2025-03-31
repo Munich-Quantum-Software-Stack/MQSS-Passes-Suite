@@ -813,12 +813,12 @@ void parseAndInsertMeasurements(
   }
 }
 
-class QASM3ToQuakePass
-    : public PassWrapper<QASM3ToQuakePass, OperationPass<func::FuncOp>> {
+class QASM3ToQuake
+    : public PassWrapper<QASM3ToQuake, OperationPass<func::FuncOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(QASM3ToQuakePass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(QASM3ToQuake)
 
-  QASM3ToQuakePass(std::istringstream &qasmStream, bool measureAllQubits)
+  QASM3ToQuake(std::istringstream &qasmStream, bool measureAllQubits)
       : qasmStream(qasmStream), measureAllQubits(measureAllQubits) {}
 
   llvm::StringRef getArgument() const override {
@@ -907,5 +907,5 @@ private:
 std::unique_ptr<mlir::Pass>
 mqss::opt::createQASM3ToQuakePass(std::istringstream &qasmStream,
                                   bool measureAllQubits) {
-  return std::make_unique<QASM3ToQuakePass>(qasmStream, measureAllQubits);
+  return std::make_unique<QASM3ToQuake>(qasmStream, measureAllQubits);
 }

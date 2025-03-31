@@ -22,11 +22,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -35,7 +37,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_CANCELLATIONNULLROTATION
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -70,24 +72,23 @@ void nullRotationCancellation(mlir::Operation *currentOp) {
   }
 }
 
-class NullRotationCancellationPass
-    : public PassWrapper<NullRotationCancellationPass,
-                         OperationPass<func::FuncOp>> {
+class CancellationNullRotation : public BaseMQSSPass<CancellationNullRotation> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(NullRotationCancellationPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CancellationNullRotation)
 
-  llvm::StringRef getArgument() const override { return "CancelNullRotations"; }
+  llvm::StringRef getArgument() const override {
+    return "CancellationNullRotation";
+  }
   llvm::StringRef getDescription() const override {
     return "Optimization pass that removes of Rx, Ry and Rz null rotations";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { nullRotationCancellation(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { nullRotationCancellation(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<mlir::Pass> mqss::opt::createNullRotationCancellationPass() {
-  return std::make_unique<NullRotationCancellationPass>();
+std::unique_ptr<mlir::Pass> mqss::opt::createCancellationNullRotationPass() {
+  return std::make_unique<CancellationNullRotation>();
 }

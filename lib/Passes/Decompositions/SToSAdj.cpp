@@ -20,29 +20,31 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from: https://threeplusone.com/pubs/on_gates.pdf
+Adapted from:  https://dl.acm.org/doi/10.5555/1972505
 
 *************************************************************************/
 
-#include "Passes/Transforms.hpp"
+#include "Passes/BaseMQSSPass.hpp"
+#include "Passes/Decompositions.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
-#include "Passes/Transforms.h.inc"
+#define GEN_PASS_DEF_STOSADJ
+#include "Passes/Decompositions.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 
 namespace {
 
-void ReplaceHZHToX(mlir::Operation *currentOp) {
-  auto currentGate = dyn_cast_or_null<quake::HOp>(*currentOp);
+void ReplaceSZToSAdj(mlir::Operation *currentOp) {
+  auto currentGate = dyn_cast_or_null<quake::ZOp>(*currentOp);
   if (!currentGate)
     return;
   // check single qubit h operation
@@ -54,20 +56,13 @@ void ReplaceHZHToX(mlir::Operation *currentOp) {
       currentGate, currentGate.getTargets()[0]);
   if (!prevOp)
     return;
-  auto prevGate = dyn_cast_or_null<quake::ZOp>(*prevOp);
+  auto prevGate = dyn_cast_or_null<quake::SOp>(*prevOp);
   if (!prevGate)
     return;
   // check single qubit gate
   if (prevGate.getControls().size() != 0 || prevGate.getTargets().size() != 1)
     return;
-  auto prevPrevOp = supportQuake::getPreviousOperationOnTarget(
-      prevGate, currentGate.getTargets()[0]);
-  if (!prevPrevOp)
-    return;
-  auto prevPrevGate = dyn_cast_or_null<quake::HOp>(*prevPrevOp);
-  // check single qubit gate
-  if (prevPrevGate.getControls().size() != 0 ||
-      prevPrevGate.getTargets().size() != 1)
+  if (prevGate.isAdj())
     return;
 // I found the pattern, then I remove it from the circuit
 #ifdef DEBUG
@@ -77,35 +72,31 @@ void ReplaceHZHToX(mlir::Operation *currentOp) {
   llvm::outs() << "Previous Operation: ";
   prevGate->print(llvm::outs());
   llvm::outs() << "\n";
-  llvm::outs() << "Previous Previous Operation: ";
-  prevPrevGate->print(llvm::outs());
-  llvm::outs() << "\n";
 #endif
   mlir::IRRewriter rewriter(currentGate->getContext());
   rewriter.setInsertionPointAfter(currentGate);
-  rewriter.create<quake::XOp>(currentGate.getLoc(), currentGate.getControls(),
-                              currentGate.getTargets());
+  rewriter.create<quake::SOp>(prevGate.getLoc(), true, prevGate.getParameters(),
+                              prevGate.getControls(), prevGate.getTargets());
   rewriter.eraseOp(currentGate);
   rewriter.eraseOp(prevGate);
-  rewriter.eraseOp(prevPrevGate);
 }
 
-class HZHToXPass : public PassWrapper<HZHToXPass, OperationPass<func::FuncOp>> {
+class SToSAdj : public BaseMQSSPass<SToSAdj> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(HZHToXPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SToSAdj)
 
-  llvm::StringRef getArgument() const override { return "HZHToX"; }
+  llvm::StringRef getArgument() const override { return "SToSAdj"; }
   llvm::StringRef getDescription() const override {
-    return "Optimization pass that replaces a pattern composed of H, Z, H by X";
+    return "Optimization pass that replaces a pattern composed of S and Z by "
+           "S(adj)";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceHZHToX(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { ReplaceSZToSAdj(op); });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createHZHToXPass() {
-  return std::make_unique<HZHToXPass>();
+std::unique_ptr<Pass> mqss::opt::createSToSAdjPass() {
+  return std::make_unique<SToSAdj>();
 }

@@ -24,17 +24,19 @@ Adapted from:  https://dl.acm.org/doi/10.5555/1972505
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Decompositions.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_SADJTOS
 #include "Passes/Decompositions.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -80,27 +82,22 @@ void ReplaceSAdjZToS(mlir::Operation *currentOp) {
   rewriter.eraseOp(prevGate);
 }
 
-class SAdjToSPass
-    : public PassWrapper<SAdjToSPass, OperationPass<func::FuncOp>> {
+class SAdjToS : public BaseMQSSPass<SAdjToS> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SAdjToSPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SAdjToS)
 
-  llvm::StringRef getArgument() const override { return "SadjZToS"; }
+  llvm::StringRef getArgument() const override { return "SAdjZToS"; }
   llvm::StringRef getDescription() const override {
     return "Optimization pass that replaces a pattern composed of S adjoint "
            "and Z by S";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceSAdjZToS(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { ReplaceSAdjZToS(op); });
   }
 };
 } // namespace
 
 std::unique_ptr<Pass> mqss::opt::createSAdjToSPass() {
-  return std::make_unique<SAdjToSPass>();
+  return std::make_unique<SAdjToS>();
 }
-
-// Register the pass on initialization
-void registerSAdjToSPass() { ::registerSAdjToSPass(); }

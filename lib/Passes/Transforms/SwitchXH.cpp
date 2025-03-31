@@ -20,22 +20,23 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-Adapted from: https://dl.acm.org/doi/10.5555/1972505
+It applies the following transformations
 
+X⋅H = H⋅Z
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
-#include "Support/Transforms/CancellationOperations.hpp"
+#include "Support/Transforms/SwitchOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
-#include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
-// Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_DEF_DOUBLECNOTCANCELLATIONPASS
+#define GEN_PASS_DEF_SWITCHXH
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
@@ -43,30 +44,24 @@ using namespace mqss::support::transforms;
 
 namespace {
 
-class DoubleCnotCancellationPass
-    : public PassWrapper<DoubleCnotCancellationPass,
-                         OperationPass<mlir::ModuleOp>> {
+class SwitchXH : public BaseMQSSPass<SwitchXH> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(DoubleCnotCancellationPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SwitchXH)
 
-  llvm::StringRef getArgument() const override {
-    return "CancellationDoubleCx";
-  }
+  llvm::StringRef getArgument() const override { return "SwitchXH"; }
   llvm::StringRef getDescription() const override {
-    return "This pass removes the pattern CNot, CNot if both gates operates on "
-           "the same control and targets.";
+    return "Pass that switches a pattern composed by X and Hadamard to "
+           "Hadamard and Z";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
-      patternCancellation<quake::XOp, quake::XOp>(op, 1, 1, 1, 1);
-      // remove pattern
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
+      patternSwitch<quake::XOp, quake::HOp, quake::HOp, quake::ZOp>(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createDoubleCnotCancellationPass() {
-  return std::make_unique<DoubleCnotCancellationPass>();
+std::unique_ptr<Pass> mqss::opt::createSwitchXHPass() {
+  return std::make_unique<SwitchXH>();
 }

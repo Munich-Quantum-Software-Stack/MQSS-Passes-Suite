@@ -44,13 +44,12 @@ using namespace mlir;
 
 namespace {
 
-class PrintQuakeGatesPass
-    : public PassWrapper<PrintQuakeGatesPass, OperationPass<func::FuncOp>> {
+class PrintQuakeGates
+    : public PassWrapper<PrintQuakeGates, OperationPass<mlir::ModuleOp>> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(PrintQuakeGatesPass)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(PrintQuakeGates)
 
-  PrintQuakeGatesPass(llvm::raw_string_ostream &ostream)
-      : outputStream(ostream) {}
+  PrintQuakeGates(llvm::raw_string_ostream &ostream) : outputStream(ostream) {}
 
   llvm::StringRef getArgument() const override {
     return "print-quake-gates-pass";
@@ -86,5 +85,5 @@ private:
 
 std::unique_ptr<mlir::Pass>
 mqss::opt::createPrintQuakeGatesPass(llvm::raw_string_ostream &ostream) {
-  return std::make_unique<PrintQuakeGatesPass>(ostream);
+  return std::make_unique<PrintQuakeGates>(ostream);
 }

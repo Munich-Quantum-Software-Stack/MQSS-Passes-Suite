@@ -20,49 +20,50 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   January 2025
   version 1.0
 
-It applies the following transformations
+Adapted from:
+https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-can-be-implemented-using-a-cnot-gate-and-hadamard-gates
 
-Z⋅H = H⋅X
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Transforms.hpp"
-#include "Support/Transforms/SwitchOperations.hpp"
+#include "Support/Transforms/CommutateOperations.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
+#include "mlir/Transforms/GreedyPatternRewriteDriver.h"
 
 // Include auto-generated pass registration
 namespace mqss::opt {
-#define GEN_PASS_REGISTRATION
+#define GEN_PASS_DEF_COMMUTECXRX
 #include "Passes/Transforms.h.inc"
 } // namespace mqss::opt
 using namespace mlir;
 using namespace mqss::support::transforms;
 
 namespace {
-class ZGateAndHadamardSwitchPass
-    : public PassWrapper<ZGateAndHadamardSwitchPass,
-                         OperationPass<func::FuncOp>> {
-public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(ZGateAndHadamardSwitchPass)
 
-  llvm::StringRef getArgument() const override { return "SwitchZH"; }
+class CommuteCxRx : public BaseMQSSPass<CommuteCxRx> {
+public:
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CommuteCxRx)
+
+  llvm::StringRef getArgument() const override { return "CommuteCxRx"; }
   llvm::StringRef getDescription() const override {
-    return "Pass that switches a pattern composed by Z and Hadamard to "
-           "Hadamard and X";
+    return "Apply commutation pass of pattern CNot-Rx";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) {
-      patternSwitch<quake::ZOp, quake::HOp, quake::HOp, quake::XOp>(op);
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) {
+      commuteOperation<quake::XOp, quake::RxOp>(op, 1, 1, 0, 1);
+      // CommuteCNotRx(op);
     });
   }
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createZGateAndHadamardSwitchPass() {
-  return std::make_unique<ZGateAndHadamardSwitchPass>();
+std::unique_ptr<Pass> mqss::opt::createCommuteCxRxPass() {
+  return std::make_unique<CommuteCxRx>();
 }

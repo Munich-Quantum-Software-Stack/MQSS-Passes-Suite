@@ -25,10 +25,12 @@ https://agra.informatik.uni-bremen.de/doc/konf/2021_DSD_CNOTs_remote_gates.pdf
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Decompositions.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -67,7 +69,7 @@ void ReverseCNot(mlir::Operation *currentOp) {
   rewriter.eraseOp(cxOp);
 }
 
-class ReverseCx : public PassWrapper<ReverseCx, OperationPass<mlir::ModuleOp>> {
+class ReverseCx : public BaseMQSSPass<ReverseCx> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(ReverseCx)
 
@@ -77,9 +79,8 @@ public:
            "two-qubits CNot gate in a circuit";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReverseCNot(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { ReverseCNot(op); });
   }
 };
 } // namespace

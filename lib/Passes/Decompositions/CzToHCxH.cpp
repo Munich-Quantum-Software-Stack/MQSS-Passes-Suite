@@ -25,10 +25,12 @@ https://quantumcomputing.stackexchange.com/questions/12458/show-that-a-cz-gate-c
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Decompositions.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -64,7 +66,7 @@ struct ReplaceCzToHCxH : public OpRewritePattern<quake::ZOp> {
   }
 };
 
-class CzToHCxH : public PassWrapper<CzToHCxH, OperationPass<mlir::ModuleOp>> {
+class CzToHCxH : public BaseMQSSPass<CzToHCxH> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CzToHCxH)
 
@@ -73,17 +75,15 @@ public:
     return "Decomposition pass of Cz by H, Cx, and H";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    auto ctx = circuit.getContext();
-
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    auto ctx = kernel.getContext();
     RewritePatternSet patterns(ctx);
     patterns.insert<ReplaceCzToHCxH>(ctx);
     ConversionTarget target(*ctx);
     target.addLegalDialect<quake::QuakeDialect>();
     target.addIllegalOp<quake::ZOp>();
-    if (failed(applyPartialConversion(circuit, target, std::move(patterns)))) {
-      circuit.emitOpError("CzToHCxHDecompositionPass failed");
+    if (failed(applyPartialConversion(kernel, target, std::move(patterns)))) {
+      kernel.emitOpError("CzToHCxHDecompositionPass failed");
       signalPassFailure();
     }
   }
@@ -92,9 +92,4 @@ public:
 
 std::unique_ptr<Pass> mqss::opt::createCzToHCxHDecompositionPass() {
   return std::make_unique<CzToHCxH>();
-}
-
-// Register the pass on initialization
-void registerCzToHCxHDecompositionPass() {
-  ::registerCzToHCxHDecompositionPass();
 }

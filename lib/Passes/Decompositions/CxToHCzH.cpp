@@ -24,10 +24,12 @@ Adapted from: https://quantumcomputing.stackexchange.com/a/13784
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Decompositions.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -63,7 +65,7 @@ struct ReplaceCxToHCzH : public OpRewritePattern<quake::XOp> {
   }
 };
 
-class CxToHCzH : public PassWrapper<CxToHCzH, OperationPass<mlir::ModuleOp>> {
+class CxToHCzH : public BaseMQSSPass<CxToHCzH> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(CxToHCzH)
 
@@ -72,17 +74,15 @@ public:
     return "Decomposition pass of two-qubits cnot by H, Cz, and H";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    auto ctx = circuit.getContext();
-
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    auto ctx = kernel.getContext();
     RewritePatternSet patterns(ctx);
     patterns.insert<ReplaceCxToHCzH>(ctx);
     ConversionTarget target(*ctx);
     target.addLegalDialect<quake::QuakeDialect>();
     target.addIllegalOp<quake::XOp>();
-    if (failed(applyPartialConversion(circuit, target, std::move(patterns)))) {
-      circuit.emitOpError("CxToHCzH Decomposition failed");
+    if (failed(applyPartialConversion(kernel, target, std::move(patterns)))) {
+      kernel.emitOpError("CxToHCzH Decomposition failed");
       signalPassFailure();
     }
   }

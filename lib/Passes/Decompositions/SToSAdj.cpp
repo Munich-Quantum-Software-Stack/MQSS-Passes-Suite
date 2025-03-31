@@ -24,11 +24,13 @@ Adapted from:  https://dl.acm.org/doi/10.5555/1972505
 
 *************************************************************************/
 
+#include "Passes/BaseMQSSPass.hpp"
 #include "Passes/Decompositions.hpp"
 #include "Support/CodeGen/Quake.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "cudaq/Support/Plugin.h"
+#include "mlir/IR/Threading.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
 #include "mlir/Transforms/DialectConversion.h"
 
@@ -79,7 +81,7 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
   rewriter.eraseOp(prevGate);
 }
 
-class SToSAdj : public PassWrapper<SToSAdj, OperationPass<mlir::ModuleOp>> {
+class SToSAdj : public BaseMQSSPass<SToSAdj> {
 public:
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SToSAdj)
 
@@ -89,9 +91,8 @@ public:
            "S(adj)";
   }
 
-  void runOnOperation() override {
-    auto circuit = getOperation();
-    circuit.walk([&](Operation *op) { ReplaceSZToSAdj(op); });
+  void operationsOnQuantumKernel(func::FuncOp kernel) override {
+    kernel.walk([&](Operation *op) { ReplaceSZToSAdj(op); });
   }
 };
 } // namespace

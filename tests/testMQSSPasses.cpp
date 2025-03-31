@@ -133,8 +133,7 @@ TEST(TestMQSSPasses, TestPrintQuakeGatesPass) {
   // Adding custom pass
   std::string moduleOutput;
   llvm::raw_string_ostream stringStream(moduleOutput);
-  pm.nest<mlir::func::FuncOp>().addPass(
-      mqss::opt::createPrintQuakeGatesPass(stringStream));
+  pm.addPass(mqss::opt::createPrintQuakeGatesPass(stringStream));
   // running the pass
   if (mlir::failed(pm.run(mlirModule)))
     std::runtime_error("The pass failed...");

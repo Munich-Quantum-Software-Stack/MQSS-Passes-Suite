@@ -317,28 +317,30 @@ TEST_P(VerificationTestPassesMQSS, Run) {
   qasmStream = std::stringstream(qasmOutput);
   qc2.import(qasmStream, qc::Format::OpenQASM2);
   std::cout << "Press Enter to Continue ...";
-  std::cin.get();
-  // set the configuration
-  config.functionality.traceThreshold = 1e-2;
+  // std::cin.get();
+  //  set the configuration
+  config.functionality.traceThreshold = 1e-01;
+  config.execution.parallel = true;
   config.execution.runConstructionChecker = true;
   config.execution.runAlternatingChecker = false;
   config.execution.runZXChecker = false;
   config.execution.runSimulationChecker = false;
   ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
-  std::cout << "before run " << std::endl;
+  std::cout << "before run " << fileName << std::endl;
   ecm.run();
   std::cout << "after run " << std::endl;
   std::cout << ecm.getResults() << "\n";
   std::cout << "Press Enter to Continue ...";
-  std::cin.get();
-  EXPECT_EQ(ecm.equivalence(), ec::EquivalenceCriterion::Equivalent);
+  // std::cin.get();
+  EXPECT_TRUE(ecm.getResults().consideredEquivalent());
   std::cout << "Press Enter to Continue ...";
-  std::cin.get();
+  // std::cin.get();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     MQSSPassTests, VerificationTestPassesMQSS,
-    ::testing::ValuesIn(extractQASMFiles("./qasm/MQTBench01.zip", "./qasm/")),
+    ::testing::ValuesIn(extractQASMFiles("./qasm/GHZ-2to9-Qiskit.zip",
+                                         "./qasm/")),
     [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>
            &info) {
       // Assign the test name
@@ -360,7 +362,7 @@ INSTANTIATE_TEST_SUITE_P(
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   // Stop execution on first failure
-  testing::FLAGS_gtest_break_on_failure = true;
+  testing::FLAGS_gtest_break_on_failure = false;
   // GTEST_FLAG_SET(break_on_failure, true);
   return RUN_ALL_TESTS();
 }

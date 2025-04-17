@@ -18,10 +18,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 <div align="center">
   <a href="https://munich-quantum-software-stack.github.io/MQSS-Passes-Documentation/mlir/">
-  <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./docs/_static/mqss_logo_dark.svg" width="20%">
     <img src="./docs/_static/mqss_logo.svg" width="20%">
-  </picture>
+  </a>
 </div>
 
 # Collection of MLIR Passes of the MQSS

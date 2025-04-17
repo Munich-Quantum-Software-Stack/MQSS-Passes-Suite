@@ -517,13 +517,28 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           assert(!(params.size() != 0 || controls.size() != 0 ||
                    targets.size() != 2) &&
                  "ill-formed ecr gate");
+          mlir::Value qPi = createFloatValue(builder, loc, PI_4);
+          mlir::Value minusQPi = createFloatValue(builder, loc, -1 * PI_4);
+          mlir::Value Pi = createFloatValue(builder, loc, PI);
+          // RZX(pi/4)
           builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
-          builder.create<quake::XOp>(loc, adj, controls, targets[0],
+          builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
-          mlir::Value halfPi = createFloatValue(builder, loc, 1.57079632679);
-          builder.create<quake::RzOp>(loc, adj, halfPi, controls,
-                                      targets[1]); // rz(pi/2) b;
-          builder.create<quake::XOp>(loc, adj, controls, targets[0],
+          builder.create<quake::RzOp>(loc, adj, qPi, controls,
+                                      targets[1]); // rz(theta) b
+          builder.create<quake::XOp>(loc, adj, targets[0],
+                                     targets[1]); // cx a, b;
+          builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
+          // rx (pi)
+          builder.create<quake::RxOp>(loc, adj, Pi, controls,
+                                      targets[0]); // rz(theta) b
+          // RZX(-pi/4)
+          builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
+          builder.create<quake::XOp>(loc, adj, targets[0],
+                                     targets[1]); // cx a, b;
+          builder.create<quake::RzOp>(loc, adj, minusQPi, controls,
+                                      targets[1]); // rz(theta) b
+          builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
           builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
         }},

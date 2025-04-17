@@ -167,6 +167,11 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed sx gate");
           mlir::Value halfPi = createFloatValue(builder, loc, PI_2);
           builder.create<quake::RxOp>(loc, adj, halfPi, controls, targets);
+          // the following sequence is also valid, but we keep the one with the
+          // less number of gates
+          // builder.create<quake::HOp>(loc, adj, params, controls, targets);
+          // builder.create<quake::SOp>(loc, adj, params, controls, targets);
+          // builder.create<quake::HOp>(loc, adj, params, controls, targets);
         }},
        {"sxdg",
         [&]() { // since sx is not supported, replace it by rx with -pi/2
@@ -174,7 +179,7 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           assert(!(params.size() != 0 || controls.size() != 0 ||
                    targets.size() != 1) &&
                  "ill-formed sxdg gate");
-          mlir::Value minHalfPi = createFloatValue(builder, loc, -PI_2);
+          mlir::Value minHalfPi = createFloatValue(builder, loc, -1 * PI_2);
           builder.create<quake::RxOp>(loc, false, minHalfPi, controls, targets);
         }},
        {"t",
@@ -232,36 +237,52 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
         }},
        {"phase",
         [&]() {
-          /* update repo phase is supported now
-            assert(!(params.size() !=1 || controls.size()!= 0 ||
-          targets.size()!=1) && "ill-formed phase gate");
-          builder.create<quake::RzOp>(loc, adj, params, controls, targets); */
+          assert(!(params.size() != 1 || controls.size() != 0 ||
+                   targets.size() != 1) &&
+                 "ill-formed phase gate");
+          builder.create<quake::RzOp>(loc, adj, params, controls, targets);
         }},
        {"cp",
         [&]() {
-          // update repo phase is supported now
-          /*std::cout << "controls size " << controls.size()  << std::endl;
-          std::cout << "target size " << targets.size()  << std::endl;
-          std::cout << "params size " << params.size()  << std::endl;
-          // for a strange reason the parser returns two targets
-          // assume first target is control
-          assert(!(params.size() !=1 || controls.size()!= 0 ||
-          targets.size()!=2) && "ill-formed cphase gate");
-          // cp decompose into:
-          //cx q1, q2;
-          //rz(theta) q2;
-          //cx q1, q2;
+          assert(!(params.size() != 1 || controls.size() != 0 ||
+                   targets.size() != 2) &&
+                 "ill-formed crx gate");
+          double angleValue =
+              extractDoubleArgumentValue(params[0].getDefiningOp());
+          mlir::Value halfValue =
+              createFloatValue(builder, loc, angleValue / 2);
+          mlir::Value minusHalfValue =
+              createFloatValue(builder, loc, -1 * angleValue / 2);
+          builder.create<quake::RzOp>(loc, adj, halfValue, controls,
+                                      targets[0]);
           ValueRange empty;
           builder.create<quake::XOp>(loc, adj, empty, targets[0], targets[1]);
-          builder.create<quake::RzOp>(loc, adj, params, empty, targets[1]);
-          builder.create<quake::XOp>(loc, adj, empty, targets[0], targets[1]);*/
+          builder.create<quake::RzOp>(loc, adj, minusHalfValue, controls,
+                                      targets[1]);
+          builder.create<quake::XOp>(loc, adj, empty, targets[0], targets[1]);
+          builder.create<quake::RzOp>(loc, adj, halfValue, controls,
+                                      targets[1]);
         }},
        {"cphase",
         [&]() {
-          /* update repo phase is supported now
-          assert(!(params.size() !=1 || controls.size()!= 1 ||
-          targets.size()!=1) && "ill-formed cphase gate");
-          builder.create<quake::RzOp>(loc, adj, params, controls, targets);*/
+          assert(!(params.size() != 1 || controls.size() != 0 ||
+                   targets.size() != 2) &&
+                 "ill-formed crx gate");
+          double angleValue =
+              extractDoubleArgumentValue(params[0].getDefiningOp());
+          mlir::Value halfValue =
+              createFloatValue(builder, loc, angleValue / 2);
+          mlir::Value minusHalfValue =
+              createFloatValue(builder, loc, -1 * angleValue / 2);
+          builder.create<quake::RzOp>(loc, adj, halfValue, controls,
+                                      targets[0]);
+          ValueRange empty;
+          builder.create<quake::XOp>(loc, adj, empty, targets[0], targets[1]);
+          builder.create<quake::RzOp>(loc, adj, minusHalfValue, controls,
+                                      targets[1]);
+          builder.create<quake::XOp>(loc, adj, empty, targets[0], targets[1]);
+          builder.create<quake::RzOp>(loc, adj, halfValue, controls,
+                                      targets[1]);
         }},
        {"z",
         [&]() {
@@ -335,7 +356,7 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed u1 gate");
           builder.create<quake::R1Op>(loc, adj, params, controls, targets);
         }},
-       {"u2",
+       {"u2",   // TODO
         [&]() { // since u2 is not supported, it has to be decomposed
           // u2(φ, λ)
           std::cout << "controls size " << controls.size() << std::endl;
@@ -344,13 +365,13 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           assert(!(params.size() != 2 || controls.size() != 0 ||
                    targets.size() != 1) &&
                  "ill-formed u2 gate");
-          builder.create<quake::RzOp>(loc, adj, params[0], controls,
-                                      targets); // phi
           mlir::Value halfPi = createFloatValue(builder, loc, PI_2);
-          builder.create<quake::RxOp>(loc, adj, halfPi, controls,
-                                      targets); // pi/2
           builder.create<quake::RzOp>(loc, adj, params[1], controls,
                                       targets); // phi
+          builder.create<quake::RyOp>(loc, adj, halfPi, controls,
+                                      targets); // theta
+          builder.create<quake::RzOp>(loc, adj, params[0], controls,
+                                      targets); // lambda
         }},
        {"u3",
         [&]() {
@@ -359,8 +380,8 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed u3 gate");
           builder.create<quake::U3Op>(loc, adj, params, controls, targets);
         }},
-       {"iswap",
-        [&]() { // since iswap is not supported, it has to be decomposed
+       {"iswap", // TODO
+        [&]() {  // since iswap is not supported, it has to be decomposed
           /*gate iswap q1, q2 {
             h q2;
             cx q1, q2;
@@ -376,8 +397,8 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           builder.create<quake::HOp>(loc, adj, params, controls,
                                      targets[1]); // q2
         }},
-       {"iswapdg",
-        [&]() { // since iswapdg is not supported, it has to be decomposed
+       {"iswapdg", // TODO
+        [&]() {    // since iswapdg is not supported, it has to be decomposed
           /*gate iswapdg q1, q2 {
               h q2;
               cx q1, q2;
@@ -409,12 +430,47 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           assert(!(params.size() != 1 || controls.size() != 0 ||
                    targets.size() != 2) &&
                  "ill-formed rxx gate");
+          mlir::Value zeroValue = createFloatValue(builder, loc, 0);
+          mlir::Value halfPi = createFloatValue(builder, loc, PI_2);
+          mlir::Value pi = createFloatValue(builder, loc, PI);
+          mlir::Value minusPi = createFloatValue(builder, loc, -1 * PI);
+          // TODO
+          double angleValue =
+              extractDoubleArgumentValue(params[0].getDefiningOp());
+          mlir::Value minusAngle =
+              createFloatValue(builder, loc, -1 * angleValue);
+          mlir::Value piMinusAngle =
+              createFloatValue(builder, loc, PI - angleValue);
+          std::vector<mlir::Value> paramsU3;
+          paramsU3.push_back(halfPi);
+          paramsU3.push_back(params[0]);
+          paramsU3.push_back(zeroValue);
+          std::vector<mlir::Value> paramsU2;
+          paramsU2.push_back(minusPi);
+          paramsU2.push_back(piMinusAngle);
+          std::vector<mlir::Value> paramsU1;
+          paramsU1.push_back(minusAngle);
+
+          builder.create<quake::U3Op>(loc, adj, paramsU3, controls, targets[0]);
+          builder.create<quake::HOp>(loc, adj, controls, targets[1]);
+
           builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
-          builder.create<quake::RxOp>(loc, adj, params, controls,
-                                      targets[1]); // rx b;
+
+          builder.create<quake::R1Op>(loc, adj, paramsU1, controls, targets[1]);
+
           builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
+
+          // u2
+          builder.create<quake::RzOp>(loc, adj, paramsU2[1], controls,
+                                      targets[0]); // phi
+          builder.create<quake::RyOp>(loc, adj, halfPi, controls,
+                                      targets[0]); // theta
+          builder.create<quake::RzOp>(loc, adj, paramsU2[0], controls,
+                                      targets[0]); // lambda
+          builder.create<quake::HOp>(loc, adj, controls, targets[1]);
+
         }},
        {"ryy",
         [&]() { // since ryy is not supported, it has to be decomposed
@@ -512,13 +568,28 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           assert(!(params.size() != 0 || controls.size() != 0 ||
                    targets.size() != 2) &&
                  "ill-formed ecr gate");
+          mlir::Value qPi = createFloatValue(builder, loc, PI_4);
+          mlir::Value minusQPi = createFloatValue(builder, loc, -1 * PI_4);
+          mlir::Value Pi = createFloatValue(builder, loc, PI);
+          // RZX(pi/4)
           builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
-          builder.create<quake::XOp>(loc, adj, controls, targets[0],
+          builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
-          mlir::Value halfPi = createFloatValue(builder, loc, 1.57079632679);
-          builder.create<quake::RzOp>(loc, adj, halfPi, controls,
-                                      targets[1]); // rz(pi/2) b;
-          builder.create<quake::XOp>(loc, adj, controls, targets[0],
+          builder.create<quake::RzOp>(loc, adj, qPi, controls,
+                                      targets[1]); // rz(theta) b
+          builder.create<quake::XOp>(loc, adj, targets[0],
+                                     targets[1]); // cx a, b;
+          builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
+          // rx (pi)
+          builder.create<quake::RxOp>(loc, adj, Pi, controls,
+                                      targets[0]); // rz(theta) b
+          // RZX(-pi/4)
+          builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
+          builder.create<quake::XOp>(loc, adj, targets[0],
+                                     targets[1]); // cx a, b;
+          builder.create<quake::RzOp>(loc, adj, minusQPi, controls,
+                                      targets[1]); // rz(theta) b
+          builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
           builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
         }},

@@ -62,13 +62,15 @@ std::cout << "Circuit after pass:\n";
 mlirModule->dump();
 ```
 
-The following circuit will be used as a test case. Each following sections shows the transpiled
-circuit obtained for **IQM, AQT, PlanQ and WMI** backends.
+The following circuit will be used as a test case. The following section shows the transpiled
+circuit for **IQM**.
+
+<!--circuit obtained for **IQM, AQT, PlanQ and WMI** backends.-->
 
 <div align="center">
   <img  alt="Input" src="Input.png" width=75%>
 </div>
-
+<!--
 ## AQT
 
 The AQT backend supports the following gates:
@@ -89,7 +91,7 @@ The WMI backend supports the following gates:
 
 The WMI backend supports the following gates: `"rx", "ry", "rz", "x(1)", "z(1)"`.
 
-<!--TODO -->
+-->
 
 ## IQM
 

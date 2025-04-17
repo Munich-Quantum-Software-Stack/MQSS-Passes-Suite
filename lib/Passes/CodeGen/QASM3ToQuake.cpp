@@ -167,6 +167,11 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed sx gate");
           mlir::Value halfPi = createFloatValue(builder, loc, PI_2);
           builder.create<quake::RxOp>(loc, adj, halfPi, controls, targets);
+          // the following sequence is also valid, but we keep the one with the
+          // less number of gates
+          // builder.create<quake::HOp>(loc, adj, params, controls, targets);
+          // builder.create<quake::SOp>(loc, adj, params, controls, targets);
+          // builder.create<quake::HOp>(loc, adj, params, controls, targets);
         }},
        {"sxdg",
         [&]() { // since sx is not supported, replace it by rx with -pi/2

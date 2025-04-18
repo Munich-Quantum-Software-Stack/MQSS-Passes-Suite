@@ -200,6 +200,13 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed t gate");
           builder.create<quake::TOp>(loc, adj, params, controls, targets);
         }},
+       {"tdg",
+        [&]() {
+          assert(!(params.size() != 0 || controls.size() != 0 ||
+                   targets.size() != 1) &&
+                 "ill-formed t gate");
+          builder.create<quake::TOp>(loc, true, params, controls, targets);
+        }},
        {"teleport",
         [&]() { assert(false && "Teleport operation is not supported!"); }},
        {"rx",
@@ -376,9 +383,6 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
        {"u2",
         [&]() { // since u2 is not supported, it has to be decomposed
           // u2(φ, λ)
-          std::cout << "controls size " << controls.size() << std::endl;
-          std::cout << "target size " << targets.size() << std::endl;
-          std::cout << "params size " << params.size() << std::endl;
           assert(!(params.size() != 2 || controls.size() != 0 ||
                    targets.size() != 1) &&
                  "ill-formed u2 gate");
@@ -389,6 +393,42 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                                       targets); // theta
           builder.create<quake::RzOp>(loc, adj, params[0], controls,
                                       targets); // lambda
+        }},
+       {"rccx",
+        [&]() {
+          mlir::Value zeroValue = createFloatValue(builder, loc, 0.0);
+          mlir::Value Pi = createFloatValue(builder, loc, PI);
+          mlir::Value halfPi = createFloatValue(builder, loc, PI_2);
+          mlir::Value qPi = createFloatValue(builder, loc, PI_4);
+          mlir::Value minusQPi = createFloatValue(builder, loc, -1 * PI_4);
+          // u2 (0,pi) q[2]
+          builder.create<quake::RzOp>(loc, adj, Pi, controls,
+                                      targets[2]); // phi
+          builder.create<quake::RyOp>(loc, adj, halfPi, controls,
+                                      targets[2]); // theta
+          builder.create<quake::RzOp>(loc, adj, zeroValue, controls,
+                                      targets[2]); // lambda
+          // u1(pi/4) q[2]
+          builder.create<quake::R1Op>(loc, adj, qPi, controls, targets[2]);
+          // cx q[1], q[2]
+          builder.create<quake::XOp>(loc, adj, params, targets[1], targets[2]);
+          // u1(-pi / 4) q[2];
+          builder.create<quake::R1Op>(loc, adj, minusQPi, controls, targets[2]);
+          // cx q[0], q[2];
+          builder.create<quake::XOp>(loc, adj, params, targets[0], targets[2]);
+          // u1(pi / 4) q[2];
+          builder.create<quake::R1Op>(loc, adj, qPi, controls, targets[2]);
+          // cx q[1], q[2]
+          builder.create<quake::XOp>(loc, adj, params, targets[1], targets[2]);
+          // u1(-pi / 4) q[2];
+          builder.create<quake::R1Op>(loc, adj, minusQPi, controls, targets[2]);
+          // u2 (0,pi) q[2]
+          builder.create<quake::RzOp>(loc, adj, Pi, controls,
+                                      targets[2]); // phi
+          builder.create<quake::RyOp>(loc, adj, halfPi, controls,
+                                      targets[2]); // theta
+          builder.create<quake::RzOp>(loc, adj, zeroValue, controls,
+                                      targets[2]); // lambda
         }},
        {"u3",
         [&]() {

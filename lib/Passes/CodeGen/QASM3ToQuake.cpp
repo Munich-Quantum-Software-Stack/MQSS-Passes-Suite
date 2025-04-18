@@ -366,6 +366,13 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed u1 gate");
           builder.create<quake::R1Op>(loc, adj, params, controls, targets);
         }},
+       {"cu1",
+        [&]() {
+          assert(!(params.size() != 1 || controls.size() != 0 ||
+                   targets.size() != 2) &&
+                 "ill-formed u1 gate");
+          builder.create<quake::R1Op>(loc, adj, params, targets[0], targets[1]);
+        }},
        {"u2",
         [&]() { // since u2 is not supported, it has to be decomposed
           // u2(φ, λ)

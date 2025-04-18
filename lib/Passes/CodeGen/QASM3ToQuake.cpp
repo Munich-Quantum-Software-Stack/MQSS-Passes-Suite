@@ -116,7 +116,18 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           assert(false && "xx_plus_yy phase operation is not supported!");
         }},
        {"U",
-        [&]() { assert(false && "Global phase operation is not supported!"); }},
+        [&]() { // since u is not supported, U(θ, φ, λ) = Rz(φ) * Ry(θ) * Rz(λ)
+          // u2(φ, λ)
+          assert(!(params.size() != 3 || controls.size() != 0 ||
+                   targets.size() != 1) &&
+                 "ill-formed U gate");
+          builder.create<quake::RzOp>(loc, adj, params[2], controls,
+                                      targets); // phi
+          builder.create<quake::RyOp>(loc, adj, params[0], controls,
+                                      targets); // theta
+          builder.create<quake::RzOp>(loc, adj, params[1], controls,
+                                      targets); // lambda
+        }},
        {"x",
         [&]() {
           assert(!(params.size() != 0 || controls.size() != 0 ||
@@ -294,7 +305,6 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
        {"id", [&]() { /* do nothing because identity*/ }},
        {"cx",
         [&]() {
-          // std::cout << "Context: " << builder.getContext() << std::endl;
           assert(!(params.size() != 0 || controls.size() != 1 ||
                    targets.size() != 1) &&
                  "ill-formed cx gate");
@@ -356,7 +366,7 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed u1 gate");
           builder.create<quake::R1Op>(loc, adj, params, controls, targets);
         }},
-       {"u2",   // TODO
+       {"u2",
         [&]() { // since u2 is not supported, it has to be decomposed
           // u2(φ, λ)
           std::cout << "controls size " << controls.size() << std::endl;
@@ -409,24 +419,19 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           assert(!(params.size() != 0 || controls.size() != 0 ||
                    targets.size() != 2) &&
                  "ill-formed iswapdg gate");
-          builder.create<quake::HOp>(loc, adj, params, controls,
+          builder.create<quake::HOp>(loc, false, params, controls,
                                      targets[1]); // q2
-          builder.create<quake::XOp>(loc, adj, params, targets[0],
+          builder.create<quake::XOp>(loc, false, params, targets[0],
                                      targets[1]); // q1, q2
-          builder.create<quake::HOp>(loc, adj, params, controls,
+          builder.create<quake::HOp>(loc, false, params, controls,
                                      targets[1]); // q2
-          builder.create<quake::ZOp>(loc, adj, params, targets[0],
+          builder.create<quake::ZOp>(loc, false, params, targets[0],
                                      targets[1]); // q1, q2
-          builder.create<quake::HOp>(loc, adj, params, controls,
+          builder.create<quake::HOp>(loc, false, params, controls,
                                      targets[1]); // q2
         }},
        {"rxx",
         [&]() { // since rxx is not supported, it has to be decomposed
-          /*gate rxx(theta) a, b {
-              cx a, b;
-              rx(theta) b;
-              cx a, b;
-          }*/
           assert(!(params.size() != 1 || controls.size() != 0 ||
                    targets.size() != 2) &&
                  "ill-formed rxx gate");
@@ -450,18 +455,17 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           paramsU2.push_back(piMinusAngle);
           std::vector<mlir::Value> paramsU1;
           paramsU1.push_back(minusAngle);
-
+          // U3 and H
           builder.create<quake::U3Op>(loc, adj, paramsU3, controls, targets[0]);
           builder.create<quake::HOp>(loc, adj, controls, targets[1]);
-
+          // Cx
           builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
-
+          // U1
           builder.create<quake::R1Op>(loc, adj, paramsU1, controls, targets[1]);
-
+          // Cx
           builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
-
           // u2
           builder.create<quake::RzOp>(loc, adj, paramsU2[1], controls,
                                       targets[0]); // phi
@@ -469,10 +473,11 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                                       targets[0]); // theta
           builder.create<quake::RzOp>(loc, adj, paramsU2[0], controls,
                                       targets[0]); // lambda
+          // h
           builder.create<quake::HOp>(loc, adj, controls, targets[1]);
 
         }},
-       {"ryy",
+       {"ryy",  // TODO: not working properly yet
         [&]() { // since ryy is not supported, it has to be decomposed
           /*gate ryy(theta) a, b {
               ry(pi/2) a;
@@ -486,23 +491,16 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           assert(!(params.size() != 1 || controls.size() != 0 ||
                    targets.size() != 2) &&
                  "ill-formed ryy gate");
-          mlir::Value halfPi = createFloatValue(builder, loc, 1.57079632679);
-          mlir::Value minHalfPi =
-              createFloatValue(builder, loc, -1.57079632679);
-          builder.create<quake::RyOp>(loc, adj, halfPi, controls,
-                                      targets[0]); // ry(pi/2) a;
-          builder.create<quake::RyOp>(loc, adj, halfPi, controls,
-                                      targets[1]); // ry(pi/2) b;
+
+          builder.create<quake::HOp>(loc, adj, controls, targets[1]);
           builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
-          builder.create<quake::RyOp>(loc, adj, params, controls,
-                                      targets[1]); // ry(theta) b;
+          builder.create<quake::RzOp>(loc, adj, params, controls,
+                                      targets[0]); // ry(pi/2) a;
           builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
-          builder.create<quake::RyOp>(loc, adj, minHalfPi, controls,
-                                      targets[0]); // ry(pi/2) a;
-          builder.create<quake::RyOp>(loc, adj, minHalfPi, controls,
-                                      targets[1]); // ry(pi/2) b;
+          builder.create<quake::HOp>(loc, adj, controls, targets[1]);
+
         }},
        {"rzz",
         [&]() { // since rzz is not supported, it has to be decomposed
@@ -516,7 +514,7 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed rzz gate");
           builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
-          builder.create<quake::RzOp>(loc, adj, params, controls,
+          builder.create<quake::R1Op>(loc, adj, params, controls,
                                       targets[1]); // rz(theta) b
           builder.create<quake::XOp>(loc, adj, targets[0],
                                      targets[1]); // cx a, b;
@@ -594,11 +592,6 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
           builder.create<quake::HOp>(loc, adj, controls, targets[1]); // h b;
         }},
        {"cswap", [&]() {
-          /*cx q[0], q[1];  // CNOT gate, Control: q[0], Target: q[1]
-          cx q[0], q[2];  // CNOT gate, Control: q[0], Target: q[2]
-          ccx q[0], q[1], q[2]; // Toffoli gate, Control: q[0], Targets: q[1],
-          q[2] cx q[0], q[1];  // CNOT gate to undo the first step cx q[0],
-          q[2];  // CNOT gate to undo the second step*/
           assert(!(params.size() != 0 || controls.size() != 1 ||
                    targets.size() != 2) &&
                  "ill-formed cswap gate");

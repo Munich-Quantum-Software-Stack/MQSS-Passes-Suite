@@ -330,17 +330,15 @@ TEST_P(VerificationTestPassesMQSS, Run) {
   ecm.run();
   std::cout << "after run " << std::endl;
   std::cout << ecm.getResults() << "\n";
-  std::cout << "Press Enter to Continue ...";
   // std::cin.get();
   EXPECT_TRUE(ecm.getResults().consideredEquivalent());
-  std::cout << "Press Enter to Continue ...";
   // std::cin.get();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     MQSSPassTests, VerificationTestPassesMQSS,
-    ::testing::ValuesIn(extractQASMFiles("./qasm/GHZ-2to9-Qiskit.zip",
-                                         "./qasm/")),
+    ::testing::ValuesIn(
+        extractQASMFiles("./qasm/MQTBench-qasm-parser-testbed.zip", "./qasm/")),
     [](const ::testing::TestParamInfo<VerificationTestPassesMQSS::ParamType>
            &info) {
       // Assign the test name
@@ -362,7 +360,7 @@ INSTANTIATE_TEST_SUITE_P(
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   // Stop execution on first failure
-  testing::FLAGS_gtest_break_on_failure = false;
+  testing::FLAGS_gtest_break_on_failure = true;
   // GTEST_FLAG_SET(break_on_failure, true);
   return RUN_ALL_TESTS();
 }

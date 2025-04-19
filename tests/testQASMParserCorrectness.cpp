@@ -335,7 +335,6 @@ TEST_P(VerificationTestPassesMQSS, Run) {
   ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
   ecm.run();
   std::cout << ecm.getResults() << "\n";
-  // EXPECT_EQ(ecm.equivalence(), ec::EquivalenceCriterion::Equivalent);
   EXPECT_TRUE(ecm.getResults().consideredEquivalent());
 }
 

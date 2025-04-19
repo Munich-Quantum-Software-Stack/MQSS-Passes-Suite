@@ -170,6 +170,13 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                  "ill-formed s gate");
           builder.create<quake::SOp>(loc, adj, params, controls, targets);
         }},
+       {"sdg",
+        [&]() {
+          assert(!(params.size() != 0 || controls.size() != 0 ||
+                   targets.size() != 1) &&
+                 "ill-formed s gate");
+          builder.create<quake::SOp>(loc, true, params, controls, targets);
+        }},
        {"sx",
         [&]() { // since sx is not supported, replace it by rx with pi/2
                 // rotation
@@ -436,6 +443,13 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
                    targets.size() != 1) &&
                  "ill-formed u3 gate");
           builder.create<quake::U3Op>(loc, adj, params, controls, targets);
+        }},
+       {"cu3",
+        [&]() {
+          assert(!(params.size() != 3 || controls.size() != 0 ||
+                   targets.size() != 2) &&
+                 "ill-formed u3 gate");
+          builder.create<quake::U3Op>(loc, adj, params, targets[0], targets[1]);
         }},
        {"iswap", // TODO
         [&]() {  // since iswap is not supported, it has to be decomposed

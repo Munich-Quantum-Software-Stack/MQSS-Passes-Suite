@@ -50,10 +50,12 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 #include <iomanip>
 #include <regex>
+#include <unordered_map>
 
 using namespace mlir;
 using namespace mqss::support::quakeDialect;
-using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
+// using IDQASMMLIR = std::map<std::string, std::map<int, int>>;
+using QASMVectorToQuakeVector = std::unordered_map<std::string, mlir::Value>;
 
 namespace {
 
@@ -666,13 +668,13 @@ void insertQASMGateIntoQuakeModule(std::string gateId, OpBuilder &builder,
   }
 }
 
-// returns a tuple of T1 and T2
-// T1 a map of mlir indices: identifier, qasmqubit, mllirqubit
-// T2 allocated vector of qubits, all the qubit registers are condensed into one
-std::tuple<IDQASMMLIR, mlir::Value> insertAllocatedQubits(
+// QASMVectorToMLIRValue
+std::tuple<QASMVectorToQuakeVector, std::vector<std::pair<std::string, int>>>
+insertAllocatedQubits(
     const std::vector<std::shared_ptr<qasm3::Statement>> &program,
     OpBuilder &builder, Location loc, mlir::Operation *inOp) {
-  std::map<std::string, int> expQubits;
+  // I have to do it like this to preserve the order they are declared
+  std::vector<std::pair<std::string, int>> orderVectors = {};
   int totalQubits = 0;
   for (const auto &statement : program) {
     // Check if the statement is a DeclarationStatement
@@ -680,8 +682,8 @@ std::tuple<IDQASMMLIR, mlir::Value> insertAllocatedQubits(
             std::dynamic_pointer_cast<qasm3::DeclarationStatement>(statement)) {
       //        std::cout << "type name " <<  typeid(*statement).name()  <<
       //        "\n";
-      // std::cout << "identifier " <<  declStmt->identifier  << "\n";
-      // std::cout << "expression " <<  declStmt->expression << "\n";
+      std::cout << "identifier " << declStmt->identifier << "\n";
+      std::cout << "expression " << declStmt->expression << "\n";
       // Checking the type contained in the variant
       auto &variantType = declStmt->type;
       if (auto designatedPtr = std::get_if<
@@ -700,8 +702,8 @@ std::tuple<IDQASMMLIR, mlir::Value> insertAllocatedQubits(
         if (auto designator = typeExpr->getDesignator()) {
           if (auto constant =
                   std::dynamic_pointer_cast<qasm3::Constant>(designator)) {
-            expQubits.insert(
-                {std::string(declStmt->identifier), constant->getSInt()});
+            orderVectors.push_back(std::make_pair(
+                std::string(declStmt->identifier), constant->getSInt()));
             totalQubits += constant->getSInt(); // Access the variant
             // std::cout << "Total qubits: " << val << std::endl;
           }
@@ -710,12 +712,24 @@ std::tuple<IDQASMMLIR, mlir::Value> insertAllocatedQubits(
     }
   }
   // identifier, qasmqubit, mlirqubit
-  IDQASMMLIR mlirQubits;
+  QASMVectorToQuakeVector mlirQubitVectors;
+  // IDQASMMLIR mlirQubits;
   if (totalQubits == 0 || totalQubits == -1)
-    return std::make_tuple(mlirQubits, nullptr); // do nothing
+    return std::make_tuple(mlirQubitVectors,
+                           orderVectors); // do nothing and return empty map
   // instead of returning do the insertion of the measurement in the MLIR module
   // return totalQubits;
   builder.setInsertionPoint(inOp); // Set insertion before return
+  // create the different mlir vectors in the QASM program
+  for (const auto &pair : orderVectors) {
+    std::cout << "order " << pair.first << "\n";
+    // Define the type for a vector of totalQubits qubits
+    auto qubitVecType = quake::VeqType::get(builder.getContext(), pair.second);
+    auto qubitReg = builder.create<quake::AllocaOp>(loc, qubitVecType);
+    mlirQubitVectors.emplace(pair.first, qubitReg);
+  }
+  return std::make_tuple(mlirQubitVectors, orderVectors);
+  /*
   // Define the type for a vector of totalQubits qubits
   auto qubitVecType = quake::VeqType::get(builder.getContext(), totalQubits);
   // Create the quake.alloca operation
@@ -730,7 +744,7 @@ std::tuple<IDQASMMLIR, mlir::Value> insertAllocatedQubits(
   }
   assert(globalCount == totalQubits &&
          "Fatal error! This should never happen"); // paranoia checks
-  return std::make_tuple(mlirQubits, qubitReg.getResult());
+  return std::make_tuple(mlirQubits, qubitReg.getResult());*/
 }
 
 double evaluateExpression(const std::shared_ptr<qasm3::Expression> &expr) {
@@ -790,7 +804,8 @@ double evaluateExpression(const std::shared_ptr<qasm3::Expression> &expr) {
 // Function to print gate information
 void insertGate(const std::shared_ptr<qasm3::GateCallStatement> &gateCall,
                 OpBuilder &builder, Location loc, mlir::Operation *inOp,
-                mlir::Value qubits, IDQASMMLIR mlirQubits) {
+                QASMVectorToQuakeVector QASMToVectors) {
+  // mlir::Value qubits, IDQASMMLIR mlirQubits) {
   bool isAdj = false;
   std::vector<mlir::Value> parameters = {};
   std::vector<mlir::Value> controls = {};
@@ -844,24 +859,26 @@ void insertGate(const std::shared_ptr<qasm3::GateCallStatement> &gateCall,
               std::dynamic_pointer_cast<qasm3::Constant>(operand->expression))
         qubitOp = constantExprOp->getSInt();
       assert(qubitOp != -1 && "Fatal error, this must not happen!");
-      int selectedQubit = -1;
-      try {
+      mlir::Value selectedVector =
+          QASMToVectors.at(std::string(operand->identifier));
+      int selectedQubit = qubitOp;
+      /*try {
         selectedQubit =
             mlirQubits.at(std::string(operand->identifier)).at(qubitOp);
       } catch (const std::out_of_range &e) {
         assert(false && "Fatal error!");
-      }
+      }*/
       if (operand->expression) {
         std::cout << "[" << qubitOp << "]";
       }
       if (i < numControls) {
-        auto controlQubit =
-            builder.create<quake::ExtractRefOp>(loc, qubits, selectedQubit);
+        auto controlQubit = builder.create<quake::ExtractRefOp>(
+            loc, selectedVector, selectedQubit);
         controls.push_back(controlQubit);
         std::cout << " (Control)";
       } else {
-        auto targetQubit =
-            builder.create<quake::ExtractRefOp>(loc, qubits, selectedQubit);
+        auto targetQubit = builder.create<quake::ExtractRefOp>(
+            loc, selectedVector, selectedQubit);
         targets.push_back(targetQubit);
         std::cout << " (Target)";
       }
@@ -880,16 +897,31 @@ void insertGate(const std::shared_ptr<qasm3::GateCallStatement> &gateCall,
 void parseAndInsertMeasurements(
     const std::vector<std::shared_ptr<qasm3::Statement>> &statements,
     OpBuilder &builder, Location loc, mlir::Operation *inOp,
-    mlir::Value allocatedQubits, IDQASMMLIR mlirQubits) {
+    QASMVectorToQuakeVector QASMToVectors) {
+  // mlir::Value allocatedQubits, IDQASMMLIR mlirQubits) {
   // Defining the builder
   builder.setInsertionPoint(inOp); // Set insertion before return
   // llvm::outs() << "Printing measurements!\n";
   for (const auto &statement : statements) {
     // llvm::outs() << "Statement Type: " << typeid(*statement).name() << "\n";
-    //  Check if the statement is a MeasureStatement
+    //   Check if the statement is a MeasureStatement
     if (auto assignmentStmt =
             std::dynamic_pointer_cast<qasm3::AssignmentStatement>(statement)) {
       // llvm::outs() << "Found AssignmentStatement\n";
+      std::string classicalRegister;
+      size_t classicalIndex = 0;
+      if (assignmentStmt->identifier)
+        classicalRegister = assignmentStmt->identifier->getName();
+      if (auto idxExpr = std::dynamic_pointer_cast<qasm3::Constant>(
+              assignmentStmt->indexExpression)) {
+        classicalIndex = idxExpr->getSInt();
+      } else {
+        llvm::errs() << "Error: indexExpression is not a Constant.\n";
+        assert(false && "Unsupported classical index expression");
+      }
+      llvm::outs() << "Measurement result goes to: " << classicalRegister << "["
+                   << classicalIndex << "]\n";
+
       if (assignmentStmt->expression) {
         // llvm::outs() << "Expression Type: " <<
         // typeid(assignmentStmt->expression).name() << "\n";
@@ -902,7 +934,6 @@ void parseAndInsertMeasurements(
           if (auto measureExpr =
                   std::dynamic_pointer_cast<qasm3::MeasureExpression>(
                       declExpr->expression)) {
-            // llvm::outs() << "Found MeasureExpression\n";
             if (measureExpr->gate) {
               std::string qubit = measureExpr->gate->identifier;
               // llvm::outs() << "Measured Qubit: " << qubit << "\n";
@@ -910,16 +941,18 @@ void parseAndInsertMeasurements(
                 // llvm::outs() << "Has expression\n";
                 if (auto operand = std::dynamic_pointer_cast<qasm3::Constant>(
                         measureExpr->gate->expression)) {
+                  mlir::Value selectedQuakeVector = QASMToVectors.at(qubit);
                   size_t localQubit = operand->getSInt();
-                  size_t measQubit = -1;
-                  try {
+                  // size_t measQubit = -1;
+                  size_t measQubit = localQubit;
+                  /*try {
                     measQubit = mlirQubits.at(qubit).at(localQubit);
                   } catch (const std::out_of_range &e) {
                     assert(false && "Fatal error!");
-                  }
+                  }*/
                   // insert measurement
                   auto measRef = builder.create<quake::ExtractRefOp>(
-                      loc, allocatedQubits, measQubit);
+                      loc, selectedQuakeVector, measQubit);
                   SmallVector<Value> targetValues = {measRef};
                   Type measTy = quake::MeasureType::get(builder.getContext());
                   builder.create<quake::MzOp>(loc, measTy, targetValues)
@@ -986,18 +1019,19 @@ public:
     OpBuilder builder(circuit.getContext());
     Location loc = circuit.getLoc();
     // Traverse the AST
-    auto [mlirQubits, allocatedQubits] =
+    auto [allocatedQubitVectors, orderVectors] =
         insertAllocatedQubits(program, builder, loc, returnOp);
-    if (!allocatedQubits)
+    if (allocatedQubitVectors.size() == 0)
       return; // if no allocated qubits return nothing
 // for debugging print maps of qubits
 #ifdef DEBUG
-    for (const auto &pair : mlirQubits) {
-      std::map<int, int> innerMap = pair.second;
+    for (const auto &pair : allocatedQubitVectors) {
+      llvm::outs() << "QASM vector " << pair.first << "\n";
+      /*std::map<int, int> innerMap = pair.second;
       for (const auto &innerPair : innerMap) {
         llvm::outs() << "id:" << pair.first << " qasmQubit: " << innerPair.first
                      << " mlirQubit: " << innerPair.second << "\n";
-      }
+      }*/
     }
 #endif
     // Parse and insert gates
@@ -1005,20 +1039,21 @@ public:
       // Check if the statement is a GateCallStatement
       if (auto gateCall =
               std::dynamic_pointer_cast<qasm3::GateCallStatement>(statement))
-        insertGate(gateCall, builder, loc, returnOp, allocatedQubits,
-                   mlirQubits);
+        insertGate(gateCall, builder, loc, returnOp, allocatedQubitVectors);
     llvm::outs() << "Gates were inserted!\n";
     //// Insert barriers if required
     if (measureAllQubits) {
-      // apply measurements in all allocated qubits
+      // apply measurements in all allocated qubiti vectors
       builder.setInsertionPoint(returnOp); // Set insertion before return
-      Type measTy = quake::MeasureType::get(builder.getContext());
-      auto stdVectType = cudaq::cc::StdvecType::get(measTy);
-      builder.create<quake::MzOp>(loc, stdVectType,
-                                  allocatedQubits); //  .getMeasOut();
+      for (const auto &pair : orderVectors) {
+        Type measTy = quake::MeasureType::get(builder.getContext());
+        auto stdVectType = cudaq::cc::StdvecType::get(measTy);
+        builder.create<quake::MzOp>(loc, stdVectType,
+                                    allocatedQubitVectors.at(pair.first));
+      }
     } else {
       parseAndInsertMeasurements(program, builder, loc, returnOp,
-                                 allocatedQubits, mlirQubits);
+                                 allocatedQubitVectors);
     }
   }
 

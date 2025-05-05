@@ -227,7 +227,9 @@ std::string convertQASMToQuake(std::string qasmFile) {
   std::regex pattern2(R"([-_])");
   // Replace all occurrences of "-" and "_"
   kernelName = std::regex_replace(kernelName, pattern2, "");
+#ifdef DEBUG
   std::cout << "kernel name " << kernelName << std::endl;
+#endif
   std::string templateEmptyQuake =
       getEmptyQuakeKernel(kernelName, "_" + kernelName);
   // Read file content into a string
@@ -309,7 +311,6 @@ TEST_P(VerificationTestPassesMQSS, Run) {
 
   SCOPED_TRACE(testName);
   auto [qasmInput, qasmOutput] = verificationTest(fileName);
-  std::cout << "I am here" << std::endl;
   // qcec objects required for verification
   qc::QuantumComputation qc1, qc2;
   ec::Configuration config{};
@@ -321,13 +322,12 @@ TEST_P(VerificationTestPassesMQSS, Run) {
   // them
   qc::CircuitOptimizer::removeFinalMeasurements(qc1);
   qc::CircuitOptimizer::removeFinalMeasurements(qc2);
-
+#ifdef DEBUG
   std::cout << "----------PRINT NO MEAS QC1-------------------\n";
   qc1.print(std::cout);
   std::cout << "----------PRINT NO MEAS QC2-------------------\n";
   qc2.print(std::cout);
-  std::cout << "Press Enter to Continue ...";
-  // std::cin.get();
+#endif
   //   set the configuration
   config.functionality.traceThreshold = 1e-01;
   config.execution.parallel = true;
@@ -336,13 +336,12 @@ TEST_P(VerificationTestPassesMQSS, Run) {
   config.execution.runZXChecker = false;
   config.execution.runSimulationChecker = false;
   ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
-  std::cout << "before run " << fileName << std::endl;
+  // run checks
   ecm.run();
-  std::cout << "after run " << std::endl;
+#ifdef DEBUG
   std::cout << ecm.getResults() << "\n";
-  // std::cin.get();
+#endif
   EXPECT_TRUE(ecm.getResults().consideredEquivalent());
-  // std::cin.get();
 }
 
 INSTANTIATE_TEST_SUITE_P(

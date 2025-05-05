@@ -898,6 +898,8 @@ void parseAndInsertMeasurements(
     const std::vector<std::shared_ptr<qasm3::Statement>> &statements,
     OpBuilder &builder, Location loc, mlir::Operation *inOp,
     QASMVectorToQuakeVector QASMToVectors) {
+
+  std::map<int, std::pair<std::string, int>> ClassicalRegToQVector = {};
   // mlir::Value allocatedQubits, IDQASMMLIR mlirQubits) {
   // Defining the builder
   builder.setInsertionPoint(inOp); // Set insertion before return
@@ -935,39 +937,39 @@ void parseAndInsertMeasurements(
                   std::dynamic_pointer_cast<qasm3::MeasureExpression>(
                       declExpr->expression)) {
             if (measureExpr->gate) {
-              std::string qubit = measureExpr->gate->identifier;
+              std::string qVector = measureExpr->gate->identifier;
               // llvm::outs() << "Measured Qubit: " << qubit << "\n";
               if (measureExpr->gate->expression) {
                 // llvm::outs() << "Has expression\n";
                 if (auto operand = std::dynamic_pointer_cast<qasm3::Constant>(
                         measureExpr->gate->expression)) {
-                  mlir::Value selectedQuakeVector = QASMToVectors.at(qubit);
                   size_t localQubit = operand->getSInt();
-                  // size_t measQubit = -1;
-                  size_t measQubit = localQubit;
-                  /*try {
-                    measQubit = mlirQubits.at(qubit).at(localQubit);
-                  } catch (const std::out_of_range &e) {
-                    assert(false && "Fatal error!");
-                  }*/
-                  // insert measurement
-                  auto measRef = builder.create<quake::ExtractRefOp>(
-                      loc, selectedQuakeVector, measQubit);
-                  SmallVector<Value> targetValues = {measRef};
-                  Type measTy = quake::MeasureType::get(builder.getContext());
-                  builder.create<quake::MzOp>(loc, measTy, targetValues)
-                      .getMeasOut();
+                  ClassicalRegToQVector.emplace(
+                      classicalIndex, std::make_pair(qVector, localQubit));
                   // llvm::outs() << "Operand Identifier: " <<
                   // operand->getSInt() << "\n";
                 }
               }
-            } else {
+            } else
               assert(false && "Measurement has not qubit associated to it!");
-            }
           }
         }
       }
     }
+  }
+  for (const auto &pair : ClassicalRegToQVector) {
+    int classicalIndex = pair.first;
+    auto innerPair = pair.second;
+    std::string qVector = innerPair.first;
+    int qubit = innerPair.second;
+    mlir::Value selectedQuakeVector = QASMToVectors.at(qVector);
+
+    // insert measurement
+    auto measRef =
+        builder.create<quake::ExtractRefOp>(loc, selectedQuakeVector, qubit);
+    SmallVector<Value> targetValues = {measRef};
+    Type measTy = quake::MeasureType::get(builder.getContext());
+    builder.create<quake::MzOp>(loc, measTy, targetValues).getMeasOut();
   }
 }
 

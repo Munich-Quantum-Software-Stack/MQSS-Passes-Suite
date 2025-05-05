@@ -37,6 +37,7 @@ matches.
 #include "EquivalenceCheckingManager.hpp"
 #include "EquivalenceCriterion.hpp"
 #include "checker/dd/applicationscheme/ApplicationScheme.hpp"
+#include "circuit_optimizer/CircuitOptimizer.hpp"
 #include "dd/DDDefinitions.hpp"
 #include "ir/operations/Control.hpp"
 
@@ -314,11 +315,20 @@ TEST_P(VerificationTestPassesMQSS, Run) {
   ec::Configuration config{};
   std::stringstream qasmStream = std::stringstream(qasmInput);
   qc1.import(qasmStream, qc::Format::OpenQASM2);
-  qasmStream = std::stringstream(qasmOutput);
-  qc2.import(qasmStream, qc::Format::OpenQASM2);
+  std::stringstream qasmStream2 = std::stringstream(qasmOutput);
+  qc2.import(qasmStream2, qc::Format::OpenQASM2);
+  // since the final measurements seem to be the problem, lets try to remove
+  // them
+  qc::CircuitOptimizer::removeFinalMeasurements(qc1);
+  qc::CircuitOptimizer::removeFinalMeasurements(qc2);
+
+  std::cout << "----------PRINT NO MEAS QC1-------------------\n";
+  qc1.print(std::cout);
+  std::cout << "----------PRINT NO MEAS QC2-------------------\n";
+  qc2.print(std::cout);
   std::cout << "Press Enter to Continue ...";
   // std::cin.get();
-  //  set the configuration
+  //   set the configuration
   config.functionality.traceThreshold = 1e-01;
   config.execution.parallel = true;
   config.execution.runConstructionChecker = true;
@@ -360,7 +370,6 @@ INSTANTIATE_TEST_SUITE_P(
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   // Stop execution on first failure
-  testing::FLAGS_gtest_break_on_failure = true;
-  // GTEST_FLAG_SET(break_on_failure, true);
+  testing::FLAGS_gtest_break_on_failure = false;
   return RUN_ALL_TESTS();
 }

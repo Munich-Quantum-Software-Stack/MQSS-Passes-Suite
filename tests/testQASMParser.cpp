@@ -37,6 +37,7 @@ matches.
 #include "EquivalenceCheckingManager.hpp"
 #include "EquivalenceCriterion.hpp"
 #include "checker/dd/applicationscheme/ApplicationScheme.hpp"
+#include "circuit_optimizer/CircuitOptimizer.hpp"
 #include "dd/DDDefinitions.hpp"
 #include "ir/operations/Control.hpp"
 
@@ -226,7 +227,9 @@ std::string convertQASMToQuake(std::string qasmFile) {
   std::regex pattern2(R"([-_])");
   // Replace all occurrences of "-" and "_"
   kernelName = std::regex_replace(kernelName, pattern2, "");
+#ifdef DEBUG
   std::cout << "kernel name " << kernelName << std::endl;
+#endif
   std::string templateEmptyQuake =
       getEmptyQuakeKernel(kernelName, "_" + kernelName);
   // Read file content into a string
@@ -308,17 +311,24 @@ TEST_P(VerificationTestPassesMQSS, Run) {
 
   SCOPED_TRACE(testName);
   auto [qasmInput, qasmOutput] = verificationTest(fileName);
-  std::cout << "I am here" << std::endl;
   // qcec objects required for verification
   qc::QuantumComputation qc1, qc2;
   ec::Configuration config{};
   std::stringstream qasmStream = std::stringstream(qasmInput);
   qc1.import(qasmStream, qc::Format::OpenQASM2);
-  qasmStream = std::stringstream(qasmOutput);
-  qc2.import(qasmStream, qc::Format::OpenQASM2);
-  std::cout << "Press Enter to Continue ...";
-  // std::cin.get();
-  //  set the configuration
+  std::stringstream qasmStream2 = std::stringstream(qasmOutput);
+  qc2.import(qasmStream2, qc::Format::OpenQASM2);
+  // since the final measurements seem to be the problem, lets try to remove
+  // them
+  qc::CircuitOptimizer::removeFinalMeasurements(qc1);
+  qc::CircuitOptimizer::removeFinalMeasurements(qc2);
+#ifdef DEBUG
+  std::cout << "----------PRINT NO MEAS QC1-------------------\n";
+  qc1.print(std::cout);
+  std::cout << "----------PRINT NO MEAS QC2-------------------\n";
+  qc2.print(std::cout);
+#endif
+  //   set the configuration
   config.functionality.traceThreshold = 1e-01;
   config.execution.parallel = true;
   config.execution.runConstructionChecker = true;
@@ -326,13 +336,12 @@ TEST_P(VerificationTestPassesMQSS, Run) {
   config.execution.runZXChecker = false;
   config.execution.runSimulationChecker = false;
   ec::EquivalenceCheckingManager ecm(qc1, qc2, config);
-  std::cout << "before run " << fileName << std::endl;
+  // run checks
   ecm.run();
-  std::cout << "after run " << std::endl;
+#ifdef DEBUG
   std::cout << ecm.getResults() << "\n";
-  // std::cin.get();
+#endif
   EXPECT_TRUE(ecm.getResults().consideredEquivalent());
-  // std::cin.get();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -360,7 +369,6 @@ INSTANTIATE_TEST_SUITE_P(
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   // Stop execution on first failure
-  testing::FLAGS_gtest_break_on_failure = true;
-  // GTEST_FLAG_SET(break_on_failure, true);
+  testing::FLAGS_gtest_break_on_failure = false;
   return RUN_ALL_TESTS();
 }

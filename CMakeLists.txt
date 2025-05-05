@@ -130,6 +130,7 @@ file(GLOB SRC_TRANSFORMS
 file(GLOB SRC_SUPPORT_QUAKE
      "${CMAKE_CURRENT_SOURCE_DIR}/lib/Support/CodeGen/Quake/*.cpp")
 file(GLOB SRC_OPTIMIZER "${CMAKE_CURRENT_SOURCE_DIR}/lib/Optimizer/*.cpp")
+file(GLOB SRC_INTERFACES "${CMAKE_CURRENT_SOURCE_DIR}/lib/Interfaces/*.cpp")
 
 add_mlir_library(
   SupportQuake
@@ -137,6 +138,20 @@ add_mlir_library(
   ${SRC_SUPPORT_QUAKE}
   LINK_LIBS
   PUBLIC
+  MLIRIR
+  MLIRPass
+  MLIRTransforms)
+
+add_mlir_library(
+  Interfaces
+  SHARED
+  ${SRC_INTERFACES}
+  LINK_LIBS
+  PUBLIC
+  SupportQuake
+  MQT::CoreIR
+  MQT::CoreNA
+  MQT::QMapSC
   MLIRIR
   MLIRPass
   MLIRTransforms)
@@ -154,6 +169,7 @@ add_mlir_library(
   LINK_LIBS
   PUBLIC
   SupportQuake
+  Interfaces
   MQT::CoreIR
   MQT::CoreNA
   MQT::QMapSC
@@ -171,6 +187,7 @@ add_mlir_library(
   MLIRIR
   MLIRPasses)
 
+target_compile_options(Interfaces PRIVATE -fexceptions -frtti)
 target_compile_options(SupportQuake PRIVATE -fexceptions -frtti)
 target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)
 
@@ -178,6 +195,7 @@ target_compile_options(MLIRPasses PRIVATE -fexceptions -frtti)
 add_library(MQSS::MLIRPasses ALIAS MLIRPasses)
 add_library(MQSS::SupportQuake ALIAS SupportQuake)
 add_library(MQSS::Optimizer ALIAS Optimizer)
+add_library(MQSS::Interfaces ALIAS Interfaces)
 
 # add tests
 if(BUILD_MLIR_PASSES_TESTS)

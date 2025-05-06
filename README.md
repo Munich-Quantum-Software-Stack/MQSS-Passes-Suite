@@ -111,50 +111,93 @@ For more information on [QUAKE MLIR Dialect](https://github.com/NVIDIA/cuda-quan
 
 ### What is an MLIR pass?
 
-An MLIR pass is a transformation or analysis applied to an MLIR intermediate representation (IR) to
+An MLIR pass is a transformation or analysis applied to an MLIR intermediate representation (IR) to 
 **modify**, **optimize**, or **gather information**. Passes are a central concept in compiler
-frameworks, including MLIR, enabling modular, reusable, and extensible transformations of code at
-various levels of abstraction.
+frameworks, including MLIR, enabling modular, reusable,and extensible code transformations at
+various abstraction levels.
 
 <div align="center">
     <img src="./docs/_static/mlir-pass.png" width="45%">
 </div>
 
-For instance, in the figure above, an MLIR optimization pass is applied to the input circuit, which
-contains two consecutive Hadamard gates on qubit 0. Accordingly, in the output-optimized circuit
+For instance, in the figure above, an MLIR optimization pass is applied to the input example circuit,
+which contains two consecutive Hadamard gates on qubit 0. Accordingly, in the output-optimized circuit
 shown on the right, those two consecutive Hadamards are removed because they are equivalent to an
 identity operation.
 
-MLIR has two categories of passes: **transformation** passes, and **analysis** passes. The pass
-presented above is a transformation pass. Moreover, passes can be applied in sequences defined as
-**pass pipelines**.
+MLIR has two categories of passes: **transformation** passes and **analysis** passes. The pass 
+presented above is a transformation pass. Moreover, passes can be applied in sequences defined
+as **pass pipelines**.
 
 <div align="center">
     <img src="./docs/_static/mlir-passes.png" width="100%">
 </div>
 
-In the figure shown above, three pass pipelines are defined. In purple, a synthesis to QUAKE
-pipeline synthesizes QUAKE MLIR code from a given input C++ program. In green, an optimization
-pipeline that applies a series of transformations passes on MLIR modules. Finally, in orange, a pass
-pipeline that lowers QUAKE MLIR modules to the Quantum Intermediate Representation (QIR).
+In the figure shown above, three pass pipelines are defined. In purple, a synthesis to QUAKE pipeline
+synthesizes QUAKE MLIRcode from a given input C++ program. In green, an optimization pipeline that
+applies a series of transformations passes on MLIR modules. Finally, in orange, a pass pipeline that
+lowers QUAKE MLIR modules to the Quantum Intermediate Representation (QIR).
 
-### Why to include MLIR into the MQSS?
+The compiler converts the high-level HPCQC application to MLIR and forwards the quantum circuits to
+the QRM. Then, the QRM represents the quantum circuits as quantum kernels using the MLIR dialect Quake
+(see purple blocks). Optimization involves applying a pipeline of target-agnostic and target-specific
+passes that transform the input quantum circuit into an optimized version (see green blocks) that is
+compliant with the target device. Finally, the optimized MLIR/Quake circuit is lowered to a program
+with instructions accepted by the selected target backend (see orange blocks). In this example, the
+optimized MLIR code is lowered to QIR. Note that the code presented here is not functional and is
+only for illustrative purposes.
+
+### Why include MLIR into the MQSS?
 
 One fundamental feature of MLIR is its ability to model different levels of abstraction related to a
-domain-specific language. In contrast, Quantum representations such as the QIR or QASM are low-level
-representations. Performing transformations on a low-level abstraction might not be a good choice.
-Low-level representations are a list of quantum gates that operate on qubits. In the example below,
-the QIR program on the right is equivalent to the quantum circuit on the left.
+domain-specific language. In contrast, Quantum representations such as the QIR or QASM are
+instruction-level representations. Performing transformations on a low-level abstraction, such as
+instruction-level, might not be a good choice. Instruction-level representations are a list of quantum
+gates that operate on qubits. 
+The figure below shows a non-compliant and a compliant SSA MLIR/Quake quantum kernel on the left and
+right, respectively. The problem with using representations that do not expose the data dependencies,
+as shown on the left and QIR, is that the compiler might apply incorrect transformations during
+optimization.
 
 <div align="center">
     <img src="./docs/_static/mlir-why2.png" width="100%">
 </div>
 
-However, dataflow dependencies are lost in low-level representations, such as QIR. In contrast, MLIR
-(QUAKE) holds the dataflow dependencies natively, and no modifications to the compilation
-infrastructure are required. Thus, transformation passes such as decompositions or replacements can
-be easily implemented. Moreover, other dialects can be integrated with QUAKE to re-utilize the
-existing MLIR infrastructure.
+The representation presented on the left assumes a value referencing each qubit. Values %1 and %2
+correspond to qubits 1 and 2, respectively. By following only the value %1, the compiler might
+wrongly assume that h1 has produced the value %1 and is immediately consumed by h2.
+The compiler will try to remove gates h1 and h2 since two consecutive Hadamard gates result in
+an identity. However, following this assumption, the compiler could ignore the fact that a measurement
+exists between the two gates. Thus, representations using values referencing qubits might not be a
+good choice when applying transformation that relies on the data dependencies among gates. In contrast,
+as presented on the figure's right, an SSA-compliant representation exposes the data dependencies
+without ambiguity since each gate consumes/produces values.
+These values can also be visualized as the wires connecting the gates in the quantum circuit. A color
+code distinguishes the different values for clarity. Note that measurements might require wrapping and
+unwrapping the wires since they must operate on qubit references, i.e., values %1 and %2.
+There, gate h1 consumes the value %3, corresponding to unwrapping the qubit reference value %1 and
+producing the value %5. Gate h2 consumes the value %7, which corresponds to unwrapping the qubit
+reference value %1 after the measurement. Accordingly, there is no ambiguity in the representation,
+and eliminating h1 and h2 is impossible because both gates reference different values at their output
+and input, respectively. The representation presented on the left assumes a value referencing each
+qubit. Values %1 and %2 correspond to qubits 1 and 2, respectively. By following only the value %1,
+the compiler might wrongly assume that h1 has produced the value %1 and is immediately consumed
+by h2.
+The compiler will try to remove gates h1 and h2 since two consecutive Hadamard gates result in an
+identity. However, this assumption could ignore that a measurement exists between the two gates.
+Thus, representations using values referencing qubits might not be a good choice when applying
+transformation that relies on the data dependencies among gates. In contrast, as presented on the
+right of Fig. 4, an SSA-compliant representation exposes the data dependencies without ambiguity
+since each gate consumes/produces values. 
+These values can also be visualized as the wires connecting the gates in the quantum circuit. 
+A color code distinguishes the different values for clarity. Note that measurements might require
+wrapping and unwrapping the wires since they need to operate on qubit references, i.e., values
+%1 and %2.
+There, gate h1 consumes the value %3, corresponding to unwrapping the qubit reference value %1,
+and producing the value %5. Gate h2 consumes the value %7 corresponding to unwrapping the qubit
+reference value %1 after the measurement. Accordingly, there is no ambiguity in the representation,
+and eliminating h1 and h2 is impossible because both gates reference different values at their
+output and input, respectively.
 
 ### Where do MLIR passes fit into the MQSS?
 

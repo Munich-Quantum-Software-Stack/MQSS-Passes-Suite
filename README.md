@@ -127,7 +127,7 @@ presented above is a transformation pass. Moreover, passes can be applied in seq
 **pass pipelines**.
 
 <div align="center">
-    <img src="./docs/_static/mlir-passes.png" width="80%">
+    <img src="./docs/_static/mlir-passes.png" width="100%">
 </div>
 
 In the figure shown above, three pass pipelines are defined. In purple, a synthesis to QUAKE

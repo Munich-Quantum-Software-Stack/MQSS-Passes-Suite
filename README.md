@@ -144,7 +144,7 @@ Low-level representations are a list of quantum gates that operate on qubits. In
 the QIR program on the right is equivalent to the quantum circuit on the left.
 
 <div align="center">
-    <img src="./docs/_static/mlir-why.png" width="100%">
+    <img src="./docs/_static/mlir-why2.png" width="100%">
 </div>
 
 However, dataflow dependencies are lost in low-level representations, such as QIR. In contrast, MLIR

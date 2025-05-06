@@ -90,18 +90,21 @@ For more information on [MLIR](https://github.com/llvm/llvm-project.git).
 
 ### What is an MLIR Dialect?
 
-An MLIR dialect is a modular and extensible namespace within the MLIR framework that defines a set
-of **operations**, **types** and **attributes** specific to a domain, language, or computation
-model. Dialects enable MLIR to be a highly flexible intermediate representation (IR).
+An MLIR dialect is a modular and extensible namespace within the MLIR framework that defines a set of
+**operations**, **types** and **attributes** specific to a domain, language, or model of computation. Dialects
+enable MLIR to be a highly flexible intermediate representation (IR).
 
-For instance, **Quake** is an MLIR dialect designed for quantum computing. It serves as part of
-NVIDIA's CUDAQ framework, which facilitates the development, optimization, and deployment of
-quantum-classical hybrid programs. Quake represents quantum programs within MLIR, providing a
-high-level abstraction for quantum operations and allowing developers to leverage the MLIR
-infrastructure for optimization and compilation.
+For instance, **Quake** is an MLIR dialect designed for quantum computing. It serves as part of NVIDIA's CUDAQ framework,
+facilitating the development, optimization, and deployment of quantum-classical hybrid programs. Quake represents
+quantum programs within MLIR, providing a high-level abstraction for quantum operations and allowing developers to
+leverage the MLIR infrastructure for optimization and compilation.
+Below is an example of a quantum circuit and its corresponding representation using Quake. Each instruction at MLIR
+level matches the gates represented in the diagram. Though, at first, this representation might resemble other
+representations such as QASM and QIR, there exists a difference in the flexibility of the representation that allows
+transformations at different levels of abstraction, which is provided by the MLIR framework.
 
 <div align="center">
-    <img src="./docs/_static/mlir-quake.png" width="60%">
+    <img src="./docs/_static/mlir-quake.png" width="70%">
 </div>
 
 For more information on [QUAKE MLIR Dialect](https://github.com/NVIDIA/cuda-quantum.git).

@@ -20,7 +20,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   February 2025
   version 1.0
   brief
-    TODO
+    Definition of the switch operation. This function is only valid for two
+qubit gates. Given a pattern using the template, the function will find the
+pattern and perform a switch operation.
 
 *******************************************************************************
 * This source code and the accompanying materials are made available under    *

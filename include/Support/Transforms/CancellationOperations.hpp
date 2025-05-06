@@ -20,7 +20,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   February 2025
   version 1.0
   brief
-    TODO
+    Definition of the cancellation operation at MLIR level. Given a pattern
+    specified by the template, the function will find the pattern and remove
+    it from a given mlir module.
 
 *******************************************************************************
 * This source code and the accompanying materials are made available under    *

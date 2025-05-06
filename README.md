@@ -165,38 +165,21 @@ optimization.
 
 The representation presented on the left assumes a value referencing each qubit. Values %1 and %2
 correspond to qubits 1 and 2, respectively. By following only the value %1, the compiler might
-wrongly assume that h1 has produced the value %1 and is immediately consumed by h2.
-The compiler will try to remove gates h1 and h2 since two consecutive Hadamard gates result in
+wrongly assume that _h1_ has produced the value %1 and is immediately consumed by _h2_.
+The compiler will try to remove gates _h1_ and _h2_ since two consecutive Hadamard gates result in
 an identity. However, following this assumption, the compiler could ignore the fact that a measurement
 exists between the two gates. Thus, representations using values referencing qubits might not be a
 good choice when applying transformation that relies on the data dependencies among gates. In contrast,
 as presented on the figure's right, an SSA-compliant representation exposes the data dependencies
 without ambiguity since each gate consumes/produces values.
-These values can also be visualized as the wires connecting the gates in the quantum circuit. A color
-code distinguishes the different values for clarity. Note that measurements might require wrapping and
-unwrapping the wires since they must operate on qubit references, i.e., values %1 and %2.
-There, gate h1 consumes the value %3, corresponding to unwrapping the qubit reference value %1 and
-producing the value %5. Gate h2 consumes the value %7, which corresponds to unwrapping the qubit
+
+These values can also be visualized as the wires connecting the gates in the quantum circuit.
+Accordingly, there is no ambiguity in the representation, and eliminating _h1_ and _h2_ is impossible
+because both gates reference different values at their output and input, respectively.
+There, gate _h1_ consumes the value %3, corresponding to unwrapping the qubit reference value %1,
+and producing the value %5. Gate _h2_ consumes the value %7 corresponding to unwrapping the qubit
 reference value %1 after the measurement. Accordingly, there is no ambiguity in the representation,
-and eliminating h1 and h2 is impossible because both gates reference different values at their output
-and input, respectively. The representation presented on the left assumes a value referencing each
-qubit. Values %1 and %2 correspond to qubits 1 and 2, respectively. By following only the value %1,
-the compiler might wrongly assume that h1 has produced the value %1 and is immediately consumed
-by h2.
-The compiler will try to remove gates h1 and h2 since two consecutive Hadamard gates result in an
-identity. However, this assumption could ignore that a measurement exists between the two gates.
-Thus, representations using values referencing qubits might not be a good choice when applying
-transformation that relies on the data dependencies among gates. In contrast, as presented on the
-right of Fig. 4, an SSA-compliant representation exposes the data dependencies without ambiguity
-since each gate consumes/produces values. 
-These values can also be visualized as the wires connecting the gates in the quantum circuit. 
-A color code distinguishes the different values for clarity. Note that measurements might require
-wrapping and unwrapping the wires since they need to operate on qubit references, i.e., values
-%1 and %2.
-There, gate h1 consumes the value %3, corresponding to unwrapping the qubit reference value %1,
-and producing the value %5. Gate h2 consumes the value %7 corresponding to unwrapping the qubit
-reference value %1 after the measurement. Accordingly, there is no ambiguity in the representation,
-and eliminating h1 and h2 is impossible because both gates reference different values at their
+and eliminating _h1_ and _h2_ is impossible because both gates reference different values at their
 output and input, respectively.
 
 ### Where do MLIR passes fit into the MQSS?

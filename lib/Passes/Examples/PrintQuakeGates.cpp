@@ -22,7 +22,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   brief
   PrintQuakeGatesPass(llvm::raw_string_ostream ostream)
   Example MLIR pass that shows how to traverse a Quantum kernel written in
-  QUAKE MLIR.
+  MLIR/Quake.
   The pass prints in ostream the type of each quantum gate and its operand(s)
   qubits.
 

@@ -22,7 +22,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   version 1.0
   brief
   QuakeQMapPass(Architecture architecture, Configuration settings)
-  This pass performs the mapping of Quantum kernels defined in QUAKE MLIR.
+  This pass performs the mapping of Quantum kernels defined in MLIR/Quake.
   The mapper used is MQT-QMAP. As inputs, it will receive the target
 architecture where Quantum kernels must execute and the settings to configure
 que MQT-QMAP mapper. The mapper modifies the input Quantum kernels to be

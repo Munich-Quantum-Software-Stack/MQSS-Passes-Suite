@@ -28,17 +28,18 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 <!-- [DOXYGEN MAIN] -->
 
 This repository holds a collection of MLIR passes that operate on Quantum programs to optimize,
-transform, and lower quantum circuits to instructions compliant with the target devices. The presented
-passes are integrated into the Munich Quantum Software Stack (MQSS) infrastructure. In particular,
-this collection of passes is used in the Quantum Resource Manager (QRM) to optimize, transform, and
-lower quantum programs to quantum devices. The passes stored in this collection can be classified as
-target-agnostic and target-specific. Target agnostic passes can be applied to any quantum circuit and
-do not require information on the selected quantum target device. In contrast, target-specific passes
-tightly depend on the selected quantum device. For instance, transpilation passes that convert a quantum
-circuit defined using arbitrary gates to a quantum circuit compliant with the native gate set of the
-selected quantum device.
+transform, and lower quantum circuits to instructions compliant with the target devices. The
+presented passes are integrated into the Munich Quantum Software Stack (MQSS) infrastructure. In
+particular, this collection of passes is used in the Quantum Resource Manager (QRM) to optimize,
+transform, and lower quantum programs to quantum devices. The passes stored in this collection can
+be classified as target-agnostic and target-specific. Target agnostic passes can be applied to any
+quantum circuit and do not require information on the selected quantum target device. In contrast,
+target-specific passes tightly depend on the selected quantum device. For instance, transpilation
+passes that convert a quantum circuit defined using arbitrary gates to a quantum circuit compliant
+with the native gate set of the selected quantum device.
 
 <!-- [DOXYGEN MAIN] -->
+
 <div align="center">
   <a href="https://munich-quantum-software-stack.github.io/MQSS-Passes-Documentation/mlir/">
   <img style="min-width: 200px !important; width: 30%;" src="https://img.shields.io/badge/documentation-blue?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNi4wIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjQgRm9udGljb25zLCBJbmMuLS0+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTk2IDBDNDMgMCAwIDQzIDAgOTZMMCA0MTZjMCA1MyA0MyA5NiA5NiA5NmwyODggMCAzMiAwYzE3LjcgMCAzMi0xNC4zIDMyLTMycy0xNC4zLTMyLTMyLTMybDAtNjRjMTcuNyAwIDMyLTE0LjMgMzItMzJsMC0zMjBjMC0xNy43LTE0LjMtMzItMzItMzJMMzg0IDAgOTYgMHptMCAzODRsMjU2IDAgMCA2NEw5NiA0NDhjLTE3LjcgMC0zMi0xNC4zLTMyLTMyczE0LjMtMzIgMzItMzJ6bTMyLTI0MGMwLTguOCA3LjItMTYgMTYtMTZsMTkyIDBjOC44IDAgMTYgNy4yIDE2IDE2cy03LjIgMTYtMTYgMTZsLTE5MiAwYy04LjggMC0xNi03LjItMTYtMTZ6bTE2IDQ4bDE5MiAwYzguOCAwIDE2IDcuMiAxNiAxNnMtNy4yIDE2LTE2IDE2bC0xOTIgMGMtOC44IDAtMTYtNy4yLTE2LTE2czcuMi0xNiAxNi0xNnoiLz48L3N2Zz4=" alt="Documentation" />
@@ -52,19 +53,19 @@ selected quantum device.
 ### What is MQSS?
 
 **MQSS** stands for _Munich Quantum Software Stack_, which is a project of the _Munich Quantum
-Valley (MQV)_ initiative and is jointly developed by the _Leibniz Supercomputing Centre (LRZ)_
-and the Chairs for _Design Automation (CDA)_ and for _Computer Architecture and Parallel Systems
-(CAPS)_ at TUM. It provides a comprehensive compilation and runtime infrastructure for on-premise
-and remote quantum devices, supports modern compilation and optimization techniques, and enables
-current and future high-level abstractions for quantum programming. This stack is designed to
-deploy in various scenarios via flexible configuration options, including stand-alone scenarios
-for individual systems, cloud access to multiple devices, and tight integration into HPC
-environments supporting quantum acceleration. A concrete instance of the MQSS is deployed at the
-LRZ for the MQV, serving as a single access point to all of its quantum devices via multiple
-compatible access paths, including a web portal, command line access via web credentials as well
-as the option for hybrid access with tight integration with LRZ's HPC systems. It facilitates
-the connection between end-users and quantum computing platforms by its integration within HPC
-infrastructures, such as those found at the LRZ.
+Valley (MQV)_ initiative and is jointly developed by the _Leibniz Supercomputing Centre (LRZ)_ and
+the Chairs for _Design Automation (CDA)_ and for _Computer Architecture and Parallel Systems (CAPS)_
+at TUM. It provides a comprehensive compilation and runtime infrastructure for on-premise and remote
+quantum devices, supports modern compilation and optimization techniques, and enables current and
+future high-level abstractions for quantum programming. This stack is designed to deploy in various
+scenarios via flexible configuration options, including stand-alone scenarios for individual
+systems, cloud access to multiple devices, and tight integration into HPC environments supporting
+quantum acceleration. A concrete instance of the MQSS is deployed at the LRZ for the MQV, serving as
+a single access point to all of its quantum devices via multiple compatible access paths, including
+a web portal, command line access via web credentials as well as the option for hybrid access with
+tight integration with LRZ's HPC systems. It facilitates the connection between end-users and
+quantum computing platforms by its integration within HPC infrastructures, such as those found at
+the LRZ.
 
 ### What is MLIR?
 
@@ -73,10 +74,10 @@ domain-specific compilers and optimizing transformations. MLIR originated as par
 ecosystem and is particularly tailored for modern, complex computational workflows, including
 machine learning, AI, and heterogeneous hardware.
 
-MLIR supports multiple levels of abstraction within a single framework, allowing developers to
-work with high-level domain-specific operations down to hardware-specific operations. Users can
-define their **dialects** (custom operations and types) for specific problem domains while leveraging
-the shared infrastructure for optimization and code generation already provided by MLIR.
+MLIR supports multiple levels of abstraction within a single framework, allowing developers to work
+with high-level domain-specific operations down to hardware-specific operations. Users can define
+their **dialects** (custom operations and types) for specific problem domains while leveraging the
+shared infrastructure for optimization and code generation already provided by MLIR.
 
 <div align="center">
     <img src="./docs/_static/mlir.png" width="70%">
@@ -90,18 +91,20 @@ For more information on [MLIR](https://github.com/llvm/llvm-project.git).
 
 ### What is an MLIR Dialect?
 
-An MLIR dialect is a modular and extensible namespace within the MLIR framework that defines a set of
-**operations**, **types** and **attributes** specific to a domain, language, or model of computation. Dialects
-enable MLIR to be a highly flexible intermediate representation (IR).
+An MLIR dialect is a modular and extensible namespace within the MLIR framework that defines a set
+of **operations**, **types** and **attributes** specific to a domain, language, or model of
+computation. Dialects enable MLIR to be a highly flexible intermediate representation (IR).
 
-For instance, **Quake** is an MLIR dialect designed for quantum computing. It serves as part of NVIDIA's CUDAQ framework,
-facilitating the development, optimization, and deployment of quantum-classical hybrid programs. Quake represents
-quantum programs within MLIR, providing a high-level abstraction for quantum operations and allowing developers to
-leverage the MLIR infrastructure for optimization and compilation.
-Below is an example of a quantum circuit and its corresponding representation using Quake. Each instruction at MLIR
-level matches the gates represented in the diagram. Though, at first, this representation might resemble other
-representations such as QASM and QIR, there exists a difference in the flexibility of the representation that allows
-transformations at different levels of abstraction, which is provided by the MLIR framework.
+For instance, **Quake** is an MLIR dialect designed for quantum computing. It serves as part of
+NVIDIA's CUDAQ framework, facilitating the development, optimization, and deployment of
+quantum-classical hybrid programs. Quake represents quantum programs within MLIR, providing a
+high-level abstraction for quantum operations and allowing developers to leverage the MLIR
+infrastructure for optimization and compilation. Below is an example of a quantum circuit and its
+corresponding representation using Quake. Each instruction at MLIR level matches the gates
+represented in the diagram. Though, at first, this representation might resemble other
+representations such as QASM and QIR, there exists a difference in the flexibility of the
+representation that allows transformations at different levels of abstraction, which is provided by
+the MLIR framework.
 
 <div align="center">
     <img src="./docs/_static/mlir-quake.png" width="70%">
@@ -111,7 +114,7 @@ For more information on [QUAKE MLIR Dialect](https://github.com/NVIDIA/cuda-quan
 
 ### What is an MLIR pass?
 
-An MLIR pass is a transformation or analysis applied to an MLIR intermediate representation (IR) to 
+An MLIR pass is a transformation or analysis applied to an MLIR intermediate representation (IR) to
 **modify**, **optimize**, or **gather information**. Passes are a central concept in compiler
 frameworks, including MLIR, enabling modular, reusable,and extensible code transformations at
 various abstraction levels.
@@ -120,44 +123,43 @@ various abstraction levels.
     <img src="./docs/_static/mlir-pass.png" width="45%">
 </div>
 
-For instance, in the figure above, an MLIR optimization pass is applied to the input example circuit,
-which contains two consecutive Hadamard gates on qubit 0. Accordingly, in the output-optimized circuit
-shown on the right, those two consecutive Hadamards are removed because they are equivalent to an
-identity operation.
+For instance, in the figure above, an MLIR optimization pass is applied to the input example
+circuit, which contains two consecutive Hadamard gates on qubit 0. Accordingly, in the
+output-optimized circuit shown on the right, those two consecutive Hadamards are removed because
+they are equivalent to an identity operation.
 
-MLIR has two categories of passes: **transformation** passes and **analysis** passes. The pass 
-presented above is a transformation pass. Moreover, passes can be applied in sequences defined
-as **pass pipelines**.
+MLIR has two categories of passes: **transformation** passes and **analysis** passes. The pass
+presented above is a transformation pass. Moreover, passes can be applied in sequences defined as
+**pass pipelines**.
 
 <div align="center">
     <img src="./docs/_static/mlir-passes.png" width="100%">
 </div>
 
-In the figure shown above, three pass pipelines are defined. In purple, a synthesis to QUAKE pipeline
-synthesizes QUAKE MLIRcode from a given input C++ program. In green, an optimization pipeline that
-applies a series of transformations passes on MLIR modules. Finally, in orange, a pass pipeline that
-lowers QUAKE MLIR modules to the Quantum Intermediate Representation (QIR).
+In the figure shown above, three pass pipelines are defined. In purple, a synthesis to QUAKE
+pipeline synthesizes QUAKE MLIRcode from a given input C++ program. In green, an optimization
+pipeline that applies a series of transformations passes on MLIR modules. Finally, in orange, a pass
+pipeline that lowers QUAKE MLIR modules to the Quantum Intermediate Representation (QIR).
 
 The compiler converts the high-level HPCQC application to MLIR and forwards the quantum circuits to
-the QRM. Then, the QRM represents the quantum circuits as quantum kernels using the MLIR dialect Quake
-(see purple blocks). Optimization involves applying a pipeline of target-agnostic and target-specific
-passes that transform the input quantum circuit into an optimized version (see green blocks) that is
-compliant with the target device. Finally, the optimized MLIR/Quake circuit is lowered to a program
-with instructions accepted by the selected target backend (see orange blocks). In this example, the
-optimized MLIR code is lowered to QIR. Note that the code presented here is not functional and is
-only for illustrative purposes.
+the QRM. Then, the QRM represents the quantum circuits as quantum kernels using the MLIR dialect
+Quake (see purple blocks). Optimization involves applying a pipeline of target-agnostic and
+target-specific passes that transform the input quantum circuit into an optimized version (see green
+blocks) that is compliant with the target device. Finally, the optimized MLIR/Quake circuit is
+lowered to a program with instructions accepted by the selected target backend (see orange blocks).
+In this example, the optimized MLIR code is lowered to QIR. Note that the code presented here is not
+functional and is only for illustrative purposes.
 
 ### Why include MLIR into the MQSS?
 
 One fundamental feature of MLIR is its ability to model different levels of abstraction related to a
 domain-specific language. In contrast, Quantum representations such as the QIR or QASM are
 instruction-level representations. Performing transformations on a low-level abstraction, such as
-instruction-level, might not be a good choice. Instruction-level representations are a list of quantum
-gates that operate on qubits. 
-The figure below shows a non-compliant and a compliant SSA MLIR/Quake quantum kernel on the left and
-right, respectively. The problem with using representations that do not expose the data dependencies,
-as shown on the left and QIR, is that the compiler might apply incorrect transformations during
-optimization.
+instruction-level, might not be a good choice. Instruction-level representations are a list of
+quantum gates that operate on qubits. The figure below shows a non-compliant and a compliant SSA
+MLIR/Quake quantum kernel on the left and right, respectively. The problem with using
+representations that do not expose the data dependencies, as shown on the left and QIR, is that the
+compiler might apply incorrect transformations during optimization.
 
 <div align="center">
     <img src="./docs/_static/mlir-why2.png" width="100%">
@@ -165,17 +167,17 @@ optimization.
 
 The representation presented on the left assumes a value referencing each qubit. Values %1 and %2
 correspond to qubits 1 and 2, respectively. By following only the value %1, the compiler might
-wrongly assume that _h1_ has produced the value %1 and is immediately consumed by _h2_.
-The compiler will try to remove gates _h1_ and _h2_ since two consecutive Hadamard gates result in
-an identity. However, following this assumption, the compiler could ignore the fact that a measurement
-exists between the two gates. Thus, representations using values referencing qubits might not be a
-good choice when applying transformation that relies on the data dependencies among gates. In contrast,
+wrongly assume that _h1_ has produced the value %1 and is immediately consumed by _h2_. The compiler
+will try to remove gates _h1_ and _h2_ since two consecutive Hadamard gates result in an identity.
+However, following this assumption, the compiler could ignore the fact that a measurement exists
+between the two gates. Thus, representations using values referencing qubits might not be a good
+choice when applying transformation that relies on the data dependencies among gates. In contrast,
 as presented on the figure's right, an SSA-compliant representation exposes the data dependencies
 without ambiguity since each gate consumes/produces values.
 
 These values can also be visualized as the wires connecting the gates in the quantum circuit.
-Accordingly, there is no ambiguity in the representation, and eliminating _h1_ and _h2_ is impossible
-because both gates reference different values at their output and input, respectively.
+Accordingly, there is no ambiguity in the representation, and eliminating _h1_ and _h2_ is
+impossible because both gates reference different values at their output and input, respectively.
 There, gate _h1_ consumes the value %3, corresponding to unwrapping the qubit reference value %1,
 and producing the value %5. Gate _h2_ consumes the value %7 corresponding to unwrapping the qubit
 reference value %1 after the measurement. Accordingly, there is no ambiguity in the representation,

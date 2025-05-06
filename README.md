@@ -28,13 +28,13 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 <!-- [DOXYGEN MAIN] -->
 
 This repository holds a collection of MLIR passes that operate on Quantum programs to optimize,
-transform, and lower to target devices. The presented passes are integrated into the Munich Quantum
-Software Stack (MQSS) infrastructure. In particular, this collection of passes is used in the
-Quantum Resource Manager (QRM) for optimizing, transforming, and lowering quantum programs to
-quantum devices. The passes stored in this collection can be classified as target-agnostic and
-target-specific. Target agnostic passes can be applied to any quantum circuit and do not require
-information on the selected quantum target device. In contrast, target-specific passes tightly
-depend on the selected quantum device. For instance, transpilation passes that convert a quantum
+transform, and lower quantum circuits to instructions compliant with the target devices. The presented
+passes are integrated into the Munich Quantum Software Stack (MQSS) infrastructure. In particular,
+this collection of passes is used in the Quantum Resource Manager (QRM) to optimize, transform, and
+lower quantum programs to quantum devices. The passes stored in this collection can be classified as
+target-agnostic and target-specific. Target agnostic passes can be applied to any quantum circuit and
+do not require information on the selected quantum target device. In contrast, target-specific passes
+tightly depend on the selected quantum device. For instance, transpilation passes that convert a quantum
 circuit defined using arbitrary gates to a quantum circuit compliant with the native gate set of the
 selected quantum device.
 
@@ -52,19 +52,19 @@ selected quantum device.
 ### What is MQSS?
 
 **MQSS** stands for _Munich Quantum Software Stack_, which is a project of the _Munich Quantum
-Valley (MQV)_ initiative and is jointly developed by the _Leibniz Supercomputing Centre (LRZ)_ and
-the Chairs for _Design Automation (CDA)_, and for _Computer Architecture and Parallel Systems
+Valley (MQV)_ initiative and is jointly developed by the _Leibniz Supercomputing Centre (LRZ)_
+and the Chairs for _Design Automation (CDA)_ and for _Computer Architecture and Parallel Systems
 (CAPS)_ at TUM. It provides a comprehensive compilation and runtime infrastructure for on-premise
-and remote quantum devices, support for modern compilation and optimization techniques, and enables
-both current and future high-level abstractions for quantum programming. This stack is designed to
-be capable of deployment in a variety of scenarios via flexible configuration options, including
-stand-alone scenarios for individual systems, cloud access to a variety of devices as well as tight
-integration into HPC environments supporting quantum acceleration. Within the MQV, a concrete
-instance of the MQSS is deployed at the LRZ for the MQV, serving as a single access point to all of
-its quantum devices via multiple compatible access paths, including a web portal, command line
-access via web credentials as well as the option for hybrid access with tight integration with LRZ's
-HPC systems. It facilitates the connection between end-users and quantum computing platforms by its
-integration within HPC infrastructures, such as those found at the LRZ.
+and remote quantum devices, supports modern compilation and optimization techniques, and enables
+current and future high-level abstractions for quantum programming. This stack is designed to
+deploy in various scenarios via flexible configuration options, including stand-alone scenarios
+for individual systems, cloud access to multiple devices, and tight integration into HPC
+environments supporting quantum acceleration. A concrete instance of the MQSS is deployed at the
+LRZ for the MQV, serving as a single access point to all of its quantum devices via multiple
+compatible access paths, including a web portal, command line access via web credentials as well
+as the option for hybrid access with tight integration with LRZ's HPC systems. It facilitates
+the connection between end-users and quantum computing platforms by its integration within HPC
+infrastructures, such as those found at the LRZ.
 
 ### What is MLIR?
 
@@ -73,18 +73,18 @@ domain-specific compilers and optimizing transformations. MLIR originated as par
 ecosystem and is particularly tailored for modern, complex computational workflows, including
 machine learning, AI, and heterogeneous hardware.
 
-MLIR supports multiple levels of abstraction within a single framework, allowing developers to work
-with high-level domain-specific operations down to hardware-specific operations. Users can define
-their **dialects** (custom operations and types) for specific problem domains while leveraging the
-shared infrastructure for optimization and code generation.
+MLIR supports multiple levels of abstraction within a single framework, allowing developers to
+work with high-level domain-specific operations down to hardware-specific operations. Users can
+define their **dialects** (custom operations and types) for specific problem domains while leveraging
+the shared infrastructure for optimization and code generation already provided by MLIR.
+
+<div align="center">
+    <img src="./docs/_static/mlir.png" width="70%">
+</div>
 
 Additionally, MLIR promotes interoperability among different models of computation and supports
 **optimization passes** across various abstraction levels, including high-level and low-level
 operations.
-
-<div align="center">
-    <img src="./docs/_static/mlir.png" width="60%">
-</div>
 
 For more information on [MLIR](https://github.com/llvm/llvm-project.git).
 

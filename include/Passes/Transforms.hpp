@@ -275,10 +275,10 @@ std::unique_ptr<mlir::Pass> createHZHToXPass();
   \image html docs/_static/mqss-passes/XGateAndHadamardSwitchPass.png width=70%
 
   Example 2:
-  \image html docs/_static/mqss-passes/XGateAndHadamardSwitchPass.png width=70%
+  \image html docs/_static/mqss-passes/YGateAndHadamardSwitchPass.png width=70%
 
   Example 3:
-  \image html docs/_static/mqss-passes/XGateAndHadamardSwitchPass.png width=70%
+  \image html docs/_static/mqss-passes/ZGateAndHadamardSwitchPass.png width=70%
 
  @return An `mlir::Pass` object containing the definition of the
  PauliGateAndHadamardSwitchPass. This `mlir::Pass` object has to be passed to an

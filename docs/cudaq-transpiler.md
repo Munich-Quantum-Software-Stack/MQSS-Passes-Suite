@@ -50,7 +50,7 @@ Next, add a `cudaq::opt::createBasisConversionPass` to the pass manager. Do not 
 pm.addPass(createBasisConversionPass(options));
 ```
 
-Finally, you can dump and visualize the effects of the decomposition pattern on your MLIR module as
+Finally, you can dump and visualize the effects of running the transpiler on your MLIR module as
 follows:
 
 ```cpp

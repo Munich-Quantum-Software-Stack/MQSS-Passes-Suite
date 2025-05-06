@@ -29,7 +29,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 \snippet{doc} README.md DOXYGEN MAIN
 
 <div align="center">
-  <img class="mlir-passes" alt="MLIR passes" src="mlir-passes.png" width=80%>
+  <img class="mlir-passes" alt="MLIR passes" src="mlir-passes.png" width=100%>
 </div>
 ### How to Use this Documentation?
 

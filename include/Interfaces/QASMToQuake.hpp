@@ -51,6 +51,14 @@ using namespace mlir;
  */
 using QASMVectorToQuakeVector = std::unordered_map<std::string, mlir::Value>;
 
+/**
+ * @typedef QuantumVectorsOrder
+ * @brief The `QuantumVectorsOrder` is list of pairs. Each entry of the pair is
+ * composed of a string that is the id in the AST associated to the quantum
+ * vector and the `int` value is the number of qubits in the register.
+ */
+using QuantumVectorsOrder = std::vector<std::pair<std::string, int>>;
+
 namespace mqss::interfaces {
 
 /**
@@ -93,34 +101,6 @@ bool isMultiQubitGate(const std::string &gateType);
     @return the number of control outputs of the give gate type.
 */
 size_t getNumControls(const std::string &gateType);
-
-/**
- * @brief This function return the quantum vectors and its order, given a
- Abstract Syntax Tree of a QASM program.
-   @details This function receives an AST of QASM program, and create a
- `quake::veq` for each quantum register declared in the QASM program. Moreover,
- returns the order of appearance of each quantum register.
-    @param[in] program is the AST of a QASM program.
-    @param[out] builder is an `OpBuilder` object associated with a MLIR module.
- It is used to insert new instructions (quantum registers) to the corresponding
- MLIR module.
-    @param[in] loc is the location of the new inserted instruction (quantum
- registers).
-    @param[in] inOp is the `return` operation in the module associated to the
- builder. New instructions are inserted before the`return` operation.
-    @return a tuple composed of `QASMVectorToQuakeVector` and
- `std::vector<std::pair<std::string, int>>`. The `QASMVectorToQuakeVector` is a
- map of type `std::unordered_map<std::string, mlir::Value>`. The `key` is a
- string corresponding to a quantum vector declared in the QASM program and the
- `value` corresponds to an `mlir::Value` associated to a created and inserted
- `quake::veq`. The second argument of the tuple is a vector that preserves the
- order of the inserted `quake::veq`, each entry is pair storing the quantum
- vector id, and the size of the quantum vector.
-*/
-std::tuple<QASMVectorToQuakeVector, std::vector<std::pair<std::string, int>>>
-insertAllocatedQubits(
-    const std::vector<std::shared_ptr<qasm3::Statement>> &program,
-    OpBuilder &builder, Location loc, mlir::Operation *inOp);
 
 /**
  * @brief Function that evaluates a numeric expression in the AST.
@@ -169,4 +149,30 @@ void parseAndInsertMeasurements(
     OpBuilder &builder, Location loc, mlir::Operation *inOp,
     QASMVectorToQuakeVector QASMToVectors);
 
+/**
+ * @brief This function return the quantum vectors and its order, given a
+ Abstract Syntax Tree of a QASM program.
+   @details This function receives an AST of QASM program, and create a
+ `quake::veq` for each quantum register declared in the QASM program. Moreover,
+ returns the order of appearance of each quantum register.
+    @param[in] program is the AST of a QASM program.
+    @param[out] builder is an `OpBuilder` object associated with a MLIR module.
+ It is used to insert new instructions (quantum registers) to the corresponding
+ MLIR module.
+    @param[in] loc is the location of the new inserted instruction (quantum
+ registers).
+    @param[in] inOp is the `return` operation in the module associated to the
+ builder. New instructions are inserted before the`return` operation.
+    @return a tuple composed of `QASMVectorToQuakeVector` and
+ `std::vector<std::pair<std::string, int>>`. The `QASMVectorToQuakeVector` is a
+ map of type `std::unordered_map<std::string, mlir::Value>`. The `key` is a
+ string corresponding to a quantum vector declared in the QASM program and the
+ `value` corresponds to an `mlir::Value` associated to a created and inserted
+ `quake::veq`. The second argument of the tuple is a vector that preserves the
+ order of the inserted `quake::veq`, each entry is pair storing the quantum
+ vector id, and the size of the quantum vector.
+*/
+std::tuple<QASMVectorToQuakeVector, QuantumVectorsOrder> insertAllocatedQubits(
+    const std::vector<std::shared_ptr<qasm3::Statement>> &program,
+    OpBuilder &builder, Location loc, mlir::Operation *inOp);
 } // namespace mqss::interfaces

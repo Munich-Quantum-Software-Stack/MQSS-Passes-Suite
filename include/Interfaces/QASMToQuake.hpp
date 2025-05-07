@@ -149,7 +149,7 @@ void insertGate(const std::shared_ptr<qasm3::GateCallStatement> &gateCall,
                 OpBuilder &builder, Location loc, mlir::Operation *inOp,
                 QASMVectorToQuakeVector QASMToVectors);
 
-/** TODO
+/**
  * @brief This function inserts measurements into a MLIR/Quake module.
    @details The QASM to Quake parser invokes this function to insert
  measurements into a given MLIR/Quake module.

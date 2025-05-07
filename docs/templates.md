@@ -27,12 +27,18 @@ The following sections describe how expand this collection of MLIR passes by def
 
 ## Registering a new pass {#pass-definition}
 
-To define a new pass you have to register it into the `include/Passes.hpp` file. Let say, you want
-to include a custom pass called `CustomExamplePass`. The method to create the pass must be
-registered as follows:
+Into the MQSS, the passes are classified as _transforms_, _decompositions_ and _code generation_
+passes. To define a new pass you have to register it into the `include/Transforms.hpp`,
+`include/Decompositions.hpp` or `include/CodeGen.hpp` files, respectively.
+
+Let say, you want to include a custom pass called `CustomExamplePass` as part of the decompositions
+collection. The method to create the pass must be registered in the file
+`include/Decompositions.hpp` as follows:
 
 ```cpp
-std::unique_ptr<mlir::Pass> createCustomExamplePass();
+namespace mqss::opt {
+  std::unique_ptr<mlir::Pass> createCustomExamplePass();
+}
 ```
 
 If the pass requires arguments, those have to be also declared into the signature of the method that
@@ -40,7 +46,9 @@ creates the pass. For instance, we declare a `CustomExampleArgumentPass` that re
 `int value`.
 
 ```cpp
-std::unique_ptr<mlir::Pass> createCustomExampleArgumentPass(int value);
+namespace mqss::opt {
+  std::unique_ptr<mlir::Pass> createCustomExampleArgumentPass(int value);
+}
 ```
 
 Notice that the pass has to be declared into `namespace mqss::opt` to be integrated as part of the
@@ -106,22 +114,22 @@ std::unique_ptr<Pass> mqss::opt::createCustomExamplePass(){
 }
 ```
 
-In order to be integrated into this project, the file `CustomExamplePass.cpp` must be in the `src`
-directory of this repository.
+In order to be integrated into this project, the file `CustomExamplePass.cpp` must be in the
+`lib/Passes/Decompositions`, `lib/Passes/Transforms` or `lib/Passes/CodeGen` directory of this
+repository.
 
 ## Building your pass {#pass-build}
 
 After including your pass in the project, you can build it as follows:
 
 ```bash
-cd build
-cmake ..
-make
+bash build.sh --mlir-dir "dir-to-mlir" --clang-dir "dir-to-clang"
+              --llvm-dir "dir-to-llvm"
 ```
 
 ## Using your new pass {#pass-use}
 
-Once your pass is integrated into this project. You can use it to transform any given QUAKE MLIR
+Once your pass is integrated into this project. You can use it to transform any given MLIR/Quake
 module. Assuming that your MLIR module is into a string named `quakeModule`. First, you need to get
 the context and the module itself as follows:
 
@@ -131,8 +139,8 @@ mlir::MLIRContext &context = *contextPtr;
 ```
 
 Apart of getting context and module, the function `extractMLIRContext` register the dialects to be
-used, in our case QUAKE dialect too. This tells to MLIR to recognize operations and functions
-belonging to QUAKE dialect.
+used, in our case Quake dialect too. This tells to MLIR to recognize operations and functions
+belonging to Quake dialect.
 
 Next, you have to declare a pass manager `mlir::PassManager` and load your custom pass
 `mqss::opt::createCustomExamplePass` as follows:

@@ -15,17 +15,22 @@ License for the specific language governing permissions and limitations under
 the License.
 
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
--------------------------------------------------------------------------
+*******************************************************************************
   author Martin Letras
   date   February 2025
   version 1.0
-  brief
-    TODO
-
 *******************************************************************************
 * This source code and the accompanying materials are made available under    *
 * the terms of the Apache License 2.0 which accompanies this distribution.    *
 ******************************************************************************/
+/** @file
+    @brief
+    @details Definition of the commute operation. This function is only valid
+   for two qubit gates. Given a pattern using the template, the function will
+   find the pattern and perform a commute operation.
+    @par
+    This header must be included to use the commute operation into a pass.
+*/
 
 #pragma once
 
@@ -43,7 +48,23 @@ using namespace mlir;
 using namespace mqss::support::quakeDialect;
 
 namespace mqss::support::transforms {
-// Finds the pattern composed of T2, T1 and commute them to T1, T2
+/**
+ * @brief Commutes two quantum operations if they match a specific pattern.
+ *
+ * @details This function searches for a specific pattern where operation T2 is
+ * followed by T1 and attempts to commute them to the order T1 followed by T2,
+ * under the constraints of control and target qubit counts.
+ *
+ * @tparam T1 The type of the first quantum operation (e.g., an MLIR operation
+ * class).
+ * @tparam T2 The type of the second quantum operation.
+ * @param currentOp The current MLIR operation from which to begin the pattern
+ * search.
+ * @param nCtrlsOp1 The number of control qubits associated with operation T1.
+ * @param nTgtsOp1 The number of target qubits associated with operation T1.
+ * @param nCtrlsOp2 The number of control qubits associated with operation T2.
+ * @param nTgtsOp2 The number of target qubits associated with operation T2.
+ */
 template <typename T1, typename T2>
 void commuteOperation(mlir::Operation *currentOp, int nCtrlsOp1, int nTgtsOp1,
                       int nCtrlsOp2, int nTgtsOp2) {

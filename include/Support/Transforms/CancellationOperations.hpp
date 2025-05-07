@@ -15,17 +15,23 @@ License for the specific language governing permissions and limitations under
 the License.
 
 SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
--------------------------------------------------------------------------
+*******************************************************************************
   author Martin Letras
   date   February 2025
   version 1.0
-  brief
-    TODO
-
 *******************************************************************************
 * This source code and the accompanying materials are made available under    *
 * the terms of the Apache License 2.0 which accompanies this distribution.    *
 ******************************************************************************/
+
+/** @file
+    @brief
+    @details Definition of the cancellation operation at MLIR level. Given a
+   pattern specified by the template, the function will find the pattern and
+   remove it from a given mlir module.
+    @par
+    This header must be included to use the pattern cancellation into a pass.
+*/
 
 #pragma once
 
@@ -43,9 +49,22 @@ using namespace mlir;
 using namespace mqss::support::quakeDialect;
 
 namespace mqss::support::transforms {
-// Finds the pattern composed of T2, T1 and remove them
-// and T1 and T2 share the same control
-// Targets and controls should be the same on both
+
+/**
+ * @brief Function that removes (cancel) a pattern of two quantum operations
+ * under specific constraints.
+ * @details This function examines the current operation and tries to cancel two
+ * operations based on the number of control and target qubits they involve.
+ *
+ * @tparam T1 is the type of the first operation (e.g., a specific MLIR Op
+ * class).
+ * @tparam T2 is the type of the second operation.
+ * @param[in] currentOp pointer to the current MLIR operation being analyzed.
+ * @param[in] nCtrlsOp1 number of control qubits in the first operation.
+ * @param[in] nTgtsOp1 number of target qubits in the first operation.
+ * @param[in] nCtrlsOp2 number of control qubits in the second operation.
+ * @param[in] nTgtsOp2 number of target qubits in the second operation.
+ */
 template <typename T1, typename T2>
 void patternCancellation(mlir::Operation *currentOp, int nCtrlsOp1,
                          int nTgtsOp1, int nCtrlsOp2, int nTgtsOp2) {

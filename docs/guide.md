@@ -46,7 +46,7 @@ Then, you can install LLVM/MLIR and the prerequisites required by CudaQ by runni
 ```
 
 \note Do not forget to include `compiler-rt` in the `LLVM_PROJECTS`. This is required by some of the
-MQSS MLIR passes. If you do not include it, compilation will not work.
+MQSS MLIR passes. If you do not include it, the project will not compile.
 
 ## Initial Setup
 
@@ -94,14 +94,14 @@ cd /workspaces/passes
 
 ## Working on Source Code
 
-Building the project requires a C compiler supporting _C11_ and a minimum CMake version of _3.19_.
+Building the project requires a C++ compiler supporting _C11_ and a minimum CMake version of _3.19_.
 The example devices and the tests require a C++ compiler supporting _C++17_ and _C++20_ dialects.
 
 ### Configure and Build
 
 This collection of MLIR passes uses CMake as its build system. However, we provide an script
 `build.sh` that first builds CudaQ library `cudaq-mlir-runtime`. Then, the script builds the MQSS
-passes project. You, can configure and build the project as follows:
+passes project. You can configure and build the project as follows:
 
 ```shell
 bash build.sh --jobs 5 --debug --mlir-dir "dir-to-mlir" --clang-dir "dir-to-clang"
@@ -111,10 +111,10 @@ bash build.sh --jobs 5 --debug --mlir-dir "dir-to-mlir" --clang-dir "dir-to-clan
 In the following, we describe each of the arguments accepted by `build.sh`.
 
 - `--jobs` (**optional**) The number of jobs utilized to configure and compile the project. If not
-  specified, one job is used.
+  specified, a single job is used to compile the project.
 - `--debug` (**optional**) Used to show debug information. If you want to build the project without
   debug information, do not include it.
-- `--mlir-dir` Path of your MLIR installation.
+- `--mlir-dir` Path of your MLIR installation. E.g., `/opt/llvm/lib/cmake/mlir/`
 - `--clang-dir` Path of your Clang installation.
 - `--llvm-dir` Path of your LLVM installation.
 - `--build-tests` (**optional**) Include it if you want to build the tests of this project.
@@ -124,8 +124,8 @@ In the following, we describe each of the arguments accepted by `build.sh`.
 ### Running Tests
 
 We use the [GoogleTest](https://google.github.io/googletest/primer.html) framework for unit testing
-each MLIR in this collection. All tests are contained in the `test` directory. You can configure and
-build the project using CMake as follows:
+each MLIR pass in this collection. All tests are contained in the `test` directory. You can
+configure and build the project using CMake as follows:
 
 ```shell
 bash build.sh --build-tests

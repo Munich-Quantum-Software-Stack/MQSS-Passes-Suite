@@ -1,6 +1,6 @@
 /* This code and any associated documentation is provided "as is"
 
-Copyright 2024 Munich Quantum Software Stack Project
+Copyright 2025 Munich Quantum Software Stack Project
 
 Licensed under the Apache License, Version 2.0 with LLVM Exceptions (the
 "License"); you may not use this file except in compliance with the License.

@@ -20,13 +20,14 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   February 2025
   version 1.0
   brief
-    TODO
+    Set of the most functions used to manipulate Quake MLIR modules. E.g.,
+    contains functions to define integer, and double constants, extract
+    references, get the number of qubits, classical registers, etc.
 
 *******************************************************************************
 * This source code and the accompanying materials are made available under    *
 * the terms of the Apache License 2.0 which accompanies this distribution.    *
 ******************************************************************************/
-#pragma once
 
 #include "Support/CodeGen/Quake.hpp"
 

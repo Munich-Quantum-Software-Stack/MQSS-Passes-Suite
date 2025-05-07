@@ -20,15 +20,17 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
   date   April 2025
   version 1.0
 ****************************************************************************/
-/* @file
-  @brief
-  This header defines the three optimization levels supported by the MQSS.
-  @details This header defines the three optimization levels supported by the
-  MQSS: `O1`, `O2` and `O3`. Each function appends the corresponding list of
-  optimization passes to a given `mlir::PassManager` object.
-  @par This header must included to use the different optimization levels that
-  are part of the MQSS.
-*/
+/** @file
+ * @brief
+ * This header defines the three optimization levels supported by the MQSS.
+ * @details This header defines the three optimization levels supported by the
+ * MQSS: `O1`, `O2` and `O3`. Each function appends the corresponding list of
+ * optimization passes to a given `mlir::PassManager` object.
+ *
+ * @par
+ * This header must included to use the different optimization levels that
+ * are part of the MQSS.
+ */
 
 #pragma once
 
@@ -38,27 +40,27 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include "mlir/Transforms/Passes.h"
 
 namespace mqss::opt {
-/*
+/**
   @brief Function defining the optimization level `O1`.
   @details This functions appends to a `mlir::PassManager` the list of passes
   corresponding to optimization level `O1`.
-  @param[out] is the `mlir::PassManager` after appending the list of passes
+  @param[out] pm is the `mlir::PassManager` after appending the list of passes
   corresponding to optimization level `O1`.
 */
 void O1(mlir::PassManager &pm);
-/*
+/**
   @brief Function defining the optimization level `O2`.
   @details This functions appends to a `mlir::PassManager` the list of passes
   corresponding to optimization level `O2`.
-  @param[out] is the `mlir::PassManager` after appending the list of passes
+  @param[out] pm is the `mlir::PassManager` after appending the list of passes
   corresponding to optimization level `O2`.
 */
 void O2(mlir::PassManager &pm);
-/*
+/**
   @brief Function defining the optimization level `O3`.
   @details This functions appends to a `mlir::PassManager` the list of passes
   corresponding to optimization level `O3`.
-  @param[out] is the `mlir::PassManager` after appending the list of passes
+  @param[out] pm is the `mlir::PassManager` after appending the list of passes
   corresponding to optimization level `O3`.
 */
 void O3(mlir::PassManager &pm);

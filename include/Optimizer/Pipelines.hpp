@@ -22,7 +22,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 ****************************************************************************/
 /** @file
  * @brief
- * This header defines the three optimization levels supported by the MQSS.
+ * @details This header defines the three optimization levels supported by the
+ * MQSS.
  * @details This header defines the three optimization levels supported by the
  * MQSS: `O1`, `O2` and `O3`. Each function appends the corresponding list of
  * optimization passes to a given `mlir::PassManager` object.

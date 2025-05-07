@@ -29,7 +29,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
  * optimization passes to a given `mlir::PassManager` object.
  *
  * @par
- * This header must included to use the different optimization levels that
+ * This header must be included to use the different optimization levels that
  * are part of the MQSS.
  */
 

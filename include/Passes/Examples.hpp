@@ -26,8 +26,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
  * into the Munich Quantum Software Stack (MQSS).
  *
  * @par
- * This header must be included to use the collection of passes that are part of
- * the MQSS.
+ * This header must be included to use the collection of example passes that are
+ * part of the MQSS.
  */
 
 #ifndef EXAMPLES_H

@@ -26,12 +26,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
  * into the Munich Quantum Software Stack (MQSS).
  *
  * @par
- * This header must be included to use the collection of passes that are part of
- * the MQSS.
+ * This header must be included to use the collection of code generation passes
+ * that are part of the MQSS.
  */
-
-#ifndef CODEGEN_H
-#define CODEGEN_H
 
 #pragma once
 
@@ -80,4 +77,3 @@ std::unique_ptr<mlir::Pass>
 createQASM3ToQuakePass(std::istringstream &qasmStream,
                        bool measureAllQubits = false);
 } // namespace mqss::opt
-#endif // CODEGEN_H

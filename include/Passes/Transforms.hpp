@@ -26,12 +26,9 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
  * into the Munich Quantum Software Stack (MQSS).
  *
  * @par
- * This header must be included to use the collection of passes that are part of
- * the MQSS.
+ * This header must be included to use the collection of transforms passes that
+ * are part of the MQSS.
  */
-
-#ifndef TRANSFORMS_H
-#define TRANSFORMS_H
 
 #pragma once
 
@@ -376,7 +373,6 @@ std::unique_ptr<mlir::Pass> createSwitchHYPass();
  */
 std::unique_ptr<mlir::Pass> createSwitchHZPass();
 } // namespace mqss::opt
-#endif // TRANSFORMS_H
 
 /**
  * @def GEN_PASS_DECL

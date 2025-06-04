@@ -42,6 +42,8 @@ RUN apt-get update && \
     openssh-client \
     libgtest-dev \
     pkg-config \
+    bison \
+    flex \
     libboost-program-options-dev \
     libzip-dev && \
     # Clean up cache to reduce image size

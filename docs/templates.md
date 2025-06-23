@@ -28,12 +28,12 @@ The following sections describe how expand this collection of MLIR passes by def
 ## Registering a new pass {#pass-definition}
 
 Into the MQSS, the passes are classified as _transforms_, _decompositions_ and _code generation_
-passes. To define a new pass you have to register it into the `include/Transforms.hpp`,
-`include/Decompositions.hpp` or `include/CodeGen.hpp` files, respectively.
+passes. To define a new pass you have to register it into the `include/Passes/Transforms.hpp`,
+`include/Passes/Decompositions.hpp` or `include/Passes/CodeGen.hpp` files, respectively.
 
 Let say, you want to include a custom pass called `CustomExamplePass` as part of the decompositions
 collection. The method to create the pass must be registered in the file
-`include/Decompositions.hpp` as follows:
+`include/Passes/Decompositions.hpp` as follows:
 
 ```cpp
 namespace mqss::opt {
@@ -173,6 +173,3 @@ mlirModule->print(stringStream);
 // Printing the transformed module
 std::cout << "Module after Pass\n" << moduleAsString << std::endl;
 ```
-
-Finally, more examples of use of custom passes and an step-by-step guide on how to test your passes
-can be found in [Testing your passes](guide.md).

@@ -76,4 +76,15 @@ createQuakeToTikzPass(llvm::raw_string_ostream &ostream);
 std::unique_ptr<mlir::Pass>
 createQASM3ToQuakePass(std::istringstream &qasmStream,
                        bool measureAllQubits = false);
+
+/**
+ * @brief Pass that generates a linalge module form a quake module.
+   @details This method constructs an `mlir::Pass` of the type
+ QuakeToLinAlgPass. This pass generates a MLIR/linalg module of a given input
+ quake module.
+ @return An `mlir::Pass` object containing the definition of the
+ QuakeToLinAlgPass. This `mlir::Pass` object has to be passed to an
+ `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createQuakeToLinAlgPass();
 } // namespace mqss::opt

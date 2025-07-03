@@ -19,6 +19,17 @@ set(COMMON_LIBRARIES ${CUDAQ_MLIR_RUNTIME_PATH}/libcudaq-mlir-runtime.so
                      ${GTEST_LIBRARIES})
 
 # Test executable
+add_executable(test-linalg-pass testLinAlgParser.cpp)
+target_link_libraries(test-linalg-pass PRIVATE ${COMMON_LIBRARIES} MLIRPasses)
+target_include_directories(
+  test-linalg-pass
+  PRIVATE ${CMAKE_SOURCE_DIR}/include
+          ${CMAKE_SOURCE_DIR}/include/Passes/
+          ${CMAKE_SOURCE_DIR}/include/Support/
+          ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
+          ${CUDAQ_MLIR_RUNTIME_PATH})
+add_test(NAME Tesst-lingalg-pass COMMAND test-linalg-pass)
+
 add_executable(test-mqss-passes testMQSSPasses.cpp)
 target_link_libraries(test-mqss-passes PRIVATE ${COMMON_LIBRARIES} MLIRPasses)
 target_include_directories(

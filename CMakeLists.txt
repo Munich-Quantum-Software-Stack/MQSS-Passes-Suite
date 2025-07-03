@@ -174,6 +174,7 @@ add_mlir_library(
   MQT::CoreNA
   MQT::QMapSC
   MQT::QMapSCHeuristic
+  MLIRTensorDialect
   MLIRIR
   MLIRPass
   MLIRTransforms)

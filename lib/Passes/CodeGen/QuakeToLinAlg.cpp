@@ -28,9 +28,11 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 ******************************************************************************/
 
 // #include "Interfaces/Constants.hpp"
-// #include "Interfaces/QASMToQuake.hpp"
+#include "Interfaces/QuakeToLinAlg.hpp"
+
 #include "Passes/CodeGen.hpp"
 #include "Support/CodeGen/Quake.hpp"
+#include "Support/DAG/Quake-DAG.hpp"
 #include "cudaq/Optimizer/Dialect/CC/CCOps.h"
 #include "cudaq/Optimizer/Dialect/CC/CCTypes.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
@@ -52,7 +54,8 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #include <unordered_map>
 
 using namespace mlir;
-// using namespace mqss::interfaces;
+using namespace mqss::support::quakeDialect;
+using namespace mqss::interfaces;
 
 namespace {
 
@@ -60,32 +63,38 @@ bool hasFunc(mlir::ModuleOp module, llvm::StringRef name) {
   return static_cast<bool>(module.lookupSymbol<mlir::func::FuncOp>(name));
 }
 
-/*void replaceWithApplyGate(OpBuilder &builder, Operation *op, StringRef gateFn)
-{ builder.setInsertionPoint(op);
+void replaceWithApplyGate(OpBuilder &builder, Operation *op, StringRef gateFn) {
+  builder.setInsertionPoint(op);
 
   auto loc = op->getLoc();
   auto qubit = op->getOperand(0);
   auto module = op->getParentOfType<ModuleOp>();
 
+  auto f32Type = builder.getF32Type();
+  // Assuming the gate matrix is 2x2 tensor of f32
+  auto mat2x2f32 = mlir::RankedTensorType::get({2, 2}, f32Type);
+
   // Call gate matrix creator (e.g., @create_hadamard)
   auto gateFunc = SymbolRefAttr::get(builder.getContext(), gateFn);
-  auto gateCall = builder.create<func::CallOp>(loc,
-builder.getType<TensorType>(), gateFunc, ValueRange{});
+  auto gateCall =
+      builder.create<func::CallOp>(loc, mat2x2f32, gateFunc, ValueRange{});
 
   // Call @apply_gate with (matrix, qubit)
+  // Assuming apply_gate returns some tensor type; adapt if needed
   auto applyFunc = SymbolRefAttr::get(builder.getContext(), "apply_gate");
-  auto applyCall = builder.create<func::CallOp>(loc,
-builder.getType<TensorType>(), applyFunc, ValueRange{gateCall.getResult(0),
-qubit});
+  auto applyCall = builder.create<func::CallOp>(
+      loc, mat2x2f32, applyFunc, ValueRange{gateCall.getResult(0), qubit});
 
   // Replace original quake op
-  op->replaceAllUsesWith(applyCall.getResult(0));
-  op->erase();
+  std::cout << "op " << std::endl;
+  op->dump();
+  assert(op->getNumResults() == 1 && "Expected op to have exactly one result");
+  //  op->replaceAllUsesWith(ValueRange{applyCall.getResult(0)});
+  //  op->erase();
 }
 
-void replaceTwoQubitGate(OpBuilder &builder, Operation *op, StringRef gateFn) {
-  builder.setInsertionPoint(op);
-  Location loc = op->getLoc();
+/*void replaceTwoQubitGate(OpBuilder &builder, Operation *op, StringRef gateFn)
+{ builder.setInsertionPoint(op); Location loc = op->getLoc();
 
   auto ctrl = op->getOperand(0);
   auto target = op->getOperand(1);
@@ -107,6 +116,65 @@ target}
   op->erase();
 }
 */
+void insertCreateX(OpBuilder &builder, ModuleOp module) {
+  if (hasFunc(module, "create_x"))
+    return;
+
+  builder.setInsertionPointToStart(module.getBody());
+  Location loc = builder.getUnknownLoc();
+
+  auto f32Type = builder.getF32Type();
+  auto mat2x2f32 = RankedTensorType::get({2, 2}, f32Type);
+  auto funcType = builder.getFunctionType({}, {mat2x2f32});
+
+  auto func = builder.create<func::FuncOp>(loc, "create_x", funcType);
+  func.setPrivate();
+  Block *entry = func.addEntryBlock();
+  builder.setInsertionPointToStart(entry);
+
+  Value zero = builder.create<arith::ConstantOp>(
+      loc, f32Type, builder.getFloatAttr(f32Type, 0.0f));
+  Value one = builder.create<arith::ConstantOp>(
+      loc, f32Type, builder.getFloatAttr(f32Type, 1.0f));
+
+  // Elements in row-major order: [0,1,1,0]
+  Value result = builder.create<tensor::FromElementsOp>(
+      loc, mat2x2f32, ValueRange{zero, one, one, zero});
+
+  builder.create<func::ReturnOp>(loc, result);
+}
+
+void insertCreateCX(OpBuilder &builder, ModuleOp module) {
+  if (hasFunc(module, "create_cx"))
+    return;
+
+  builder.setInsertionPointToStart(module.getBody());
+  Location loc = builder.getUnknownLoc();
+
+  auto f32Type = builder.getF32Type();
+  auto mat4x4f32 = RankedTensorType::get({4, 4}, f32Type);
+  auto funcType = builder.getFunctionType({}, {mat4x4f32});
+
+  auto func = builder.create<func::FuncOp>(loc, "create_cx", funcType);
+  func.setPrivate();
+  Block *entry = func.addEntryBlock();
+  builder.setInsertionPointToStart(entry);
+
+  Value zero = builder.create<arith::ConstantOp>(
+      loc, f32Type, builder.getFloatAttr(f32Type, 0.0f));
+  Value one = builder.create<arith::ConstantOp>(
+      loc, f32Type, builder.getFloatAttr(f32Type, 1.0f));
+
+  // Flatten the 4x4 matrix elements in row-major order:
+  // [1,0,0,0, 0,1,0,0, 0,0,0,1, 0,0,1,0]
+  Value result = builder.create<tensor::FromElementsOp>(
+      loc, mat4x4f32,
+      ValueRange{one, zero, zero, zero, zero, one, zero, zero, zero, zero, zero,
+                 one, zero, zero, one, zero});
+
+  builder.create<func::ReturnOp>(loc, result);
+}
+
 void insertCreateHadamard(OpBuilder &builder, ModuleOp module) {
   if (hasFunc(module, "create_hadamard"))
     return;
@@ -155,33 +223,39 @@ public:
     auto context = &getContext();
     context->getOrLoadDialect<mlir::tensor::TensorDialect>();
 
-    // Iterate through all functions and insert the required functions for each
-    // gate
-    module.walk([&](Operation *op) {
-      // Get the function name
-      // StringRef funcName = op.getName();
-      // if (!(funcName.find(std::string(CUDAQ_PREFIX_FUNCTION)) !=
-      //  std::string::npos))
-      //  return; // do nothing if the function is not cudaq kernel
-      if (auto quakeH = dyn_cast_or_null<quake::HOp>(op)) {
-        insertCreateHadamard(builder, module); // ✅ pass correct type
-      }
-    });
-
     // Iterate through all functions
-    /*for (auto func : module.getOps<func::FuncOp>()) {
-      func.walk([&](Operation *op) {
-        if (auto quakeH = dyn_cast_or_null<quake::HOp>(op)) {
-          replaceWithApplyGate(builder, quakeH, "create_hadamard");
-        } else if (auto quakeZ = dyn_cast_or_null<quake::ZOp>(op)) {
-          replaceWithApplyGate(builder, quakeZ, "create_z");
-        }
-        // Add other gate handlers as needed
-      });
-    }*/
+    for (auto func : module.getOps<func::FuncOp>()) {
+      // Check if the function has the "cudaq-kernel" attribute
+      if (!func->hasAttr("cudaq-kernel"))
+        continue;
+      QuakeDAG dag;
+      dag.parse_mlir(func);
+      dag.print();
+      dag.dump_dot("/home/flammy.dot");
+      functionsToDAG[func] = dag;
+      // after all the functions have been parsed to the DAG
+      // then, create empty functions with prefix gpu
+      llvm::StringRef functionName = func.getName();
+      mlir::Location loc = builder.getUnknownLoc();
+      // Set insertion point inside the module
+      builder.setInsertionPointToStart(module.getBody());
+      // Crear tipo de función sin inputs ni outputs
+      auto funcType = builder.getFunctionType({}, {});
+      // Crear la función
+      auto gpuFunc = builder.create<mlir::func::FuncOp>(
+          loc, "mqss_gpu_" + functionName.str(), funcType);
+      // Agregar bloque de entrada vacío
+      mlir::Block *entryBlock = gpuFunc.addEntryBlock();
+      // Insertar instrucciones (si quieres) aquí:
+      builder.setInsertionPointToStart(entryBlock);
+      builder.create<mlir::func::ReturnOp>(loc);
+    }
+
+    inlineMatrixToMLIRModule(module);
   }
 
 private:
+  std::map<func::FuncOp, QuakeDAG> functionsToDAG;
 };
 
 } // namespace

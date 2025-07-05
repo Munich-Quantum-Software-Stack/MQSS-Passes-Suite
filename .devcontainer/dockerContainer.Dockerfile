@@ -44,6 +44,7 @@ RUN apt-get update && \
     pkg-config \
     bison \
     flex \
+    libeigen3-dev \
     libboost-program-options-dev \
     libzip-dev && \
     # Clean up cache to reduce image size

@@ -58,7 +58,7 @@ set(MQT_QMAP_TESTS OFF)
 find_package(mqt-qmap REQUIRED)
 # Restore the original CXX flags and compiler
 set(CMAKE_CXX_STANDARD 20)
-
+find_package(Eigen3 REQUIRED)
 # ###################### CUDAQ settings ###################################
 set(CUDAQ_MAIN_INCLUDE_DIR "${CUDAQ_SOURCE_DIR}/include")
 
@@ -95,6 +95,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Passes/
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Support/
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Support/CodeGen/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/Support/DAG/
   ${CMAKE_CURRENT_SOURCE_DIR}/include/Optimizer/
   ${MQT_QMAP_INCLUDE_DIR}
   ${MQT_CORE_INCLUDE_DIR}
@@ -128,7 +129,8 @@ file(GLOB SRC_EXAMPLES "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Examples/*.cpp")
 file(GLOB SRC_TRANSFORMS
      "${CMAKE_CURRENT_SOURCE_DIR}/lib/Passes/Transforms/*.cpp")
 file(GLOB SRC_SUPPORT_QUAKE
-     "${CMAKE_CURRENT_SOURCE_DIR}/lib/Support/CodeGen/Quake/*.cpp")
+     "${CMAKE_CURRENT_SOURCE_DIR}/lib/Support/CodeGen/Quake/*.cpp"
+     "${CMAKE_CURRENT_SOURCE_DIR}/lib/Support/DAG/*.cpp")
 file(GLOB SRC_OPTIMIZER "${CMAKE_CURRENT_SOURCE_DIR}/lib/Optimizer/*.cpp")
 file(GLOB SRC_INTERFACES "${CMAKE_CURRENT_SOURCE_DIR}/lib/Interfaces/*.cpp")
 
@@ -148,6 +150,7 @@ add_mlir_library(
   ${SRC_INTERFACES}
   LINK_LIBS
   PUBLIC
+  Eigen3::Eigen
   SupportQuake
   MQT::CoreIR
   MQT::CoreNA

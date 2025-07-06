@@ -32,6 +32,7 @@ control and target qubits.
 #include "Interfaces/MatricesQuantumGates.hpp"
 #include "Interfaces/QuakeToLinAlg.hpp"
 #include "Support/CodeGen/Quake.hpp"
+#include "Support/DAG/Quake-DAG.hpp"
 #include "cudaq/Optimizer/Dialect/CC/CCOps.h"
 #include "cudaq/Optimizer/Dialect/CC/CCTypes.h"
 #include "cudaq/Support/Plugin.h"
@@ -46,6 +47,7 @@ control and target qubits.
 #include "llvm/Support/raw_ostream.h"
 
 #include <Eigen/Dense>
+#include <boost/graph/graph_traits.hpp>
 #include <complex>
 #include <iostream>
 
@@ -57,6 +59,10 @@ using MatrixXcd =
 
 bool hasFunc(mlir::ModuleOp module, llvm::StringRef name) {
   return static_cast<bool>(module.lookupSymbol<mlir::func::FuncOp>(name));
+}
+
+mlir::func::FuncOp getFuncOp(mlir::ModuleOp module, llvm::StringRef name) {
+  return module.lookupSymbol<mlir::func::FuncOp>(name);
 }
 
 // Function: generate an MLIR constant op holding the complex matrix as
@@ -79,14 +85,34 @@ Value createComplexMatrixConstant(OpBuilder &builder, Location loc,
   auto tensorType =
       RankedTensorType::get({rows, cols, 2}, builder.getF64Type());
   auto denseAttr = DenseElementsAttr::get(tensorType, llvm::makeArrayRef(data));
-
   return builder.create<arith::ConstantOp>(loc, tensorType, denseAttr);
 }
 
+mlir::Value initializeQubit(mlir::func::FuncOp gpuFunction,
+                            mlir::OpBuilder &builder) {
+  mlir::Block &entryBlock = gpuFunction.getBody().front();
+  builder.setInsertionPointToStart(&entryBlock);
+
+  // this functions inserts |0⟩ State:
+  auto elementType = mlir::ComplexType::get(builder.getF64Type());
+  auto tensorType = mlir::RankedTensorType::get({2}, elementType);
+
+  std::vector<std::complex<double>> data = {{1.0, 0.0}, {0.0, 0.0}};
+
+  mlir::DenseElementsAttr initAttr =
+      mlir::DenseElementsAttr::get(tensorType, llvm::makeArrayRef(data));
+  mlir::Location loc = builder.getUnknownLoc();
+
+  auto constantOp =
+      builder.create<mlir::arith::ConstantOp>(loc, tensorType, initAttr);
+  return constantOp;
+}
+
 template <typename Derived>
-void inlineFunction(mlir::ModuleOp &module, std::string name,
-                    mlir::OpBuilder &builder,
-                    const Eigen::MatrixBase<Derived> &matrixBase) {
+mlir::func::FuncOp
+inlineFunction(mlir::ModuleOp &module, std::string name,
+               mlir::OpBuilder &builder,
+               const Eigen::MatrixBase<Derived> &matrixBase) {
   using Scalar = typename Derived::Scalar;
   static_assert(std::is_same_v<Scalar, float> ||
                     std::is_same_v<Scalar, double> ||
@@ -95,7 +121,7 @@ void inlineFunction(mlir::ModuleOp &module, std::string name,
                 "Unsupported scalar type");
 
   if (hasFunc(module, name))
-    return;
+    return getFuncOp(module, name);
 
   builder.setInsertionPointToStart(module.getBody());
   mlir::Location loc = builder.getUnknownLoc();
@@ -151,65 +177,88 @@ void inlineFunction(mlir::ModuleOp &module, std::string name,
   auto tensorVal =
       builder.create<mlir::tensor::FromElementsOp>(loc, matrixType, elements);
   builder.create<mlir::func::ReturnOp>(loc, mlir::ValueRange{tensorVal});
+  return func;
 }
 
-void mqss::interfaces::inlineMatrixToMLIRModule(ModuleOp module) {
-  OpBuilder builder(module.getContext());
-  module.walk([&](Operation *op) {
-    auto gate = dyn_cast<quake::OperatorInterface>(op);
-    if (!gate)
-      return;
-    QuantumGates quantumGates;
-    if (isa<quake::XOp>(gate)) {
-      // Insert a function to hold the constant
-      inlineFunction(module, "Matrix_XOp", builder, quantumGates.X());
-      return;
+void mqss::interfaces::insertGatesToMLIRModule(mlir::ModuleOp module,
+                                               QuakeDAG dag, OpBuilder &builder,
+                                               func::FuncOp gpuFunction) {
+  auto &graph = dag.getGraph();
+  using DAG = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
+                                    MLIRVertex>;
+  boost::graph_traits<DAG>::vertex_iterator vi, vi_end;
+  for (std::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi) {
+    if (graph[*vi].isQubit) {
+      // insert the initial state of the qubit
+      auto result = initializeQubit(gpuFunction, builder);
+      graph[*vi].result = result;
+      continue;
     }
-    if (isa<quake::YOp>(gate)) {
-      inlineFunction(module, "Matrix_YOp", builder, quantumGates.Y());
-      return;
+    if (graph[*vi].isQubit == false && graph[*vi].isMeasurement == false) {
+      // this is a gate
+      std::cout << "gate name " << graph[*vi].name << std::endl;
+      auto gate = graph[*vi].operation;
+      gate->dump();
+      QuantumGates quantumGates;
+      func::FuncOp mlirMatrix;
+      std::string gpuFunName = gpuFunction.getName().str();
+      std::string gateName = graph[*vi].name;
+      std::vector<int> controls = graph[*vi].controls;
+      std::vector<int> targets = graph[*vi].targets;
+      std::vector<double> arguments = graph[*vi].arguments;
+
+      if (isa<quake::XOp>(gate)) {
+        if (targets.size() == 1 && controls.size() == 0)
+          mlirMatrix =
+              inlineFunction(module, "Matrix_XOp", builder, quantumGates.X());
+        if (targets.size() == 1 && controls.size() == 1)
+          mlirMatrix = inlineFunction(module, "Matrix_CxOp", builder,
+                                      quantumGates.CNOT());
+      }
+      if (isa<quake::YOp>(gate))
+        mlirMatrix =
+            inlineFunction(module, "Matrix_YOp", builder, quantumGates.Y());
+      if (isa<quake::ZOp>(gate))
+        mlirMatrix =
+            inlineFunction(module, "Matrix_ZOp", builder, quantumGates.Z());
+      if (isa<quake::HOp>(gate))
+        mlirMatrix =
+            inlineFunction(module, "Matrix_HOp", builder, quantumGates.H());
+      if (isa<quake::SOp>(gate))
+        mlirMatrix =
+            inlineFunction(module, "Matrix_SOp", builder, quantumGates.S());
+      if (isa<quake::TOp>(gate))
+        mlirMatrix =
+            inlineFunction(module, "Matrix_TOp", builder, quantumGates.T());
+      if (isa<quake::R1Op>(gate)) {
+        std::string matrixName = "Matrix_" + gpuFunName + "_" + gateName;
+        mlirMatrix = inlineFunction(module, matrixName, builder,
+                                    quantumGates.R1(arguments[0]));
+      }
+      if (isa<quake::RxOp>(gate)) {
+        std::string matrixName = "Matrix_" + gpuFunName + "_" + gateName;
+        mlirMatrix = inlineFunction(module, matrixName, builder,
+                                    quantumGates.Rx(arguments[0]));
+      }
+      if (isa<quake::RyOp>(gate)) {
+        std::string matrixName = "Matrix_" + gpuFunName + "_" + gateName;
+        mlirMatrix = inlineFunction(module, matrixName, builder,
+                                    quantumGates.Ry(arguments[0]));
+      }
+      if (isa<quake::RzOp>(gate)) {
+        std::string matrixName = "Matrix_" + gpuFunName + "_" + gateName;
+        mlirMatrix = inlineFunction(module, matrixName, builder,
+                                    quantumGates.Rz(arguments[0]));
+      }
+      if (isa<quake::SwapOp>(gate))
+        mlirMatrix = inlineFunction(module, "Matrix_SwapOp", builder,
+                                    quantumGates.SWAP());
+
+      if (!mlirMatrix) {
+        // save the matrix into the vertex
+        graph[*vi].matrix = mlirMatrix;
+      }
+      continue;
     }
-    if (isa<quake::ZOp>(gate)) {
-      inlineFunction(module, "Matrix_ZOp", builder, quantumGates.Z());
-      return;
-    }
-    if (isa<quake::HOp>(gate)) {
-      inlineFunction(module, "Matrix_HOp", builder, quantumGates.H());
-      return;
-    }
-    if (isa<quake::SOp>(gate)) {
-      inlineFunction(module, "Matrix_SOp", builder, quantumGates.S());
-      return;
-    }
-    if (isa<quake::TOp>(gate)) {
-      inlineFunction(module, "Matrix_TOp", builder, quantumGates.T());
-      return;
-    }
-    if (isa<quake::R1Op>(gate)) {
-      // get the argument
-      /*
-      MatrixXf realMatrix = quantumGates.R1().real().cast<float>();
-      inlineFunction(module, "Matrix_R1Op", builder, realMatrix);*/
-      return;
-    }
-    if (isa<quake::RxOp>(gate)) {
-      /*MatrixXf realMatrix = quantumGates.Rx().real().cast<float>();
-      inlineFunction(module, "Matrix_RxOp", builder, realMatrix);
-      return;*/
-    }
-    if (isa<quake::RyOp>(gate)) {
-      /*MatrixXf realMatrix = quantumGates.X().real().cast<float>();
-      inlineFunction(module, "Matrix_RyOp", builder, realMatrix);
-      return;*/
-    }
-    if (isa<quake::RzOp>(gate)) {
-      /*MatrixXf realMatrix = quantumGates.X().real().cast<float>();
-      inlineFunction(module, "Matrix_RzOp", builder, realMatrix);
-      return;*/
-    }
-    if (isa<quake::SwapOp>(gate)) {
-      inlineFunction(module, "Matrix_SwapOp", builder, quantumGates.SWAP());
-      return;
-    }
-  });
+  }
 }

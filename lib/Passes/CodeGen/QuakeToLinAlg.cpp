@@ -230,32 +230,37 @@ public:
         continue;
       QuakeDAG dag;
       dag.parse_mlir(func);
+      llvm::StringRef functionName = func.getName();
+#ifdef DEBUG
       dag.print();
-      dag.dump_dot("/home/flammy.dot");
+      dag.dump_dot("./" + functionName.str() + ".dot");
+#endif
       functionsToDAG[func] = dag;
+
       // after all the functions have been parsed to the DAG
       // then, create empty functions with prefix gpu
-      llvm::StringRef functionName = func.getName();
+
       mlir::Location loc = builder.getUnknownLoc();
       // Set insertion point inside the module
       builder.setInsertionPointToStart(module.getBody());
       // Crear tipo de función sin inputs ni outputs
       auto funcType = builder.getFunctionType({}, {});
-      // Crear la función
       auto gpuFunc = builder.create<mlir::func::FuncOp>(
-          loc, "mqss_gpu_" + functionName.str(), funcType);
+          loc, "mqss_gpu" + functionName.str(), funcType);
       // Agregar bloque de entrada vacío
       mlir::Block *entryBlock = gpuFunc.addEntryBlock();
       // Insertar instrucciones (si quieres) aquí:
       builder.setInsertionPointToStart(entryBlock);
       builder.create<mlir::func::ReturnOp>(loc);
+      functionQuakeToGPU[func] = gpuFunc;
+      insertGatesToMLIRModule(module, dag, builder, gpuFunc);
+      // insertMatricesMultiplicationsToMLIRModule(module,dag,builder);
     }
-
-    inlineMatrixToMLIRModule(module);
   }
 
 private:
   std::map<func::FuncOp, QuakeDAG> functionsToDAG;
+  std::map<func::FuncOp, func::FuncOp> functionQuakeToGPU;
 };
 
 } // namespace

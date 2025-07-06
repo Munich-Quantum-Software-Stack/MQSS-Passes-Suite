@@ -56,7 +56,9 @@ using namespace mlir;
 
 struct MLIRVertex {
   std::string name;
-  mlir::Operation *operation = nullptr; // mlir operation
+  mlir::Operation *operation = nullptr; // quake operation
+  mlir::func::FuncOp matrix;
+  mlir::Value result;
   std::vector<int> targets;
   std::vector<int> controls;
   std::vector<double> arguments;
@@ -79,12 +81,15 @@ public:
   // Dumps the DAG to a .dot file for Graphviz/Dotty
   void dump_dot(const std::string &filename) const;
 
-private:
   using DAG = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
                                     MLIRVertex>;
 
   using Vertex = boost::graph_traits<DAG>::vertex_descriptor;
 
+  DAG &getGraph() { return dag; }
+  const DAG &getGraph() const { return dag; }
+
+private:
   DAG dag;
   std::unordered_map<std::string, Vertex> node_map;
 

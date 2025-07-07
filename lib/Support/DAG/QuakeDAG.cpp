@@ -49,12 +49,14 @@ void QuakeDAG::parse_mlir(func::FuncOp kernel) {
       return;
     // then, the operation is a quake gate
     llvm::StringRef opName = op->getName().getStringRef();
-    Vertex operation = get_or_add_node("q_" + std::string(opName) + "_" +
-                                       std::to_string(idx++));
+    std::regex pattern("^quake\\.");
+    std::string result = std::regex_replace(opName.str(), pattern, "");
+    Vertex operation = get_or_add_node(result + "_" + std::to_string(idx++));
     std::vector<int> controls = getIndicesOfValueRange(gate.getControls());
     std::vector<int> targets = getIndicesOfValueRange(gate.getTargets());
     std::vector<double> params = getParametersValues(gate.getParameters());
     // load data into the vertex
+    dag[operation].operation = op;
     dag[operation].targets = targets;
     dag[operation].controls = controls;
     dag[operation].arguments = params;
@@ -87,7 +89,7 @@ void QuakeDAG::parse_mlir(func::FuncOp kernel) {
 // Print the DAG to console
 void QuakeDAG::print() const {
   boost::graph_traits<DAG>::vertex_iterator vi, vi_end;
-  for (std::tie(vi, vi_end) = vertices(dag); vi != vi_end; ++vi) {
+  for (std::tie(vi, vi_end) = boost::vertices(dag); vi != vi_end; ++vi) {
     std::cout << dag[*vi].name << " -> ";
     for (auto out : boost::make_iterator_range(adjacent_vertices(*vi, dag))) {
       std::cout << dag[out].name << ", ";

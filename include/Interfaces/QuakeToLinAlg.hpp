@@ -32,6 +32,7 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
 #pragma once
 
+#include "Support/DAG/Quake-DAG.hpp"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeDialect.h"
 #include "cudaq/Optimizer/Dialect/Quake/QuakeOps.h"
 #include "mlir/Pass/Pass.h"
@@ -53,5 +54,11 @@ namespace mqss::interfaces {
  It is used to insert new instructions to the corresponding MLIR module.
     @param[in] loc is the location of the new inserted instruction.
 */
-void inlineMatrixToMLIRModule(ModuleOp module);
+// TODO
+void insertGatesToMLIRModule(mlir::ModuleOp module, QuakeDAG &dag,
+                             OpBuilder &builder, func::FuncOp gpuFunction);
+
+void insertMatricesMultiplicationsToMLIRModule(mlir::ModuleOp module,
+                                               QuakeDAG dag, OpBuilder &builder,
+                                               func::FuncOp gpuFunction);
 } // namespace mqss::interfaces

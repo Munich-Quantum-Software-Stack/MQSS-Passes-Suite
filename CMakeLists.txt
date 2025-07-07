@@ -156,6 +156,8 @@ add_mlir_library(
   MQT::CoreNA
   MQT::QMapSC
   MLIRIR
+  MLIRLinalgDialect
+  MLIRLinalgUtils
   MLIRPass
   MLIRTransforms)
 

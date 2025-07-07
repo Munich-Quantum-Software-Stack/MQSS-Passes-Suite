@@ -81,10 +81,11 @@ public:
   // Dumps the DAG to a .dot file for Graphviz/Dotty
   void dump_dot(const std::string &filename) const;
 
-  using DAG = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
-                                    MLIRVertex>;
+  using DAG = boost::adjacency_list<boost::vecS, boost::vecS,
+                                    boost::bidirectionalS, MLIRVertex>;
 
   using Vertex = boost::graph_traits<DAG>::vertex_descriptor;
+  using in_edge_iterator = boost::graph_traits<DAG>::in_edge_iterator;
 
   DAG &getGraph() { return dag; }
   const DAG &getGraph() const { return dag; }

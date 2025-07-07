@@ -55,7 +55,10 @@ namespace mqss::interfaces {
     @param[in] loc is the location of the new inserted instruction.
 */
 // TODO
-void insertGatesToMLIRModule(mlir::ModuleOp module, QuakeDAG dag,
+void insertGatesToMLIRModule(mlir::ModuleOp module, QuakeDAG &dag,
                              OpBuilder &builder, func::FuncOp gpuFunction);
 
+void insertMatricesMultiplicationsToMLIRModule(mlir::ModuleOp module,
+                                               QuakeDAG dag, OpBuilder &builder,
+                                               func::FuncOp gpuFunction);
 } // namespace mqss::interfaces

@@ -239,7 +239,6 @@ public:
 
       // after all the functions have been parsed to the DAG
       // then, create empty functions with prefix gpu
-
       mlir::Location loc = builder.getUnknownLoc();
       // Set insertion point inside the module
       builder.setInsertionPointToStart(module.getBody());
@@ -254,7 +253,7 @@ public:
       builder.create<mlir::func::ReturnOp>(loc);
       functionQuakeToGPU[func] = gpuFunc;
       insertGatesToMLIRModule(module, dag, builder, gpuFunc);
-      // insertMatricesMultiplicationsToMLIRModule(module,dag,builder);
+      insertMatricesMultiplicationsToMLIRModule(module, dag, builder, gpuFunc);
     }
   }
 

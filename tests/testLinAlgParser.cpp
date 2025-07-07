@@ -38,7 +38,10 @@ matches.
 // llvm includes
 #include "llvm/Support/raw_ostream.h"
 // mlir includes
+#include "mlir/Dialect/Arith/IR/Arith.h"
+#include "mlir/Dialect/Complex/IR/Complex.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
+#include "mlir/Dialect/Linalg/IR/Linalg.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
 #include "mlir/ExecutionEngine/ExecutionEngine.h"
 #include "mlir/ExecutionEngine/OptUtils.h"
@@ -131,7 +134,9 @@ TEST(TestLinAlgPass, TestQuakeToLinAlg) {
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
   context.loadDialect<mlir::tensor::TensorDialect>();
-
+  context.loadDialect<mlir::arith::ArithDialect>();
+  context.loadDialect<mlir::complex::ComplexDialect>();
+  context.loadDialect<mlir::linalg::LinalgDialect>();
   // creating pass manager
   mlir::PassManager pm(&context);
   // Adding custom pass

@@ -38,6 +38,7 @@ control and target qubits.
 #include "cudaq/Support/Plugin.h"
 #include "mlir/Dialect/Complex/IR/Complex.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
+#include "mlir/Dialect/Linalg/IR/Linalg.h"
 #include "mlir/Dialect/SCF/IR/SCF.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
 #include "mlir/Rewrite/FrozenRewritePatternSet.h"
@@ -52,6 +53,8 @@ control and target qubits.
 #include <iostream>
 
 using namespace mlir;
+using namespace mlir::complex;
+using namespace mlir::utils;
 using namespace mqss::support::quakeDialect;
 
 using MatrixXcd =
@@ -63,6 +66,104 @@ bool hasFunc(mlir::ModuleOp module, llvm::StringRef name) {
 
 mlir::func::FuncOp getFuncOp(mlir::ModuleOp module, llvm::StringRef name) {
   return module.lookupSymbol<mlir::func::FuncOp>(name);
+}
+
+/// Two‑operand multiply helper.
+/// ops[0] and ops[1] must be the same element type (complex<f32|f64>)
+/// and ranks among {0,1,2}. Returns a Value of the multiplied result.
+Value insertMul(OpBuilder &builder, Location loc, ArrayRef<Value> ops) {
+  assert(ops.size() == 2 && "insertMul requires exactly two operands");
+
+  // Fetch the tensor type for operand 0 (we assume both have same shape/type).
+  auto rt0 = ops[0].getType().dyn_cast<RankedTensorType>();
+  auto rt1 = ops[1].getType().dyn_cast<RankedTensorType>();
+  assert(rt0 && rt1 && "Operands must be RankedTensorType");
+
+  auto rank0 = rt0.getRank();
+  auto rank1 = rt1.getRank();
+  auto eltType = rt0.getElementType().dyn_cast<ComplexType>();
+  assert(eltType && eltType == rt1.getElementType().dyn_cast<ComplexType>() &&
+         "Element types must match and be complex");
+
+  // --- Case A: Scalar (rank0 == 0 && rank1 == 0) ---
+  if (rank0 == 0 && rank1 == 0) {
+    return builder.create<mlir::complex::MulOp>(loc, eltType, ops[0], ops[1])
+        .getResult();
+  }
+
+  // --- Case B: Vector (rank0 == 1 && rank1 == 1, same shape) ---
+  if (rank0 == 1 && rank1 == 1 && rt0.getShape() == rt1.getShape()) {
+    // Create empty output tensor
+    Value resultTensor =
+        builder.create<mlir::tensor::EmptyOp>(loc, rt0.getShape(), eltType);
+
+    auto ctx = builder.getContext();
+    auto dimExpr = mlir::getAffineDimExpr(0, ctx);
+    auto map =
+        mlir::AffineMap::get(/*dimCount=*/1, /*symbolCount=*/0, {dimExpr});
+    SmallVector<mlir::AffineMap> indexingMaps = {map, map, map};
+    SmallVector<mlir::utils::IteratorType> iterTypes = {
+        mlir::utils::IteratorType::parallel};
+
+    auto genericOp = builder.create<mlir::linalg::GenericOp>(
+        loc, TypeRange{rt0}, ValueRange{ops[0], ops[1]},
+        ValueRange{resultTensor}, indexingMaps, iterTypes,
+        /*doc=*/"",
+        /*libraryCall=*/"",
+        [&](OpBuilder &nestedBuilder, Location nestedLoc, ValueRange args) {
+          Value prod = nestedBuilder.create<mlir::complex::MulOp>(
+              nestedLoc, eltType, args[0], args[1]);
+          nestedBuilder.create<mlir::linalg::YieldOp>(nestedLoc, prod);
+        });
+
+    return genericOp.getResult(0);
+  }
+
+  // --- Case C: Matrix × Vector → Matvec (rank0==2, rank1==1) ---
+  if (rank0 == 2 && rank1 == 1 && rt0.getDimSize(1) == rt1.getDimSize(0)) {
+    // Init result tensor< M x complex >
+    int64_t M = rt0.getDimSize(0);
+    auto resultType = RankedTensorType::get({M}, eltType);
+    Value init = builder.create<mlir::tensor::EmptyOp>(
+        loc, ArrayRef<int64_t>{M}, eltType);
+    return builder
+        .create<linalg::MatvecOp>(loc, resultType, ValueRange{ops[0], ops[1]},
+                                  ValueRange{init})
+        .getResult(0);
+  }
+
+  // --- Case D: Matrix × Matrix → Matmul (rank0==2, rank1==2) ---
+  if (rank0 == 2 && rank1 == 2 && rt0.getDimSize(1) == rt1.getDimSize(0)) {
+    int64_t M = rt0.getDimSize(0), K = rt0.getDimSize(1), N = rt1.getDimSize(1);
+    auto resultType = RankedTensorType::get({M, N}, eltType);
+    Value init = builder.create<mlir::tensor::EmptyOp>(
+        loc, ArrayRef<int64_t>{M, N}, eltType);
+    return builder
+        .create<linalg::MatmulOp>(loc, resultType, ValueRange{ops[0], ops[1]},
+                                  ValueRange{init})
+        .getResult(0);
+  }
+
+  llvm_unreachable("Unsupported operand shapes for insertMul");
+}
+
+/// Insert an N‑ary multiply by folding the 2‑operand case.
+/// Requires at least 2 operands.
+Value insertMulN(OpBuilder &builder, Location loc, ArrayRef<Value> ops) {
+  assert(ops.size() >= 2 && "Need at least two operands to multiply");
+
+  // Start by multiplying the first two:
+  SmallVector<Value, 4> two = {ops[0], ops[1]};
+  Value acc = insertMul(builder, loc, two);
+
+  // Then fold in the rest
+  for (size_t i = 2, e = ops.size(); i < e; ++i) {
+    two[0] = acc;
+    two[1] = ops[i];
+    acc = insertMul(builder, loc, two);
+  }
+
+  return acc;
 }
 
 // Function: generate an MLIR constant op holding the complex matrix as
@@ -181,11 +282,12 @@ inlineFunction(mlir::ModuleOp &module, std::string name,
 }
 
 void mqss::interfaces::insertGatesToMLIRModule(mlir::ModuleOp module,
-                                               QuakeDAG dag, OpBuilder &builder,
+                                               QuakeDAG &dag,
+                                               OpBuilder &builder,
                                                func::FuncOp gpuFunction) {
   auto &graph = dag.getGraph();
-  using DAG = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,
-                                    MLIRVertex>;
+  using DAG = boost::adjacency_list<boost::vecS, boost::vecS,
+                                    boost::bidirectionalS, MLIRVertex>;
   boost::graph_traits<DAG>::vertex_iterator vi, vi_end;
   for (std::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi) {
     if (graph[*vi].isQubit) {
@@ -254,11 +356,72 @@ void mqss::interfaces::insertGatesToMLIRModule(mlir::ModuleOp module,
         mlirMatrix = inlineFunction(module, "Matrix_SwapOp", builder,
                                     quantumGates.SWAP());
 
-      if (!mlirMatrix) {
+      if (mlirMatrix) {
         // save the matrix into the vertex
         graph[*vi].matrix = mlirMatrix;
       }
       continue;
+    }
+  }
+}
+
+void mqss::interfaces::insertMatricesMultiplicationsToMLIRModule(
+    mlir::ModuleOp module, QuakeDAG dag, OpBuilder &builder,
+    func::FuncOp gpuFunction) {
+  llvm::outs() << "insert muls\n";
+  mlir::Location loc = builder.getUnknownLoc();
+  auto &graph = dag.getGraph();
+  using DAG = boost::adjacency_list<boost::vecS, boost::vecS,
+                                    boost::bidirectionalS, MLIRVertex>;
+  using Vertex = boost::graph_traits<DAG>::vertex_descriptor;
+  using InEdgeIterator = boost::graph_traits<DAG>::in_edge_iterator;
+
+  auto complexType = ComplexType::get(builder.getF64Type());
+  boost::graph_traits<DAG>::vertex_iterator vi, vi_end;
+  // get the operation before the return, to start to insert new operations
+  mlir::Block &lastBlock = gpuFunction.getBody().back();
+  // Look for the return op (usually at the end)
+  for (mlir::Operation &op : lastBlock) {
+    if (llvm::isa<mlir::func::ReturnOp>(&op)) {
+      builder.setInsertionPoint(&op); // Insert before return
+      break;
+    }
+  }
+
+  for (std::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi) {
+    if (graph[*vi].isQubit || graph[*vi].isMeasurement)
+      continue;
+    // for each vertex insert multiplications
+    Vertex v = *vi;
+    std::pair<InEdgeIterator, InEdgeIterator> in_edges_range =
+        in_edges(v, graph);
+    llvm::outs() << "Vertex to insert mul " << graph[*vi].name << "\n";
+    auto fMatrix = graph[*vi].matrix;
+    llvm::outs() << "\tMatrix name " << fMatrix.getName() << "\n";
+    auto funcType = fMatrix.getFunctionType();
+    auto resultTypes = funcType.getResults();
+    // 3) Use that result type in your CallOp
+    mlir::Type matrixType = resultTypes.front();
+    auto matrixValue = builder
+                           .create<func::CallOp>(loc, fMatrix.getName(),
+                                                 matrixType, ValueRange{})
+                           .getResult(0);
+    // get the operands of the matrix multiplication
+    SmallVector<mlir::Value> operands;
+    operands.push_back(matrixValue);
+    for (InEdgeIterator it = in_edges_range.first; it != in_edges_range.second;
+         ++it) {
+      auto edge = *it;
+      auto sourceVertex = boost::source(edge, graph);
+      llvm::outs() << "\tInput Vertex " << graph[sourceVertex].name << "\n";
+      if (!graph[sourceVertex].result)
+        continue;
+      operands.push_back(graph[sourceVertex].result);
+    }
+    llvm::outs() << "Operands size " << operands.size() << "\n";
+    if (operands.size() != 3 && operands.size() != 1) {
+      Value product = insertMulN(builder, loc, operands);
+      graph[*vi].result = product;
     }
   }
 }

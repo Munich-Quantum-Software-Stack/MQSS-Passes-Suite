@@ -58,7 +58,6 @@ set(MQT_QMAP_TESTS OFF)
 find_package(mqt-qmap REQUIRED)
 # Restore the original CXX flags and compiler
 set(CMAKE_CXX_STANDARD 20)
-find_package(Eigen3 REQUIRED)
 # ###################### CUDAQ settings ###################################
 set(CUDAQ_MAIN_INCLUDE_DIR "${CUDAQ_SOURCE_DIR}/include")
 
@@ -150,7 +149,6 @@ add_mlir_library(
   ${SRC_INTERFACES}
   LINK_LIBS
   PUBLIC
-  Eigen3::Eigen
   SupportQuake
   MQT::CoreIR
   MQT::CoreNA

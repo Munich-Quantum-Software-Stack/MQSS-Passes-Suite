@@ -130,7 +130,6 @@ TEST(TestLinAlgPass, TestQuakeToLinAlg) {
 #ifdef DEBUG
   std::cout << "Input Quake Module " << std::endl << quakeModule << std::endl;
 #endif
-
   auto [mlirModule, contextPtr] = extractMLIRContext(quakeModule);
   mlir::MLIRContext &context = *contextPtr;
   context.loadDialect<mlir::tensor::TensorDialect>();
@@ -141,14 +140,7 @@ TEST(TestLinAlgPass, TestQuakeToLinAlg) {
   mlir::PassManager pm(&context);
   // Adding custom pass
   pm.addPass(mlir::createCanonicalizerPass());
-  // pm.nest<mlir::func::FuncOp>().addPass(cudaq::opt::createMemToReg());
-  //  running the pass
-  // if (mlir::failed(pm.run(mlirModule)))
-  //   std::runtime_error("The pass failed...");
-  // #ifdef DEBUG
-  //   std::cout << "After including memtoreg pass:\n" << std::endl;
-  //   mlirModule->dump();
-  // #endif
+  pm.addPass(mlir::createCSEPass());
   pm.addPass(mqss::opt::createQuakeToLinAlgPass());
   // running the pass
   if (mlir::failed(pm.run(mlirModule)))

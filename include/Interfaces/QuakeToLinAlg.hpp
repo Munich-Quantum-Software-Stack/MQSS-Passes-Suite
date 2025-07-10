@@ -45,20 +45,27 @@ using namespace mlir;
 namespace mqss::interfaces {
 
 /**
- * @brief Given a gate as a quake::OperatorInterface, this functions inlines the
- corresponding matrix in the given builder.
-   @details This method inlines a matrix corresponding to gate into an MLIR
- module associated with the builder passed as parameter.
-    @param[in] gate is the mlir gate to be inserted.
-    @param[out] builder is an `OpBuilder` object associated with a MLIR module.
+ * @brief Given a module and a quake quantum kernel. This method perform the
+ transformation from Quake to LinAlg + Arith.
+   @details This method converts any given Quake quantum kernel to a sequence of
+ complex vectors/matrices multiplications corresponding to the input quantum
+ kernel. This representation might be useful, later as input of IREE compiler
+ which is able to generate GPU code for many vendors.
+    @param[out] module is the mlir module where my input quantum kernel is. In
+ module the converted function will be inserted.
+    @param[in] quakeFunction is the quantum kernel to be converted.
+    @param[in] builder is an `OpBuilder` object associated with a MLIR module.
  It is used to insert new instructions to the corresponding MLIR module.
-    @param[in] loc is the location of the new inserted instruction.
+    @param[in] tensorType is the datatype associated to the state vector
+    @param[in] matrixType is the datatype associated to the gate matrices
+    @param[in] numberOfQubits is the number of qubits utilized by the quantum
+ kernel
 */
-// TODO
-void insertGatesToMLIRModule(mlir::ModuleOp module, QuakeDAG &dag,
-                             OpBuilder &builder, func::FuncOp gpuFunction);
+mlir::Value convertQuakeToLinAlg(mlir::ModuleOp module,
+                                 mlir::func::FuncOp quakeFunction,
+                                 OpBuilder &builder, func::FuncOp gpuFunction,
+                                 mlir::RankedTensorType tensorType,
+                                 mlir::RankedTensorType matrixType,
+                                 int numberOfQubits);
 
-void insertMatricesMultiplicationsToMLIRModule(mlir::ModuleOp module,
-                                               QuakeDAG dag, OpBuilder &builder,
-                                               func::FuncOp gpuFunction);
 } // namespace mqss::interfaces

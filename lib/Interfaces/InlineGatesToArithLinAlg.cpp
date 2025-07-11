@@ -40,17 +40,15 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
     }
     The equivalent in LinAlg + Artih looks as follows:
     module {
+      // generated function that returns a matrix [2^3 x 2^3].
+      //This is the type of function that has to be defined later func.func
       func.func private @"h_3qubits_control[]_target[0]"() ->
-tensor<8x8xcomplex<f64>>  // generated function that returns a matrix [2^3 x
-2^3]. This is the type of function that has to be defined later func.func
-@quake() { %cst = arith.constant dense<(0.000000e+00,0.000000e+00)> :
-tensor<8xcomplex<f64>> // qubit state %0 = call
-@"h_3qubits_control[]_target[0]"() : () -> tensor<8x8xcomplex<f64>> // calling
-the gate matrix %1 = tensor.empty() : tensor<8xcomplex<f64>> // allocating a
-vector to store the result of the matrix/vector multiplication %2 =
-linalg.matvec ins(%0, %cst : tensor<8x8xcomplex<f64>>, tensor<8xcomplex<f64>>)
-outs(%1 : tensor<8xcomplex<f64>>) -> tensor<8xcomplex<f64>> // multiplying the
-gate and the state return %2
+tensor<8x8xcomplex<f64>> func.func @quake() { %cst = arith.constant
+dense<(0.000000e+00,0.000000e+00)> : tensor<8xcomplex<f64>> %0 = call
+@"h_3qubits_control[]_target[0]"() : () -> tensor<8x8xcomplex<f64> %1 =
+tensor.empty() : tensor<8xcomplex<f64>> %2 = linalg.matvec ins(%0, %cst :
+tensor<8x8xcomplex<f64>>, tensor<8xcomplex<f64>>) outs(%1 :
+tensor<8xcomplex<f64>>) -> tensor<8xcomplex<f64>> return %2
       }
     }
 
@@ -262,14 +260,6 @@ mlir::Value mqss::interfaces::convertQuakeToLinAlg(
     mlir::ModuleOp module, mlir::func::FuncOp quakeFunction, OpBuilder &builder,
     func::FuncOp gpuFunction, mlir::RankedTensorType tensorType,
     mlir::RankedTensorType matrixType, int numberOfQubits) {
-  //  mlir::Block &lastBlock = gpuFunction.getBody().back();
-  //  // Look for the return op (usually at the end)
-  //  for (mlir::Operation &op : lastBlock) {
-  //    if (llvm::isa<mlir::func::ReturnOp>(&op)) {
-  //      builder.setInsertionPoint(&op); // Insert before return
-  //      break;
-  //    }
-  //  }
   // insert the initial state of the circuit
   Value state =
       initializeQubits(gpuFunction, builder, numberOfQubits, tensorType);

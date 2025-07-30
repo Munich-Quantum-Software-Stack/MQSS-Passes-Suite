@@ -42,28 +42,28 @@ using namespace mlir;
 
 namespace {
 
-struct ReplaceCxToHCzH : public OpRewritePattern<quake::XOp> {
-  using OpRewritePattern::OpRewritePattern;
-  LogicalResult matchAndRewrite(quake::XOp cxOp,
-                                PatternRewriter &rewriter) const override {
-    if (cxOp.getControls().size() != 1 && cxOp.getTargets().size() != 1)
-      return success(); // if the cx operation is not two qubit then do nothing
-    // Get the operands of the XOp (control and target qubits)
-    Value control = cxOp.getControls()[0];
-    Value target = cxOp.getTargets()[0];
-    Location loc = cxOp.getLoc();
-    // TODO: howt to pass hOp.isAdj(), hOp.getParameters()
-    // Insert the H gate on the original target qubit
-    rewriter.create<quake::HOp>(loc, target);
-    // Insert the Z gate swapping the control and target qubits
-    rewriter.create<quake::ZOp>(loc, target, control);
-    // Insert the H gate on the original target qubit
-    rewriter.create<quake::HOp>(loc, target);
-    // Erase the original Cx operation
-    rewriter.eraseOp(cxOp);
-    return success();
-  }
-};
+void CxToHCzHPattern(mlir::Operation *currentOp) {
+  auto cxOp = dyn_cast_or_null<quake::XOp>(*currentOp);
+  if (!cxOp)
+    return;
+  if (cxOp.getControls().size() != 1 || cxOp.getTargets().size() != 1)
+    return; // if the cx operation is not two qubit then do nothing
+  // Get the operands of the XOp (control and target qubits)
+  Value control = cxOp.getControls()[0];
+  Value target = cxOp.getTargets()[0];
+  Location loc = cxOp.getLoc();
+  // TODO: howt to pass hOp.isAdj(), hOp.getParameters()
+  // Insert the H gate on the original target qubit
+  mlir::IRRewriter rewriter(cxOp->getContext());
+  rewriter.setInsertionPointAfter(cxOp);
+  rewriter.create<quake::HOp>(loc, target);
+  // Insert the Z gate swapping the control and target qubits
+  rewriter.create<quake::ZOp>(loc, target, control);
+  // Insert the H gate on the original target qubit
+  rewriter.create<quake::HOp>(loc, target);
+  // Erase the original Cx operation
+  rewriter.eraseOp(cxOp);
+}
 
 class CxToHCzH : public BaseMQSSPass<CxToHCzH> {
 public:
@@ -75,16 +75,7 @@ public:
   }
 
   void operationsOnQuantumKernel(func::FuncOp kernel) override {
-    auto ctx = kernel.getContext();
-    RewritePatternSet patterns(ctx);
-    patterns.insert<ReplaceCxToHCzH>(ctx);
-    ConversionTarget target(*ctx);
-    target.addLegalDialect<quake::QuakeDialect>();
-    target.addIllegalOp<quake::XOp>();
-    if (failed(applyPartialConversion(kernel, target, std::move(patterns)))) {
-      kernel.emitOpError("CxToHCzH Decomposition failed");
-      signalPassFailure();
-    }
+    kernel.walk([&](Operation *op) { CxToHCzHPattern(op); });
   }
 };
 } // namespace

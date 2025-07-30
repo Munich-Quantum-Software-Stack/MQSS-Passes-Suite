@@ -7,7 +7,10 @@ set(CMAKE_CXX_FLAGS "-w -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-switch")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -frtti -fexceptions")
 # Add Google Test
+find_package(fmt REQUIRED)
 find_package(GTest REQUIRED)
+find_package(cpr REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBZIP REQUIRED libzip)
 
@@ -150,3 +153,22 @@ set(TEST_OUTPUT_DIR $<TARGET_FILE_DIR:test-mqss-passes>/qasm)
 add_custom_target(
   copy-qasm-test ALL COMMAND ${CMAKE_COMMAND} -E copy_directory
                              ${CMAKE_SOURCE_DIR}/tests/qasm ${TEST_OUTPUT_DIR})
+
+add_executable(test-arslan RestClient.cpp test-optimization-submission.cpp)
+target_link_libraries(
+  test-arslan
+  PRIVATE ${COMMON_LIBRARIES}
+          MLIRPasses
+          Optimizer
+          fmt::fmt
+          cpr::cpr
+          OpenSSL::SSL
+          OpenSSL::Crypto)
+target_include_directories(
+  test-arslan
+  PRIVATE ${CMAKE_SOURCE_DIR}/include
+          ${CMAKE_SOURCE_DIR}/include/Passes/
+          ${CMAKE_SOURCE_DIR}/include/Support/
+          ${CMAKE_SOURCE_DIR}/include/Support/CodeGen
+          ${CUDAQ_MLIR_RUNTIME_PATH})
+# add_test(NAME Tesst-MQSS-passes COMMAND test-mqss-passes)

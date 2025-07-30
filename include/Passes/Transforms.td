@@ -35,6 +35,11 @@ def CancellationDoubleCx : Pass<"CancellationDoubleCx"> {
   let constructor = "mqss::opt::createCancellationDoubleCxPass()";
 }
 
+def ReductionPattern : Pass<"ReductionPattern"> {
+  let summary = "This pass removes the pattern Gate, Gate if both gates operates on the same control and targets. ";
+  let constructor = "mqss::opt::createReductionPatternPass()";
+}
+
 def HXHToZ : Pass<"HXHToZ"> {
   let summary = " Optimization pass that replaces a pattern composed of H, X, H by Z";
   let constructor = "mqss::opt::createHXHToZPass()";

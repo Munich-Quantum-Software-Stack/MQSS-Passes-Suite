@@ -12,15 +12,15 @@ def CzToHCxH : Pass<"CzToHCxH"> {
 
 def ReverseCx : Pass<"ReverseCx"> {
   let summary = "Decomposition pass that reverses the control and targets of each two-qubits CNot gate in a circuit";
-  let constructor = "mqss::opt::createReverseCNotPass()";
+  let constructor = "mqss::opt::createReverseCxPass()";
 }
 
-def SAdjToS : Pass<"SAdjZToS"> {
+def SAdjZToS : Pass<"SAdjZToS"> {
   let summary = "Optimization pass that replaces a pattern composed of S adjoint and Z by S";
-  let constructor = "mqss::opt::createSAdjToSPass()";
+  let constructor = "mqss::opt::createSAdjZToSPass()";
 }
 
-def SToSAdj : Pass<"SZToSadj"> {
+def SZToSAdj : Pass<"SZToSAdj"> {
   let summary = " Optimization pass that replaces a pattern composed of S and Z by S(adj)";
-  let constructor = "mqss::opt::createSToSAdjPass()";
+  let constructor = "mqss::opt::createSZToSAdjPass()";
 }

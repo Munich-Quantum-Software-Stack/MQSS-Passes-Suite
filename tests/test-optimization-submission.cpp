@@ -171,7 +171,7 @@ void transpileToIQM(mlir::MLIRContext &context, mlir::ModuleOp m_module) {
     std::runtime_error("The pass failed...");
 #ifdef DEBUG
   std::cout << "Circuit after pass:\n";
-  mlirModule->dump();
+  m_module->dump();
 #endif
 }
 

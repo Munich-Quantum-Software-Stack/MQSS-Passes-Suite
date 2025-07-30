@@ -48,7 +48,7 @@ repos:
     rev: v1.30.2
     hooks:
       - id: typos
-
+        exclude: tests/test-optimization-submission.cpp
   # Clang-format the C++ part of the code base automatically
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v19.1.7

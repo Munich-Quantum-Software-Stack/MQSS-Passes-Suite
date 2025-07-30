@@ -480,10 +480,10 @@ INSTANTIATE_TEST_SUITE_P(
         //                    "./quake/NullRotationCancellationPass.qke",
         //                    []() { return
         //                    mqss::opt::createNullRotationCancellationPass();})
-        std::make_tuple("SAdjToSPass", "./quake/SAdjToSPass.qke",
-                        []() { return mqss::opt::createSAdjToSPass(); }),
-        std::make_tuple("SToSAdjPass", "./quake/SToSAdjPass.qke",
-                        []() { return mqss::opt::createSToSAdjPass(); })
+        std::make_tuple("SAdjZToSPass", "./quake/SAdjToSPass.qke",
+                        []() { return mqss::opt::createSAdjZToSPass(); }),
+        std::make_tuple("SZToSAdjPass", "./quake/SToSAdjPass.qke",
+                        []() { return mqss::opt::createSZToSAdjPass(); })
         //    std::make_tuple("NormalizeArgAnglePass",
         //                    "./quake/NormalizeArgAnglePass.qke",
         //                    []() { return

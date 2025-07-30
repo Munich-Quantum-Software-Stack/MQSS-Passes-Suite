@@ -467,11 +467,11 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(
             "SAdjToSPass", "./quake/SAdjToSPass.qke",
             "./golden-cases/SAdjToSPass.qke",
-            []() { return mqss::opt::createSAdjToSPass(); }, false),
+            []() { return mqss::opt::createSAdjZToSPass(); }, false),
         std::make_tuple(
             "SToSAdjPass", "./quake/SToSAdjPass.qke",
             "./golden-cases/SToSAdjPass.qke",
-            []() { return mqss::opt::createSToSAdjPass(); }, false),
+            []() { return mqss::opt::createSZToSAdjPass(); }, false),
         std::make_tuple(
             "NormalizeArgAnglePass", "./quake/NormalizeArgAnglePass.qke",
             "./golden-cases/NormalizeArgAnglePass.qke",

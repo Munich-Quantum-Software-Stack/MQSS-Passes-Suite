@@ -81,11 +81,11 @@ void ReplaceSZToSAdj(mlir::Operation *currentOp) {
   rewriter.eraseOp(prevGate);
 }
 
-class SToSAdj : public BaseMQSSPass<SToSAdj> {
+class SZToSAdj : public BaseMQSSPass<SZToSAdj> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SToSAdj)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SZToSAdj)
 
-  llvm::StringRef getArgument() const override { return "SToSAdj"; }
+  llvm::StringRef getArgument() const override { return "SZToSAdj"; }
   llvm::StringRef getDescription() const override {
     return "Optimization pass that replaces a pattern composed of S and Z by "
            "S(adj)";
@@ -97,6 +97,6 @@ public:
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createSToSAdjPass() {
-  return std::make_unique<SToSAdj>();
+std::unique_ptr<Pass> mqss::opt::createSZToSAdjPass() {
+  return std::make_unique<SZToSAdj>();
 }

@@ -82,9 +82,9 @@ void ReplaceSAdjZToS(mlir::Operation *currentOp) {
   rewriter.eraseOp(prevGate);
 }
 
-class SAdjToS : public BaseMQSSPass<SAdjToS> {
+class SAdjZToS : public BaseMQSSPass<SAdjZToS> {
 public:
-  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SAdjToS)
+  MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SAdjZToS)
 
   llvm::StringRef getArgument() const override { return "SAdjZToS"; }
   llvm::StringRef getDescription() const override {
@@ -98,6 +98,6 @@ public:
 };
 } // namespace
 
-std::unique_ptr<Pass> mqss::opt::createSAdjToSPass() {
-  return std::make_unique<SAdjToS>();
+std::unique_ptr<Pass> mqss::opt::createSAdjZToSPass() {
+  return std::make_unique<SAdjZToS>();
 }

@@ -202,6 +202,22 @@ std::unique_ptr<mlir::Pass> createCommuteZCxPass();
 std::unique_ptr<mlir::Pass> createCancellationDoubleCxPass();
 
 /**
+ * @brief MLIR/Quake pass that operates on the pattern composed of CNot and
+ CNot.
+   @details This method constructs an `mlir::Pass` of the type
+ DoubleCnotCancellationPass. This pass operates on all the patterns composed of
+ a CNot and CNot operating on the same control and target, in a given MLIR/Quake
+ module and removes it from the module, as follows.
+
+  \image html docs/_static/mqss-passes/DoubleCnotCancellationPass.png width=100%
+
+ @return An `mlir::Pass` object containing the definition of the
+ DoubleCnotCancellationPass. This `mlir::Pass` object has to be passed to an
+ `mlir::PassManager` to take effect on any given MLIR module.
+ */
+std::unique_ptr<mlir::Pass> createReductionPatternPass();
+
+/**
  * @brief MLIR/Quake pass that operates on each rotation Rx, Ry, and Rz gate in
  a given quantum circuit.
    @details This method constructs an `mlir::Pass` of the type

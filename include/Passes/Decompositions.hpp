@@ -29,10 +29,6 @@ SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
  * This header must be included to use the collection of decomposition passes
  * that are part of the MQSS.
  */
-
-#ifndef DECOMPOSITIONS_H
-#define DECOMPOSITIONS_H
-
 #pragma once
 
 #include "mlir/Pass/Pass.h"
@@ -110,7 +106,7 @@ std::unique_ptr<mlir::Pass> createReverseCxPass();
  This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take
  effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createSAdjToSPass();
+std::unique_ptr<mlir::Pass> createSAdjZToSPass();
 
 /**
  * @brief MLIR/Quake pass that operates on the pattern composed of S and
@@ -124,6 +120,17 @@ std::unique_ptr<mlir::Pass> createSAdjToSPass();
  This `mlir::Pass` object has to be passed to an `mlir::PassManager` to take
  effect on any given MLIR module.
  */
-std::unique_ptr<mlir::Pass> createSToSAdjPass();
+std::unique_ptr<mlir::Pass> createSZToSAdjPass();
 } // namespace mqss::opt
-#endif // DECOMPOSITIONS_H
+/**
+ * @def GEN_PASS_DECL
+ * @brief Macro for declaring passes for registration
+ */
+// declarative passes
+#define GEN_PASS_DECL
+/**
+ * @def GEN_PASS_REGISTRATION
+ * @brief Macro for pass registration
+ */
+#define GEN_PASS_REGISTRATION
+#include "Passes/Decompositions.h.inc"
